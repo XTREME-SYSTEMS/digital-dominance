@@ -38,19 +38,7 @@ export async function uploadFile(file) {
 
 // Structured and plain-text responses matching Core.InvokeLLM's previous return shape.
 export async function invokeLLM(opts) {
-  let res;
-  try {
-    res = await base44.functions.invoke('independentAi', opts);
-  } catch (error) {
-    if (error?.response?.status === 503) throw new Error('Independent AI providers are unavailable. Check provider rate limits, billing, and account access.');
-    throw error;
-  }
-  const data = res.data;
-  if (!data?.ok || data.result == null) throw new Error(data?.error || 'Independent AI failed');
-  if (opts.response_json_schema && (typeof data.result !== 'object' || Array.isArray(data.result))) {
-    throw new Error('Independent AI did not return valid structured data');
-  }
-  return data.result;
+  return base44.integrations.Core.InvokeLLM(opts);
 }
 
 // LLM text generation through available free-tier providers.
