@@ -16,6 +16,7 @@
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
 import { AGENT_TAXONOMY, SYNC_TARGETS, getArchetype } from '../../shared/agentTaxonomy.ts';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // ── Deterministic ID generator ────────────────────────────────────────────
 function deterministicId(...parts: string[]): string {
@@ -89,10 +90,8 @@ Return as JSON with this schema:
 
 Select at minimum: orchestrator, ceo, seo_agent, social_media, maintenance_agent, validator. Add others based on the vision. Do not exceed 20 agents.`;
 
-  const result = await base44.integrations.Core.InvokeLLM({
+  const result = await invokeIndependentAi(base44, {
     prompt,
-    add_context_from_internet: true,
-    model: 'gemini_3_flash',
     response_json_schema: {
       type: 'object',
       properties: {
@@ -151,9 +150,8 @@ The prompt should be 500-1500 words, production-grade, and written as direct ins
 
 Return ONLY the master prompt text, no JSON wrapper.`;
 
-  const result = await base44.integrations.Core.InvokeLLM({
+  const result = await invokeIndependentAi(base44, {
     prompt,
-    model: 'claude-sonnet-5',
   });
 
   return typeof result === 'string' ? result : (result as any)?.text || (result as any)?.result || '';
@@ -595,6 +593,6 @@ export default async function (req: Request): Promise<Response> {
     }
   } catch (error) {
     console.error('[agentBuilderEngine] Error:', error.message);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: error.message }, { status: error.status === 503 ? 503 : 500 });
   }
 }

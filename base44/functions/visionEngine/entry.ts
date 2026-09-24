@@ -13,6 +13,7 @@
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
 import { secrets } from 'base44:runtime';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 const GODADDY_BASE = 'https://api.godaddy.com/v1';
 
@@ -104,10 +105,8 @@ Return as JSON:
   "clarifying_questions": ["string"]
 }`;
 
-        const result = await base44.integrations.Core.InvokeLLM({
+        const result = await invokeIndependentAi(base44, {
           prompt,
-          add_context_from_internet: true,
-          model: 'gemini_3_flash',
           response_json_schema: {
             type: 'object',
             properties: {
@@ -179,10 +178,8 @@ Return as JSON:
   ]
 }`;
 
-        const result = await base44.integrations.Core.InvokeLLM({
+        const result = await invokeIndependentAi(base44, {
           prompt,
-          add_context_from_internet: true,
-          model: 'gemini_3_flash',
           response_json_schema: {
             type: 'object',
             properties: {
@@ -277,10 +274,8 @@ Return as JSON:
   ]
 }`;
 
-        const result = await base44.integrations.Core.InvokeLLM({
+        const result = await invokeIndependentAi(base44, {
           prompt,
-          add_context_from_internet: true,
-          model: 'gemini_3_flash',
           response_json_schema: {
             type: 'object',
             properties: {
@@ -317,6 +312,6 @@ Return as JSON:
     }
   } catch (error) {
     console.error('[visionEngine] Error:', error.message);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: error.message }, { status: error.status === 503 ? 503 : 500 });
   }
 }

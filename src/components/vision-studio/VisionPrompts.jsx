@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { Sparkles, Loader2, Star } from 'lucide-react';
 
 // ── 20 Vision Prompts for the Vision Studio ──
@@ -108,11 +108,13 @@ const VISION_PROMPTS = [
 
 export default function VisionPrompts({ onPromptSelect }) {
   const [aiLoading, setAiLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleAiAssist = async () => {
     setAiLoading(true);
+    setError('');
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `You are a visionary business architect. Generate ONE powerful, specific vision statement (2-4 sentences) for an autonomous AI agent system that a business owner or entrepreneur could build.
 
 The system can create: AI tools, mobile apps, lead generation funnels, content factories, prediction engines, crypto creators, agent swarms, SEO dominators, and autonomous workflows — all powered by deterministic, infinitely capable AI agents.
@@ -132,8 +134,7 @@ Output ONLY the vision statement text, no preamble or explanation.`,
         onPromptSelect(generated);
       }
     } catch (e) {
-      const random = VISION_PROMPTS[Math.floor(Math.random() * VISION_PROMPTS.length)];
-      onPromptSelect(random.prompt);
+      setError(e?.response?.data?.error || e.message || 'Unable to generate a vision right now.');
     }
     setAiLoading(false);
   };
@@ -158,6 +159,7 @@ Output ONLY the vision statement text, no preamble or explanation.`,
       <p className="text-xs text-stone-400 mb-4">
         Click any strategy to load it into the vision box, or use AI Assist to generate a custom vision.
       </p>
+      {error && <p role="alert" className="text-xs text-red-600 mb-4">{error}</p>}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
         {VISION_PROMPTS.map((p, i) => (
           <button

@@ -38,7 +38,13 @@ export async function uploadFile(file) {
 
 // Structured and plain-text responses matching Core.InvokeLLM's previous return shape.
 export async function invokeLLM(opts) {
-  const res = await base44.functions.invoke('independentAi', opts);
+  let res;
+  try {
+    res = await base44.functions.invoke('independentAi', opts);
+  } catch (error) {
+    if (error?.response?.status === 503) throw new Error('Independent AI providers are unavailable. Check provider rate limits, billing, and account access.');
+    throw error;
+  }
   const data = res.data;
   if (!data?.ok || data.result == null) throw new Error(data?.error || 'Independent AI failed');
   if (opts.response_json_schema && (typeof data.result !== 'object' || Array.isArray(data.result))) {

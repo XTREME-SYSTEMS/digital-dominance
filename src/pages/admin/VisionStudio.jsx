@@ -52,7 +52,7 @@ export default function VisionStudio() {
       setVisionResult(data);
       setVisionApproved(false);
     } catch (e) {
-      setError(e.message);
+      setError(e?.response?.data?.error || e.message || 'Request failed. Please try again.');
     }
     setAssisting(false);
   }, [rawIdea, feedback]);
@@ -83,7 +83,7 @@ export default function VisionStudio() {
       const data = res.data || res;
       setStrategies(data.strategies || []);
     } catch (e) {
-      setError(e.message);
+      setError(e?.response?.data?.error || e.message || 'Request failed. Please try again.');
     }
     setGeneratingStrategies(false);
   }, [visionResult, strategyAngle, excludeNames]);
@@ -132,7 +132,7 @@ export default function VisionStudio() {
       setStep(4);
       queryClient.invalidateQueries({ queryKey: ['agent-personas'] });
     } catch (e) {
-      setError(e.message);
+      setError(e?.response?.data?.error || e.message || 'Request failed. Please try again.');
     }
     setGeneratingAgents(false);
   }, [selectedStrategy, strategies, visionResult, queryClient]);
@@ -145,7 +145,7 @@ export default function VisionStudio() {
       const res = await base44.functions.invoke('agentBuilderEngine', { action: 'launch' });
       setLaunchResult(res.data || res);
     } catch (e) {
-      setError(e.message);
+      setError(e?.response?.data?.error || e.message || 'Request failed. Please try again.');
     }
     setLaunching(false);
   }, []);
