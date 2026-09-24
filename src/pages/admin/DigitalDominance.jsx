@@ -13,7 +13,7 @@ import KnowledgeLibrary from '@/components/digital-dominance/KnowledgeLibrary';
 import MetricDashboard from '@/components/digital-dominance/MetricDashboard';
 
 const SECTIONS = [
-  { id: 'swarm', title: 'Autonomous Swarm Generator', desc: 'One button generates the exact agent swarm to operate this entire system', icon: Zap, accent: 'amber', component: AutonomousSwarmGenerator },
+  { id: 'swarm', title: 'Autonomous Swarm Generator', desc: 'Save the 38 specialist profiles; activate tools and automations separately', icon: Zap, accent: 'amber', component: AutonomousSwarmGenerator },
   { id: 'data', title: 'Data Strategy Pipeline', desc: 'Discovery → Acquisition → Ingestion → Normalization → Organize → Strategize → Enrich', icon: Database, accent: 'blue', component: DataStrategyPipeline },
   { id: 'scraper', title: 'National Epoxy Contractor Scraper', desc: 'Passive cloud-browser scraping of every epoxy contractor in the USA', icon: Radar, accent: 'emerald', component: NationalContractorScraper },
   { id: 'competitors', title: 'Competitor Intelligence + Pricing', desc: 'Top 20 epoxy competitor websites + pricing intelligence engine', icon: Radar, accent: 'rose', component: CompetitorIntelligence },

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Zap, Loader2, CheckCircle2, AlertCircle, Bot, Rocket } from 'lucide-react';
+import { Zap, Loader2, CheckCircle2, AlertCircle, Bot } from 'lucide-react';
 
 const SWARM_BLUEPRINT = [
   { role: 'Data Discovery Agent', purpose: 'Scans web for epoxy/concrete contractors, investors, and market data', count: 3, tools: ['cloud_browser', 'web_search'] },
@@ -22,79 +22,54 @@ const SWARM_BLUEPRINT = [
   { role: 'Validation & QA Agent', purpose: 'Validates all outputs, checks quality, flags issues', count: 2, tools: ['closed_loop_tester', 'llm'] },
 ];
 
+const SWARM_VERSION = 'digital-dominance-v1';
+const SWARM_PROFILES = SWARM_BLUEPRINT.flatMap((entry, roleIndex) =>
+  Array.from({ length: entry.count }, (_, slot) => ({
+    short_name: `DD-${String(roleIndex + 1).padStart(2, '0')}-${slot + 1}`,
+    name: `${entry.role} ${slot + 1}`,
+    persona_type: 'swarm',
+    strategy_hash: SWARM_VERSION,
+    assigned_context: entry.purpose,
+    system_prompt: `You are ${entry.role} ${slot + 1} for the Digital Dominance System. Your responsibility: ${entry.purpose}. Relevant tools: ${entry.tools.join(', ')}. Only use tools and data explicitly made available to you; do not claim a task has run unless its result is verified. Request approval before messaging customers, spending money, publishing, or changing production systems.`,
+    max_autonomy: 'supervised',
+    active: false,
+  }))
+);
+
 export default function AutonomousSwarmGenerator() {
   const [generating, setGenerating] = useState(false);
   const [generated, setGenerated] = useState(null);
   const [error, setError] = useState(null);
-  const [launched, setLaunched] = useState(false);
+
+  useEffect(() => {
+    let current = true;
+    const load = async () => {
+      try {
+        const user = await base44.auth.me();
+        const saved = await base44.entities.AgentPersona.filter({ owner_id: user.id, strategy_hash: SWARM_VERSION });
+        if (current && saved.length) setGenerated({ agents: saved });
+      } catch (e) {
+        if (current) setError(e.message);
+      }
+    };
+    load();
+    return () => { current = false; };
+  }, []);
 
   const generate = async () => {
     setGenerating(true);
     setError(null);
-    setGenerated(null);
-    setLaunched(false);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an autonomous swarm architect. Based on this swarm blueprint, generate a detailed deployment plan for each agent including their system_prompt (2-3 sentences), assigned entities, and execution schedule.
-
-Blueprint: ${JSON.stringify(SWARM_BLUEPRINT)}
-
-For each agent, provide:
-- agent_name
-- system_prompt (2-3 sentences defining behavior)
-- assigned_entities (which Base44 entities they read/write)
-- schedule (cron or interval)
-- autonomy_level (supervised/autonomous)
-
-Return a JSON object with an "agents" array containing all agents.`,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            agents: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  agent_name: { type: 'string' },
-                  system_prompt: { type: 'string' },
-                  assigned_entities: { type: 'array', items: { type: 'string' } },
-                  schedule: { type: 'string' },
-                  autonomy_level: { type: 'string' },
-                  role: { type: 'string' },
-                },
-              },
-            },
-            total_agents: { type: 'integer' },
-            estimated_monthly_cost: { type: 'string' },
-          },
-        },
-      });
-      setGenerated(res);
+      const user = await base44.auth.me();
+      const existing = await base44.entities.AgentPersona.filter({ owner_id: user.id, strategy_hash: SWARM_VERSION });
+      const savedNames = new Set(existing.map((agent) => agent.short_name));
+      const missing = SWARM_PROFILES.filter((profile) => !savedNames.has(profile.short_name));
+      const created = missing.length ? await base44.entities.AgentPersona.bulkCreate(missing.map((profile) => ({ ...profile, owner_id: user.id }))) : [];
+      setGenerated({ agents: [...existing, ...created] });
     } catch (e) {
       setError(e.message);
     } finally {
       setGenerating(false);
-    }
-  };
-
-  const launch = async () => {
-    setLaunched(true);
-    // In production, this would create AgentPersona records and register workflows
-    try {
-      if (generated?.agents) {
-        await base44.entities.AgentPersona.bulkCreate(
-          generated.agents.slice(0, 20).map((a) => ({
-            name: a.agent_name,
-            persona_type: 'swarm',
-            system_prompt: a.system_prompt,
-            assigned_context: a.role,
-            max_autonomy: a.autonomy_level === 'autonomous' ? 'autonomous' : 'supervised',
-            active: true,
-          }))
-        );
-      }
-    } catch (e) {
-      console.error('Launch error:', e);
     }
   };
 
@@ -103,7 +78,7 @@ Return a JSON object with an "agents" array containing all agents.`,
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h3 className="text-lg font-bold text-stone-900">Generate Your Exact Swarm</h3>
-          <p className="text-sm text-stone-500">One click generates {SWARM_BLUEPRINT.reduce((s, a) => s + a.count, 0)} specialized agents across {SWARM_BLUEPRINT.length} roles to operate the entire Digital Dominance System.</p>
+          <p className="text-sm text-stone-500">One click saves {SWARM_PROFILES.length} specialist profiles across {SWARM_BLUEPRINT.length} roles. Automations and tools require separate setup.</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -112,21 +87,8 @@ Return a JSON object with an "agents" array containing all agents.`,
             className="flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-3 text-sm font-bold text-stone-950 hover:bg-amber-400 disabled:opacity-50 transition"
           >
             {generating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Zap className="h-5 w-5" />}
-            {generating ? 'Generating Swarm...' : 'Generate Swarm'}
+            {generating ? 'Saving Profiles...' : 'Generate Swarm'}
           </button>
-          {generated && !launched && (
-            <button
-              onClick={launch}
-              className="flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 text-sm font-bold text-white hover:bg-green-700 transition"
-            >
-              <Rocket className="h-5 w-5" /> Launch Swarm
-            </button>
-          )}
-          {launched && (
-            <span className="flex items-center gap-2 rounded-xl bg-green-100 border border-green-300 px-4 py-3 text-sm font-bold text-green-700">
-              <CheckCircle2 className="h-5 w-5" /> Swarm Launched
-            </span>
-          )}
         </div>
       </div>
 
@@ -165,8 +127,8 @@ Return a JSON object with an "agents" array containing all agents.`,
           <div className="flex items-center gap-4 rounded-xl bg-amber-50 border border-amber-200 p-4">
             <CheckCircle2 className="h-8 w-8 text-amber-600" />
             <div>
-              <p className="text-sm font-bold text-stone-900">{generated.total_agents || generated.agents?.length} agents generated</p>
-              <p className="text-xs text-stone-500">Estimated monthly cost: {generated.estimated_monthly_cost || 'TBD'}</p>
+              <p className="text-sm font-bold text-stone-900">{generated.agents?.length || 0} of {SWARM_PROFILES.length} specialist profiles saved</p>
+              <p className="text-xs text-stone-500">Profiles are drafts, not running agents. Scheduled automations and tool access have not been activated.</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -174,17 +136,12 @@ Return a JSON object with an "agents" array containing all agents.`,
               <div key={i} className="rounded-xl border border-stone-200 bg-white p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-bold text-stone-900">{agent.agent_name}</span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${agent.autonomy_level === 'autonomous' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-                    {agent.autonomy_level}
-                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-700">
+                                       Inactive
+                                     </span>
                 </div>
-                <p className="text-xs text-stone-600 mb-2">{agent.system_prompt}</p>
-                <div className="flex flex-wrap gap-1">
-                  {(agent.assigned_entities || []).map((e) => (
-                    <span key={e} className="text-[10px] bg-stone-100 rounded px-1.5 py-0.5 text-stone-500">{e}</span>
-                  ))}
-                </div>
-                <p className="text-[10px] text-stone-400 mt-1">Schedule: {agent.schedule}</p>
+                <p className="text-xs text-stone-600 mb-2">{agent.assigned_context}</p>
+                <p className="text-[10px] text-stone-400">{agent.short_name} · Draft profile · No schedule</p>
               </div>
             ))}
           </div>
