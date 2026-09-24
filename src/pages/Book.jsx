@@ -58,6 +58,7 @@ export default function Book() {
         const res = await base44.functions.invoke("bookEstimate", { action: "book", lead_id: id, date, time });
         if (res.data?.ok) {
           await trackEvent("in_home_booked", { lead_id: id });
+          trackEvent("book_estimate", { lead_id: id });
           navigate(`/booked/${res.data.appointment_id}`);
           return;
         }
@@ -77,6 +78,7 @@ export default function Book() {
         });
         await base44.entities.Lead.update(id, { status: "IN-HOME ESTIMATE BOOKED", appointment_status: "in-home-booked" });
         await trackEvent("in_home_booked", { lead_id: id });
+        trackEvent("book_estimate", { lead_id: id });
         navigate(`/booked/${appt.id}`);
       } catch {
         setBooking(false);
