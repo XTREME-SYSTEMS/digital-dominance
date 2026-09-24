@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 import { waitUntil } from 'base44:runtime';
 
 // SELF-REFLECTION ENGINE
@@ -46,7 +47,7 @@ export default async function(req: Request): Promise<Response> {
       ]);
 
       // Use LLM to audit the system
-      const auditRes = await svc.integrations.Core.InvokeLLM({
+      const auditRes = await invokeIndependentAi(base44, {
         prompt: `You are a persistent self-reflection engine for an autonomous digital dominance system. Perform a deep self-audit on the "${area}" subsystem.
 
 Current system state:
@@ -129,7 +130,7 @@ Return JSON with findings, issues_found, score, lessons_learned.`,
         }
       }
 
-      const fixRes = await svc.integrations.Core.InvokeLLM({
+      const fixRes = await invokeIndependentAi(base44, {
         prompt: `You are a self-fix engine. Based on these audit findings, generate and apply fixes.
 
 System area: ${system_area || 'digital_dominance'}
@@ -189,7 +190,7 @@ Return JSON with: fixes (array of {issue, fix_action, status}), expected_score_a
         svc.entities.AgentPersona.filter({ active: false }, '-created_date', 20).catch(() => []),
       ]);
 
-      const healRes = await svc.integrations.Core.InvokeLLM({
+      const healRes = await invokeIndependentAi(base44, {
         prompt: `You are a self-healing engine. Diagnose and prescribe healing actions for the "${area}" system.
 
 Issues detected:
@@ -241,7 +242,7 @@ Generate healing actions to restore system health. Return JSON with: diagnosis, 
       const goals = await svc.entities.DominanceGoal.filter({ status: 'active' }, '-created_date', 20).catch(() => []);
       const recentCycles = await svc.entities.SelfReflectionCycle.filter({}, '-created_date', 20).catch(() => []);
 
-      const convergeRes = await svc.integrations.Core.InvokeLLM({
+      const convergeRes = await invokeIndependentAi(base44, {
         prompt: `You are a convergence engine. Analyze the system's progress toward all goals and determine convergence actions.
 
 Active goals: ${JSON.stringify(goals.map(g => ({ title: g.title, target: g.target_value, current: g.current_value, progress: g.progress_percentage, deadline: g.deadline })))}
@@ -289,7 +290,7 @@ Return JSON with: goal_status (array), convergence_score, next_actions (array), 
     if (action === 'learn') {
       const cycle_id = `SR-LEARN-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-      const learnRes = await svc.integrations.Core.InvokeLLM({
+      const learnRes = await invokeIndependentAi(base44, {
         prompt: `You are a self-learning engine for the Vision Cortex system. Reflect on how the system can improve its own operation, management, and perfection.
 
 Generate insights on:
@@ -384,7 +385,7 @@ Return JSON with: insights (array), learning_priorities (array), self_optimizati
 async function runAuditOnly(svc: any, userId: string) {
   const area = SYSTEM_AREAS[Math.floor(Math.random() * SYSTEM_AREAS.length)];
   const cycle_id = `SR-AUDIT-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  const auditRes = await svc.integrations.Core.InvokeLLM({
+  const auditRes = await invokeIndependentAi(base44, {
     prompt: `Quick self-audit of the "${area}" system. Return JSON with findings, issues_found (integer), score (0-100).`,
     response_json_schema: { type: 'object', properties: { findings: { type: 'string' }, issues_found: { type: 'integer' }, score: { type: 'integer' } } },
   });
@@ -429,7 +430,7 @@ async function runHealOnly(svc: any, userId: string) {
 async function runConvergeOnly(svc: any, userId: string) {
   const cycle_id = `SR-CONV-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const goals = await svc.entities.DominanceGoal.filter({ status: 'active' }, '-created_date', 10).catch(() => []);
-  const convergeRes = await svc.integrations.Core.InvokeLLM({
+  const convergeRes = await invokeIndependentAi(base44, {
     prompt: `Quick convergence check. Goals: ${goals.length}. Return JSON with convergence_score (0-100), next_actions (array), focus_area.`,
     response_json_schema: { type: 'object', properties: { convergence_score: { type: 'integer' }, next_actions: { type: 'array', items: { type: 'string' } }, focus_area: { type: 'string' } } },
   });
@@ -444,7 +445,7 @@ async function runConvergeOnly(svc: any, userId: string) {
 
 async function runLearnOnly(svc: any, userId: string) {
   const cycle_id = `SR-LEARN-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  const learnRes = await svc.integrations.Core.InvokeLLM({
+  const learnRes = await invokeIndependentAi(base44, {
     prompt: `Quick self-learning insight for Vision Cortex. Return JSON with insights (array), learning_priorities (array), perfection_score (0-100).`,
     response_json_schema: { type: 'object', properties: { insights: { type: 'array', items: { type: 'string' } }, learning_priorities: { type: 'array', items: { type: 'string' } }, perfection_score: { type: 'integer' } } },
   });
