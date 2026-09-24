@@ -5,9 +5,9 @@
 export const FREE_LLM_PROVIDERS = [
   {
     id: 'groq',
-    name: 'Groq (Llama 3.1 70B)',
+    name: 'Groq (Qwen 3.8 27B + GPT-OSS 120B)',
     endpoint: 'https://api.groq.com/openai/v1/chat/completions',
-    models: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'],
+    models: ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b'],
     freeTier: '30 RPM, 14,400 requests/day',
     apiKeyEnv: 'GROQ_API_KEY',
     speed: 'ultra-fast',
@@ -16,9 +16,9 @@ export const FREE_LLM_PROVIDERS = [
   },
   {
     id: 'google-ai',
-    name: 'Google AI Studio (Gemini Flash)',
+    name: 'Google AI Studio (Gemini 2.5 Flash)',
     endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
-    models: ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-2.0-flash-exp'],
+    models: ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-pro'],
     freeTier: '15 RPM, 1,500 requests/day, 1M tokens/min',
     apiKeyEnv: 'GOOGLE_AI_API_KEY',
     speed: 'fast',
@@ -30,9 +30,9 @@ export const FREE_LLM_PROVIDERS = [
     name: 'OpenRouter (Free Models)',
     endpoint: 'https://openrouter.ai/api/v1/chat/completions',
     models: [
-      'meta-llama/llama-3.1-8b-instruct:free',
-      'mistralai/mistral-7b-instruct:free',
-      'google/gemini-flash-1.5:free',
+      'qwen/qwen3.8-27b:free',
+      'z-ai/glm-5.2:free',
+      'nvidia/nemotron-3.5-lightning:free',
     ],
     freeTier: '20 RPM, 200 requests/day (free models)',
     apiKeyEnv: 'OPENROUTER_API_KEY',
@@ -77,7 +77,7 @@ export async function callFreeLlm(base44, messages, options = {}) {
           Authorization: `Bearer ${groqKey}`,
         },
         body: JSON.stringify({
-          model: options.model || 'llama-3.3-70b-versatile',
+          model: options.model || 'qwen/qwen3.8-27b',
           messages,
           temperature: options.temperature || 0.7,
           max_tokens: options.maxTokens || 4096,
@@ -103,7 +103,7 @@ export async function callFreeLlm(base44, messages, options = {}) {
           Authorization: `Bearer ${openrouterKey}`,
         },
         body: JSON.stringify({
-          model: 'meta-llama/llama-3.1-8b-instruct:free',
+          model: 'qwen/qwen3.8-27b:free',
           messages,
           temperature: options.temperature || 0.7,
           max_tokens: options.maxTokens || 4096,
@@ -118,10 +118,42 @@ export async function callFreeLlm(base44, messages, options = {}) {
     }
   }
 
-  // Fallback: Base44 InvokeLLM (always available, uses integration credits)
-  const result = await base44.integrations.Core.InvokeLLM({
-    prompt: messages.map((m) => m.content).join('\n\n'),
-    response_json_schema: options.jsonSchema || null,
-  });
-  return { provider: 'base44', content: typeof result === 'string' ? result : JSON.stringify(result) };
+  // Try Google AI (free, supports large context + vision)
+  const googleKey = secrets.get('GOOGLE_AI_API_KEY');
+  if (googleKey) {
+    try {
+      const promptText = messages.map((m) => (typeof m.content === 'string' ? m.content : '')).join('\n\n');
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${googleKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: promptText }] }],
+            generationConfig: { temperature: options.temperature || 0.7 },
+            ...(options.jsonSchema ? { responseMimeType: 'application/json' } : {}),
+          }),
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (content) return { provider: 'google-ai', content };
+      }
+    } catch (e) {
+      // Fall through
+    }
+  }
+
+  // Fallback: Vercel AI Gateway (separate billing from Base44 integration credits)
+  try {
+    const res = await base44.functions.invoke('vercelAiGateway', {
+      action: 'generateText',
+      prompt: messages.map((m) => (typeof m.content === 'string' ? m.content : '')).join('\n\n'),
+      response_json_schema: options.jsonSchema || undefined,
+    });
+    return { provider: 'vercel-gateway', content: res.data?.text || '' };
+  } catch (e) {
+    return { provider: 'error', content: `All LLM providers failed: ${e.message}` };
+  }
 }

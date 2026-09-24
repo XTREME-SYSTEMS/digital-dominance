@@ -92,6 +92,7 @@ import MetaAgent from '@/pages/admin/MetaAgent';
 import ConvergenceEngine from '@/pages/admin/ConvergenceEngine';
 import PipelineBuilder from '@/pages/admin/PipelineBuilder';
 import MasterPipeline from '@/pages/admin/MasterPipeline';
+import SystemIndependence from '@/pages/admin/SystemIndependence';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -284,6 +285,7 @@ const AuthenticatedApp = () => {
         <Route path="convergence" element={<ConvergenceEngine />} />
         <Route path="pipeline-builder" element={<PipelineBuilder />} />
         <Route path="master-pipeline" element={<MasterPipeline />} />
+        <Route path="independence" element={<SystemIndependence />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
