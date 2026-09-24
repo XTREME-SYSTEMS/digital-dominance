@@ -10,6 +10,8 @@ const navGroups = [
     label: null,
     items: [
       { to: "/admin", end: true, icon: Sparkles, label: "Opportunity Intelligence" },
+      { to: "/admin/master-pipeline", icon: ListOrdered, label: "Master Pipeline" },
+      { to: "/admin/pipeline-builder", icon: Zap, label: "Pipeline Builder" },
       { to: "/admin/google-workspace-os", icon: Globe, label: "Google Workspace OS" },
       { to: "/admin/internal-architecture", icon: Layers, label: "Internal Architecture" },
       { to: "/admin/google-command-center", icon: Globe, label: "Google Command Center" },
