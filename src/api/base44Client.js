@@ -17,6 +17,23 @@ function unwrapFunctionResponse(response) {
 }
 
 async function invokeIndependentAi(options = {}) {
+  // Legacy InvokeLLM supported add_context_from_internet. Preserve that
+  // contract by routing grounded research through an external search-capable
+  // model instead of silently returning ungrounded text.
+  if (options.add_context_from_internet) {
+    const response = await rawBase44.functions.invoke('vercelAiGateway', {
+      action: 'generateText',
+      ...options,
+      model: 'perplexity/sonar-pro',
+    });
+    const data = unwrapFunctionResponse(response);
+    if (data?.ok === false || (data?.parsed == null && data?.text == null)) {
+      throw new Error(data?.error || 'External research model returned no result');
+    }
+    if (options.response_json_schema) return data.parsed ?? data.text;
+    return data.text ?? data.parsed;
+  }
+
   try {
     const response = await rawBase44.functions.invoke('independentAi', options);
     const data = unwrapFunctionResponse(response);
