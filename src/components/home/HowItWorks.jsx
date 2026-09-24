@@ -1,10 +1,10 @@
 import React from "react";
 
 const steps = [
-  { n: "01", t: "Answer a few questions", d: "Tell us about your garage size, concrete condition and the finish you like." },
-  { n: "02", t: "See your price range", d: "We calculate a realistic estimated project range instantly." },
-  { n: "03", t: "Talk to a specialist", d: "A floor specialist reviews your details and answers your questions." },
-  { n: "04", t: "Confirm final pricing", d: "We inspect the concrete when needed and provide a final proposal." }
+  { n: "01", t: "Start with your address", d: "Add your ZIP and property address so we can check available property data for your garage size." },
+  { n: "02", t: "Choose your finish", d: "Tell us about your concrete. Browse colors and optionally upload a photo to preview your floor." },
+  { n: "03", t: "See a preliminary range", d: "Get an estimated price range based on the details available, not a guaranteed final quote." },
+  { n: "04", t: "Confirm with a specialist", d: "A specialist reviews your floor and confirms the scope and final price before any work begins." }
 ];
 
 export default function HowItWorks() {

@@ -41,13 +41,13 @@ export default function Nav({ settings }) {
 
   return (
     <header ref={headerRef} className="fixed top-0 inset-x-0 z-50">
-      {/* 10% OFF promo bar — clickable to the estimate funnel */}
+      {/* Estimate entry point */}
       <Link
         to="/funnel"
         onClick={() => trackEvent("funnel_cta_clicked", { location: "home_promo" })}
         className="block bg-amber-500 text-stone-950 text-center text-xs font-bold tracking-wide py-1.5 hover:bg-amber-400 transition"
       >
-        🎉 10% OFF YOUR GARAGE FLOOR COATING — TAP TO GET YOUR FREE ESTIMATE
+        FREE GARAGE FLOOR ESTIMATE · SEE A PRELIMINARY PRICE RANGE
       </Link>
 
       <div className="transition-all duration-300 bg-stone-950/10 backdrop-blur-sm border-b border-white/10">

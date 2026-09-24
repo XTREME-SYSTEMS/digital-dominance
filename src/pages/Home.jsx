@@ -7,6 +7,7 @@ import ConsultationForm from "@/components/home/ConsultationForm";
 import { captureAttribution } from "@/lib/estimatorStore";
 import MarketingSection from "@/components/home/MarketingSection";
 import BeforeAfterShowcase from "@/components/home/BeforeAfterShowcase";
+import HowItWorks from "@/components/home/HowItWorks";
 import FlakeShowcase from "@/components/home/FlakeShowcase";
 import FloorTypeGallery from "@/components/home/FloorTypeGallery";
 import ApplicationSpaces from "@/components/home/ApplicationSpaces";
@@ -31,10 +32,9 @@ export default function Home() {
 
       <Hero settings={settings} />
       <ConsultationForm settings={settings} />
-
-      <MarketingSection />
-
       <BeforeAfterShowcase />
+      <HowItWorks />
+      <MarketingSection />
       <FloorTypeGallery />
       <ApplicationSpaces />
       <FlakeShowcase />

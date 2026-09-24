@@ -29,7 +29,7 @@ export default function ConsultationForm({ settings }) {
     } finally { setBusy(false); }
   }
   return (
-    <section className="bg-stone-50 border-b border-stone-200 px-6 py-10" aria-labelledby="callback-heading">
+    <section id="callback" className="bg-stone-50 border-b border-stone-200 px-6 py-10 scroll-mt-24" aria-labelledby="callback-heading">
       <div className="max-w-6xl mx-auto md:flex md:items-center md:gap-12">
         <div className="md:w-1/2 mb-6 md:mb-0">
           <h2 id="callback-heading" className="text-2xl md:text-3xl font-heading font-bold text-stone-900">Not ready to price it yourself?</h2>

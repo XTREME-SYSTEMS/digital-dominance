@@ -32,8 +32,10 @@ const STEP_EVENTS = ["funnel_started", "address_entered", "condition_selected", 
 export default function Funnel() {
   const navigate = useNavigate();
   const { settings, isLoading } = useSettings();
-  const [step, setStep] = useState(0);
-  const [data, setData] = useState({ floor_condition: [], photos: [] });
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialZip = /^\d{5}$/.test(urlParams.get("zip") || "") ? urlParams.get("zip") : "";
+  const [step, setStep] = useState(initialZip ? 1 : 0);
+  const [data, setData] = useState({ floor_condition: [], photos: [], zip: initialZip });
   const [leadId, setLeadId] = useState(null);
   const [detectedSqft, setDetectedSqft] = useState(null);
   const [estimatedSize, setEstimatedSize] = useState(false);

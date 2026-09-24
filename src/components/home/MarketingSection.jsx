@@ -5,13 +5,13 @@ const highlights = [
   { icon: MapPin, label: "70+ locations" },
   { icon: Droplets, label: "Stain & oil resistant" },
   { icon: ShieldCheck, label: "Crack & moisture sealed" },
-  { icon: Flame, label: "Hot-tire proof" },
-  { icon: Clock, label: "1-day installation" },
+  { icon: Flame, label: "Hot-tire resistant" },
+  { icon: Clock, label: "Installation time varies by floor" },
   { icon: Sparkles, label: "Easy to clean" },
   { icon: Store, label: "Trust national retailers" }
 ];
 
-const POWER_TEXT = "Powered by America's #1 Largest Epoxy Superstore";
+const POWER_TEXT = "Backed by Xtreme Polishing Systems";
 
 // Black band highlighting the key benefits of an epoxy garage floor,
 // with a prominent power statement above it (typewriter animated).

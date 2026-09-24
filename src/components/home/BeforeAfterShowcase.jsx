@@ -12,10 +12,10 @@ export default function BeforeAfterShowcase() {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-stone-900">
-            Your first step to a beautiful garage
+See what your garage could become
           </h2>
           <p className="mt-4 text-stone-600 max-w-2xl mx-auto">
-            See the difference a professional epoxy flake floor makes. Drag the slider to reveal the transformation.
+Explore an example floor transformation, then use the visualizer to preview a finish in your own space. These are concept images, not completed customer projects.
           </p>
         </div>
         <BeforeAfter beforeUrl={BEFORE_URL} afterUrl={AFTER_URL} />

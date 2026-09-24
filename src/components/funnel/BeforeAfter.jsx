@@ -12,7 +12,7 @@ export default function BeforeAfter({ beforeUrl, afterUrl }) {
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const p = ((clientX - rect.left) / rect.width) * 100;
-    setPos(Math.max(0, Math.min(100, p)));
+    setPos(Math.max(1, Math.min(99, p)));
   };
 
   return (
