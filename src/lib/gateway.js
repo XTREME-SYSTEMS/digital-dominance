@@ -71,10 +71,23 @@ export async function editImage(opts) {
   return res.data;
 }
 
-// Email → Xtreme Comms gateway (replaces base44.integrations.Core.SendEmail)
+// Email → independent email gateway (Xtreme Communications first, Gmail fallback).
 export async function sendEmail(opts) {
-  const res = await base44.functions.invoke('xtremeComms', { action: 'sendEmail', ...opts });
-  return res.data;
+  const res = await base44.functions.invoke('independentEmail', {
+    ...(opts?.to === 'jeremy@strategicmindsai.com' ? { action: 'contact' } : {}),
+    ...opts,
+  });
+  const data = res.data ?? res;
+  if (data?.error) throw new Error(data.error);
+  return data?.result ?? data;
+}
+
+// Video → Vercel AI Gateway + Supabase Storage.
+export async function generateVideo(opts) {
+  const res = await base44.functions.invoke('independentVideo', opts);
+  const data = res.data ?? res;
+  if (!data?.url) throw new Error(data?.error || 'Independent video generation failed');
+  return data;
 }
 
 // SMS → Xtreme Comms gateway
