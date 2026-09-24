@@ -14,7 +14,7 @@ async function searchOpenRouter(prompt) {
   if (!key) throw new Error('OpenRouter search key is not configured');
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    signal: AbortSignal.timeout(35000),
+    signal: AbortSignal.timeout(20000),
     body: JSON.stringify({ model: 'openai/gpt-4.1-mini', messages: [{ role: 'user', content: prompt }],
       plugins: [{ id: 'web', engine: 'exa', max_results: 8 }], temperature: 0.2, max_tokens: 6000 }),
   });
@@ -38,7 +38,7 @@ async function searchGoogle(prompt) {
   const key = secrets.get('GOOGLE_AI_API_KEY');
   if (!key) throw new Error('Google AI search key is not configured');
   const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, signal: AbortSignal.timeout(25000),
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, signal: AbortSignal.timeout(5000),
     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], tools: [{ google_search: {} }], generationConfig: { temperature: 0.2, maxOutputTokens: 8192 } }),
   });
   if (!response.ok) throw providerError('Google AI search', response.status);

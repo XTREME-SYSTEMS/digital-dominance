@@ -6,6 +6,13 @@ import ScannerGrid, { SCANNERS } from '@/components/opportunity-intelligence/Sca
 import ScanResults from '@/components/opportunity-intelligence/ScanResults';
 import SavedOpportunities from '@/components/opportunity-intelligence/SavedOpportunities';
 
+function scanError(error) {
+  const detail = error?.response?.data?.error || error?.data?.error || error?.response?.data?.message;
+  return detail || (error?.response?.status === 503
+    ? 'Scanner service unavailable. Check independent search-provider billing and access, then retry.'
+    : error?.message || 'Scan failed. Please retry.');
+}
+
 export default function OpportunityIntelligence() {
   const [activeScan, setActiveScan] = useState(null);
   const [scanning, setScanning] = useState(false);
@@ -20,7 +27,7 @@ export default function OpportunityIntelligence() {
       const res = await base44.functions.invoke('opportunityIntelligenceEngine', { action: key });
       setResults(res.data || res);
     } catch (e) {
-      setResults({ error: e.response?.data?.error || e.message, findings: [] });
+      setResults({ error: scanError(e), findings: [] });
     }
     setScanning(false);
   }, []);
@@ -36,7 +43,12 @@ export default function OpportunityIntelligence() {
         const res = await base44.functions.invoke('opportunityIntelligenceEngine', { action: scanner.key });
         collected[scanner.key] = res.data;
       } catch (e) {
-        collected[scanner.key] = { error: e.response?.data?.error || e.message, findings: [] };
+        collected[scanner.key] = { error: scanError(e), findings: [] };
+      }
+      const failure = collected[scanner.key]?.error || '';
+      if (failure.includes('search billing balance required') && failure.includes('account access denied')) {
+        setResults({ results: { ...collected }, stoppedReason: 'Full scan stopped: OpenRouter search needs a billing balance and Google AI search denied access. Restore either provider before retrying the remaining scanners.' });
+        break;
       }
       setResults({ results: { ...collected } });
     }

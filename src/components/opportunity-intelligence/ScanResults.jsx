@@ -81,6 +81,7 @@ export default function ScanResults({ results, loading, activeScan, fullScanProg
   if (results.results) {
     return (
       <div className="space-y-6">
+        {results.stoppedReason && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{results.stoppedReason}</p>}
         {Object.entries(results.results).map(([key, data]) => {
           if (!data) return null;
           const scanner = fullScanProgress?.find((s) => s.key === key);
@@ -90,7 +91,7 @@ export default function ScanResults({ results, loading, activeScan, fullScanProg
               <div className="flex items-center gap-2 mb-3">
                 {scanner?.icon && <scanner.icon className="h-5 w-5 text-amber-600" />}
                 <h3 className="text-sm font-black text-stone-900">{label}</h3>
-                <span className="text-xs text-stone-400 ml-auto">{data.findings?.length || 0} findings</span>
+                <span className="text-xs text-stone-400 ml-auto">{data.error ? 'Unavailable' : `${data.findings?.length || 0} findings`}</span>
               </div>
               {data.error ? (
                 <div className="flex items-center gap-2 text-xs text-red-500">
