@@ -7,6 +7,7 @@ export default function RefactorScanner() {
   const queryClient = useQueryClient();
   const [scanResult, setScanResult] = useState(null);
   const [error, setError] = useState(null);
+  const [progress, setProgress] = useState('');
 
   const scanMutation = useMutation({
     mutationFn: async () => {
@@ -23,15 +24,34 @@ export default function RefactorScanner() {
 
   const fullCycleMutation = useMutation({
     mutationFn: async () => {
+      setError(null);
+      setProgress('Running read-only checks...');
       const res = await base44.functions.invoke('autonomousRefactorEngine', { action: 'full_cycle' });
-      return res.data;
+      const scan = res.data;
+      if (!scan.ok) throw new Error(scan.error || 'Scan failed');
+      const processed = [];
+      for (const [index, job] of (scan.jobs || []).slice(0, 5).entries()) {
+        setProgress(`Reviewing finding ${index + 1} of ${Math.min(scan.jobs.length, 5)}...`);
+        try {
+          await base44.functions.invoke('autonomousRefactorEngine', { action: 'plan', job_id: job.job_id });
+          await base44.functions.invoke('autonomousRefactorEngine', { action: 'execute', job_id: job.job_id });
+          const validation = await base44.functions.invoke('autonomousRefactorEngine', { action: 'validate', job_id: job.job_id });
+          processed.push({ ...job, validated: validation.data.validation?.passed, score: validation.data.validation?.score });
+        } catch (err) {
+          processed.push({ ...job, error: err.response?.data?.error || err.message });
+        }
+        setScanResult({ ...scan, processed });
+        queryClient.invalidateQueries({ queryKey: ['refactorJobs'] });
+      }
+      setProgress('');
+      return { ...scan, processed };
     },
     onSuccess: (data) => {
       setScanResult(data);
       queryClient.invalidateQueries({ queryKey: ['refactorJobs'] });
       queryClient.invalidateQueries({ queryKey: ['refactorStats'] });
     },
-    onError: (err) => setError(err.message),
+    onError: (err) => { setProgress(''); setError(err.response?.data?.error || err.message); },
   });
 
   const isScanning = scanMutation.isPending;
@@ -44,7 +64,7 @@ export default function RefactorScanner() {
         <h2 className="font-bold text-stone-900">Phase 1 — System Scan</h2>
       </div>
       <p className="text-sm text-stone-500">
-        Audits all {104}+ backend functions by calling each with a safe test payload. Identifies broken functions, slow responses, consolidation opportunities, and code quality issues using AI analysis.
+        Checks only backend actions confirmed read-only. Unverified functions are not called. Findings show response failures and latency; AI review does not inspect source code or deploy changes.
       </p>
 
       <div className="flex flex-wrap gap-3">
@@ -66,6 +86,7 @@ export default function RefactorScanner() {
         </button>
       </div>
 
+      {progress && <p role="status" className="text-sm text-stone-600">{progress}</p>}
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
@@ -80,7 +101,7 @@ export default function RefactorScanner() {
               <ScanStat label="Tested" value={scanResult.scan_stats.total_tested} color="text-stone-700" />
               <ScanStat label="OK" value={scanResult.scan_stats.successful} color="text-emerald-600" />
               <ScanStat label="Failed" value={scanResult.scan_stats.failed} color="text-red-600" />
-              <ScanStat label="Jobs Created" value={scanResult.jobs_created} color="text-amber-600" />
+              <ScanStat label="Not checked" value={scanResult.scan_stats.not_tested} color="text-stone-500" />
             </div>
           )}
           {scanResult.scan && (
@@ -88,7 +109,7 @@ export default function RefactorScanner() {
               <ScanStat label="Tested" value={scanResult.scan.total_tested} color="text-stone-700" />
               <ScanStat label="OK" value={scanResult.scan.successful} color="text-emerald-600" />
               <ScanStat label="Failed" value={scanResult.scan.failed} color="text-red-600" />
-              <ScanStat label="Jobs" value={scanResult.scan.jobs_created} color="text-amber-600" />
+              <ScanStat label="Not checked" value={scanResult.scan.not_tested} color="text-stone-500" />
             </div>
           )}
           {scanResult.summary && (

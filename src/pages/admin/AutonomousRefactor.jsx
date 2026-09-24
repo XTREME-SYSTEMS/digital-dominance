@@ -21,7 +21,7 @@ export default function AutonomousRefactor() {
         <div className="flex flex-wrap gap-4 mt-4">
           <div className="flex items-center gap-2 text-sm text-stone-300">
             <Zap className="h-4 w-4 text-amber-400" />
-            <span>Scans 104+ backend functions</span>
+            <span>Read-only checks; unverified functions skipped</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-stone-300">
             <RefreshCw className="h-4 w-4 text-amber-400" />
@@ -29,7 +29,7 @@ export default function AutonomousRefactor() {
           </div>
           <div className="flex items-center gap-2 text-sm text-stone-300">
             <ShieldCheck className="h-4 w-4 text-amber-400" />
-            <span>Validated before deployment</span>
+            <span>AI review only; no code deployed</span>
           </div>
         </div>
       </div>

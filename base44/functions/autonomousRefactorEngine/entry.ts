@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // ============================================================
 // AUTONOMOUS REFACTOR ENGINE
@@ -17,7 +18,7 @@ const KNOWN_FUNCTIONS = [
   "fleetAlphaPrime", "generateRss", "generateSeoPage", "generateSitemap", "generateSop",
   "githubSync", "godaddyApi", "googleAnalytics", "googleVerifierConnectUrl",
   "googleVerifierExchange", "googleWorkspaceSync", "graphEngine", "intelligenceSync",
-  "intentRouter", "llmRouter", "massIngestionEngine", "memoryRouter", "metaAgent",
+  "intentRouter", "independentAi", "llmRouter", "massIngestionEngine", "memoryRouter", "metaAgent",
   "metaArchitecture", "notifySeoUpdates", "optimizeSeo", "phase9Proof", "pingIndexNow",
   "postconditionValidator", "predictionEngine", "propertyLookup", "pullSearchConsoleData",
   "pushLeadToHubspot", "ragPipeline", "railwayScraper", "rebrandGenerator", "rebrandStudio",
@@ -34,20 +35,12 @@ const KNOWN_FUNCTIONS = [
   "xtremeUniversalGeneratorBridge"
 ];
 
-const SAFE_TEST_PAYLOADS: Record<string, any> = {
-  status: { action: "status" },
-  stats: { action: "stats" },
-  list: { action: "list" },
-  default: { action: "status" },
+// Only actions whose handlers have been reviewed as read-only may run in an automatic scan.
+const SAFE_PROBES: Record<string, any> = {
+  autonomousRefactorEngine: { action: 'status' },
+  independentAi: { action: 'status' },
+  llmRouter: { action: 'list_connections' },
 };
-
-function getTestPayload(funcName: string): any {
-  const lower = funcName.toLowerCase();
-  if (lower.includes("status") || lower.includes("audit") || lower.includes("scan")) return SAFE_TEST_PAYLOADS.status;
-  if (lower.includes("stats") || lower.includes("metric")) return SAFE_TEST_PAYLOADS.stats;
-  if (lower.includes("list") || lower.includes("engine")) return SAFE_TEST_PAYLOADS.list;
-  return SAFE_TEST_PAYLOADS.default;
-}
 
 function genId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -56,110 +49,41 @@ function genId(prefix: string): string {
 // ============================================================
 // PHASE 1: SCAN
 // ============================================================
-async function scanSystem(base44: any): Promise<any> {
-  const svc = base44.asServiceRole;
-  const cycleId = genId("cycle");
+async function scanSystem(base44: any, ownerId: string): Promise<any> {
+  const cycleId = genId('cycle');
   const results: any[] = [];
   const errors: any[] = [];
   const slow: any[] = [];
 
-  for (const funcName of KNOWN_FUNCTIONS) {
-    const payload = getTestPayload(funcName);
+  for (const [funcName, payload] of Object.entries(SAFE_PROBES)) {
     const start = Date.now();
     try {
-      const response = await base44.functions.invoke(funcName, payload);
+      await base44.functions.invoke(funcName, payload);
       const elapsed = Date.now() - start;
-      results.push({ function: funcName, status: "ok", elapsed_ms: elapsed });
+      results.push({ function: funcName, elapsed_ms: elapsed });
       if (elapsed > 3000) slow.push({ function: funcName, elapsed_ms: elapsed });
     } catch (err: any) {
-      const elapsed = Date.now() - start;
-      errors.push({ function: funcName, error: (err?.message || String(err)).slice(0, 500), elapsed_ms: elapsed });
+      errors.push({ function: funcName, error: String(err?.message || err).slice(0, 500), elapsed_ms: Date.now() - start });
     }
   }
 
-  const scanSummary = {
-    total_tested: KNOWN_FUNCTIONS.length,
-    successful: results.length,
-    failed: errors.length,
-    slow_functions: slow,
-    errors: errors.slice(0, 20),
-    all_functions: KNOWN_FUNCTIONS,
-  };
+  const summary = { total_tested: results.length + errors.length, successful: results.length, failed: errors.length, slow_count: slow.length, not_tested: Math.max(0, KNOWN_FUNCTIONS.length - Object.keys(SAFE_PROBES).filter(name => KNOWN_FUNCTIONS.includes(name)).length) };
+  const observations = [...errors.map(e => ({ target_name: e.function, issue_type: 'test_failure', issue_description: `Read-only probe failed: ${e.error}`, severity: 'high', priority: 'high' })),
+    ...slow.map(s => ({ target_name: s.function, issue_type: 'performance', issue_description: `Read-only probe took ${s.elapsed_ms}ms. Investigate before changing code.`, severity: 'medium', priority: 'normal' }))];
+  const jobs = observations.length ? await base44.entities.RefactorJob.bulkCreate(observations.map(o => ({
+    ...o, owner_id: ownerId, job_id: genId('refactor'), cycle_id: cycleId, job_type: 'scan', target_type: 'backend_function', status: 'identified', created_at: new Date().toISOString(), scan_data: JSON.stringify({ probe: SAFE_PROBES[o.target_name], cycle_id: cycleId }),
+  }))) : [];
 
-  const llmResponse = await base44.integrations.Core.InvokeLLM({
-    prompt: `You are an autonomous code refactoring analyst. Analyze this backend function scan results and identify the TOP refactoring opportunities.
-
-SCAN RESULTS:
-${JSON.stringify(scanSummary, null, 2)}
-
-For each opportunity, return a JSON object with:
-- target_name: the function name
-- issue_type: one of [broken_function, performance, consolidation, duplicated_code, dead_code, complex_logic, missing_error_handling, inconsistent_pattern]
-- issue_description: what's wrong and why it needs refactoring
-- severity: critical | high | medium | low
-- refactor_action: specific action to take
-- priority: critical | high | normal | low
-
-Rules:
-- Functions that returned errors are "broken_function" severity critical
-- Functions that took >3000ms are "performance" severity high
-- Functions with similar names/purposes are "consolidation" opportunities
-- Identify groups of functions that could be merged
-
-Return a JSON object: { "opportunities": [ ... ], "summary": "brief summary" }
-Return at most 15 opportunities, sorted by severity (critical first).`,
-    response_json_schema: {
-      type: "object",
-      properties: {
-        opportunities: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              target_name: { type: "string" },
-              issue_type: { type: "string" },
-              issue_description: { type: "string" },
-              severity: { type: "string" },
-              refactor_action: { type: "string" },
-              priority: { type: "string" },
-            },
-          },
-        },
-        summary: { type: "string" },
-      },
-    },
-  });
-
-  const jobsCreated: any[] = [];
-  const ownerId = base44.user?.id || "system";
-  for (const opp of (llmResponse as any).opportunities || []) {
-    const jobId = genId("refactor");
-    const job = await svc.entities.RefactorJob.create({
-      owner_id: ownerId,
-      job_id: jobId,
-      cycle_id: cycleId,
-      job_type: "scan",
-      target_type: "backend_function",
-      target_name: opp.target_name,
-      issue_type: opp.issue_type,
-      issue_description: opp.issue_description,
-      severity: opp.severity,
-      status: "identified",
-      priority: opp.priority,
-      scan_data: JSON.stringify({ refactor_action: opp.refactor_action, cycle_id: cycleId }),
-      created_at: new Date().toISOString(),
-    });
-    jobsCreated.push({ id: job.id, job_id: job.job_id, target: job.target_name, issue: job.issue_type, severity: job.severity });
+  let analysis = 'Read-only checks completed. Failures require investigation; unverified functions were not called.';
+  try {
+    const ai = await invokeIndependentAi(base44, { prompt: `Summarize these read-only runtime probe results in one sentence. Do not claim source-code analysis or that untested functions are healthy: ${JSON.stringify({ summary, errors, slow })}`, max_tokens: 300 });
+    if (typeof ai === 'string' && ai.trim()) analysis = ai;
+  } catch (err: any) {
+    analysis += ' AI summary unavailable.';
   }
 
-  return {
-    ok: true,
-    cycle_id: cycleId,
-    summary: (llmResponse as any).summary,
-    scan_stats: { total_tested: scanSummary.total_tested, successful: scanSummary.successful, failed: scanSummary.failed, slow_count: slow.length },
-    jobs_created: jobsCreated.length,
-    jobs: jobsCreated,
-  };
+  return { ok: true, cycle_id: cycleId, summary: analysis, scan_stats: summary, jobs_created: jobs.length,
+    jobs: jobs.map(j => ({ id: j.id, job_id: j.job_id, target: j.target_name, issue: j.issue_type, severity: j.severity })) };
 }
 
 // ============================================================
@@ -173,7 +97,7 @@ async function planRefactor(base44: any, jobId: string): Promise<any> {
 
   await svc.entities.RefactorJob.update(job.id, { status: "planning" });
 
-  const planResponse = await base44.integrations.Core.InvokeLLM({
+  const planResponse = await invokeIndependentAi(base44, {
     prompt: `You are an autonomous refactoring planner. Generate a detailed refactoring plan for this issue:
 
 TARGET: ${job.target_name} (${job.target_type})
@@ -223,7 +147,7 @@ async function executeRefactor(base44: any, jobId: string): Promise<any> {
 
   await svc.entities.RefactorJob.update(job.id, { status: "executing" });
 
-  const codeResponse = await base44.integrations.Core.InvokeLLM({
+  const codeResponse = await invokeIndependentAi(base44, {
     prompt: `You are an autonomous code refactoring executor. Based on this refactoring plan, generate the refactored code.
 
 TARGET: ${job.target_name} (${job.target_type})
@@ -273,7 +197,7 @@ async function validateRefactor(base44: any, jobId: string): Promise<any> {
 
   await svc.entities.RefactorJob.update(job.id, { status: "validating" });
 
-  const validationResponse = await base44.integrations.Core.InvokeLLM({
+  const validationResponse = await invokeIndependentAi(base44, {
     prompt: `You are an autonomous code validation engine. Validate this refactored code.
 
 ORIGINAL ISSUE: ${job.issue_type} — ${job.issue_description}
@@ -320,38 +244,10 @@ Return:
 // ============================================================
 // PHASE 5: FULL CYCLE
 // ============================================================
-async function fullCycle(base44: any): Promise<any> {
-  const scanResult = await scanSystem(base44);
-  if (!scanResult.jobs || scanResult.jobs.length === 0) {
-    return { ok: true, message: "No refactoring opportunities found. System is clean.", scan: scanResult };
-  }
-
-  const processed: any[] = [];
-  const maxJobs = Math.min(scanResult.jobs.length, 5);
-  for (const jobInfo of scanResult.jobs.slice(0, maxJobs)) {
-    try {
-      await planRefactor(base44, jobInfo.job_id);
-      await executeRefactor(base44, jobInfo.job_id);
-      const validationResult = await validateRefactor(base44, jobInfo.job_id);
-      processed.push({
-        job_id: jobInfo.job_id,
-        target: jobInfo.target,
-        issue: jobInfo.issue,
-        severity: jobInfo.severity,
-        validated: validationResult.validation?.passed || false,
-        score: validationResult.validation?.score || 0,
-      });
-    } catch (err: any) {
-      processed.push({ job_id: jobInfo.job_id, target: jobInfo.target, error: (err.message || "").slice(0, 200) });
-    }
-  }
-
-  return {
-    ok: true,
-    scan: { total_tested: scanResult.scan_stats.total_tested, successful: scanResult.scan_stats.successful, failed: scanResult.scan_stats.failed, jobs_created: scanResult.jobs_created },
-    processed,
-    summary: scanResult.summary,
-  };
+async function fullCycle(base44: any, ownerId: string): Promise<any> {
+  // Return promptly; the UI runs each job phase in a separate bounded request.
+  const scanResult = await scanSystem(base44, ownerId);
+  return { ok: true, scan: { ...scanResult.scan_stats, jobs_created: scanResult.jobs_created }, jobs: scanResult.jobs, processed: [], summary: scanResult.summary };
 }
 
 // ============================================================
@@ -395,17 +291,19 @@ async function getStatus(base44: any): Promise<any> {
 export default async function(req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    if (!user || user.role !== 'admin') return Response.json({ error: 'Admin access required' }, { status: 403 });
     const body = await req.json().catch(() => ({}));
     const action = body.action || 'status';
     const jobId = body.job_id;
 
     let result: any;
     switch (action) {
-      case 'scan': result = await scanSystem(base44); break;
+      case 'scan': result = await scanSystem(base44, user.id); break;
       case 'plan': result = await planRefactor(base44, jobId); break;
       case 'execute': result = await executeRefactor(base44, jobId); break;
       case 'validate': result = await validateRefactor(base44, jobId); break;
-      case 'full_cycle': result = await fullCycle(base44); break;
+      case 'full_cycle': result = await fullCycle(base44, user.id); break;
       case 'status': result = await getStatus(base44); break;
       default: result = { ok: false, error: 'Unknown action: ' + action };
     }
