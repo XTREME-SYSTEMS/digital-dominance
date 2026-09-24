@@ -7,6 +7,22 @@ function unwrap(response: any) {
 }
 
 export async function invokeIndependentAi(base44: any, options: any) {
+  // Preserve Base44 Core.InvokeLLM internet-grounding semantics. A successful
+  // free text model is not an acceptable substitute for a live research call.
+  if (options?.add_context_from_internet) {
+    const response = await base44.functions.invoke('vercelAiGateway', {
+      action: 'generateText',
+      ...options,
+      model: 'perplexity/sonar-pro',
+    });
+    const data = unwrap(response);
+    const result = options?.response_json_schema ? (data?.parsed ?? data?.text) : (data?.text ?? data?.parsed);
+    if (result === undefined || result === null || result === '') {
+      throw new Error(data?.error || 'External research model returned no result');
+    }
+    return result;
+  }
+
   let primaryError: any = null;
 
   try {
