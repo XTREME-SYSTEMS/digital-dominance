@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { money } from "@/lib/pricing";
 import { XTREME_AI_ICON_URL } from "@/components/Logo";
+import HomeFunnelSnapshot from "@/components/admin/HomeFunnelSnapshot";
 import { isAfter, subDays, startOfDay } from "date-fns";
 
 const PRIMARY_ACTIONS = [
@@ -159,6 +160,8 @@ export default function Dashboard() {
           Live data
         </div>
       </div>
+
+      <HomeFunnelSnapshot />
 
       {/* PRIMARY ACTIONS — big, bold, impossible to miss */}
       <div>

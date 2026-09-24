@@ -36,6 +36,7 @@ export default function Funnel() {
   const [data, setData] = useState({ floor_condition: [], photos: [] });
   const [leadId, setLeadId] = useState(null);
   const [detectedSqft, setDetectedSqft] = useState(null);
+  const [estimatedSize, setEstimatedSize] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [floorImage, setFloorImage] = useState(null);
   const [conceptImage, setConceptImage] = useState(null);
@@ -58,11 +59,11 @@ export default function Funnel() {
         try {
           const lead = await base44.entities.Lead.get(leadId);
           const pdfBytes = generateBidPdf(lead, settings, window.location.origin);
-          const { file_url } = await uploadFile(new File([pdfBytes], "Garage-Floor-Estimate.pdf", { type: "application/pdf" }));
+          const file = await uploadFile(new File([pdfBytes], "Garage-Floor-Estimate.pdf", { type: "application/pdf" })).catch(() => null);
           await base44.functions.invoke("sendEstimateEmail", {
             lead_id: leadId,
             floor_image_url: floorImage || undefined,
-            pdf_url: file_url,
+            pdf_url: file?.file_url,
             origin: window.location.origin,
           });
           trackEvent("estimate_email_sent", { lead_id: leadId });
@@ -86,18 +87,16 @@ export default function Funnel() {
     update({ floor_condition: arr.includes(key) ? arr.filter((k) => k !== key) : [...arr, key] });
   };
 
-  // Pull the garage's real square footage from public property records.
-  // Primary: the deterministic propertyLookup backend function (Browserbase +
-  // Estately + OpenStreetMap) — same address always returns the same sqft.
-  // Secondary: AI-driven web search against property records (Zillow, Realtor,
-  // county appraiser) for wider coverage when the deterministic source has no
-  // data. Results are cached in localStorage per address so the same address
-  // always returns the same sqft (no more inconsistent values between runs).
+  // Look up a preliminary garage-size estimate from available property data.
+  // Cache the result per address for consistency within this browser.
   const lookupGarageSqft = async (fullAddress) => {
     const cacheKey = `garage_sqft:${fullAddress.toLowerCase().replace(/\s+/g, " ").trim()}`;
     try {
       const cached = localStorage.getItem(cacheKey);
-      if (cached) return JSON.parse(cached);
+      if (cached) {
+        const previous = JSON.parse(cached);
+        if (previous.source !== "ai_property_records") return previous;
+      }
     } catch {}
 
     const cache = (result) => {
@@ -112,51 +111,20 @@ export default function Funnel() {
     // the same sqft across all users and devices).
     try {
       const res = await base44.functions.invoke("propertyLookup", { address: fullAddress, fallback_sqft: 440 });
-      const sqft = Number(res?.sqft);
-      if (sqft > 0 && res?.source && res.source !== "fallback_size") {
+      const property = res.data || {};
+      const sqft = Number(property.sqft);
+      if (sqft > 0 && property.source && property.source !== "fallback_size") {
         return cache({
           sqft: Math.min(Math.max(Math.round(sqft), 200), 1200),
-          source: res.source,
-          confidence: res.confidence || "medium",
-          consensus_method: res.consensus_method || null,
-          garage_spaces: res.garage_spaces ?? null,
-          interior_sqft: res.interior_sqft ?? null
+          source: property.source,
+          confidence: property.confidence || "medium",
+          consensus_method: property.consensus_method || null,
+          garage_spaces: property.garage_spaces ?? null,
+          interior_sqft: property.interior_sqft ?? null
         });
       }
     } catch {
       // fall through to secondary
-    }
-    // Secondary — AI web search for wider coverage
-    try {
-      const gwRes = await base44.functions.invoke('vercelAiGateway', {
-        action: 'generateText',
-        prompt: `Look up the residential property at "${fullAddress}" using public property records and real estate listings such as Zillow, Realtor.com, Redfin, and the county property appraiser. I need the GARAGE square footage. If the garage square footage is not directly stated, estimate it from the number of garage spaces (1 car ≈ 220 sqft, 2 car ≈ 440 sqft, 3 car ≈ 660 sqft, 4 car ≈ 880 sqft) or from the interior living area (garage ≈ 20% of interior sqft). Return the best garage square footage estimate, the number of garage spaces, the interior living sqft, and your confidence level.`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            found: { type: "boolean", description: "True if property data was found for this address" },
-            garage_sqft: { type: "number", description: "Estimated garage square footage" },
-            garage_spaces: { type: "number", description: "Number of enclosed garage parking spaces" },
-            interior_sqft: { type: "number", description: "Interior living area square footage" },
-            confidence: { type: "string", description: "high, medium, or low" },
-            source: { type: "string", description: "Where the data came from" }
-          },
-          required: ["found"]
-        }
-      });
-      const res = gwRes?.data?.parsed || {};
-      const sqft = Number(res?.garage_sqft);
-      if (res?.found && sqft > 0) {
-        return cache({
-          sqft: Math.min(Math.max(Math.round(sqft), 200), 1200),
-          source: "ai_property_records",
-          confidence: "low",
-          garage_spaces: res.garage_spaces ?? null,
-          interior_sqft: res.interior_sqft ?? null
-        });
-      }
-    } catch {
-      // fall through to default
     }
     return cache(result);
   };
@@ -187,11 +155,13 @@ export default function Funnel() {
   // After the scrape animation, resolve the lookup, build the estimate from
   // the real square footage, and create the lead with all questionnaire answers.
   const onScrapeComplete = async (result) => {
+    if (leadId) { setStep(6); return; }
     const fallback = 440;
     result = result && Number(result.sqft) ? result : { sqft: fallback };
     const sqft = Number(result.sqft) || fallback;
     setDetectedSqft(sqft);
-
+    setEstimatedSize(!result.source || result.source === "fallback_size");
+    
     const est = calcEstimate(settings, { ...data, square_footage: sqft, desired_system: data.desired_system || "flake" });
     const score = calcLeadScore(settings, data);
     const lead = await base44.entities.Lead.create({
@@ -287,7 +257,7 @@ export default function Funnel() {
                 Get Your Garage Floor Estimate
               </h1>
               <p className="mt-4 text-stone-600 leading-relaxed">
-                Answer a few quick questions and we'll look up your garage's square footage from public property records — then show you exactly what your new epoxy floor could look like.
+                Answer a few quick questions for a preliminary price range. You can also explore colors and preview what your new floor could look like.
               </p>
               <div className="mt-6 flex flex-col gap-2 text-sm text-stone-500">
                 <span className="flex items-center justify-center gap-2"><Clock className="h-4 w-4 text-amber-500" /> Takes about 60 seconds</span>
@@ -302,7 +272,7 @@ export default function Funnel() {
           {/* Step 1: Address */}
           {step === 1 && (
             <div>
-              <StepHeader n="1" title="What's your property address?" sub="We'll use public records to find your garage's exact square footage — no guessing." />
+              <StepHeader n="1" title="What's your property address?" sub="We'll check public records for your garage size. If it isn't available, we'll show a clearly labeled preliminary range." />
               <div className="space-y-3 mt-6">
                 <Input placeholder="Street address" value={data.address || ""} onChange={(e) => update({ address: e.target.value })} className="h-12" />
                 <div className="grid grid-cols-2 gap-3">
@@ -396,7 +366,7 @@ export default function Funnel() {
               <p className="mt-3 text-xs text-stone-500">{settings.consent_language}</p>
               <Button
                 onClick={submitContact}
-                disabled={!data.first_name || !data.email || !data.phone || submitting}
+                disabled={!data.first_name?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || "") || (data.phone || "").replace(/\D/g, "").length < 7 || submitting}
                 className="mt-4 h-14 w-full text-base font-bold bg-amber-500 hover:bg-amber-400 text-stone-950"
               >
                 LOOK UP MY GARAGE <ArrowRight className="h-5 w-5" />
@@ -412,12 +382,12 @@ export default function Funnel() {
                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-500/20 mb-3">
                   <CheckCircle2 className="h-6 w-6 text-green-400" />
                 </div>
-                <h2 className="text-lg font-semibold text-white">Your garage has been identified</h2>
+                <h2 className="text-lg font-semibold text-white">{estimatedSize ? "Your preliminary garage estimate" : "Your garage has been identified"}</h2>
                 <p className="text-sm text-stone-400 mt-1">{data.address}, {data.city}, {data.state}</p>
                 <div className="mt-5">
-                  <div className="text-xs font-bold tracking-[0.2em] text-amber-500">DETECTED GARAGE SIZE</div>
+                  <div className="text-xs font-bold tracking-[0.2em] text-amber-500">{estimatedSize ? "ASSUMED GARAGE SIZE" : "ESTIMATED SIZE FROM PROPERTY DATA"}</div>
                   <div className="mt-2 text-5xl font-semibold text-white tabular-nums">{detectedSqft?.toLocaleString()}</div>
-                  <div className="text-sm text-stone-400">square feet</div>
+                  <div className="text-sm text-stone-400">square feet{estimatedSize ? " · based on a typical two-car garage; confirm with a specialist" : ""}</div>
                 </div>
                 <div className="mt-5 pt-5 border-t border-stone-800">
                   <div className="text-xs font-bold tracking-[0.2em] text-amber-500">ESTIMATED PROJECT RANGE</div>

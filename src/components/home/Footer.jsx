@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Facebook, Instagram, Youtube, Linkedin, Send } from "lucide-react";
 import FooterLocations from "@/components/home/FooterLocations";
@@ -37,14 +37,6 @@ const COMPANY_BLURB = `Xtreme Polishing Systems supplies concrete and floor resu
 
 export default function Footer() {
   const { settings } = useSettings();
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (email) setSubscribed(true);
-  };
-
   return (
     <footer className="bg-stone-950 text-stone-400 pt-12 pb-6 px-6 border-t border-amber-500/20">
       <div className="max-w-6xl mx-auto">
@@ -112,30 +104,11 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Estimate path */}
           <div>
-            <h3 className="text-sm font-bold text-white uppercase mb-3">Subscribe For Exclusive Deals</h3>
-            <p className="text-xs text-stone-500 mb-3">Get exclusive SMS deals, tips, and offers delivered to your inbox.</p>
-            {subscribed ? (
-              <div className="text-xs text-amber-500 font-semibold">✓ Thanks for subscribing!</div>
-            ) : (
-              <form onSubmit={handleSubscribe} className="flex gap-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your e-mail"
-                  required
-                  className="flex-1 h-9 px-3 rounded-lg bg-stone-900 border border-stone-700 text-xs text-white placeholder-stone-600 focus:border-amber-500 outline-none"
-                />
-                <button type="submit" aria-label="Subscribe"
-                  className="h-9 w-9 grid place-items-center rounded-lg bg-amber-500 text-stone-950 hover:bg-amber-400 transition shrink-0">
-                  <Send className="h-4 w-4" />
-                </button>
-              </form>
-            )}
-            <div className="mt-3 text-xs text-stone-600">SUBSCRIBE + LIKE + SHARE</div>
-            <div className="mt-1 text-xs text-stone-500">Follow us @xtremepolishingsystems</div>
+            <h3 className="text-sm font-bold text-white uppercase mb-3">Get a free estimate</h3>
+            <p className="text-xs text-stone-400 mb-3">Tell us about your garage and see a preliminary price range.</p>
+            <Link to="/funnel" className="inline-flex min-h-10 items-center rounded-lg bg-amber-500 px-4 text-sm font-bold text-stone-950">Price my floor</Link>
             <div className="mt-4">
               <InstallAppButton variant="dark" />
             </div>

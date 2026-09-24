@@ -3,6 +3,8 @@ import { useSettings } from "@/lib/useSettings";
 import { trackEvent } from "@/lib/tracking";
 import Nav from "@/components/home/Nav";
 import Hero from "@/components/home/Hero";
+import ConsultationForm from "@/components/home/ConsultationForm";
+import { captureAttribution } from "@/lib/estimatorStore";
 import MarketingSection from "@/components/home/MarketingSection";
 import BeforeAfterShowcase from "@/components/home/BeforeAfterShowcase";
 import FlakeShowcase from "@/components/home/FlakeShowcase";
@@ -19,6 +21,7 @@ export default function Home() {
   const { settings } = useSettings();
 
   useEffect(() => {
+    captureAttribution();
     trackEvent("page_view", { page: "/" });
   }, []);
 
@@ -27,6 +30,7 @@ export default function Home() {
       <Nav settings={settings} />
 
       <Hero settings={settings} />
+      <ConsultationForm settings={settings} />
 
       <MarketingSection />
 

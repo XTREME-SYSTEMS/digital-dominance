@@ -78,7 +78,7 @@ export default function Leads() {
                   {(settings.systems || []).find((s) => s.key === l.desired_system)?.name || l.desired_system}
                 </td>
                 <td className="px-4 py-3 tabular-nums text-stone-600">{l.square_footage}</td>
-                <td className="px-4 py-3 whitespace-nowrap tabular-nums">{money(l.estimate_low)} – {money(l.estimate_high)}</td>
+                <td className="px-4 py-3 whitespace-nowrap tabular-nums">{l.estimate_low != null && l.estimate_high != null ? `${money(l.estimate_low)} – ${money(l.estimate_high)}` : "Awaiting details"}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-stone-600">{l.timeline}</td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   {typeof l.lead_score === "number" ? (

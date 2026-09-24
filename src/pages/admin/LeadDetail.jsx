@@ -92,8 +92,8 @@ export default function LeadDetail() {
           <Row label="Floor condition">{conditions.join(", ") || "—"}</Row>
           <Row label="Desired floor">{(settings.systems || []).find((s) => s.key === lead.desired_system)?.name || lead.desired_system}</Row>
           <Row label="Timeline">{lead.timeline}</Row>
-          <Row label="Estimate shown">{money(lead.estimate_low)} – {money(lead.estimate_high)}</Row>
-          <Row label="Estimate midpoint">{money(lead.estimate_mid)}</Row>
+          <Row label="Estimate shown">{lead.estimate_low != null && lead.estimate_high != null ? `${money(lead.estimate_low)} – ${money(lead.estimate_high)}` : "Awaiting details"}</Row>
+          <Row label="Estimate midpoint">{lead.estimate_mid != null ? money(lead.estimate_mid) : "—"}</Row>
           <Row label="Lead source">{lead.lead_source} {lead.utm_source ? `· ${lead.utm_source}` : ""} {lead.utm_campaign || ""}</Row>
           <Row label="Attribution">{[lead.utm_medium, lead.utm_term, lead.utm_content].filter(Boolean).join(" · ") || "organic"}</Row>
           <Row label="Device / referrer">{[lead.device, lead.referrer].filter(Boolean).join(" · ") || "—"}</Row>

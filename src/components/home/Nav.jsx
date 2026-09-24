@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, Phone, Smartphone, Palette, ArrowRight } from "lucide-react";
 import Logo from "@/components/Logo";
 import InstallAppButton from "@/components/home/InstallAppButton";
+import { trackEvent } from "@/lib/tracking";
 
 export default function Nav({ settings }) {
   const [scrolled, setScrolled] = useState(false);
@@ -43,6 +44,7 @@ export default function Nav({ settings }) {
       {/* 10% OFF promo bar — clickable to the estimate funnel */}
       <Link
         to="/funnel"
+        onClick={() => trackEvent("funnel_cta_clicked", { location: "home_promo" })}
         className="block bg-amber-500 text-stone-950 text-center text-xs font-bold tracking-wide py-1.5 hover:bg-amber-400 transition"
       >
         🎉 10% OFF YOUR GARAGE FLOOR COATING — TAP TO GET YOUR FREE ESTIMATE
@@ -88,7 +90,7 @@ export default function Nav({ settings }) {
           <a href={`tel:${settings.phone}`} className="block text-sm font-medium text-stone-200">Call: {settings.phone}</a>
           <a href={`sms:${settings.automation_phone || "+1-833-700-1239"}`} className="block text-sm font-medium text-amber-400">Text our AI: {settings.automation_phone_display || "1-833-700-1239"}</a>
           <div className="pt-2 border-t border-white/10 space-y-2.5">
-            <Link to="/funnel" onClick={() => setOpen(false)} className="flex h-11 items-center justify-end gap-2 rounded-xl text-sm font-bold transition pr-4" style={{ background: 'linear-gradient(180deg, #FFE25A 0%, #FFD700 45%, #C8A300 100%)', border: '2px solid #000', color: '#1a1a1a', boxShadow: '0 4px 12px rgba(255,215,0,.4), inset 0 1px rgba(255,255,255,.4)' }}>
+            <Link to="/funnel" onClick={() => { trackEvent("funnel_cta_clicked", { location: "home_mobile_nav" }); setOpen(false); }} className="flex h-11 items-center justify-end gap-2 rounded-xl text-sm font-bold transition pr-4" style={{ background: 'linear-gradient(180deg, #FFE25A 0%, #FFD700 45%, #C8A300 100%)', border: '2px solid #000', color: '#1a1a1a', boxShadow: '0 4px 12px rgba(255,215,0,.4), inset 0 1px rgba(255,255,255,.4)' }}>
               Price my Floor + Visualize it <Palette className="h-4 w-4" />
             </Link>
             <Link to="/elite" onClick={() => setOpen(false)} className="flex h-11 items-center justify-end gap-2 rounded-xl bg-white/10 hover:bg-white/20 text-sm font-bold transition pr-4" style={{ border: '2px solid #FFD700', color: '#FFD700' }}>

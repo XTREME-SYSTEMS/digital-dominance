@@ -18,16 +18,17 @@ export function clearDraft() {
 
 export function captureAttribution() {
   const p = new URLSearchParams(window.location.search);
-  const referrer = document.referrer || "";
-  const hasUtm = p.get("utm_source") || p.get("utm_medium") || p.get("utm_campaign");
-  return {
-    utm_source: p.get("utm_source") || "",
-    utm_medium: p.get("utm_medium") || "",
-    utm_campaign: p.get("utm_campaign") || "",
-    utm_term: p.get("utm_term") || "",
-    utm_content: p.get("utm_content") || "",
-    referrer,
+  const keys = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
+  const current = Object.fromEntries(keys.map(k => [k, p.get(k) || ""]));
+  let previous = null;
+  try { previous = JSON.parse(sessionStorage.getItem("gf_attribution")); } catch {}
+  const hasUtm = keys.some(k => current[k]);
+  const value = previous && !hasUtm ? previous : {
+    ...current,
+    referrer: document.referrer || "",
     landing_page: window.location.pathname,
     lead_source: hasUtm ? "paid" : "website"
   };
+  try { sessionStorage.setItem("gf_attribution", JSON.stringify(value)); } catch {}
+  return value;
 }

@@ -18,6 +18,8 @@ export default function ScrapeProgress({ address, lookup, onComplete }) {
   const [progress, setProgress] = useState(0);
   const [finalizing, setFinalizing] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
+  const [lookupResult, setLookupResult] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,14 +30,18 @@ export default function ScrapeProgress({ address, lookup, onComplete }) {
       // Wait for the real records lookup to resolve before declaring done.
       let result = null;
       try {
-        result = lookup ? await withTimeout(lookup, 45000) : null;
+        result = lookup ? await withTimeout(lookup, 12000) : null;
       } catch {
         result = null;
       }
       if (cancelled) return;
-      setDone(true);
-      setProgress(100);
-      setTimeout(() => !cancelled && onComplete?.(result), 500);
+      setLookupResult(result);
+      try {
+        await onComplete?.(result);
+        if (!cancelled) { setDone(true); setProgress(100); }
+      } catch {
+        if (!cancelled) { setFinalizing(false); setError("We couldn't save your estimate. Please try again."); }
+      }
     };
 
     const run = (i) => {
@@ -70,7 +76,7 @@ export default function ScrapeProgress({ address, lookup, onComplete }) {
           <div className="inline-flex items-center justify-center mb-4" style={{ width: 96, height: 96 }}>
             <Image src={XTREME_AI_ICON_URL} alt="Xtreme AI Systems" className="w-full h-full" fittingType="fit" />
           </div>
-          <h2 className="text-2xl font-semibold text-white">Looking up your garage</h2>
+          <h2 className="text-2xl font-semibold text-white">Preparing your estimate</h2>
           <p className="mt-2 text-stone-400 text-sm truncate">{address}</p>
         </div>
 
@@ -96,7 +102,7 @@ export default function ScrapeProgress({ address, lookup, onComplete }) {
           })}
 
           {/* Finalizing: shown while we wait for the real records lookup */}
-          {finalizing && !done && (
+          {finalizing && !done && !error && (
             <div className="flex items-center gap-3 opacity-100">
               <div className="h-8 w-8 rounded-full flex items-center justify-center shrink-0 bg-amber-500/20">
                 <Loader2 className="h-4 w-4 text-amber-500 animate-spin" />
@@ -105,6 +111,13 @@ export default function ScrapeProgress({ address, lookup, onComplete }) {
             </div>
           )}
 
+          {error && <div role="alert" className="rounded-lg border border-red-400 p-4 text-sm text-white">
+            <p>{error}</p>
+            <button className="mt-3 rounded-lg bg-amber-500 px-4 py-2 font-semibold text-stone-950" onClick={async () => {
+              setError(""); setFinalizing(true);
+              try { await onComplete?.(lookupResult); } catch { setFinalizing(false); setError("We couldn't save your estimate. Please try again."); }
+            }}>Try again</button>
+          </div>}
           {/* Complete: only once the lookup has resolved */}
           {done && (
             <div className="flex items-center gap-3 opacity-100">
