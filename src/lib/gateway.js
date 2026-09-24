@@ -53,10 +53,10 @@ export async function invokeLLM(opts) {
   return data.result;
 }
 
-// LLM text generation → Vercel AI Gateway (replaces base44.integrations.Core.InvokeLLM)
+// LLM text generation through available free-tier providers.
 export async function generateText(opts) {
-  const res = await base44.functions.invoke('vercelAiGateway', { action: 'generateText', ...opts });
-  return res.data;
+  const result = await invokeLLM(opts);
+  return { text: typeof result === 'string' ? result : JSON.stringify(result), parsed: result };
 }
 
 // Text-to-image → Vercel AI Gateway (replaces base44.integrations.Core.GenerateImage)

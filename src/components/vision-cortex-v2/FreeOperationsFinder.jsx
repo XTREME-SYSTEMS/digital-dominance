@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { Gift, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function FreeOperationsFinder({ vision }) {
@@ -11,7 +11,7 @@ export default function FreeOperationsFinder({ vision }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `Find ALL free operations, tools, and resources for this vision: "${vision}".
 For every category of the system, identify free alternatives that cost $0.
 Include: free APIs, free tiers, open-source tools, free hosting, free LLMs, free databases, free automation, free design tools, free marketing channels.

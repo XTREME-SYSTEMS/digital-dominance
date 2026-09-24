@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { secrets } from 'base44:runtime';
 import { COMPANY_FACTS, COMMS_TEMPLATES, TEMPLATE_CATEGORIES } from '../../shared/companyIntel.ts';
-import { generateText } from '../../shared/aiGateway.ts';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 const BROWSERBASE_API_KEY = () => secrets.get('BROWSERBASE_API_KEY');
 
@@ -30,6 +30,7 @@ export default async function (req) {
 
     const body = await req.json();
     const { action } = body;
+    const generateText = async (options) => ({ parsed: await invokeIndependentAi(base44, options) });
 
     switch (action) {
       case 'getCompanyIntel': {

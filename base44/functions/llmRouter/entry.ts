@@ -36,13 +36,11 @@ export default async function (req: Request): Promise<Response> {
         );
 
         if (!connections || connections.length === 0) {
-          // Fall back to Base44 built-in InvokeLLM
-          const result = await base44.integrations.Core.InvokeLLM({
+          const response = await base44.functions.invoke('independentAi', {
             prompt: body.prompt,
             response_json_schema: body.response_json_schema || undefined,
-            model: body.model || undefined,
           });
-          return Response.json({ ok: true, provider: 'base44', result, tokens_used: 0 });
+          return Response.json({ ok: true, provider: response.data.provider, result: response.data.result, tokens_used: 0 });
         }
 
         const conn = connections[0];
@@ -112,12 +110,7 @@ export default async function (req: Request): Promise<Response> {
           responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
           tokensUsed = data.usageMetadata?.totalTokenCount || 0;
         } else {
-          // Fall back to Base44
-          const result = await base44.integrations.Core.InvokeLLM({
-            prompt: body.prompt,
-            response_json_schema: body.response_json_schema || undefined,
-          });
-          return Response.json({ ok: true, provider: 'base44', result, tokens_used: 0 });
+          return Response.json({ error: 'Unsupported provider connection' }, { status: 400 });
         }
 
         // Track token usage

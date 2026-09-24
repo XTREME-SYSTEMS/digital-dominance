@@ -12,9 +12,10 @@ const MIGRATIONS = [
     title: "AI / LLM Generation",
     base44Service: "Core.InvokeLLM",
     independentFunction: "independentAi",
-    providers: ["Groq (Llama 3.3 70B)", "Google AI (Gemini 2.0 Flash)", "OpenRouter (Free)", "Vercel AI Gateway"],
-    secrets: ["GROQ_API_KEY", "GOOGLE_AI_API_KEY", "OPENROUTER_API_KEY", "VERCEL_AI_GATEWAY_API_KEY"],
-    status: "active",
+    providers: ["Groq (free tier)", "Google AI (free tier, subject to account access)", "OpenRouter (free models)"],
+    secrets: ["GROQ_API_KEY", "GOOGLE_AI_API_KEY", "OPENROUTER_API_KEY"],
+    status: "partial",
+    note: "Free tiers have rate limits; configured keys do not guarantee available requests. Other AI tools may still use paid gateways.",
   },
   {
     id: "email",
@@ -33,9 +34,10 @@ const MIGRATIONS = [
     title: "Image Generation",
     base44Service: "Core.GenerateImage",
     independentFunction: "vercelAiGateway",
-    providers: ["Vercel AI Gateway (GPT Image)"],
+    providers: ["Vercel AI Gateway (paid or trial credit)"],
     secrets: ["VERCEL_AI_GATEWAY_API_KEY"],
-    status: "active",
+    status: "partial",
+    note: "No verified free-tier image-generation replacement is configured; this action can incur charges.",
   },
   {
     id: "storage",
@@ -152,7 +154,7 @@ export default function SystemIndependence() {
           <div>
             <h1 className="text-2xl font-bold text-stone-900">System Independence</h1>
             <p className="text-sm text-stone-500">
-              The system operates without Base44 integration credits — powered by your paid Vercel, Supabase, Railway, and free LLM accounts
+              Free-tier AI migration is in progress. Provider quotas, other paid services, and remaining integrations still apply.
             </p>
           </div>
         </div>
@@ -168,10 +170,10 @@ export default function SystemIndependence() {
           )}
           <div>
             <h3 className="text-base font-bold text-stone-900">
-              {aiStatus?.independent ? "System is Independent" : "Checking independence status..."}
+              {aiStatus ? "Free-tier AI configuration" : "Checking AI configuration..."}
             </h3>
             <p className="text-sm text-stone-600">
-              {activeCount} services fully migrated · {partialCount} partially migrated · 0 dependent on Base44 integration credits
+              {activeCount} alternate routes available · {partialCount} partially migrated · More app routes still require migration
             </p>
           </div>
         </div>
@@ -287,7 +289,7 @@ export default function SystemIndependence() {
         <div className="space-y-3">
           {[
             { layer: "Frontend", tech: "Vercel (paid)", icon: Globe, color: "text-blue-600 bg-blue-50" },
-            { layer: "AI / LLM", tech: "Groq + Google AI + OpenRouter (free) → Vercel AI Gateway", icon: Brain, color: "text-purple-600 bg-purple-50" },
+            { layer: "AI / LLM", tech: "Groq + Google AI + OpenRouter (free tiers, subject to quota)", icon: Brain, color: "text-purple-600 bg-purple-50" },
             { layer: "Email", tech: "Xtreme Comms Gateway + Gmail Connector", icon: Mail, color: "text-green-600 bg-green-50" },
             { layer: "Database", tech: "Supabase PostgreSQL (paid)", icon: Database, color: "text-orange-600 bg-orange-50" },
             { layer: "File Storage", tech: "Supabase Storage", icon: Database, color: "text-orange-600 bg-orange-50" },

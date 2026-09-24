@@ -45,7 +45,7 @@ async function tryGroq(prompt, systemPrompt, options) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: options.model || 'qwen/qwen3.8-27b',
+        model: 'qwen/qwen3.8-27b',
         messages,
         temperature: options.temperature ?? 0.7,
         max_tokens: options.max_tokens || 4096,
@@ -127,20 +127,6 @@ async function tryOpenRouter(prompt, systemPrompt, options) {
   } catch { cleanup(); return null; }
 }
 
-async function tryVercelGateway(base44, prompt, systemPrompt, fileUrls, options) {
-  try {
-    const res = await base44.functions.invoke('vercelAiGateway', {
-      action: 'generateText',
-      prompt,
-      system_prompt: systemPrompt,
-      model: 'openai/gpt-5.4-mini',
-      response_json_schema: options.response_json_schema || undefined,
-      file_urls: fileUrls || undefined,
-    });
-    return res.data?.text || null;
-  } catch { return null; }
-}
-
 export default async function(req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
@@ -194,10 +180,9 @@ export default async function(req: Request): Promise<Response> {
           groq: !!secrets.get('GROQ_API_KEY'),
           google_ai: !!secrets.get('GOOGLE_AI_API_KEY'),
           openrouter: !!secrets.get('OPENROUTER_API_KEY'),
-          vercel_gateway: !!secrets.get('VERCEL_AI_GATEWAY_API_KEY'),
-        },
-        independent: true,
-        message: 'System operates without Base44 integration credits',
+          },
+          independent: true,
+          message: 'Free-tier AI keys are configured; actual availability depends on provider quota and account access',
       });
     }
 
@@ -233,18 +218,10 @@ export default async function(req: Request): Promise<Response> {
       else errors.push('openrouter: unavailable or failed');
     }
 
-    // 4. Vercel AI Gateway (separate billing, NOT Base44 credits)
-    if (!result) {
-      result = await tryVercelGateway(base44, prompt, system_prompt, file_urls, options);
-      if (result) provider = 'vercel-gateway';
-      else errors.push('vercel-gateway: unavailable or failed');
-    }
-
     if (!result) {
       return Response.json({
-        error: 'All independent AI providers failed',
+        error: 'Free-tier AI providers are unavailable. Check provider rate limits, billing, and account access.',
         errors,
-        hint: 'Check that GROQ_API_KEY, GOOGLE_AI_API_KEY, or VERCEL_AI_GATEWAY_API_KEY secrets are set',
       }, { status: 503 });
     }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { Target, Loader2, Sparkles, TrendingUp, DollarSign, Users } from 'lucide-react';
 
 export default function StrategyGenerator({ vision }) {
@@ -12,7 +12,7 @@ export default function StrategyGenerator({ vision }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `You are an elite business strategist. Given this vision: "${vision}"
 
 Generate a comprehensive enhanced strategy with:
