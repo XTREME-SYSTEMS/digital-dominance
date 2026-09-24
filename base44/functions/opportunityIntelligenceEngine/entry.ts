@@ -173,7 +173,7 @@ export default async function (req: Request): Promise<Response> {
       const results: Record<string, any> = {};
       for (const [key, config] of Object.entries(SCANS)) {
         try {
-          const result = await runIndependentScan(base44, config, config.schema || scanSchema());
+          const result = await runIndependentScan(base44, { ...config, sourceKey: key }, config.schema || scanSchema());
           results[key] = result;
         } catch (e: any) {
           results[key] = { error: e.message, findings: [], summary: `Scan failed: ${e.message}` };
@@ -187,7 +187,7 @@ export default async function (req: Request): Promise<Response> {
     if (!config) {
       return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }
-    const result = await runIndependentScan(base44, config, config.schema || scanSchema());
+    const result = await runIndependentScan(base44, { ...config, sourceKey: action }, config.schema || scanSchema());
     return Response.json({ action, ...result });
   } catch (error: any) {
     console.error('[opportunityIntelligenceEngine]', error.name, error.message);

@@ -15,10 +15,10 @@ export const SCANNERS = [
   { key: 'scan_ai_problems', label: 'AI Industry Problems', desc: 'All problems & complaints in AI right now', icon: AlertTriangle, color: 'red' },
   { key: 'scan_ai_saturation', label: 'AI Saturation', desc: 'Market saturation by AI category', icon: Gauge, color: 'stone' },
   { key: 'scan_south_florida_competitors', label: 'South Florida Competitors', desc: 'Vero Beach to Miami tech & AI companies', icon: MapPin, color: 'amber' },
-  { key: 'scan_craigslist', label: 'Craigslist Scanner', desc: 'People seeking AI dev, web & digital services', icon: Search, color: 'blue' },
-  { key: 'scan_social_groups', label: 'South Florida Groups', desc: 'Business groups mentioning digital needs', icon: Users, color: 'violet' },
+  { key: 'scan_craigslist', label: 'Craigslist Scanner', desc: 'Listings may be unavailable when Craigslist blocks access', icon: Search, color: 'blue' },
+  { key: 'scan_social_groups', label: 'South Florida Groups', desc: 'Publicly indexed group and community mentions', icon: Users, color: 'violet' },
   { key: 'scan_construction_demand', label: 'Construction Demand', desc: 'Social posts needing AI & app solutions', icon: Building2, color: 'amber' },
-  { key: 'scan_networking_events', label: 'Networking Events', desc: 'Business, AI, construction & real estate events', icon: CalendarDays, color: 'green' },
+  { key: 'scan_networking_events', label: 'Networking Events', desc: 'Public news of dated business & tech events', icon: CalendarDays, color: 'green' },
   { key: 'restaurant_ai_growth', label: 'Restaurant AI Growth', desc: 'AI systems to help restaurants grow', icon: UtensilsCrossed, color: 'red' },
 ];
 
@@ -47,7 +47,7 @@ export default function ScannerGrid({ onScan, activeScan, scanning, onFullScan, 
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-xl font-black text-stone-900">Opportunity Scanners</h2>
-          <p className="text-sm text-stone-500 mt-0.5">14 public-web scanners using independent search providers — provider quotas and charges apply</p>
+          <p className="text-sm text-stone-500 mt-0.5">14 scanners using public feeds and free-tier AI analysis — source coverage and provider quotas vary</p>
         </div>
         <button
           onClick={onFullScan}

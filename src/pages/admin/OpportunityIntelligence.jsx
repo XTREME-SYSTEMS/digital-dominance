@@ -45,11 +45,6 @@ export default function OpportunityIntelligence() {
       } catch (e) {
         collected[scanner.key] = { error: scanError(e), findings: [] };
       }
-      const failure = collected[scanner.key]?.error || '';
-      if (failure.includes('search billing balance required') && failure.includes('account access denied')) {
-        setResults({ results: { ...collected }, stoppedReason: 'Full scan stopped: OpenRouter search needs a billing balance and Google AI search denied access. Restore either provider before retrying the remaining scanners.' });
-        break;
-      }
       setResults({ results: { ...collected } });
     }
     setFullScanning(false);

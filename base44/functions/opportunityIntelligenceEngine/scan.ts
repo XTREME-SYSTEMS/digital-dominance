@@ -1,7 +1,8 @@
-import { searchEvidence } from './webSearch.ts';
+import { searchPublicSources } from './publicSources.ts';
 
 export async function runIndependentScan(base44, config, schema) {
-  const { text, sources, claims, provider, searchSuggestions } = await searchEvidence(config.prompt);
+  const { text, sources, claims, provider, coverage } = await searchPublicSources(config.sourceKey);
+  if (!claims.length) return { findings: [], summary: 'No verifiable public evidence found for this scan.', provider, independent: true, searched_at: new Date().toISOString(), sources, coverage };
   const findingSchema = schema.properties.findings.items;
   const formatSchema = { ...schema, properties: { ...schema.properties, findings: { type: 'array', items: {
     ...findingSchema, properties: { ...findingSchema.properties, claim_ids: { type: 'array', items: { type: 'integer' } } },
@@ -20,6 +21,14 @@ export async function runIndependentScan(base44, config, schema) {
   const findings = result.findings.slice(0, 20).flatMap(finding => {
     if (typeof finding.title !== 'string' || typeof finding.description !== 'string') return [];
     const linkedClaims = (Array.isArray(finding.claim_ids) ? finding.claim_ids : []).filter(id => Number.isInteger(id) && claims[id]).map(id => claims[id]);
+    if (config.sourceKey === 'scan_networking_events') {
+      const date = Date.parse(finding.event_date || '');
+      if (!Number.isFinite(date) || date < Date.now() || date > Date.now() + 90 * 86400000) return [];
+      const day = new Date(date);
+      const evidenceText = linkedClaims.map(claim => claim.text).join(' ').toLowerCase();
+      const month = day.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' }).toLowerCase();
+      if (!evidenceText.includes(month) || !evidenceText.includes(String(day.getUTCDate()))) return [];
+    }
     const citations = sources.filter(source => linkedClaims.some(claim => claim.source_ids.includes(source.id)));
     if (!citations.length) return [];
     const clean = Object.fromEntries(Object.entries(finding).filter(([name, value]) => schema.properties.findings.items.properties[name]?.type === 'string' && typeof value === 'string'));
@@ -29,7 +38,7 @@ export async function runIndependentScan(base44, config, schema) {
   return {
     findings, summary: typeof result.summary === 'string' ? result.summary : `${findings.length} source-backed research findings.`,
     provider, analysis_provider: formatted.data.provider, independent: true,
-    searched_at: new Date().toISOString(), sources, search_suggestions_html: searchSuggestions,
-    coverage: 'Public web sources only. Business ideas and opportunity scores are AI estimates, not validated demand.',
+    searched_at: new Date().toISOString(), sources,
+    coverage: `${coverage} Business ideas and opportunity scores are AI hypotheses, not validated demand.`, 
   };
 }
