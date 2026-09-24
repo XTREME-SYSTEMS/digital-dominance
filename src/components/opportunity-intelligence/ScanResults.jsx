@@ -1,6 +1,7 @@
 import React from 'react';
 import { Loader2, ExternalLink, TrendingUp, AlertCircle } from 'lucide-react';
 import SaveButton from './SaveButton';
+import ScanEvidence from '@/components/opportunity-intelligence/ScanEvidence';
 
 function ScoreBadge({ score }) {
   if (!score && score !== 0) return null;
@@ -53,11 +54,13 @@ function FindingCard({ finding, scannerKey, scannerLabel }) {
           <div><span className="font-bold text-stone-500">Repo:</span> <a href={finding.repo_url} target="_blank" rel="noopener" className="text-blue-500 hover:underline flex items-center gap-1">{finding.repo_url} <ExternalLink className="h-3 w-3" /></a></div>
         )}
       </div>
-      {finding.url && (
-        <a href={finding.url} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline mt-2">
-          <ExternalLink className="h-3 w-3" /> Source
-        </a>
-      )}
+      <div className="flex flex-wrap gap-3 mt-2">
+        {(finding.citations || (finding.url ? [{ url: finding.url, title: 'Source' }] : [])).map(source => (
+          <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+            <ExternalLink className="h-3 w-3" /> {source.title}
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
@@ -95,9 +98,11 @@ export default function ScanResults({ results, loading, activeScan, fullScanProg
                 </div>
               ) : (
                 <>
+                  <ScanEvidence data={data} />
                   {data.summary && <p className="text-xs text-stone-500 mb-3">{data.summary}</p>}
+                  {!data.findings?.length && <p className="text-xs text-muted-foreground">No source-backed findings met this scanner’s criteria.</p>}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {(data.findings || []).slice(0, 6).map((f, i) => (
+                    {(data.findings || []).map((f, i) => (
                       <FindingCard key={i} finding={f} scannerKey={key} scannerLabel={label} />
                     ))}
                   </div>
@@ -114,6 +119,7 @@ export default function ScanResults({ results, loading, activeScan, fullScanProg
   const findings = results.findings || [];
   return (
     <div className="space-y-4">
+      <ScanEvidence data={results} />
       {results.summary && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-2">
           <TrendingUp className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
@@ -131,7 +137,7 @@ export default function ScanResults({ results, loading, activeScan, fullScanProg
         ))}
       </div>
       {findings.length === 0 && !results.error && (
-        <p className="text-center text-sm text-stone-400 py-8">No findings yet. Run a scan to see results.</p>
+        <p className="text-center text-sm text-stone-400 py-8">No source-backed findings met this scanner’s criteria. Try another scan.</p>
       )}
     </div>
   );

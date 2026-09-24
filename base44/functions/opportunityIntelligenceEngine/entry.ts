@@ -1,10 +1,11 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.48";
+import { runIndependentScan } from './scan.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Opportunity Intelligence Engine
 // Live web-search-powered scanner for problem discovery, trend monitoring,
 // competitor analysis, and opportunity identification.
-// Uses InvokeLLM with add_context_from_internet (gemini_3_flash) for live data.
+// Uses independent web-search providers plus independentAi; no Core integration calls.
 // Also fetches Google Calendar events from the connected calendar account.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -150,6 +151,9 @@ async function fetchCalendarEvents(accessToken: string) {
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (user.role !== 'admin') return Response.json({ error: 'Admin access required' }, { status: 403 });
     const body = await req.json().catch(() => ({}));
     const action = body.action || "full_scan";
 
@@ -169,12 +173,7 @@ export default async function (req: Request): Promise<Response> {
       const results: Record<string, any> = {};
       for (const [key, config] of Object.entries(SCANS)) {
         try {
-          const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-            prompt: config.prompt,
-            add_context_from_internet: true,
-            model: "gemini_3_flash",
-            response_json_schema: config.schema || scanSchema(),
-          });
+          const result = await runIndependentScan(base44, config, config.schema || scanSchema());
           results[key] = result;
         } catch (e: any) {
           results[key] = { error: e.message, findings: [], summary: `Scan failed: ${e.message}` };
@@ -188,14 +187,12 @@ export default async function (req: Request): Promise<Response> {
     if (!config) {
       return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }
-    const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: config.prompt,
-      add_context_from_internet: true,
-      model: "gemini_3_flash",
-      response_json_schema: config.schema || scanSchema(),
-    });
+    const result = await runIndependentScan(base44, config, config.schema || scanSchema());
     return Response.json({ action, ...result });
   } catch (error: any) {
-    return Response.json({ error: error.message }, { status: 500 });
+    console.error('[opportunityIntelligenceEngine]', error.name, error.message);
+    const message = error.name === 'TimeoutError' || error.name === 'AbortError'
+      ? 'Independent web search timed out. Please retry this scanner.' : error.message;
+    return Response.json({ error: message }, { status: 500 });
   }
 }

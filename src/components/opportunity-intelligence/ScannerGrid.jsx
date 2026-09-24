@@ -47,7 +47,7 @@ export default function ScannerGrid({ onScan, activeScan, scanning, onFullScan, 
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-xl font-black text-stone-900">Opportunity Scanners</h2>
-          <p className="text-sm text-stone-500 mt-0.5">14 live scanners — each uses web search to find real problems people are complaining about</p>
+          <p className="text-sm text-stone-500 mt-0.5">14 public-web scanners using independent search providers — provider quotas and charges apply</p>
         </div>
         <button
           onClick={onFullScan}

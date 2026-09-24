@@ -20,7 +20,7 @@ export default function OpportunityIntelligence() {
       const res = await base44.functions.invoke('opportunityIntelligenceEngine', { action: key });
       setResults(res.data || res);
     } catch (e) {
-      setResults({ error: e.message, findings: [] });
+      setResults({ error: e.response?.data?.error || e.message, findings: [] });
     }
     setScanning(false);
   }, []);
@@ -30,11 +30,15 @@ export default function OpportunityIntelligence() {
     setScanning(false);
     setActiveScan(null);
     setResults(null);
-    try {
-      const res = await base44.functions.invoke('opportunityIntelligenceEngine', { action: 'full_scan' });
-      setResults(res.data || res);
-    } catch (e) {
-      setResults({ error: e.message });
+    const collected = {};
+    for (const scanner of SCANNERS) {
+      try {
+        const res = await base44.functions.invoke('opportunityIntelligenceEngine', { action: scanner.key });
+        collected[scanner.key] = res.data;
+      } catch (e) {
+        collected[scanner.key] = { error: e.response?.data?.error || e.message, findings: [] };
+      }
+      setResults({ results: { ...collected } });
     }
     setFullScanning(false);
   }, []);
@@ -76,6 +80,7 @@ export default function OpportunityIntelligence() {
             </h2>
             {(scanning || fullScanning) && <Loader2 className="h-4 w-4 animate-spin text-amber-500" />}
           </div>
+          {fullScanning && <p className="text-sm text-muted-foreground" role="status">{Object.keys(results?.results || {}).length} of {SCANNERS.length} scanners finished. Results appear as each scan completes.</p>}
           <ScanResults
             results={results}
             loading={scanning || fullScanning}
