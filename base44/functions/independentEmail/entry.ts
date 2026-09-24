@@ -113,7 +113,7 @@ async function sendViaGmail(base44, to, subject, text, html, attachments) {
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
     if (!accessToken) return null;
 
-    const mimeMessage = buildMimeMessage(to, subject, text || body, html, attachments);
+    const mimeMessage = buildMimeMessage(to, subject, text, html, attachments);
     const encoded = base64UrlEncode(mimeMessage);
 
     const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
@@ -145,6 +145,11 @@ export default async function(req: Request): Promise<Response> {
 
     if (!to || !subject) {
       return Response.json({ error: 'to and subject required' }, { status: 400 });
+    }
+    const user = await base44.auth.me().catch(() => null);
+    // Public contact submissions may only reach the fixed company inbox.
+    if (user?.role !== 'admin' && (body.action !== 'contact' || to !== 'jeremy@strategicmindsai.com' || html || attachments || subject.length > 180 || (text || textBody || '').length > 3000)) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const plainText = text || textBody || '';

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { invokeLLM } from '@/lib/gateway';
-import Image from '@/components/ui/image';
+import { Image } from '@/components/ui/image';
 import { Palette, Loader2, CheckCircle2, Download, RefreshCw, Sparkles } from 'lucide-react';
 
 export default function LogoGenerator({ vision, approvedLogo, setApprovedLogo }) {
@@ -19,7 +19,7 @@ export default function LogoGenerator({ vision, approvedLogo, setApprovedLogo })
     try {
       // Generate brand name first
       const nameRes = await invokeLLM({
-        prompt: `Generate a single premium brand name for this vision: "${vision}". Return only the brand name, no explanation.`,
+        prompt: `Generate a single premium brand name for this vision: "${vision}". Return JSON with a name field and no explanation.`,
         response_json_schema: { type: 'object', properties: { name: { type: 'string' } } },
       });
       const name = nameRes.name || 'AI System';
@@ -39,7 +39,9 @@ export default function LogoGenerator({ vision, approvedLogo, setApprovedLogo })
       });
 
       const results = await Promise.all(logoPromises);
-      setLogos(results.filter(Boolean));
+      const available = results.filter(Boolean);
+      if (!available.length) throw new Error('Image generation is unavailable. Check your Vercel AI Gateway billing and try again.');
+      setLogos(available);
     } catch (e) {
       setError(e.message);
     } finally {

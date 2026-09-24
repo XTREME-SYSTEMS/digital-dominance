@@ -21,10 +21,11 @@ export default function Contact() {
     setError("");
     try {
       const { base44 } = await import("@/api/base44Client");
-      await base44.integrations.Core.SendEmail({
+      await base44.functions.invoke('independentEmail', {
+        action: 'contact',
         to: "jeremy@strategicmindsai.com",
-        subject: `New Strategy Call Request — ${form.name}${form.company ? ` (${form.company})` : ""}`,
-        body: `Name: ${form.name}\nEmail: ${form.email}\nCompany: ${form.company || "N/A"}\nService: ${form.service || "Not specified"}\n\nMessage:\n${form.message}`,
+        subject: `New Strategy Call Request — ${form.name.slice(0, 60)}${form.company ? ` (${form.company.slice(0, 60)})` : ""}`,
+        body: `Name: ${form.name}\nEmail: ${form.email}\nCompany: ${form.company || "N/A"}\nService: ${form.service || "Not specified"}\n\nMessage:\n${form.message}`.slice(0, 3000),
       });
       setSubmitted(true);
     } catch (err) {
