@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { FileSpreadsheet, FileText, Archive, Loader2, Sparkles, Database, ChevronDown } from 'lucide-react';
 
 const FILES = [
@@ -21,7 +21,7 @@ export default function FileIntelligenceLibrary() {
   const analyze = async (file) => {
     setAnalyzing(file.key);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `Analyze this business intelligence document: "${file.name}" — ${file.desc}. 
 
 Based on the title and description, provide:

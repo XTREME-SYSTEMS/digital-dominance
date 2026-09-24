@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { Activity, Loader2, Sparkles, BarChart3, RefreshCw } from 'lucide-react';
 
 export default function AutonomousAnalyzer({ vision }) {
@@ -11,7 +11,7 @@ export default function AutonomousAnalyzer({ vision }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `Design an autonomous agent analysis and replication system for this vision: "${vision}".
 The system should:
 1. Persistently watch analytics

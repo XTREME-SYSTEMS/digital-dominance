@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // agentRouter — Agent-to-agent communication protocol.
@@ -46,7 +47,7 @@ export default async function (req: Request): Promise<Response> {
           assigned_context: a.assigned_context || '',
         }));
 
-        const routingResult = await base44.integrations.Core.InvokeLLM({
+        const routingResult = await invokeIndependentAi(base44, {
           prompt: `You are an agent router. Given a goal and a list of agents, determine which agent(s) should handle it.
 
 GOAL: ${body.goal}
@@ -109,7 +110,7 @@ Respond with a JSON object containing:
             });
           } else {
             // No actions — generate a response via LLM
-            const llmRes = await base44.integrations.Core.InvokeLLM({
+            const llmRes = await invokeIndependentAi(base44, {
               prompt: `${agent.system_prompt || 'You are ' + agent.name}\n\nGoal: ${body.goal}\n\nProvide your analysis and recommended actions.`,
             });
             results.push({
@@ -168,6 +169,6 @@ Respond with a JSON object containing:
     }
   } catch (error) {
     console.error('[agentRouter] Error:', error.message);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: error.message }, { status: error.status === 503 ? 503 : 500 });
   }
 }

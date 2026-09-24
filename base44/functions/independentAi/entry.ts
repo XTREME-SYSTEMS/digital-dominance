@@ -23,7 +23,7 @@ import { secrets } from 'base44:runtime';
 //   Additional: system_prompt, max_tokens, temperature
 // ═══════════════════════════════════════════════════════════════════════════
 
-const TIMEOUT_MS = 45000;
+const TIMEOUT_MS = 10000;
 
 function withTimeout(ms) {
   const controller = new AbortController();
@@ -31,7 +31,7 @@ function withTimeout(ms) {
   return { controller, cleanup: () => clearTimeout(timer) };
 }
 
-async function tryGroq(prompt, systemPrompt, options) {
+async function tryGroq(prompt, systemPrompt, options, model = 'qwen/qwen3.8-27b') {
   const key = secrets.get('GROQ_API_KEY');
   if (!key) return null;
 
@@ -45,7 +45,7 @@ async function tryGroq(prompt, systemPrompt, options) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'qwen/qwen3.8-27b',
+        model,
         messages,
         temperature: options.temperature ?? 0.7,
         max_tokens: options.max_tokens || 4096,
@@ -53,10 +53,10 @@ async function tryGroq(prompt, systemPrompt, options) {
       signal: controller.signal,
     });
     cleanup();
-    if (!res.ok) return null;
+    if (!res.ok) return model === 'qwen/qwen3.8-27b' ? tryGroq(prompt, systemPrompt, options, 'openai/gpt-oss-20b') : null;
     const data = await res.json();
     return data.choices?.[0]?.message?.content || null;
-  } catch { cleanup(); return null; }
+  } catch { cleanup(); return model === 'qwen/qwen3.8-27b' ? tryGroq(prompt, systemPrompt, options, 'openai/gpt-oss-20b') : null; }
 }
 
 async function tryGoogleAI(prompt, systemPrompt, fileUrls, options) {

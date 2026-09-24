@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { Video, Loader2, Sparkles, TrendingUp, Play, Youtube } from 'lucide-react';
 
 export default function VideoGenerator({ vision }) {
@@ -39,7 +40,7 @@ Return JSON: { "trending_videos": [ { "title": string, "concept": string, "why_t
     setLoading('strategy');
     setError(null);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `Create a comprehensive YouTube video strategy for this vision: "${vision}".
 Based on trending patterns, generate:
 1. Content pillars (5 themes)
