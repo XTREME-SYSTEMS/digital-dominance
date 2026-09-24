@@ -1,4 +1,5 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.48";
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 import { secrets } from "base44:runtime";
 
 // ============================================================
@@ -272,7 +273,7 @@ async function checkBusinessNameAvailability(
   base44: any, name: string, state: string
 ): Promise<{ available: boolean; conflictingBusinesses: string[]; source: string }> {
   try {
-    const result = await base44.integrations.Core.InvokeLLM({
+    const result = await invokeIndependentAi(base44, {
       prompt: `Search the web for businesses named "${name}"${state ? ` in ${state}` : ""}. 
 
 Check:
@@ -393,7 +394,7 @@ export default async function (req: Request): Promise<Response> {
       const { keyword, city, state, niche } = body;
       if (!keyword) return Response.json({ error: "keyword is required" }, { status: 400 });
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await invokeIndependentAi(base44, {
         prompt: `You are a search intelligence analyst. Research the keyword "${keyword}"${city ? ` in ${city}, ${state || ""}` : ""} for a digital dominance strategy.
 
 Find and return:
@@ -575,7 +576,7 @@ Return as structured JSON.`,
 
       // Run multiple simulation scenarios in parallel via LLM
       const scenarioPromises = Array.from({ length: numScenarios }, (_, i) =>
-        base44.integrations.Core.InvokeLLM({
+        invokeIndependentAi(base44, {
           prompt: `You are a business simulation engine. Run a deterministic Monte Carlo simulation for a digital dominance strategy.
 
 BUSINESS: ${keyword} service business
@@ -662,7 +663,7 @@ Return JSON with:
       const { keyword, city, state, domain, niche, numSites } = body;
       if (!keyword) return Response.json({ error: "keyword is required" }, { status: 400 });
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await invokeIndependentAi(base44, {
         prompt: `You are a digital dominance strategist. Create an exhaustive, programmatic strategy for dominating Google search for "${keyword}" ${city ? `in ${city}, ${state}` : "nationally"}.
 
 DOMAIN: ${domain || "keyword-nearme.com"}
@@ -764,7 +765,7 @@ Return as structured JSON with each section as a detailed array of steps or obje
       const { keyword, city, state, domain, contentType, targetEngine } = body;
       if (!keyword) return Response.json({ error: "keyword is required" }, { status: 400 });
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await invokeIndependentAi(base44, {
         prompt: `You are an SEO/AEO/AI search content generator. Create content optimized for "${keyword}" ${city ? `in ${city}, ${state}` : "nationally"}.
 
 TARGET: ${targetEngine || "google"} (optimize for Google SEO, AEO for AI engines like ChatGPT/Claude/Perplexity, and voice search)
@@ -838,7 +839,7 @@ Return JSON with:
       const { keyword, city, state, niche, template, psychologyProfile } = body;
       if (!keyword) return Response.json({ error: "keyword is required" }, { status: 400 });
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await invokeIndependentAi(base44, {
         prompt: `You are a conversion funnel architect specializing in human psychology. Create a high-converting funnel for "${keyword}" ${city ? `in ${city}, ${state}` : "nationally"}.
 
 PSYCHOLOGY PROFILE: ${psychologyProfile || "PANIC_URGENCY"} (understand the emotional driver behind the search)
@@ -942,7 +943,7 @@ Return as structured JSON.`,
       const { keyword, numMethods } = body;
       if (!keyword) return Response.json({ error: "keyword is required" }, { status: 400 });
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await invokeIndependentAi(base44, {
         prompt: `You are a digital domination strategist. Create an exhaustive plan for making a business show up on EVERY first page of Google when someone searches for "${keyword} near me", "${keyword} near you", or related tail words.
 
 List EVERY technologically capable and possible method using AI, automation, and autonomous systems:
@@ -1009,7 +1010,7 @@ Return as structured JSON with at least ${numMethods || 50} distinct methods.`,
       const { keyword, businessName, domain } = body;
       if (!keyword) return Response.json({ error: "keyword is required" }, { status: 400 });
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await invokeIndependentAi(base44, {
         prompt: `You are a digital growth automation strategist. Create a plan to use cloud browsers, form-filling agents, and AI to join EVERY relevant digital platform for a "${keyword}" business named "${businessName || "Business Name"}" with domain ${domain || "keyword-nearme.com"}.
 
 List every platform, directory, social media, forum, and group the business should join, with:
