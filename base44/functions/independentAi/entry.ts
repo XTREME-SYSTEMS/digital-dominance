@@ -83,10 +83,10 @@ async function tryGoogleAI(prompt, systemPrompt, fileUrls, options) {
           generationConfig: {
             temperature: options.temperature ?? 0.7,
             maxOutputTokens: options.max_tokens || 4096,
+            ...(options.response_json_schema
+              ? { responseMimeType: 'application/json', responseSchema: options.response_json_schema }
+              : {}),
           },
-          ...(options.response_json_schema
-            ? { responseMimeType: 'application/json', responseSchema: options.response_json_schema }
-            : {}),
         }),
         signal: controller.signal,
       }

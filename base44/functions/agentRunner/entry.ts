@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // agentRunner — Executes an agent action and logs the result.
@@ -80,7 +81,7 @@ export default async function (req: Request): Promise<Response> {
             }
           } else if (agentAction.action_type === 'communication') {
             // Use LLM to generate a response as the agent
-            const llmResult = await base44.integrations.Core.InvokeLLM({
+            const llmResult = await invokeIndependentAi(base44, {
               prompt: `${agent.system_prompt || 'You are ' + agent.name}\n\nTask: ${agentAction.title}\nDescription: ${agentAction.description || ''}\nParameters: ${JSON.stringify(agentAction.parameters || {})}\n\nPerform this task and provide the result.`,
             });
             result = typeof llmResult === 'string' ? llmResult : JSON.stringify(llmResult);
