@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { Sparkles, Loader2, Palette, Type, Volume2, Image } from 'lucide-react';
 
 export default function BrandGenerator({ vision, approvedLogo, brand: brandProp, setBrand: setBrandProp }) {
@@ -16,7 +16,7 @@ export default function BrandGenerator({ vision, approvedLogo, brand: brandProp,
     setLoading(true);
     setError(null);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `Generate a comprehensive brand kit for this vision: "${vision}".
 The brand should be premium, modern, and memorable.
 

@@ -36,6 +36,17 @@ export async function uploadFile(file) {
   return { file_url: res.data?.file_url };
 }
 
+// Structured and plain-text responses matching Core.InvokeLLM's previous return shape.
+export async function invokeLLM(opts) {
+  const res = await base44.functions.invoke('independentAi', opts);
+  const data = res.data;
+  if (!data?.ok || data.result == null) throw new Error(data?.error || 'Independent AI failed');
+  if (opts.response_json_schema && (typeof data.result !== 'object' || Array.isArray(data.result))) {
+    throw new Error('Independent AI did not return valid structured data');
+  }
+  return data.result;
+}
+
 // LLM text generation → Vercel AI Gateway (replaces base44.integrations.Core.InvokeLLM)
 export async function generateText(opts) {
   const res = await base44.functions.invoke('vercelAiGateway', { action: 'generateText', ...opts });

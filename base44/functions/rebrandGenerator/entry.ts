@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // REBRAND GENERATOR
 // Takes an ingested website template and rebrands/enhances/modernizes it
@@ -39,7 +40,7 @@ export default async function(req: Request): Promise<Response> {
       await svc.entities.IngestedWebsite.update(website.id, { stage: 'rebranding' });
 
       // Use LLM to generate rebranded content
-      const rebrandRes = await svc.integrations.Core.InvokeLLM({
+      const rebrandRes = await invokeIndependentAi(svc, {
         prompt: `You are a world-class website rebrand engine. Take this ingested website template and completely rebrand and enhance it for a new industry.
 
 ORIGINAL TEMPLATE:
@@ -124,7 +125,7 @@ Return JSON with the complete rebranded website specification.`,
       if (!records[0]) return Response.json({ error: 'Website not found' }, { status: 404 });
       const website = records[0];
 
-      const enhanceRes = await svc.integrations.Core.InvokeLLM({
+      const enhanceRes = await invokeIndependentAi(svc, {
         prompt: `You are a website modernization engine. Enhance and modernize this website template to bring it to 2026 standards.
 
 Template: ${website.source_name}

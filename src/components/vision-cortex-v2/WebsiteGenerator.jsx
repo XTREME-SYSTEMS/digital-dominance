@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { Globe, Loader2, Sparkles, Layout, Palette } from 'lucide-react';
 
 const CATEGORIES = [
@@ -32,7 +32,7 @@ export default function WebsiteGenerator({ vision, brand }) {
   const recommendCategory = async () => {
     setLoading('recommend');
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `Given this vision: "${vision}", recommend the best website category from this list: ${CATEGORIES.join(', ')}.
 Also recommend the top 3 alternative categories. Return JSON: { "primary": string, "alternatives": [string], "reasoning": string }`,
         response_json_schema: {
@@ -54,7 +54,7 @@ Also recommend the top 3 alternative categories. Return JSON: { "primary": strin
     setError(null);
     try {
       const brandContext = brand ? `Brand: ${brand.name}, Colors: ${brand.colors?.map((c) => c.hex).join(', ')}` : '';
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `Generate a complete, top-quality website specification for category "${category}".
 Vision: "${vision}"
 Accent color: ${accent}

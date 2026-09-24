@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
+import Image from '@/components/ui/image';
 import { Palette, Loader2, CheckCircle2, Download, RefreshCw, Sparkles } from 'lucide-react';
 
 export default function LogoGenerator({ vision, approvedLogo, setApprovedLogo }) {
@@ -16,7 +18,7 @@ export default function LogoGenerator({ vision, approvedLogo, setApprovedLogo })
     setApproved(null);
     try {
       // Generate brand name first
-      const nameRes = await base44.integrations.Core.InvokeLLM({
+      const nameRes = await invokeLLM({
         prompt: `Generate a single premium brand name for this vision: "${vision}". Return only the brand name, no explanation.`,
         response_json_schema: { type: 'object', properties: { name: { type: 'string' } } },
       });
@@ -30,9 +32,10 @@ export default function LogoGenerator({ vision, approvedLogo, setApprovedLogo })
           'circular emblem', 'hexagonal tech', 'wave dynamic', 'crystalline 3D',
           'circuit-inspired', 'premium gold metallic',
         ];
-        return base44.integrations.Core.GenerateImage({
+        return base44.functions.invoke('vercelAiGateway', {
+          action: 'generateImage',
           prompt: `Professional logo for "${name}" — ${styles[i]} style, transparent background, high quality, vector-like, clean, modern, premium brand identity, centered, no text watermark, PNG with transparency`,
-        }).then((r) => ({ url: r.url, style: styles[i], index: i })).catch(() => null);
+        }).then((r) => r.data?.urls?.[0] ? ({ url: r.data.urls[0], style: styles[i], index: i }) : null).catch(() => null);
       });
 
       const results = await Promise.all(logoPromises);
@@ -81,7 +84,7 @@ export default function LogoGenerator({ vision, approvedLogo, setApprovedLogo })
           {logos.map((logo) => (
             <div key={logo.index} className={`relative group rounded-lg border-2 overflow-hidden ${approved?.index === logo.index ? 'border-green-500' : 'border-stone-200'}`}>
               <div className="aspect-square bg-[conic-gradient(at_top_left,_#f0f0f0_25%,_#e0e0e0_25%_50%,_#f0f0f0_50%_75%,_#e0e0e0_75%)]" style={{ background: 'repeating-conic-gradient(#f5f5f5 0% 25%, #e5e5e5 0% 50%)', backgroundSize: '20px 20px' }}>
-                <img src={logo.url} alt={`Logo ${logo.index + 1}`} className="w-full h-full object-contain" />
+                <Image src={logo.url} alt={`Logo ${logo.index + 1}`} className="w-full h-full object-contain" fittingType="fit" />
               </div>
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1">
                 <button onClick={() => approve(logo)} className="rounded-lg bg-green-500 text-white text-xs font-bold px-3 py-1.5 hover:bg-green-600 flex items-center gap-1">
@@ -104,7 +107,7 @@ export default function LogoGenerator({ vision, approvedLogo, setApprovedLogo })
 
       {approved && (
         <div className="rounded-lg border-2 border-green-300 bg-green-50 p-3 flex items-center gap-3">
-          <img src={approved.url} alt="Approved logo" className="h-12 w-12 object-contain" />
+          <Image src={approved.url} alt="Approved logo" className="h-12 w-12 object-contain" fittingType="fit" />
           <div>
             <p className="text-sm font-bold text-green-700">✓ Logo Approved — {approved.style}</p>
             <p className="text-xs text-stone-500">This logo will be used in the brand kit and all generated assets.</p>

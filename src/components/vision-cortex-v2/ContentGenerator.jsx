@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { PenLine, Loader2, Sparkles, MessageSquare, Mail, Video, Globe, Phone } from 'lucide-react';
 
 const CHANNELS = [
@@ -24,7 +24,7 @@ export default function ContentGenerator({ vision, brand }) {
     setError(null);
     try {
       const brandContext = brand ? `Brand: ${brand.name}, Voice: ${brand.voice || 'professional'}, Colors: ${brand.colors?.map((c) => c.hex).join(', ')}` : '';
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `Generate complete marketing content for the "${channel.name}" channel.
 Vision: "${vision}"
 ${brandContext}

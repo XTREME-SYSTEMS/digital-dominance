@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
 import { waitUntil } from 'base44:runtime';
 import { ingestZip } from './zipImport.ts';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // MASS INGESTION ENGINE
 // Handles zip/file upload, extraction, 3-stage clean/parse/organize pipeline.
@@ -144,7 +145,7 @@ async function processPipeline(svc: any, record: any, opts: any) {
     }
 
     // Use LLM to clean and extract meaningful content
-    const cleanRes = await svc.integrations.Core.InvokeLLM({
+    const cleanRes = await invokeIndependentAi(svc, {
       prompt: `You are a website ingestion engine. Clean and extract meaningful content from this raw website source data.
 
 Source name: ${record.source_name}
@@ -189,7 +190,7 @@ Return JSON with: cleaned_content, industry, template_type, layout_style, color_
     await svc.entities.IngestedWebsite.update(record.id, { stage: 'parsing' });
     log.push('Stage 2: Parsing started');
 
-    const parseRes = await svc.integrations.Core.InvokeLLM({
+    const parseRes = await invokeIndependentAi(svc, {
       prompt: `You are a website structure parser. Analyze this cleaned website content and extract its structural components.
 
 Cleaned content: ${(cleanRes.cleaned_content || '').slice(0, 25000)}
@@ -241,7 +242,7 @@ Return JSON with: sections, components, design_patterns, conversion_elements, se
     await svc.entities.IngestedWebsite.update(record.id, { stage: 'organizing' });
     log.push('Stage 3: Organizing started');
 
-    const organizeRes = await svc.integrations.Core.InvokeLLM({
+    const organizeRes = await invokeIndependentAi(svc, {
       prompt: `You are a website organization engine. Categorize and tag this parsed website for a template gallery.
 
 Industry: ${cleanRes.industry}
