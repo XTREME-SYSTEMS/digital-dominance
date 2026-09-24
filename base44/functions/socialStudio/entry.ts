@@ -370,7 +370,7 @@ export default async function (req: Request): Promise<Response> {
             const theme = THEME_KEYS[existingTimes.length % THEME_KEYS.length];
             const contentRes = await generateContentInternal(svc, theme);
             const c = contentRes || {};
-            const { url: mediaUrl, type: mediaType } = await generateMediaInternal(svc, 'image', c.media_prompt);
+            const { url: mediaUrl, type: mediaType } = await generateMediaInternal(base44, svc, 'image', c.media_prompt);
             const slot = nextSlotUTC(existingTimes);
             existingTimes.push(slot);
             const post = await svc.entities.SocialPost.create({
