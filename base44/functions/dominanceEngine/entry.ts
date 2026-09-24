@@ -1,4 +1,5 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.48";
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 import { secrets } from "base44:runtime";
 
 // ============================================================
@@ -292,7 +293,7 @@ async function runPersonaFame(base44: any, svc: any, campaign: any): Promise<any
   });
 
   // Generate persona via LLM
-  const personaRes = await base44.integrations.Core.InvokeLLM({
+  const personaRes = await invokeIndependentAi(base44, {
     prompt: `Create a digital persona for the founder/CEO of "${campaign.business_name}", a ${campaign.keyword} business in ${campaign.city || "the US"}, ${campaign.state || ""}.
 
 Generate:
