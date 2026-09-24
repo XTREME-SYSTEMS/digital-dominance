@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Upload, Loader2, CheckCircle2, AlertCircle, FileCode2, Layers, Filter, BarChart3, RefreshCw } from 'lucide-react';
+import { FileCode2, Layers, BarChart3 } from 'lucide-react';
+import ZipBatchUpload from './ZipBatchUpload';
 
 export default function MassIngestionSystem() {
-  const [uploading, setUploading] = useState(false);
   const [ingesting, setIngesting] = useState(false);
   const [error, setError] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
@@ -22,31 +22,6 @@ export default function MassIngestionSystem() {
     queryFn: async () => (await base44.functions.invoke('massIngestionEngine', { action: 'list', stage: filterStage || undefined, limit: 50 })).data,
     refetchInterval: 5000,
   });
-
-  const handleUpload = async (files) => {
-    if (!files.length) return;
-    setUploading(true);
-    setError(null);
-    try {
-      const sources = [];
-      for (const file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
-        const uploadRes = await base44.integrations.Core.UploadPublicFile({ file });
-        sources.push({ source_url: uploadRes.file_url, source_name: file.name });
-      }
-      setBatchResult(sources);
-      // Auto-ingest after upload
-      const res = await base44.functions.invoke('massIngestionEngine', { action: 'batch_ingest', sources });
-      setIngesting(true);
-      setBatchResult(res.data);
-      queryClient.invalidateQueries({ queryKey: ['ingestion-stats'] });
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleUrlIngest = async (urlsText) => {
     setIngesting(true);
@@ -85,24 +60,11 @@ export default function MassIngestionSystem() {
         ))}
       </div>
 
-      {/* Upload Zone */}
-      <div className="rounded-xl border-2 border-dashed border-stone-300 bg-stone-50 p-6">
-        <h4 className="text-sm font-bold text-stone-900 mb-3 flex items-center gap-2">
-          <Upload className="h-4 w-4 text-amber-600" /> Upload Website ZIPs / Files
-        </h4>
-        <input
-          type="file"
-          multiple
-          accept=".zip,.html,.json,.txt"
-          onChange={(e) => handleUpload(Array.from(e.target.files))}
-          className="block w-full text-sm text-stone-500 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-500 file:px-4 file:py-2 file:text-sm file:font-bold file:text-stone-950 hover:file:bg-amber-400"
-        />
-        {uploading && <p className="text-xs text-amber-600 mt-2 flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" /> Uploading files...</p>}
-        {batchResult && !uploading && (
-          <p className="text-xs text-green-600 mt-2 flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Ingested {batchResult.ingested || 0} websites — 3-stage pipeline running</p>
-        )}
-        {error && <p className="text-xs text-red-500 mt-2 flex items-center gap-1"><AlertCircle className="h-3 w-3" /> {error}</p>}
-      </div>
+      <ZipBatchUpload onComplete={() => {
+        queryClient.invalidateQueries({ queryKey: ['ingestion-stats'] });
+        queryClient.invalidateQueries({ queryKey: ['ingestion-list'] });
+        queryClient.invalidateQueries({ queryKey: ['templateLibrary'] });
+      }} />
 
       {/* URL Ingest */}
       <div className="rounded-xl border border-stone-200 bg-white p-4">
@@ -112,6 +74,9 @@ export default function MassIngestionSystem() {
           className="w-full rounded-lg border border-stone-200 p-2 text-sm h-20"
           onBlur={(e) => e.target.value && handleUrlIngest(e.target.value)}
         />
+        {ingesting && <p className="text-xs text-stone-500 mt-2">Submitting URLs…</p>}
+        {batchResult && !ingesting && <p className="text-xs text-green-700 mt-2">Submitted {batchResult.ingested || 0} URLs for processing.</p>}
+        {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
       </div>
 
       {/* 3-Stage Pipeline Visualization */}
@@ -158,7 +123,8 @@ export default function MassIngestionSystem() {
                   'bg-blue-100 text-blue-700'
                 }`}>{w.stage}</span>
               </div>
-              <p className="text-[10px] text-stone-500">{w.industry || 'detecting...'} · {w.template_type || ''}</p>
+              <p className="text-[10px] text-stone-500">{w.tags?.includes('zip_import') ? 'ZIP archive' : w.industry || 'detecting...'} · {w.template_type || ''}</p>
+              {w.error_log && <p className="mt-1 text-[10px] text-red-600">{w.error_log}</p>}
               {w.quality_score > 0 && (
                 <div className="flex items-center gap-1 mt-1">
                   <BarChart3 className="h-3 w-3 text-stone-400" />
@@ -174,7 +140,7 @@ export default function MassIngestionSystem() {
               )}
             </div>
           ))}
-          {websites.length === 0 && <p className="text-xs text-stone-400 col-span-full text-center py-4">No websites ingested yet. Upload ZIPs above to begin.</p>}
+          {websites.length === 0 && <p className="text-xs text-stone-400 col-span-full text-center py-4">No websites ingested yet. Import ZIPs above to begin.</p>}
         </div>
       </div>
     </div>

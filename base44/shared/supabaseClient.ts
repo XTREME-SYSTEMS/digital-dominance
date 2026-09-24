@@ -4,7 +4,7 @@
 // direct Supabase database or storage access.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getSupabaseConfig(base44: any): Promise<{
+export async function getSupabaseConfig(base44: any, projectName?: string): Promise<{
   projectRef: string;
   projectUrl: string;
   serviceRoleKey: string;
@@ -23,7 +23,9 @@ export async function getSupabaseConfig(base44: any): Promise<{
   if (!projects || projects.length === 0) {
     throw new Error('No Supabase projects found in your account');
   }
-  const projectRef = projects[0].ref;
+  const project = projectName ? projects.find((item: any) => item.name === projectName) : projects[0];
+  if (!project) throw new Error(`Supabase project ${projectName} not found`);
+  const projectRef = project.ref;
   const projectUrl = `https://${projectRef}.supabase.co`;
 
   const keysRes = await fetch(`https://api.supabase.com/v1/projects/${projectRef}/api-keys`, {

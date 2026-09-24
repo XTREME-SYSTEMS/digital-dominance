@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
 import { waitUntil } from 'base44:runtime';
+import { ingestZip } from './zipImport.ts';
 
 // MASS INGESTION ENGINE
 // Handles zip/file upload, extraction, 3-stage clean/parse/organize pipeline.
@@ -16,6 +17,16 @@ export default async function(req: Request): Promise<Response> {
 
     const body = await req.json().catch(() => ({}));
     const action = body.action || 'list';
+
+    if (action === 'zip_upload') {
+      if (user.role !== 'admin') return Response.json({ error: 'Admin access required' }, { status: 403 });
+      try {
+        return Response.json(await ingestZip(base44, user, body));
+      } catch (error: any) {
+        const invalid = /valid ZIP|ZIP directory|ZIP entry|ZIP files|ZIP expands|Unsafe archive|Encrypted ZIP|ZIP64|supported website source|too many entries|8 MB/.test(error.message);
+        return Response.json({ error: error.message }, { status: invalid ? 400 : 500 });
+      }
+    }
 
     // === INGEST: Accept a new website source (zip URL or file URL) ===
     if (action === 'ingest') {
