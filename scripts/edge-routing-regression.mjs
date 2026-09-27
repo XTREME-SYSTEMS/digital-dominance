@@ -136,6 +136,26 @@ check('protected preview validator never returns bypass value', () => {
   );
   const resultBlock = block.slice(block.indexOf('result = {'));
   assert.doesNotMatch(resultBlock, /bypass(Value|Secret)\s*:/i);
+  assert.match(resultBlock, /secret_returned:\s*false/);
+});
+
+check('protected preview validator supports current Vercel bypass response shape', () => {
+  const block = vercelManager.slice(
+    vercelManager.indexOf("case 'validateProtectedPreview'"),
+    vercelManager.indexOf("case 'deleteDeployment'")
+  );
+  assert.match(block, /protectionBypassKeys/);
+  assert.match(block, /protection_bypass_key_count/);
+});
+
+check('protected preview validator revokes access in finally and verifies 302 after revoke', () => {
+  const block = vercelManager.slice(
+    vercelManager.indexOf("case 'validateProtectedPreview'"),
+    vercelManager.indexOf("case 'deleteDeployment'")
+  );
+  assert.match(block, /finally\s*\{/);
+  assert.match(block, /revoke:\s*\{\s*secret:\s*bypassValue,\s*regenerate:\s*false\s*\}/s);
+  assert.match(block, /revoked_verified:\s*revoked\s*&&\s*postRevokeStatus\s*===\s*302/);
 });
 
 check('preview protection inspection is read-only and secret-safe', () => {

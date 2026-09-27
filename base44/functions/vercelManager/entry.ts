@@ -201,43 +201,97 @@ export default async function (req: Request): Promise<Response> {
           result = bypass;
           break;
         }
+        const protectionBypass = bypass?.protectionBypass;
+        const protectionBypassKeys =
+          protectionBypass && typeof protectionBypass === 'object' && !Array.isArray(protectionBypass)
+            ? Object.keys(protectionBypass)
+            : [];
         const bypassValue =
           bypass?.value ||
-          bypass?.protectionBypass?.value ||
-          bypass?.protectionBypass;
+          bypass?.secret ||
+          protectionBypass?.value ||
+          protectionBypass?.secret ||
+          (typeof protectionBypass === 'string' ? protectionBypass : null) ||
+          protectionBypassKeys.find((key) => /^[A-Za-z0-9_-]{16,}$/.test(key)) ||
+          null;
         if (!bypassValue || typeof bypassValue !== 'string') {
-          return Response.json({ error: 'Vercel did not return a temporary protection bypass' }, { status: 502 });
+          return Response.json({
+            error: 'Vercel did not return a temporary protection bypass',
+            response_shape: {
+              top_level_keys: bypass && typeof bypass === 'object' ? Object.keys(bypass).sort() : [],
+              protection_bypass_type:
+                protectionBypass === null || protectionBypass === undefined
+                  ? null
+                  : Array.isArray(protectionBypass)
+                    ? 'array'
+                    : typeof protectionBypass,
+              protection_bypass_key_count: protectionBypassKeys.length,
+            },
+          }, { status: 502 });
         }
 
         const checks: any[] = [];
-        for (const path of paths) {
-          const sep = path.includes('?') ? '&' : '?';
-          const url = `https://${host}${path}${sep}x-vercel-protection-bypass=${encodeURIComponent(bypassValue)}`;
-          const resp = await fetch(url, { redirect: 'manual' });
-          const text = await resp.text();
-          const rawLocation = resp.headers.get('location');
-          const safeLocation = rawLocation
-            ? rawLocation
-                .replace(/([?&])x-vercel-protection-bypass=[^&]+/i, '$1')
-                .replace(/[?&]$/, '')
-            : null;
-          checks.push({
-            path,
-            status: resp.status,
-            location: safeLocation,
-            route: resp.headers.get('x-digital-dominance-route'),
-            robots: resp.headers.get('x-robots-tag'),
-            content_type: resp.headers.get('content-type'),
-            body_has_noindex: /noindex/i.test(text),
-            body_has_canonical: /rel=["']canonical["']/i.test(text),
-          });
+        let revokeAttempted = false;
+        let revoked = false;
+        let revokeProviderStatus: number | null = null;
+        let postRevokeStatus: number | null = null;
+        try {
+          for (const path of paths) {
+            const sep = path.includes('?') ? '&' : '?';
+            const url = `https://${host}${path}${sep}x-vercel-protection-bypass=${encodeURIComponent(bypassValue)}`;
+            const resp = await fetch(url, { redirect: 'manual' });
+            const text = await resp.text();
+            const rawLocation = resp.headers.get('location');
+            const safeLocation = rawLocation
+              ? rawLocation
+                  .replace(/([?&])x-vercel-protection-bypass=[^&]+/i, '$1')
+                  .replace(/[?&]$/, '')
+              : null;
+            checks.push({
+              path,
+              status: resp.status,
+              location: safeLocation,
+              route: resp.headers.get('x-digital-dominance-route'),
+              robots: resp.headers.get('x-robots-tag'),
+              content_type: resp.headers.get('content-type'),
+              body_has_noindex: /noindex/i.test(text),
+              body_has_canonical: /rel=["']canonical["']/i.test(text),
+            });
+          }
+        } finally {
+          revokeAttempted = true;
+          const revoke = await vercelFetch(
+            `/aliases/${encodeURIComponent(body.deploymentId)}/protection-bypass`,
+            'PATCH',
+            token,
+            { revoke: { secret: bypassValue, regenerate: false } },
+            teamId
+          );
+          revokeProviderStatus = revoke?._error ? Number(revoke.status || 0) : 200;
+          revoked = !(revoke && revoke._error);
+          if (revoked) {
+            try {
+              const sep = paths[0].includes('?') ? '&' : '?';
+              const verifyUrl = `https://${host}${paths[0]}${sep}x-vercel-protection-bypass=${encodeURIComponent(bypassValue)}`;
+              const verify = await fetch(verifyUrl, { redirect: 'manual' });
+              postRevokeStatus = verify.status;
+            } catch {
+              postRevokeStatus = null;
+            }
+          }
         }
         result = {
           validation_only: true,
           deployment_id: body.deploymentId,
           deployment_url: host,
           bypass_ttl_sec: ttl,
+          secret_returned: false,
           checks,
+          revoke_attempted: revokeAttempted,
+          revoked,
+          revoke_provider_status: revokeProviderStatus,
+          post_revoke_status: postRevokeStatus,
+          revoked_verified: revoked && postRevokeStatus === 302,
         };
         break;
       }
