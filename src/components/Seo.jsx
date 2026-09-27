@@ -73,6 +73,10 @@ function setCanonical(href) {
   el.setAttribute("href", href);
 }
 
+function removeCanonical() {
+  document.head.querySelector('link[rel="canonical"]')?.remove();
+}
+
 function clearJsonLd() {
   document.head.querySelectorAll('script[data-seo="jsonld"]').forEach((s) => s.remove());
 }
@@ -141,10 +145,12 @@ export default function RouteSeo() {
 
     const url = SITE_URL + path;
     document.title = title;
-    const noIndex = shouldNoIndex(path);
+    const runtimeNotFound = document.documentElement.dataset.pageNotFound === "true";
+    const noIndex = shouldNoIndex(path) || runtimeNotFound;
     setMeta("name", "description", desc);
     setMeta("name", "robots", noIndex ? "noindex, nofollow" : "index, follow");
-    setCanonical(url);
+    if (runtimeNotFound) removeCanonical();
+    else setCanonical(url);
 
     // Google Search Console verification tag (injected from AppSettings)
     if (settings?.google_site_verification) {
