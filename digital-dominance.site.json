@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "siteId": "epoxyquotenearme",
+  "siteName": "EpoxyQuoteNearMe",
+  "canonicalOrigin": "https://epoxyquotenearme.com",
+  "spaFallback": "/index.html",
+  "validNonIndexPaths": [
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
+    "/oauth/consent",
+    "/app-onboarding",
+    "/elite",
+    "/ThankYou",
+    "/questionnaire",
+    "/app-settings",
+    "/visualizer-test",
+    "/tool-hub",
+    "/portal",
+    "/conversations",
+    "/connect",
+    "/acquire",
+    "/contractor",
+    "/contractor/bid",
+    "/smai",
+    "/smai/services",
+    "/smai/about",
+    "/smai/case-studies",
+    "/smai/contact",
+    "/smai/icons",
+    "/smai/portal",
+    "/smai/admin-portal"
+  ],
+  "passThroughPrefixes": [
+    "/admin",
+    "/api",
+    "/results",
+    "/book",
+    "/booked"
+  ]
+}
