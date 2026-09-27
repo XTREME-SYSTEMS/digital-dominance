@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import EpoxyContractorTemplate from "@/components/seo/EpoxyContractorTemplate";
 import PageNotFound from "@/lib/PageNotFound";
 import { base44 } from "@/api/base44Client";
@@ -54,7 +54,6 @@ function resolveState(segment) {
 
 export default function LocationSeoPage() {
   const { state, citySlug: slug } = useParams();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [pageData, setPageData] = useState(null);
@@ -68,9 +67,30 @@ export default function LocationSeoPage() {
       return;
     }
 
-    // Redirect full-state-name URLs to 2-letter-code canonical grammar
+    // Redirect legacy full-state-name URLs with a full document navigation.
+    // Base44's SPA shell may return HTTP 200 before React runs, so mark the
+    // legacy URL noindex and point its canonical at the destination first.
     if (resolved.needsRedirect) {
-      navigate(`/${resolved.code.toLowerCase()}/${slug}`, { replace: true });
+      const canonicalPath = `/${resolved.code.toLowerCase()}/${slug}`;
+      const canonicalUrl = `https://epoxyquotenearme.com${canonicalPath}`;
+
+      let robots = document.head.querySelector('meta[name="robots"]');
+      if (!robots) {
+        robots = document.createElement("meta");
+        robots.setAttribute("name", "robots");
+        document.head.appendChild(robots);
+      }
+      robots.setAttribute("content", "noindex, follow");
+
+      let canonical = document.head.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.setAttribute("rel", "canonical");
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute("href", canonicalUrl);
+
+      window.location.replace(canonicalPath);
       return;
     }
 
