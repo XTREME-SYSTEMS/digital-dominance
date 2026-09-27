@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { classifyRequestPath, renderNotFoundHtml, manifest } from '../edge-route-policy.mjs';
 
 const sitemap = fs.readFileSync(new URL('../public/sitemap.xml', import.meta.url), 'utf8');
+const vercelManager = fs.readFileSync(new URL('../base44/functions/vercelManager/entry.ts', import.meta.url), 'utf8');
 const sitemapPaths = [...sitemap.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)]
   .map((m) => m[1].trim().replace(/^https?:\/\/[^/]+/, '').replace(/\/+$/, '') || '/');
 
@@ -83,6 +84,20 @@ check('404 body is explicitly non-indexable', () => {
   const html = renderNotFoundHtml('/nonexistent-route-xyz');
   assert.match(html, /<meta name="robots" content="noindex,nofollow">/);
   assert.doesNotMatch(html, /rel=["']canonical["']/i);
+});
+
+check('Vercel manager exposes a preview-only Git deployment action', () => {
+  assert.match(vercelManager, /case 'createPreviewDeployment'/);
+  assert.match(vercelManager, /preview-only; production target is forbidden/);
+  assert.match(vercelManager, /gitSource:/);
+});
+
+check('Vercel preview action cannot set production target', () => {
+  const previewBlock = vercelManager.slice(
+    vercelManager.indexOf("case 'createPreviewDeployment'"),
+    vercelManager.indexOf("case 'deleteDeployment'")
+  );
+  assert.doesNotMatch(previewBlock, /target:\s*['"]production['"]/);
 });
 
 const failed = checks.filter((c) => !c.pass);

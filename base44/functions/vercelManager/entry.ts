@@ -90,6 +90,40 @@ export default async function (req: Request): Promise<Response> {
         result = await vercelFetch(`/v13/deployments/${encodeURIComponent(body.deploymentId)}`, 'GET', token, undefined, teamId);
         break;
       }
+      case 'createPreviewDeployment': {
+        if (!body.projectIdOrName || !body.name || !body.gitOrg || !body.gitRepo || !body.gitRef) {
+          return Response.json({
+            error: 'projectIdOrName, name, gitOrg, gitRepo, and gitRef are required',
+          }, { status: 400 });
+        }
+        if (body.target || body.prod === true || body.production === true) {
+          return Response.json({
+            error: 'createPreviewDeployment is preview-only; production target is forbidden',
+          }, { status: 403 });
+        }
+        const deployBody: any = {
+          name: String(body.name),
+          project: String(body.projectIdOrName),
+          gitSource: {
+            type: 'github',
+            org: String(body.gitOrg),
+            repo: String(body.gitRepo),
+            ref: String(body.gitRef),
+          },
+          projectSettings: {
+            framework: body.framework ?? 'vite',
+            buildCommand: body.buildCommand ?? 'npm run build',
+            installCommand: body.installCommand ?? 'npm ci',
+            outputDirectory: body.outputDirectory ?? 'dist',
+          },
+          meta: {
+            digitalDominancePreview: 'true',
+            sourceBranch: String(body.gitRef),
+          },
+        };
+        result = await vercelFetch('/v13/deployments', 'POST', token, deployBody, teamId);
+        break;
+      }
       case 'deleteDeployment': {
         if (!body.deploymentId) return Response.json({ error: 'deploymentId is required' }, { status: 400 });
         result = await vercelFetch(`/v13/deployments/${encodeURIComponent(body.deploymentId)}`, 'DELETE', token, undefined, teamId);
