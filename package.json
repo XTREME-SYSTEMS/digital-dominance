@@ -13,7 +13,8 @@
     "test:seo-indexing": "node scripts/seo-indexing-regression.mjs",
     "preview": "vite preview",
     "prebuild": "node scripts/generate-edge-route-manifest.mjs",
-    "test:edge-routing": "node scripts/generate-edge-route-manifest.mjs && node scripts/edge-routing-regression.mjs"
+    "test:edge-routing": "node scripts/generate-edge-route-manifest.mjs && node scripts/edge-routing-regression.mjs",
+    "test:edge-routing-http": "node scripts/edge-routing-http-smoke.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.51",
