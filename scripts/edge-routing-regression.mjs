@@ -100,6 +100,18 @@ check('Vercel preview action cannot set production target', () => {
   assert.doesNotMatch(previewBlock, /target:\s*['"]production['"]/);
 });
 
+check('owner-token preview validator is read-only and host-restricted', () => {
+  const block = vercelManager.slice(
+    vercelManager.indexOf("case 'validateProtectedPreviewWithOwnerToken'"),
+    vercelManager.indexOf("case 'validateProtectedPreview'")
+  );
+  assert.match(block, /endsWith\('\.vercel\.app'\)/);
+  assert.match(block, /auth_mode:\s*'vercel_owner_token'/);
+  const resultBlock = block.slice(block.lastIndexOf('result = {'));
+  assert.doesNotMatch(resultBlock, /\btoken\s*:/i);
+  assert.doesNotMatch(resultBlock, /authorization\s*:/i);
+});
+
 check('protected preview validator is restricted to vercel.app hosts', () => {
   assert.match(vercelManager, /case 'validateProtectedPreview'/);
   assert.match(vercelManager, /endsWith\('\.vercel\.app'\)/);

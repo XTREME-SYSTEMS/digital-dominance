@@ -124,6 +124,49 @@ export default async function (req: Request): Promise<Response> {
         result = await vercelFetch('/v13/deployments', 'POST', token, deployBody, teamId);
         break;
       }
+      case 'validateProtectedPreviewWithOwnerToken': {
+        if (!body.deploymentUrl || !Array.isArray(body.paths)) {
+          return Response.json({
+            error: 'deploymentUrl and paths[] are required',
+          }, { status: 400 });
+        }
+        const host = String(body.deploymentUrl).replace(/^https?:\/\//, '').replace(/\/$/, '');
+        if (!host.endsWith('.vercel.app')) {
+          return Response.json({ error: 'validation is restricted to vercel.app preview hosts' }, { status: 403 });
+        }
+        const paths = body.paths
+          .map((p: any) => String(p))
+          .filter((p: string) => p.startsWith('/'))
+          .slice(0, 20);
+
+        const checks: any[] = [];
+        for (const path of paths) {
+          const resp = await fetch(`https://${host}${path}`, {
+            redirect: 'manual',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const text = await resp.text();
+          checks.push({
+            path,
+            status: resp.status,
+            location: resp.headers.get('location'),
+            route: resp.headers.get('x-digital-dominance-route'),
+            robots: resp.headers.get('x-robots-tag'),
+            content_type: resp.headers.get('content-type'),
+            body_has_noindex: /noindex/i.test(text),
+            body_has_canonical: /rel=["']canonical["']/i.test(text),
+          });
+        }
+        result = {
+          validation_only: true,
+          auth_mode: 'vercel_owner_token',
+          deployment_url: host,
+          checks,
+        };
+        break;
+      }
       case 'validateProtectedPreview': {
         if (!body.deploymentId || !body.deploymentUrl || !Array.isArray(body.paths)) {
           return Response.json({
