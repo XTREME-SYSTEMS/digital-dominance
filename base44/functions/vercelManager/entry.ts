@@ -235,16 +235,122 @@ export default async function (req: Request): Promise<Response> {
         let revoked = false;
         let revokeProviderStatus: number | null = null;
         let postRevokeStatus: number | null = null;
+        const cookieJar = new Map<string, { value: string; domain: string; path: string }>();
+        let bootstrapStatus: number | null = null;
+        let bootstrapRedirects = 0;
+        let bootstrapCookieCount = 0;
+        let bootstrapReady = false;
+
+        const getSetCookies = (headers: Headers): string[] => {
+          const getter = (headers as any).getSetCookie;
+          if (typeof getter === 'function') {
+            const values = getter.call(headers);
+            if (Array.isArray(values)) return values.filter(Boolean);
+          }
+          const combined = headers.get('set-cookie');
+          if (!combined) return [];
+          return combined
+            .split(/,(?=\s*[^;,=\s]+=[^;,]+)/g)
+            .map((value) => value.trim())
+            .filter(Boolean);
+        };
+
+        const absorbCookies = (responseUrl: string, headers: Headers) => {
+          const responseHost = new URL(responseUrl).hostname.toLowerCase();
+          for (const raw of getSetCookies(headers)) {
+            const parts = raw.split(';').map((part) => part.trim()).filter(Boolean);
+            if (!parts.length) continue;
+            const equals = parts[0].indexOf('=');
+            if (equals <= 0) continue;
+            const name = parts[0].slice(0, equals);
+            const value = parts[0].slice(equals + 1);
+            let domain = responseHost;
+            let cookiePath = '/';
+            let deleteCookie = false;
+            for (const attr of parts.slice(1)) {
+              const attrEq = attr.indexOf('=');
+              const key = (attrEq >= 0 ? attr.slice(0, attrEq) : attr).trim().toLowerCase();
+              const attrValue = attrEq >= 0 ? attr.slice(attrEq + 1).trim() : '';
+              if (key === 'domain' && attrValue) domain = attrValue.replace(/^\./, '').toLowerCase();
+              if (key === 'path' && attrValue) cookiePath = attrValue;
+              if (key === 'max-age' && Number(attrValue) <= 0) deleteCookie = true;
+            }
+            const jarKey = `${domain}|${cookiePath}|${name}`;
+            if (deleteCookie || value === '') cookieJar.delete(jarKey);
+            else cookieJar.set(jarKey, { value, domain, path: cookiePath });
+          }
+        };
+
+        const cookieHeaderFor = (urlValue: string): string | null => {
+          const url = new URL(urlValue);
+          const requestHost = url.hostname.toLowerCase();
+          const requestPath = url.pathname || '/';
+          const pairs: string[] = [];
+          for (const [jarKey, cookie] of cookieJar.entries()) {
+            const name = jarKey.slice(jarKey.lastIndexOf('|') + 1);
+            const domainMatches =
+              requestHost === cookie.domain || requestHost.endsWith(`.${cookie.domain}`);
+            if (domainMatches && requestPath.startsWith(cookie.path || '/')) {
+              pairs.push(`${name}=${cookie.value}`);
+            }
+          }
+          return pairs.length ? pairs.join('; ') : null;
+        };
+
+        const safeAuthHost = (urlValue: string) => {
+          const hostname = new URL(urlValue).hostname.toLowerCase();
+          return hostname === host || hostname === 'vercel.com' || hostname.endsWith('.vercel.com');
+        };
+
         try {
+          let currentUrl = `https://${host}/?_vercel_share=${encodeURIComponent(bypassValue)}`;
+          for (let hop = 0; hop < 8; hop++) {
+            const cookieHeader = cookieHeaderFor(currentUrl);
+            const response = await fetch(currentUrl, {
+              redirect: 'manual',
+              headers: cookieHeader ? { Cookie: cookieHeader } : {},
+            });
+            absorbCookies(currentUrl, response.headers);
+            bootstrapStatus = response.status;
+            bootstrapCookieCount = cookieJar.size;
+
+            const location = response.headers.get('location');
+            if (response.status >= 300 && response.status < 400 && location) {
+              bootstrapRedirects++;
+              const nextUrl = new URL(location, currentUrl).toString();
+              if (!safeAuthHost(nextUrl)) {
+                throw new Error('Vercel share bootstrap redirected outside approved hosts');
+              }
+              currentUrl = nextUrl;
+              continue;
+            }
+
+            bootstrapReady =
+              new URL(currentUrl).hostname.toLowerCase() === host &&
+              response.status >= 200 &&
+              response.status < 300;
+            break;
+          }
+
+          if (!bootstrapReady) {
+            throw new Error(
+              `Vercel share bootstrap did not reach preview host; status=${bootstrapStatus}; redirects=${bootstrapRedirects}`
+            );
+          }
+
+          const routeCookieHeader = cookieHeaderFor(`https://${host}/`);
+          if (!routeCookieHeader) throw new Error('Vercel share bootstrap produced no preview cookie');
+
           for (const path of paths) {
-            const sep = path.includes('?') ? '&' : '?';
-            const url = `https://${host}${path}${sep}x-vercel-protection-bypass=${encodeURIComponent(bypassValue)}`;
-            const resp = await fetch(url, { redirect: 'manual' });
+            const resp = await fetch(`https://${host}${path}`, {
+              redirect: 'manual',
+              headers: { Cookie: routeCookieHeader },
+            });
             const text = await resp.text();
             const rawLocation = resp.headers.get('location');
             const safeLocation = rawLocation
               ? rawLocation
-                  .replace(/([?&])x-vercel-protection-bypass=[^&]+/i, '$1')
+                  .replace(/([?&])_vercel_share=[^&]+/i, '$1')
                   .replace(/[?&]$/, '')
               : null;
             checks.push({
@@ -272,7 +378,7 @@ export default async function (req: Request): Promise<Response> {
           if (revoked) {
             try {
               const sep = paths[0].includes('?') ? '&' : '?';
-              const verifyUrl = `https://${host}${paths[0]}${sep}x-vercel-protection-bypass=${encodeURIComponent(bypassValue)}`;
+              const verifyUrl = `https://${host}${paths[0]}${sep}_vercel_share=${encodeURIComponent(bypassValue)}`;
               const verify = await fetch(verifyUrl, { redirect: 'manual' });
               postRevokeStatus = verify.status;
             } catch {
@@ -286,6 +392,10 @@ export default async function (req: Request): Promise<Response> {
           deployment_url: host,
           bypass_ttl_sec: ttl,
           secret_returned: false,
+          bootstrap_ready: bootstrapReady,
+          bootstrap_status: bootstrapStatus,
+          bootstrap_redirects: bootstrapRedirects,
+          bootstrap_cookie_count: bootstrapCookieCount,
           checks,
           revoke_attempted: revokeAttempted,
           revoked,

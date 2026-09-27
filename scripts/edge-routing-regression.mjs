@@ -158,6 +158,30 @@ check('protected preview validator revokes access in finally and verifies 302 af
   assert.match(block, /revoked_verified:\s*revoked\s*&&\s*postRevokeStatus\s*===\s*302/);
 });
 
+check('protected preview validator uses one bounded Vercel share-link cookie bootstrap', () => {
+  const block = vercelManager.slice(
+    vercelManager.indexOf("case 'validateProtectedPreview'"),
+    vercelManager.indexOf("case 'deleteDeployment'")
+  );
+  assert.match(block, /currentUrl\s*=\s*.*_vercel_share=/);
+  assert.match(block, /getSetCookie/);
+  assert.match(block, /cookieJar/);
+  assert.match(block, /hop\s*<\s*8/);
+  assert.match(block, /safeAuthHost/);
+  assert.match(block, /routeCookieHeader/);
+  assert.match(block, /headers:\s*\{\s*Cookie:\s*routeCookieHeader\s*\}/s);
+  assert.doesNotMatch(block, /x-vercel-protection-bypass=/);
+});
+
+check('protected preview validator verifies revoked share link with 302', () => {
+  const block = vercelManager.slice(
+    vercelManager.indexOf("case 'validateProtectedPreview'"),
+    vercelManager.indexOf("case 'deleteDeployment'")
+  );
+  assert.match(block, /verifyUrl/);
+  assert.match(block, /_vercel_share=/);
+  assert.match(block, /revoked_verified:\s*revoked\s*&&\s*postRevokeStatus\s*===\s*302/);
+});
 check('preview protection inspection is read-only and secret-safe', () => {
   const block = vercelManager.slice(
     vercelManager.indexOf("case 'inspectPreviewProtection'"),
