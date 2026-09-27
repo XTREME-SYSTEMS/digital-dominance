@@ -114,6 +114,17 @@ check('protected preview validator never returns bypass value', () => {
   assert.doesNotMatch(resultBlock, /bypass(Value|Secret)\s*:/i);
 });
 
+check('preview protection inspection is read-only and secret-safe', () => {
+  const block = vercelManager.slice(
+    vercelManager.indexOf("case 'inspectPreviewProtection'"),
+    vercelManager.indexOf("case 'deleteDeployment'")
+  );
+  assert.match(block, /inspection_only:\s*true/);
+  assert.match(block, /protection_bypass_present/);
+  assert.match(block, /protection_bypass_type/);
+  assert.doesNotMatch(block, /protection_bypass_value|secret_value/i);
+});
+
 const failed = checks.filter((c) => !c.pass);
 for (const result of checks) {
   console.log(`${result.pass ? 'PASS' : 'FAIL'}  ${result.name}${result.detail ? ` — ${result.detail}` : ''}`);

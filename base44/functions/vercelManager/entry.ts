@@ -193,6 +193,60 @@ export default async function (req: Request): Promise<Response> {
         };
         break;
       }
+      case 'inspectPreviewProtection': {
+        if (!body.deploymentId) {
+          return Response.json({ error: 'deploymentId is required' }, { status: 400 });
+        }
+        const aliasList = await vercelFetch(
+          `/v2/deployments/${encodeURIComponent(body.deploymentId)}/aliases`,
+          'GET',
+          token,
+          undefined,
+          teamId
+        );
+        if (aliasList && aliasList._error) {
+          result = aliasList;
+          break;
+        }
+        const rawAliases = Array.isArray(aliasList?.aliases)
+          ? aliasList.aliases
+          : Array.isArray(aliasList)
+            ? aliasList
+            : [];
+        const aliases: any[] = [];
+        for (const item of rawAliases.slice(0, 10)) {
+          const aliasName = String(item?.alias || item?.name || item?.uid || '');
+          let detail: any = null;
+          if (aliasName) {
+            const fetched = await vercelFetch(
+              `/v4/aliases/${encodeURIComponent(aliasName)}`,
+              'GET',
+              token,
+              undefined,
+              teamId
+            );
+            if (!(fetched && fetched._error)) detail = fetched;
+          }
+          const pb = detail?.protectionBypass ?? item?.protectionBypass;
+          aliases.push({
+            alias: item?.alias || item?.name || null,
+            uid: item?.uid || item?.id || null,
+            deployment_id: item?.deploymentId || item?.deployment?.id || null,
+            detail_keys: detail ? Object.keys(detail).sort() : [],
+            protection_bypass_present: Boolean(pb),
+            protection_bypass_type: pb === null || pb === undefined ? null : typeof pb,
+            protection_bypass_keys:
+              pb && typeof pb === 'object' ? Object.keys(pb).sort() : [],
+          });
+        }
+        result = {
+          inspection_only: true,
+          deployment_id: body.deploymentId,
+          alias_count: aliases.length,
+          aliases,
+        };
+        break;
+      }
       case 'deleteDeployment': {
         if (!body.deploymentId) return Response.json({ error: 'deploymentId is required' }, { status: 400 });
         result = await vercelFetch(`/v13/deployments/${encodeURIComponent(body.deploymentId)}`, 'DELETE', token, undefined, teamId);
