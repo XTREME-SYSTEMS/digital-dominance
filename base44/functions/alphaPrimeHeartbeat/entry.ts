@@ -170,7 +170,52 @@ export default async function (req: Request): Promise<Response> {
       sitemapCanonicalDrift = true;
     }
 
-    // ── 10. BOUNDED CRITICAL URL SMOKE CHECKS ──
+    // ── 10. INDEXING SAFETY CANARIES ──
+    let robotsDrift = false;
+    let soft404Risk = false;
+
+    try {
+      const robotsResp = await fetch(`${canonicalUrl}/robots.txt`, {
+        method: "GET",
+        signal: AbortSignal.timeout(5000),
+      });
+      const robotsText = robotsResp.ok ? await robotsResp.text() : "";
+      const requiredRobotsLines = [
+        "Disallow: /admin",
+        "Disallow: /api/",
+        "Disallow: /visualizer-test",
+        `Sitemap: ${canonicalUrl}/sitemap.xml`,
+      ];
+      const accidentallyBlocked = [
+        "/app-onboarding",
+        "/app-settings",
+        "/elite",
+        "/questionnaire",
+        "/download",
+        "/ThankYou",
+      ].some((path) => robotsText.includes(`Disallow: ${path}`));
+
+      robotsDrift =
+        !robotsResp.ok ||
+        requiredRobotsLines.some((line) => !robotsText.includes(line)) ||
+        accidentallyBlocked ||
+        robotsText.includes("sitemap-epn.xml");
+    } catch {
+      robotsDrift = true;
+    }
+
+    try {
+      const missingResp = await fetch(`${canonicalUrl}/nonexistent-route-xyz`, {
+        method: "GET",
+        redirect: "manual",
+        signal: AbortSignal.timeout(5000),
+      });
+      soft404Risk = !(missingResp.status === 404 || missingResp.status === 410);
+    } catch {
+      soft404Risk = true;
+    }
+
+    // ── 11. BOUNDED CRITICAL URL SMOKE CHECKS ──
     const smokeUrls = [
       canonicalUrl,
       `${canonicalUrl}/epoxy-garage-floor-cost`,
@@ -202,6 +247,8 @@ export default async function (req: Request): Promise<Response> {
     if (staleTasksCount > 5) healthScore -= 10;
     if (sourceDriftDetected) healthScore -= 20;
     if (sitemapCanonicalDrift) healthScore -= 15;
+    if (robotsDrift) healthScore -= 10;
+    if (soft404Risk) healthScore -= 15;
     if (smokeChecksFailed > 0) healthScore -= Math.min(smokeChecksFailed * 10, 30);
     if (registry?.data_quarantine) healthScore -= 10;
     healthScore = Math.max(0, healthScore);
@@ -213,6 +260,8 @@ export default async function (req: Request): Promise<Response> {
     if (staleTasksCount > 0) openLoops.push(`${staleTasksCount} stale tasks (>24h)`);
     if (sourceDriftDetected) openLoops.push("Source drift detected — entity counts mismatch");
     if (sitemapCanonicalDrift) openLoops.push("Sitemap/canonical drift detected");
+    if (robotsDrift) openLoops.push("robots.txt indexing policy drift detected");
+    if (soft404Risk) openLoops.push("Soft-404 risk: unknown route does not return HTTP 404/410");
     if (smokeChecksFailed > 0) openLoops.push(`${smokeChecksFailed} smoke check failures`);
 
     // ── 13. RAISE APPROVAL ITEMS ──
@@ -249,7 +298,7 @@ export default async function (req: Request): Promise<Response> {
       smoke_checks_failed: smokeChecksFailed,
       agents_dispatched: 0,
       artifacts_collected: 0,
-      validations_run: smokeUrls.length,
+      validations_run: smokeUrls.length + 2,
       receipts_written: 1,
       self_model_updated: true,
       open_loops_updated: true,
