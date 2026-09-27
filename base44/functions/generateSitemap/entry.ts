@@ -6,7 +6,7 @@ const SITE = "https://epoxyquotenearme.com";
 // Static priority pages with their SEO config.
 const STATIC_PATHS = [
   "/", "/estimate", "/funnel", "/how-it-works", "/gallery", "/reviews",
-  "/about", "/contact", "/locations", "/color-charts", "/guides",
+  "/about", "/contact", "/locations", "/color-charts", "/guides", "/download",
   "/epoxy-garage-floor-cost", "/2-car-garage-epoxy-cost",
   "/3-car-garage-epoxy-cost", "/garage-floor-coating-cost",
   "/fl/pompano-beach",
