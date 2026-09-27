@@ -13,6 +13,11 @@ const distance = read('base44/functions/calculateDistanceTo100/entry.ts');
 const repairFactory = read('base44/functions/alphaPrimeRepairFactory/entry.ts');
 const postcondition = read('base44/functions/postconditionValidator/entry.ts');
 const heartbeat = read('base44/functions/alphaPrimeHeartbeat/entry.ts');
+const notifier = read('base44/functions/notifySeoUpdates/entry.ts');
+const googleStatus = read('base44/functions/checkGoogleStatus/entry.ts');
+const addGsc = read('base44/functions/addSearchConsoleProperty/entry.ts');
+const verifyGsc = read('base44/functions/verifySearchConsole/entry.ts');
+const submitIndexers = read('base44/functions/submitToIndexers/entry.ts');
 
 check('robots blocks admin', robots.includes('Disallow: /admin'));
 check('robots blocks api', robots.includes('Disallow: /api/'));
@@ -47,6 +52,14 @@ check('repair factory knows SEO-ROBOTS', repairFactory.includes("'SEO-ROBOTS-001
 check('postcondition checks WEB-404', postcondition.includes("benchmarkId === 'WEB-404-001'"));
 check('heartbeat detects robots drift', heartbeat.includes('robotsDrift'));
 check('heartbeat detects soft404', heartbeat.includes('soft404Risk'));
+
+check('SEO notifier uses canonical registry', notifier.includes('CanonicalSiteRegistry') && notifier.includes('https://epoxyquotenearme.com'));
+check('SEO notifier refuses Base44 preview host', notifier.includes('host.endsWith(".base44.app")'));
+check('Google status checks exact canonical property', googleStatus.includes('expectedDomainProperty') && !googleStatus.includes('epoxygaragefloorestimate'));
+check('Search Console add has no legacy default', addGsc.includes('CanonicalSiteRegistry') && !addGsc.includes('epoxygaragefloorestimate.com";'));
+check('Search Console verifier does not echo verification token', !verifyGsc.includes('token: verifyToken'));
+check('Indexer submission derives canonical registry URLs', submitIndexers.includes('CanonicalLocationRegistry') && submitIndexers.includes('https://epoxyquotenearme.com'));
+check('Indexer submission has no Base44 preview default', !submitIndexers.includes('const SITE = "https://epoxyquotenearme.base44.app"'));
 
 const failed = checks.filter((x) => !x.pass);
 for (const c of checks) console.log(`${c.pass ? 'PASS' : 'FAIL'}  ${c.name}${c.detail ? ` — ${c.detail}` : ''}`);
