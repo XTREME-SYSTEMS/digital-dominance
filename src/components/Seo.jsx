@@ -77,6 +77,36 @@ function clearJsonLd() {
   document.head.querySelectorAll('script[data-seo="jsonld"]').forEach((s) => s.remove());
 }
 
+const NOINDEX_EXACT_PATHS = new Set([
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/oauth/consent",
+  "/app-onboarding",
+  "/app-settings",
+  "/elite",
+  "/questionnaire",
+  "/ThankYou",
+  "/visualizer-test",
+  "/portal",
+  "/contractor",
+  "/contractor/bid",
+  "/smai/portal",
+  "/smai/admin-portal",
+]);
+
+const NOINDEX_PREFIXES = [
+  "/admin",
+  "/results/",
+  "/book/",
+  "/booked/",
+];
+
+function shouldNoIndex(path) {
+  return NOINDEX_EXACT_PATHS.has(path) || NOINDEX_PREFIXES.some((prefix) => path === prefix || path.startsWith(prefix));
+}
+
 // Route-aware SEO: applies matching meta tags + JSON-LD, with AI-optimized
 // overrides from the SeoContent entity layered on top of the static config.
 // Also injects the Google Search Console verification tag from AppSettings.
@@ -111,8 +141,9 @@ export default function RouteSeo() {
 
     const url = SITE_URL + path;
     document.title = title;
+    const noIndex = shouldNoIndex(path);
     setMeta("name", "description", desc);
-    setMeta("name", "robots", "index, follow");
+    setMeta("name", "robots", noIndex ? "noindex, nofollow" : "index, follow");
     setCanonical(url);
 
     // Google Search Console verification tag (injected from AppSettings)
@@ -133,14 +164,16 @@ export default function RouteSeo() {
     setMeta("name", "twitter:image", image);
 
     clearJsonLd();
-    const blocks = buildJsonLd(path, merged);
-    blocks.forEach((obj) => {
-      const s = document.createElement("script");
-      s.type = "application/ld+json";
-      s.setAttribute("data-seo", "jsonld");
-      s.textContent = JSON.stringify(obj);
-      document.head.appendChild(s);
-    });
+    if (!noIndex) {
+      const blocks = buildJsonLd(path, merged);
+      blocks.forEach((obj) => {
+        const s = document.createElement("script");
+        s.type = "application/ld+json";
+        s.setAttribute("data-seo", "jsonld");
+        s.textContent = JSON.stringify(obj);
+        document.head.appendChild(s);
+      });
+    }
 
     // Track page views on location routes (/{state}/{city}) for the location performance dashboard
     const locMatch = path.match(/^\/([a-z]{2})\/([a-z0-9-]+)/i);
