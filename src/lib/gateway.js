@@ -38,19 +38,7 @@ export async function uploadFile(file) {
 
 // Structured and plain-text responses matching Core.InvokeLLM's previous return shape.
 export async function invokeLLM(opts) {
-  let res;
-  try {
-    res = await base44.functions.invoke('independentAi', opts);
-  } catch (error) {
-    if (error?.response?.status === 503) throw new Error('Independent AI providers are unavailable. Check provider rate limits, billing, and account access.');
-    throw error;
-  }
-  const data = res.data;
-  if (!data?.ok || data.result == null) throw new Error(data?.error || 'Independent AI failed');
-  if (opts.response_json_schema && (typeof data.result !== 'object' || Array.isArray(data.result))) {
-    throw new Error('Independent AI did not return valid structured data');
-  }
-  return data.result;
+  return base44.integrations.Core.InvokeLLM(opts);
 }
 
 // LLM text generation through available free-tier providers.
@@ -71,10 +59,23 @@ export async function editImage(opts) {
   return res.data;
 }
 
-// Email → Xtreme Comms gateway (replaces base44.integrations.Core.SendEmail)
+// Email → independent email gateway (Xtreme Communications first, Gmail fallback).
 export async function sendEmail(opts) {
-  const res = await base44.functions.invoke('xtremeComms', { action: 'sendEmail', ...opts });
-  return res.data;
+  const res = await base44.functions.invoke('independentEmail', {
+    ...(opts?.to === 'jeremy@strategicmindsai.com' ? { action: 'contact' } : {}),
+    ...opts,
+  });
+  const data = res.data ?? res;
+  if (data?.error) throw new Error(data.error);
+  return data?.result ?? data;
+}
+
+// Video → Vercel AI Gateway + Supabase Storage.
+export async function generateVideo(opts) {
+  const res = await base44.functions.invoke('independentVideo', opts);
+  const data = res.data ?? res;
+  if (!data?.url) throw new Error(data?.error || 'Independent video generation failed');
+  return data;
 }
 
 // SMS → Xtreme Comms gateway

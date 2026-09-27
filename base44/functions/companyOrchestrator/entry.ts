@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // ============================================================
 // X1 AI Hub — Company Orchestrator
@@ -176,7 +177,7 @@ export default async function(req) {
         const { vision } = data;
         if (!vision) return Response.json({ ok: false, error: "Vision required" }, { status: 400 });
 
-        const llmResult = await svc.integrations.Core.InvokeLLM({
+        const llmResult = await invokeIndependentAi(base44, {
           prompt: `You are the X1 AI Hub Orchestrator for Strategic Minds AI LLC — an autonomous AI company with specialized departments.
 A user has submitted a vision. Analyze it and generate 3 distinct strategy options for achieving it.
 
@@ -233,7 +234,7 @@ Return a JSON object with the vision summary and an array of 3 strategies.`,
         const { vision, strategy } = data;
         if (!strategy) return Response.json({ ok: false, error: "Strategy required" }, { status: 400 });
 
-        const llmResult = await svc.integrations.Core.InvokeLLM({
+        const llmResult = await invokeIndependentAi(base44, {
           prompt: `You are the X1 AI Hub Orchestrator. The user has chosen a strategy to execute.
 Break it down into specific department tasks and route each to the appropriate department.
 

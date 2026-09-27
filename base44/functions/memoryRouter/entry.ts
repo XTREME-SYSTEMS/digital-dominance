@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // memoryRouter — Agent memory retrieval and capture.
@@ -95,7 +96,7 @@ export default async function (req: Request): Promise<Response> {
         let title = body.title || '';
         let content = body.content;
         if (content.length > 500 && !title) {
-          const summaryResult = await base44.integrations.Core.InvokeLLM({
+          const summaryResult = await invokeIndependentAi(base44, {
             prompt: `Summarize the following in one sentence (max 100 chars):\n\n${content.slice(0, 2000)}`,
           });
           title = (typeof summaryResult === 'string' ? summaryResult : '').slice(0, 100);

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 import { browseStealth } from '../../shared/cloudBrowser.ts';
 
 // TOP SITES BENCHMARK SCANNER
@@ -34,7 +35,7 @@ export default async function(req: Request): Promise<Response> {
       const searchQuery = category || 'best website templates 2026';
 
       // Use LLM with web search to find top sites
-      const searchRes = await svc.integrations.Core.InvokeLLM({
+      const searchRes = await invokeIndependentAi(base44, {
         prompt: `Search the web and find the top ${max_results} results for: "${searchQuery}".
 
 For each result, provide:
@@ -84,7 +85,7 @@ Return a JSON array of objects with: company_name, url, description, differentia
           }
 
           // Use LLM to extract marketing and design intelligence
-          const intelRes = await svc.integrations.Core.InvokeLLM({
+          const intelRes = await invokeIndependentAi(base44, {
             prompt: `Analyze this top company's website and extract marketing and design intelligence.
 
 Company: ${site.company_name}
@@ -155,7 +156,7 @@ Return JSON with all fields.`,
       const allResults = [];
       for (const cat of TOP_SITE_CATEGORIES) {
         try {
-          const searchRes = await svc.integrations.Core.InvokeLLM({
+          const searchRes = await invokeIndependentAi(base44, {
             prompt: `Search the web and find the top 20 results for: "${cat}". Return JSON with results array of {company_name, url, description, differentiator, category}.`,
             add_context_from_internet: true,
             response_json_schema: {
@@ -188,7 +189,7 @@ Return JSON with all fields.`,
         return Response.json({ error: `Failed to browse URL: ${e.message}` }, { status: 500 });
       }
 
-      const intelRes = await svc.integrations.Core.InvokeLLM({
+      const intelRes = await invokeIndependentAi(base44, {
         prompt: `Deeply analyze this website and extract all marketing, design, and business intelligence.
 
 URL: ${url}

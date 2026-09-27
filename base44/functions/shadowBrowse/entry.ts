@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 import { browseSession, browseStealth, str } from '../../shared/cloudBrowser.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,7 +39,7 @@ export default async function(req: Request): Promise<Response> {
     const isGoogleSearch = /https?:\/\/(www\.)?google\..*\/search/.test(url);
     if (isGoogleSearch) {
       const query = new URL(url).searchParams.get('q') || url;
-      const llmRes = await base44.integrations.Core.InvokeLLM({
+      const llmRes = await invokeIndependentAi(base44, {
         prompt: `Search Google for: "${query}". Return the top organic search results as a structured list. For each result, include: title, URL, and a brief snippet/description. Also note any local business listings (Google Business Profile results) with their name, rating, and phone if visible. Return up to 20 results.`,
         add_context_from_internet: true,
         model: 'gemini_3_flash',

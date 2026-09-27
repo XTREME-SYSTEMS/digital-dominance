@@ -27,6 +27,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { generateText } from '../../shared/aiGateway.ts';
+import { generateIndependentVideo } from '../../shared/videoGateway.ts';
 
 const FB_GRAPH = 'https://graph.facebook.com/v25.0';
 
@@ -89,11 +90,11 @@ async function generateContentInternal(svc: any, theme: string, model?: string):
   return llmRes;
 }
 
-async function generateMediaInternal(svc: any, mediaType: string, prompt: string): Promise<{ url: string | null; type: string }> {
+async function generateMediaInternal(base44: any, svc: any, mediaType: string, prompt: string): Promise<{ url: string | null; type: string }> {
   if (!prompt || mediaType === 'none') return { url: null, type: 'none' };
   try {
     if (mediaType === 'video') {
-      const res = await svc.integrations.Core.GenerateVideo({
+      const res = await generateIndependentVideo(base44, {
         prompt: `${prompt}. Vertical 9:16, cinematic, scroll-stopping, premium, high detail.`,
         duration: 6,
         aspect_ratio: '9:16',
@@ -218,19 +219,19 @@ export default async function (req: Request): Promise<Response> {
 
       case 'generateImage': {
         if (!body.prompt) return Response.json({ error: 'prompt is required' }, { status: 400 });
-        const { url, type } = await generateMediaInternal(svc, 'image', body.prompt);
+        const { url, type } = await generateMediaInternal(base44, svc, 'image', body.prompt);
         return Response.json({ ok: true, url, type });
       }
 
       case 'generateVideo': {
         if (!body.prompt) return Response.json({ error: 'prompt is required' }, { status: 400 });
-        const { url, type } = await generateMediaInternal(svc, 'video', body.prompt);
+        const { url, type } = await generateMediaInternal(base44, svc, 'video', body.prompt);
         return Response.json({ ok: true, url, type });
       }
 
       case 'generateFlyer': {
         if (!body.prompt) return Response.json({ error: 'prompt is required' }, { status: 400 });
-        const { url, type } = await generateMediaInternal(svc, 'flyer', body.prompt);
+        const { url, type } = await generateMediaInternal(base44, svc, 'flyer', body.prompt);
         return Response.json({ ok: true, url, type });
       }
 
@@ -239,7 +240,7 @@ export default async function (req: Request): Promise<Response> {
         const mediaType = body.mediaType || 'image';
         const contentRes = await generateContentInternal(svc, theme, body.model);
         const c = contentRes || {};
-        const { url: mediaUrl, type: actualMediaType } = await generateMediaInternal(svc, mediaType, c.media_prompt);
+        const { url: mediaUrl, type: actualMediaType } = await generateMediaInternal(base44, svc, mediaType, c.media_prompt);
 
         // schedule at next available slot (or provided time)
         let scheduledAt = body.scheduledAt;
@@ -369,7 +370,7 @@ export default async function (req: Request): Promise<Response> {
             const theme = THEME_KEYS[existingTimes.length % THEME_KEYS.length];
             const contentRes = await generateContentInternal(svc, theme);
             const c = contentRes || {};
-            const { url: mediaUrl, type: mediaType } = await generateMediaInternal(svc, 'image', c.media_prompt);
+            const { url: mediaUrl, type: mediaType } = await generateMediaInternal(base44, svc, 'image', c.media_prompt);
             const slot = nextSlotUTC(existingTimes);
             existingTimes.push(slot);
             const post = await svc.entities.SocialPost.create({

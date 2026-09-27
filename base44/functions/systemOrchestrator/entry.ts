@@ -12,6 +12,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // ── Map of all backend functions available for delegation ─────────────────
 const FUNCTION_REGISTRY: Record<string, string> = {
@@ -256,7 +257,7 @@ async function operate(svc: any, base44: any, command: string) {
 
   if (!matchedFunction) {
     // Use LLM to interpret the command
-    const result = await base44.integrations.Core.InvokeLLM({
+    const result = await invokeIndependentAi(base44, {
       prompt: `A user gave this command to an autonomous business system: "${command}"
 
 Available backend functions and their purposes:

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // ============================================================
 // X1 AI Hub — Closed-Loop Tester
@@ -61,7 +62,7 @@ Check these dimensions:
 
 Return a detailed JSON validation report.`;
 
-        const result = await svc.integrations.Core.InvokeLLM({
+        const result = await invokeIndependentAi(base44, {
           prompt: validationPrompt,
           response_json_schema: {
             type: "object",
@@ -141,7 +142,7 @@ Verify these postconditions:
 
 Return a JSON postcondition report.`;
 
-        const result = await svc.integrations.Core.InvokeLLM({
+        const result = await invokeIndependentAi(base44, {
           prompt: postCondPrompt,
           response_json_schema: {
             type: "object",
@@ -203,7 +204,7 @@ TASK: ${session.task_description}
 
 Generate clear, specific repair instructions that the coding engine can follow to fix the code. Focus on the critical and high severity issues.`;
 
-        const repairResult = await svc.integrations.Core.InvokeLLM({
+        const repairResult = await invokeIndependentAi(base44, {
           prompt: repairPrompt,
           response_json_schema: {
             type: "object",
@@ -321,7 +322,7 @@ Generate clear, specific repair instructions that the coding engine can follow t
         // Check LLM
         try {
           const llmStart = Date.now();
-          await svc.integrations.Core.InvokeLLM({
+          await invokeIndependentAi(base44, {
             prompt: "Respond with: OK",
             model: "gpt_5_6_sol"
           });

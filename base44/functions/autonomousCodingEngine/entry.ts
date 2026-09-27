@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // ============================================================
 // X1 AI Hub — Autonomous Coding Engine
@@ -128,7 +129,7 @@ export default async function(req) {
         const fileType = fileTypeMap[session.task_type] || "Production code";
 
         // Generate code via LLM
-        const codeResult = await svc.integrations.Core.InvokeLLM({
+        const codeResult = await invokeIndependentAi(base44, {
           prompt: CODE_GEN_PROMPT(session.task_description, session.strategy_snapshot, fileType),
           model: "claude-sonnet-5"
         });
@@ -162,7 +163,7 @@ export default async function(req) {
         await svc.entities.CodeSandboxSession.update(session.id, { status: "validating" });
 
         // Validate code via LLM (adversarial — different model than generation)
-        const validationResult = await svc.integrations.Core.InvokeLLM({
+        const validationResult = await invokeIndependentAi(base44, {
           prompt: VALIDATION_PROMPT(session.generated_code, session.task_description),
           response_json_schema: {
             type: "object",

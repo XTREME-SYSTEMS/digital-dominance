@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { invokeIndependentAi } from '../../shared/independentCore.ts';
 
 // Meta Architecture — autonomously scans the entire app, audits it, analyzes it,
 // identifies capabilities + gaps, generates hardening/optimization/self-operating steps,
@@ -37,7 +38,7 @@ export default async function(req) {
 async function runFullScan(base44, appStructure) {
   const structureText = formatAppStructure(appStructure);
 
-  const result = await base44.integrations.Core.InvokeLLM({
+  const result = await invokeIndependentAi(base44, {
     prompt: `You are a Meta Architecture Scanner. Analyze this entire application structure and produce a comprehensive audit.
 
 APPLICATION STRUCTURE:
@@ -152,7 +153,7 @@ Be exhaustive and specific. Every gap must have a concrete recommendation. Every
 async function identifyPatterns(base44, appStructure, focusArea) {
   const structureText = formatAppStructure(appStructure);
 
-  const result = await base44.integrations.Core.InvokeLLM({
+  const result = await invokeIndependentAi(base44, {
     prompt: `You are a Pattern Identifier Generator. Look at this system and identify ALL patterns.
 
 APPLICATION STRUCTURE:
@@ -214,7 +215,7 @@ Return a JSON object with:
 async function generateMissingItems(base44, appStructure) {
   const structureText = formatAppStructure(appStructure);
 
-  const result = await base44.integrations.Core.InvokeLLM({
+  const result = await invokeIndependentAi(base44, {
     prompt: `You are a Universal Generator. Given this application structure, generate EVERY system function, capability, feature, step, page, workflow, document, and setting that should exist.
 
 APPLICATION STRUCTURE:
@@ -270,7 +271,7 @@ Return JSON with:
 async function generateChecklist(base44, appStructure) {
   const structureText = formatAppStructure(appStructure);
 
-  const result = await base44.integrations.Core.InvokeLLM({
+  const result = await invokeIndependentAi(base44, {
     prompt: `You are a System Checklist Generator. Given this application structure, generate a comprehensive production-readiness checklist.
 
 APPLICATION STRUCTURE:
