@@ -12,12 +12,16 @@ import { secrets } from 'base44:runtime';
 //   generateContent   — generate SEO-optimized page content for a keyword
 //   monitorCompetitors — fetch competitor pages and detect changes
 //   syncSearchConsole — pull latest Search Console query data
+//   semrushEvidencePlan — zero-unit Semrush pilot preflight
+//   semrushParity     — owned-data-first Semrush functional parity snapshot (zero paid Semrush calls)
 //   runFullCycle      — run all of the above in sequence
 //
 // Invoke: base44.functions.invoke('seoGenerator', { action, url?, keyword?, competitorUrls? })
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { generateText } from '../../shared/aiGateway.ts';
+import { planPilot } from '../../shared/semrushEvidence.mjs';
+import { buildParitySnapshot, summarizeParity } from '../../shared/seoParity.mjs';
 
 function extractMeta(html, regex) {
   const m = html.match(regex);
@@ -267,6 +271,158 @@ async function syncSearchConsole(svc, base44) {
   }
 }
 
+function unwrapInvoke(result) {
+  return result?.data ?? result ?? null;
+}
+
+function sourceState(result, selector = (x) => x) {
+  if (result.status !== 'fulfilled') return { status: 'BLOCKED' };
+  const value = selector(unwrapInvoke(result.value));
+  if (!value || value.error) return { status: 'BLOCKED' };
+  return { status: 'VERIFIED', value };
+}
+
+// ── Semrush functional parity ──
+// Owned-data-first intelligence. Semrush remains an optional verifier.
+// No paid Semrush request is made here.
+async function semrushParity(svc, base44, body = {}) {
+  const registryRows = await svc.entities.CanonicalSiteRegistry.list(1).catch(() => []);
+  const registry = registryRows?.[0];
+  if (!registry?.canonical_domain) {
+    return {
+      ok: false,
+      status: 'BLOCKED',
+      reason: 'CANONICAL_DOMAIN_UNAVAILABLE',
+    };
+  }
+
+  const domain = String(registry.canonical_domain).toLowerCase();
+  const protocol = registry.canonical_protocol || 'https';
+  const canonicalUrl = `${protocol}://${domain}/`;
+  const sourceStatus = {};
+
+  if (body.refreshSources === true) {
+    try {
+      await base44.functions.invoke('pullSearchConsoleData', {});
+      sourceStatus.gscRefresh = 'VERIFIED';
+    } catch {
+      sourceStatus.gscRefresh = 'BLOCKED';
+    }
+  } else {
+    sourceStatus.gscRefresh = 'SKIPPED';
+  }
+
+  const settled = await Promise.allSettled([
+    svc.entities.SeoContent.list(500),
+    svc.entities.CompetitorInsight.list('-created_date', 100),
+    base44.functions.invoke('seoSimSync', { action: 'syncGA' }),
+    base44.functions.invoke('fetchCoreWebVitals', { url: canonicalUrl, strategy: 'mobile' }),
+  ]);
+
+  const seoState = sourceState(settled[0], x => Array.isArray(x) ? x : []);
+  const competitorState = sourceState(settled[1], x => Array.isArray(x) ? x : []);
+  const gaState = sourceState(settled[2], x => {
+    const expected = String(registry.ga4_property_id || '').replace(/^properties\//, '');
+    const selected = String(x?.properties?.[0]?.id || '').replace(/^properties\//, '');
+    if (!expected || !selected || expected !== selected) return null;
+    return x?.metrics || null;
+  });
+  const cwvState = sourceState(settled[3], x => x?.ok === false ? null : x);
+
+  sourceStatus.gsc = seoState.status;
+  sourceStatus.competitors = competitorState.status;
+  sourceStatus.ga4 = gaState.status;
+  sourceStatus.cwv = cwvState.status;
+
+  let technical = null;
+  try {
+    const result = await technicalAudit(svc, base44, canonicalUrl);
+    if (result?.ok) {
+      technical = result;
+      sourceStatus.technical = 'VERIFIED';
+    } else {
+      sourceStatus.technical = 'BLOCKED';
+    }
+  } catch {
+    sourceStatus.technical = 'BLOCKED';
+  }
+
+  const seoRows = seoState.value || [];
+  const gscPages = seoRows
+    .filter(row => row?.performance_snapshot)
+    .map(row => ({ route: row.route, snapshot: row.performance_snapshot }));
+
+  const competitorRows = competitorState.value || [];
+  const competitors = [];
+  const backlinks = [];
+  for (const row of competitorRows) {
+    if (row?.type === 'competitor') {
+      competitors.push({
+        name: row.competitor_name || row.name || null,
+        url: row.url || row.competitor_url || null,
+        source: 'llm_research',
+      });
+      for (const target of Array.isArray(row.backlink_targets) ? row.backlink_targets : []) {
+        backlinks.push({
+          sourceUrl: target,
+          targetUrl: canonicalUrl,
+          source: 'llm_research',
+        });
+      }
+    }
+    if (row?.type === 'backlink_opportunity' && row.url) {
+      backlinks.push({
+        sourceUrl: row.url,
+        targetUrl: canonicalUrl,
+        source: 'llm_research',
+      });
+    }
+  }
+
+  let semrush = { status: 'BLOCKED', reason: 'OPTIONAL_VERIFIER_NOT_AVAILABLE' };
+  try {
+    const planned = planPilot(domain);
+    semrush = { status: planned.status, reason: planned.reason };
+  } catch (error) {
+    semrush = {
+      status: 'BLOCKED',
+      reason: error?.message === 'DOMAIN_NOT_ALLOWED'
+        ? 'SEMRUSH_PILOT_DOMAIN_NOT_ALLOWED'
+        : 'SEMRUSH_PREFLIGHT_BLOCKED',
+    };
+  }
+
+  const snapshot = buildParitySnapshot({
+    domain,
+    now: Date.now(),
+    gscPages,
+    ga4: gaState.value || null,
+    technical,
+    cwv: cwvState.value || null,
+    competitors,
+    backlinks,
+    semrush,
+  });
+
+  const summary = summarizeParity(snapshot);
+  await logSop(
+    svc,
+    'semrush_functional_parity',
+    `Functional parity snapshot for ${domain}: ${summary.verified}/${summary.total} verified`,
+    JSON.stringify({ summary, sourceStatus })
+  );
+
+  return {
+    ok: true,
+    mode: 'functional_parity',
+    paidSemrushCalls: 0,
+    domain,
+    summary,
+    sourceStatus,
+    snapshot,
+  };
+}
+
 // ── Main handler ──
 export default async function (req: Request): Promise<Response> {
   try {
@@ -281,6 +437,12 @@ export default async function (req: Request): Promise<Response> {
 
     let result;
     switch (action) {
+      case 'semrushEvidencePlan':
+        result = planPilot(body.domain);
+        break;
+      case 'semrushParity':
+        result = await semrushParity(svc, base44, body);
+        break;
       case 'technicalAudit':
         result = await technicalAudit(svc, base44, body.url);
         break;
