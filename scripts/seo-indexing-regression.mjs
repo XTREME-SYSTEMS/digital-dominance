@@ -34,6 +34,8 @@ check('sitemap contains 400+ canonical URLs', sitemapUrls.length >= 400, `${site
 check('route-aware noindex exists', seo.includes('shouldNoIndex(path)'));
 check('404 sets noindex', notFound.includes("noindex, nofollow"));
 check('404 removes canonical', notFound.includes("link[rel=\"canonical\"]"));
+check('404 sets runtime not-found marker', notFound.includes("dataset.pageNotFound = 'true'"));
+check('RouteSeo respects runtime not-found marker', seo.includes('dataset.pageNotFound === "true"') && seo.includes('if (runtimeNotFound) removeCanonical()'));
 check('legacy location uses document navigation', location.includes('window.location.replace(canonicalPath)'));
 check('legacy location sets noindex', location.includes('noindex, follow'));
 
