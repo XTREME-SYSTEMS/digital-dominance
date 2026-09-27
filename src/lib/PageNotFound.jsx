@@ -9,6 +9,7 @@ export default function PageNotFound({}) {
     const pageName = location.pathname.substring(1);
 
     useEffect(() => {
+        document.documentElement.dataset.pageNotFound = 'true';
         document.title = 'Page Not Found | EpoxyQuoteNearMe';
 
         let robots = document.head.querySelector('meta[name="robots"]');
@@ -21,6 +22,10 @@ export default function PageNotFound({}) {
 
         document.head.querySelector('link[rel="canonical"]')?.remove();
         document.head.querySelectorAll('script[data-seo="jsonld"]').forEach((node) => node.remove());
+
+        return () => {
+            delete document.documentElement.dataset.pageNotFound;
+        };
     }, [location.pathname]);
 
     const { data: authData, isFetched } = useQuery({
