@@ -15,6 +15,11 @@ const RISK_WEIGHT: Record<string, number> = { low: 1, medium: 2, high: 4 };
 const MIN_TIME = 1;
 const MIN_COST = 1;
 const MIN_RISK = 1;
+const HTTP_SEO_BENCHMARKS = new Set([
+  'SEO-ROBOTS-001',
+  'SEO-SITEMAP-001',
+  'SEO-SITEMAP-CANONICAL-001',
+]);
 
 function calcPriorityScore(severity: string, impact: string, confidence: number, effort: string, cost: string, risk: string): number {
   const sev = SEVERITY_WEIGHT[severity] || 20;
@@ -148,13 +153,16 @@ export default async function (req: Request): Promise<Response> {
         businessImpact = 'high'; confidence = 1.0;
 
       // ── PUBLIC WEBSITE ──
-      } else if (bid.startsWith('WEB-') || bid.startsWith('DEPLOY-')) {
+      } else if (bid.startsWith('WEB-') || bid.startsWith('DEPLOY-') || HTTP_SEO_BENCHMARKS.has(bid)) {
         // HTTP smoke checks
         const url = bench.data_source;
         try {
           const resp = await fetch(url, { method: 'GET', signal: AbortSignal.timeout(8000), redirect: 'follow' });
           actual = `HTTP ${resp.status}`;
-          if (bid === 'WEB-CANONICAL-001' || bid === 'DEPLOY-LIVE-001') {
+          if (bid === 'WEB-404-001') {
+            status = resp.status === 404 || resp.status === 410 ? 'pass' : 'fail';
+            if (resp.status === 200) details = 'Soft-404 risk: missing URL returned HTTP 200';
+          } else if (bid === 'WEB-CANONICAL-001' || bid === 'DEPLOY-LIVE-001') {
             const html = await resp.text();
             const canonicalMatch = html.match(/<link\s+rel=["']canonical["']\s+href=["']([^"']+)["']/i);
             const canonicalHref = canonicalMatch ? canonicalMatch[1] : 'NOT FOUND';
@@ -166,13 +174,35 @@ export default async function (req: Request): Promise<Response> {
             status = actual === 'CLEAN' ? 'pass' : 'fail';
           } else if (bid === 'SEO-ROBOTS-001') {
             const txt = await resp.text();
-            actual = txt.includes(`${canonicalUrl}/sitemap.xml`) ? 'present' : 'missing';
-            status = actual === 'present' ? 'pass' : 'fail';
+            const required = [
+              'Disallow: /admin',
+              'Disallow: /api/',
+              'Disallow: /visualizer-test',
+              `Sitemap: ${canonicalUrl}/sitemap.xml`,
+            ];
+            const accidentalBlocks = [
+              '/app-onboarding',
+              '/app-settings',
+              '/elite',
+              '/questionnaire',
+              '/download',
+              '/ThankYou',
+            ].filter((path) => txt.includes(`Disallow: ${path}`));
+            const missingRequired = required.filter((line) => !txt.includes(line));
+            const duplicateSitemap = txt.includes('sitemap-epn.xml');
+            actual = `${missingRequired.length} required missing; ${accidentalBlocks.length} public/workflow blocks; duplicate sitemap=${duplicateSitemap}`;
+            status = missingRequired.length === 0 && accidentalBlocks.length === 0 && !duplicateSitemap ? 'pass' : 'fail';
           } else if (bid === 'SEO-SITEMAP-001') {
             const txt = await resp.text();
             const sitemapUrls = new Set([...txt.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map((m) => m[1].trim().replace(/\/$/, '')));
-            actual = `${sitemapUrls.size} URLs vs ${locationCount} registry`;
-            status = sitemapUrls.size >= locationCount * 0.9 ? 'pass' : 'fail';
+            const registryUrls = new Set(
+              locationRegistry
+                .map((loc: any) => String(loc.canonical_url || '').trim().replace(/\/$/, ''))
+                .filter(Boolean)
+            );
+            const missing = [...registryUrls].filter((url) => !sitemapUrls.has(url));
+            actual = `${missing.length} registry URLs missing from ${sitemapUrls.size}-URL sitemap`;
+            status = missing.length === 0 ? 'pass' : 'fail';
           } else if (bid === 'SEO-SITEMAP-CANONICAL-001') {
             const txt = await resp.text();
             const sitemapUrls = [...txt.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map((m) => m[1].trim());
