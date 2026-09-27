@@ -10,6 +10,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
     "test:alpha-prime": "node scripts/alpha-prime-regression.mjs",
+    "test:seo-indexing": "node scripts/seo-indexing-regression.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
