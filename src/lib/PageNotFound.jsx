@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
@@ -6,6 +7,21 @@ import { useQuery } from '@tanstack/react-query';
 export default function PageNotFound({}) {
     const location = useLocation();
     const pageName = location.pathname.substring(1);
+
+    useEffect(() => {
+        document.title = 'Page Not Found | EpoxyQuoteNearMe';
+
+        let robots = document.head.querySelector('meta[name="robots"]');
+        if (!robots) {
+            robots = document.createElement('meta');
+            robots.setAttribute('name', 'robots');
+            document.head.appendChild(robots);
+        }
+        robots.setAttribute('content', 'noindex, nofollow');
+
+        document.head.querySelector('link[rel="canonical"]')?.remove();
+        document.head.querySelectorAll('script[data-seo="jsonld"]').forEach((node) => node.remove());
+    }, [location.pathname]);
 
     const { data: authData, isFetched } = useQuery({
         queryKey: ['user'],
