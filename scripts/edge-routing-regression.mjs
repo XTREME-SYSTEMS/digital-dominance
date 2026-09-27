@@ -100,6 +100,20 @@ check('Vercel preview action cannot set production target', () => {
   assert.doesNotMatch(previewBlock, /target:\s*['"]production['"]/);
 });
 
+check('protected preview validator is restricted to vercel.app hosts', () => {
+  assert.match(vercelManager, /case 'validateProtectedPreview'/);
+  assert.match(vercelManager, /endsWith\('\.vercel\.app'\)/);
+});
+
+check('protected preview validator never returns bypass value', () => {
+  const block = vercelManager.slice(
+    vercelManager.indexOf("case 'validateProtectedPreview'"),
+    vercelManager.indexOf("case 'deleteDeployment'")
+  );
+  const resultBlock = block.slice(block.indexOf('result = {'));
+  assert.doesNotMatch(resultBlock, /bypass(Value|Secret)\s*:/i);
+});
+
 const failed = checks.filter((c) => !c.pass);
 for (const result of checks) {
   console.log(`${result.pass ? 'PASS' : 'FAIL'}  ${result.name}${result.detail ? ` — ${result.detail}` : ''}`);

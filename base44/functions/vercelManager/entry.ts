@@ -124,6 +124,75 @@ export default async function (req: Request): Promise<Response> {
         result = await vercelFetch('/v13/deployments', 'POST', token, deployBody, teamId);
         break;
       }
+      case 'validateProtectedPreview': {
+        if (!body.deploymentId || !body.deploymentUrl || !Array.isArray(body.paths)) {
+          return Response.json({
+            error: 'deploymentId, deploymentUrl, and paths[] are required',
+          }, { status: 400 });
+        }
+        if (!String(body.deploymentId).startsWith('dpl_')) {
+          return Response.json({ error: 'deploymentId must be a Vercel deployment id' }, { status: 400 });
+        }
+        const host = String(body.deploymentUrl).replace(/^https?:\/\//, '').replace(/\/$/, '');
+        if (!host.endsWith('.vercel.app')) {
+          return Response.json({ error: 'validation is restricted to vercel.app preview hosts' }, { status: 403 });
+        }
+        const paths = body.paths
+          .map((p: any) => String(p))
+          .filter((p: string) => p.startsWith('/'))
+          .slice(0, 20);
+        const ttl = Math.max(60, Math.min(Number(body.ttlSec || 120), 300));
+        const bypass = await vercelFetch(
+          `/aliases/${encodeURIComponent(body.deploymentId)}/protection-bypass`,
+          'PATCH',
+          token,
+          { ttl },
+          teamId
+        );
+        if (bypass && bypass._error) {
+          result = bypass;
+          break;
+        }
+        const bypassValue =
+          bypass?.value ||
+          bypass?.protectionBypass?.value ||
+          bypass?.protectionBypass;
+        if (!bypassValue || typeof bypassValue !== 'string') {
+          return Response.json({ error: 'Vercel did not return a temporary protection bypass' }, { status: 502 });
+        }
+
+        const checks: any[] = [];
+        for (const path of paths) {
+          const sep = path.includes('?') ? '&' : '?';
+          const url = `https://${host}${path}${sep}x-vercel-protection-bypass=${encodeURIComponent(bypassValue)}`;
+          const resp = await fetch(url, { redirect: 'manual' });
+          const text = await resp.text();
+          const rawLocation = resp.headers.get('location');
+          const safeLocation = rawLocation
+            ? rawLocation
+                .replace(/([?&])x-vercel-protection-bypass=[^&]+/i, '$1')
+                .replace(/[?&]$/, '')
+            : null;
+          checks.push({
+            path,
+            status: resp.status,
+            location: safeLocation,
+            route: resp.headers.get('x-digital-dominance-route'),
+            robots: resp.headers.get('x-robots-tag'),
+            content_type: resp.headers.get('content-type'),
+            body_has_noindex: /noindex/i.test(text),
+            body_has_canonical: /rel=["']canonical["']/i.test(text),
+          });
+        }
+        result = {
+          validation_only: true,
+          deployment_id: body.deploymentId,
+          deployment_url: host,
+          bypass_ttl_sec: ttl,
+          checks,
+        };
+        break;
+      }
       case 'deleteDeployment': {
         if (!body.deploymentId) return Response.json({ error: 'deploymentId is required' }, { status: 400 });
         result = await vercelFetch(`/v13/deployments/${encodeURIComponent(body.deploymentId)}`, 'DELETE', token, undefined, teamId);
