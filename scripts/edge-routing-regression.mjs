@@ -112,6 +112,18 @@ check('owner-token preview validator is read-only and host-restricted', () => {
   assert.doesNotMatch(resultBlock, /authorization\s*:/i);
 });
 
+check('protected preview bypass mutation is fail-closed behind operator environment gate', () => {
+  const block = vercelManager.slice(
+    vercelManager.indexOf("case 'validateProtectedPreview'"),
+    vercelManager.indexOf("case 'deleteDeployment'")
+  );
+  const gate = block.indexOf("ALLOW_VERCEL_PROTECTION_BYPASS_MUTATION");
+  const mutation = block.indexOf("/protection-bypass");
+  assert.ok(gate >= 0, 'missing protected bypass environment gate');
+  assert.ok(mutation > gate, 'mutation appears before approval gate');
+  assert.match(block, /status:\s*403/);
+});
+
 check('protected preview validator is restricted to vercel.app hosts', () => {
   assert.match(vercelManager, /case 'validateProtectedPreview'/);
   assert.match(vercelManager, /endsWith\('\.vercel\.app'\)/);

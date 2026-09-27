@@ -168,6 +168,11 @@ export default async function (req: Request): Promise<Response> {
         break;
       }
       case 'validateProtectedPreview': {
+        if (Deno.env.get('ALLOW_VERCEL_PROTECTION_BYPASS_MUTATION') !== 'true') {
+          return Response.json({
+            error: 'protected preview bypass mutation is disabled; explicit operator approval and environment gate are required',
+          }, { status: 403 });
+        }
         if (!body.deploymentId || !body.deploymentUrl || !Array.isArray(body.paths)) {
           return Response.json({
             error: 'deploymentId, deploymentUrl, and paths[] are required',
