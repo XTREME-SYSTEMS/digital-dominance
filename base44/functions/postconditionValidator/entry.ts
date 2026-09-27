@@ -81,12 +81,57 @@ export default async function (req: Request): Promise<Response> {
           postconditionMet = false;
           validatorResult = `Fetch error: ${e.message}`;
         }
+      } else if (benchmarkId === 'WEB-404-001') {
+        try {
+          const resp = await fetch('https://epoxyquotenearme.com/nonexistent-route-xyz', {
+            method: 'GET',
+            redirect: 'manual',
+            signal: AbortSignal.timeout(8000),
+          });
+          postconditionMet = resp.status === 404 || resp.status === 410;
+          validatorResult = `HTTP ${resp.status}`;
+        } catch (e: any) {
+          postconditionMet = false;
+          validatorResult = `Fetch error: ${e.message}`;
+        }
       } else if (benchmarkId === 'DEPLOY-ROBOTS-001') {
         try {
           const resp = await fetch('https://epoxyquotenearme.com/robots.txt', { signal: AbortSignal.timeout(8000) });
           const txt = await resp.text();
           postconditionMet = !txt.includes('epoxygaragefloorestimate.com');
           validatorResult = postconditionMet ? 'No old domain' : 'Old domain present';
+        } catch (e: any) {
+          postconditionMet = false;
+          validatorResult = `Fetch error: ${e.message}`;
+        }
+      } else if (benchmarkId === 'SEO-ROBOTS-001') {
+        try {
+          const resp = await fetch('https://epoxyquotenearme.com/robots.txt', { signal: AbortSignal.timeout(8000) });
+          const txt = await resp.text();
+          const required = ['Disallow: /admin', 'Disallow: /api/', 'Disallow: /visualizer-test', 'Sitemap: https://epoxyquotenearme.com/sitemap.xml'];
+          const accidental = ['/app-onboarding', '/app-settings', '/elite', '/questionnaire', '/download', '/ThankYou']
+            .filter((path) => txt.includes(`Disallow: ${path}`));
+          const missing = required.filter((line) => !txt.includes(line));
+          postconditionMet = resp.ok && missing.length === 0 && accidental.length === 0 && !txt.includes('sitemap-epn.xml');
+          validatorResult = `${missing.length} required missing; ${accidental.length} accidental blocks`;
+        } catch (e: any) {
+          postconditionMet = false;
+          validatorResult = `Fetch error: ${e.message}`;
+        }
+      } else if (benchmarkId === 'SEO-SITEMAP-001') {
+        try {
+          const [resp, locations] = await Promise.all([
+            fetch('https://epoxyquotenearme.com/sitemap.xml', { signal: AbortSignal.timeout(8000) }),
+            svc.entities.CanonicalLocationRegistry.list(500),
+          ]);
+          const txt = await resp.text();
+          const sitemapUrls = new Set([...txt.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map((m) => m[1].trim().replace(/\/$/, '')));
+          const registryUrls = locations
+            .map((loc: any) => String(loc.canonical_url || '').trim().replace(/\/$/, ''))
+            .filter(Boolean);
+          const missing = registryUrls.filter((url: string) => !sitemapUrls.has(url));
+          postconditionMet = resp.ok && missing.length === 0;
+          validatorResult = `${missing.length} registry URLs missing from ${sitemapUrls.size}-URL sitemap`;
         } catch (e: any) {
           postconditionMet = false;
           validatorResult = `Fetch error: ${e.message}`;
