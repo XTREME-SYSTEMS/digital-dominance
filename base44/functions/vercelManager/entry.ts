@@ -90,6 +90,211 @@ export default async function (req: Request): Promise<Response> {
         result = await vercelFetch(`/v13/deployments/${encodeURIComponent(body.deploymentId)}`, 'GET', token, undefined, teamId);
         break;
       }
+      case 'createPreviewDeployment': {
+        if (!body.projectIdOrName || !body.name || !body.gitOrg || !body.gitRepo || !body.gitRef) {
+          return Response.json({
+            error: 'projectIdOrName, name, gitOrg, gitRepo, and gitRef are required',
+          }, { status: 400 });
+        }
+        if (body.target || body.prod === true || body.production === true) {
+          return Response.json({
+            error: 'createPreviewDeployment is preview-only; production target is forbidden',
+          }, { status: 403 });
+        }
+        const deployBody: any = {
+          name: String(body.name),
+          project: String(body.projectIdOrName),
+          gitSource: {
+            type: 'github',
+            org: String(body.gitOrg),
+            repo: String(body.gitRepo),
+            ref: String(body.gitRef),
+          },
+          projectSettings: {
+            framework: body.framework ?? 'vite',
+            buildCommand: body.buildCommand ?? 'npm run build',
+            installCommand: body.installCommand ?? 'npm ci',
+            outputDirectory: body.outputDirectory ?? 'dist',
+          },
+          meta: {
+            digitalDominancePreview: 'true',
+            sourceBranch: String(body.gitRef),
+          },
+        };
+        result = await vercelFetch('/v13/deployments', 'POST', token, deployBody, teamId);
+        break;
+      }
+      case 'validateProtectedPreviewWithOwnerToken': {
+        if (!body.deploymentUrl || !Array.isArray(body.paths)) {
+          return Response.json({
+            error: 'deploymentUrl and paths[] are required',
+          }, { status: 400 });
+        }
+        const host = String(body.deploymentUrl).replace(/^https?:\/\//, '').replace(/\/$/, '');
+        if (!host.endsWith('.vercel.app')) {
+          return Response.json({ error: 'validation is restricted to vercel.app preview hosts' }, { status: 403 });
+        }
+        const paths = body.paths
+          .map((p: any) => String(p))
+          .filter((p: string) => p.startsWith('/'))
+          .slice(0, 20);
+
+        const checks: any[] = [];
+        for (const path of paths) {
+          const resp = await fetch(`https://${host}${path}`, {
+            redirect: 'manual',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const text = await resp.text();
+          checks.push({
+            path,
+            status: resp.status,
+            location: resp.headers.get('location'),
+            route: resp.headers.get('x-digital-dominance-route'),
+            robots: resp.headers.get('x-robots-tag'),
+            content_type: resp.headers.get('content-type'),
+            body_has_noindex: /noindex/i.test(text),
+            body_has_canonical: /rel=["']canonical["']/i.test(text),
+          });
+        }
+        result = {
+          validation_only: true,
+          auth_mode: 'vercel_owner_token',
+          deployment_url: host,
+          checks,
+        };
+        break;
+      }
+      case 'validateProtectedPreview': {
+        if (Deno.env.get('ALLOW_VERCEL_PROTECTION_BYPASS_MUTATION') !== 'true') {
+          return Response.json({
+            error: 'protected preview bypass mutation is disabled; explicit operator approval and environment gate are required',
+          }, { status: 403 });
+        }
+        if (!body.deploymentId || !body.deploymentUrl || !Array.isArray(body.paths)) {
+          return Response.json({
+            error: 'deploymentId, deploymentUrl, and paths[] are required',
+          }, { status: 400 });
+        }
+        if (!String(body.deploymentId).startsWith('dpl_')) {
+          return Response.json({ error: 'deploymentId must be a Vercel deployment id' }, { status: 400 });
+        }
+        const host = String(body.deploymentUrl).replace(/^https?:\/\//, '').replace(/\/$/, '');
+        if (!host.endsWith('.vercel.app')) {
+          return Response.json({ error: 'validation is restricted to vercel.app preview hosts' }, { status: 403 });
+        }
+        const paths = body.paths
+          .map((p: any) => String(p))
+          .filter((p: string) => p.startsWith('/'))
+          .slice(0, 20);
+        const ttl = Math.max(60, Math.min(Number(body.ttlSec || 120), 300));
+        const bypass = await vercelFetch(
+          `/aliases/${encodeURIComponent(body.deploymentId)}/protection-bypass`,
+          'PATCH',
+          token,
+          { ttl },
+          teamId
+        );
+        if (bypass && bypass._error) {
+          result = bypass;
+          break;
+        }
+        const bypassValue =
+          bypass?.value ||
+          bypass?.protectionBypass?.value ||
+          bypass?.protectionBypass;
+        if (!bypassValue || typeof bypassValue !== 'string') {
+          return Response.json({ error: 'Vercel did not return a temporary protection bypass' }, { status: 502 });
+        }
+
+        const checks: any[] = [];
+        for (const path of paths) {
+          const sep = path.includes('?') ? '&' : '?';
+          const url = `https://${host}${path}${sep}x-vercel-protection-bypass=${encodeURIComponent(bypassValue)}`;
+          const resp = await fetch(url, { redirect: 'manual' });
+          const text = await resp.text();
+          const rawLocation = resp.headers.get('location');
+          const safeLocation = rawLocation
+            ? rawLocation
+                .replace(/([?&])x-vercel-protection-bypass=[^&]+/i, '$1')
+                .replace(/[?&]$/, '')
+            : null;
+          checks.push({
+            path,
+            status: resp.status,
+            location: safeLocation,
+            route: resp.headers.get('x-digital-dominance-route'),
+            robots: resp.headers.get('x-robots-tag'),
+            content_type: resp.headers.get('content-type'),
+            body_has_noindex: /noindex/i.test(text),
+            body_has_canonical: /rel=["']canonical["']/i.test(text),
+          });
+        }
+        result = {
+          validation_only: true,
+          deployment_id: body.deploymentId,
+          deployment_url: host,
+          bypass_ttl_sec: ttl,
+          checks,
+        };
+        break;
+      }
+      case 'inspectPreviewProtection': {
+        if (!body.deploymentId) {
+          return Response.json({ error: 'deploymentId is required' }, { status: 400 });
+        }
+        const aliasList = await vercelFetch(
+          `/v2/deployments/${encodeURIComponent(body.deploymentId)}/aliases`,
+          'GET',
+          token,
+          undefined,
+          teamId
+        );
+        if (aliasList && aliasList._error) {
+          result = aliasList;
+          break;
+        }
+        const rawAliases = Array.isArray(aliasList?.aliases)
+          ? aliasList.aliases
+          : Array.isArray(aliasList)
+            ? aliasList
+            : [];
+        const aliases: any[] = [];
+        for (const item of rawAliases.slice(0, 10)) {
+          const aliasName = String(item?.alias || item?.name || item?.uid || '');
+          let detail: any = null;
+          if (aliasName) {
+            const fetched = await vercelFetch(
+              `/v4/aliases/${encodeURIComponent(aliasName)}`,
+              'GET',
+              token,
+              undefined,
+              teamId
+            );
+            if (!(fetched && fetched._error)) detail = fetched;
+          }
+          const pb = detail?.protectionBypass ?? item?.protectionBypass;
+          aliases.push({
+            alias: item?.alias || item?.name || null,
+            uid: item?.uid || item?.id || null,
+            deployment_id: item?.deploymentId || item?.deployment?.id || null,
+            detail_keys: detail ? Object.keys(detail).sort() : [],
+            protection_bypass_present: Boolean(pb),
+            protection_bypass_type: pb === null || pb === undefined ? null : typeof pb,
+            protection_bypass_keys:
+              pb && typeof pb === 'object' ? Object.keys(pb).sort() : [],
+          });
+        }
+        result = {
+          inspection_only: true,
+          deployment_id: body.deploymentId,
+          alias_count: aliases.length,
+          aliases,
+        };
+        break;
+      }
       case 'deleteDeployment': {
         if (!body.deploymentId) return Response.json({ error: 'deploymentId is required' }, { status: 400 });
         result = await vercelFetch(`/v13/deployments/${encodeURIComponent(body.deploymentId)}`, 'DELETE', token, undefined, teamId);

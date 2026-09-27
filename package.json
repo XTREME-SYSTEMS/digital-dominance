@@ -11,7 +11,10 @@
     "typecheck": "tsc -p ./jsconfig.json",
     "test:alpha-prime": "node scripts/alpha-prime-regression.mjs",
     "test:seo-indexing": "node scripts/seo-indexing-regression.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prebuild": "node scripts/generate-edge-route-manifest.mjs",
+    "test:edge-routing": "node scripts/generate-edge-route-manifest.mjs && node scripts/edge-routing-regression.mjs",
+    "test:edge-routing-http": "node scripts/edge-routing-http-smoke.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.51",
@@ -48,6 +51,7 @@
     "@stripe/react-stripe-js": "^3.0.0",
     "@stripe/stripe-js": "^5.2.0",
     "@tanstack/react-query": "^5.84.1",
+    "@vercel/functions": "^3.9.9",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
