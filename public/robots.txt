@@ -1,77 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /admin/
 Disallow: /api/
-Disallow: /app-onboarding
-Disallow: /app-settings
-Disallow: /elite
 Disallow: /visualizer-test
-Disallow: /questionnaire
-Disallow: /download
-Disallow: /ThankYou
 
-# AI / Answer Engine Crawlers — explicitly allowed
-User-agent: GPTBot
-Allow: /
-
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Perplexity-User
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: Meta-ExternalAgent
-Allow: /
-
-User-agent: Meta-ExternalFetcher
-Allow: /
-
-User-agent: AppleBot
-Allow: /
-
-User-agent: AppleBot-Extended
-Allow: /
-
-User-agent: CCBot
-Allow: /
-
-User-agent: Bytespider
-Allow: /
-
-User-agent: Sogou
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-User-agent: CommonCrawl
-Allow: /
-
-# Sitemaps — canonical domain only (Alpha Prime Phase 6B fix)
+# One canonical sitemap. Public workflow pages are crawlable so their noindex can be observed.
 Sitemap: https://epoxyquotenearme.com/sitemap.xml
-Sitemap: https://epoxyquotenearme.com/sitemap-epn.xml
