@@ -13,8 +13,27 @@
     },
     {
       "function_name": "domainOperationsAgent",
-      "description": "Run the full domain operations pipeline \u2014 add domains, process them through Search Console/Analytics/sitemaps/competitors/health, and get status"
+      "description": "Run the full domain operations pipeline \u2014 add domains, process through Search Console/Analytics/sitemaps/competitors/health, get status"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "include_other_conversation_context": false,
+    "instructions": null
+  },
+  "voice_config": {
+    "voice_id": null
+  },
+  "emails_settings": null,
+  "allow_anonymous_access": false,
   "name": "domain_operations"
 }
