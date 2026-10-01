@@ -11,8 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, CheckCircle2, Phone, Clock, ShieldCheck } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import ScrapeProgress from "@/components/funnel/ScrapeProgress";
-import FloorVisualizer from "@/components/funnel/FloorVisualizer";
-import ConceptBeforeAfter from "@/components/funnel/ConceptBeforeAfter";
+import PhotoUpload from "@/components/funnel/PhotoUpload";
 import Logo, { XTREME_AI_ICON_URL } from "@/components/Logo";
 import { Image } from "@/components/ui/image";
 import { generateBidPdf } from "@/lib/bidPdf";
@@ -26,8 +25,8 @@ const CONDITIONS = [
   { key: "major", label: "Major damage / not sure", desc: "We'll assess it" }
 ];
 
-// Steps: 0 welcome · 1 address · 2 condition · 3 visualizer · 4 contact · 5 scrape · 6 results
-const STEP_EVENTS = ["funnel_started", "address_entered", "condition_selected", "color_selected", "contact_entered"];
+// Steps: 0 welcome · 1 address · 2 condition · 3 photo · 4 contact · 5 scrape · 6 results
+const STEP_EVENTS = ["funnel_started", "address_entered", "condition_selected", "photo_uploaded", "contact_entered"];
 
 export default function Funnel() {
   const navigate = useNavigate();
@@ -41,7 +40,6 @@ export default function Funnel() {
   const [estimatedSize, setEstimatedSize] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [floorImage, setFloorImage] = useState(null);
-  const [conceptImage, setConceptImage] = useState(null);
   const sentRef = React.useRef(false);
   const lookupPromise = React.useRef(null);
 
@@ -49,11 +47,11 @@ export default function Funnel() {
 
   // Set the floor image when we reach the results step — used for the email.
   useEffect(() => {
-    if (step === 6) setFloorImage(conceptImage || (data.photos || [])[0] || "");
+    if (step === 6) setFloorImage((data.photos || [])[0] || "");
   }, [step]);
 
-  // Once the visualizer has produced the floor image (step 7), email the
-  // branded estimate to the customer from the connected Gmail account.
+  // Once we reach the results step, email the branded estimate to the
+  // customer from the connected Gmail account.
   useEffect(() => {
     if (step === 6 && leadId && floorImage !== null && !sentRef.current) {
       sentRef.current = true;
@@ -185,7 +183,7 @@ export default function Funnel() {
       flake_color_name: data.flake_color_name || "",
       flake_color_hex: data.flake_color_hex || "",
       photos: data.photos || [],
-      concept_image: conceptImage || "",
+      concept_image: "",
       estimate_mid: est.mid,
       estimate_low: est.low,
       estimate_high: est.high,
@@ -325,23 +323,16 @@ export default function Funnel() {
             </div>
           )}
 
-          {/* Step 3: Visualizer — upload photo + pick color + see before/after */}
+          {/* Step 3: Photo upload */}
           {step === 3 && (
             <div>
-              <StepHeader n="3" title="Visualize your new floor" sub="Upload a photo of your garage, then pick a color to see your transformation instantly." />
+              <StepHeader n="3" title="Upload a photo of your garage" sub="This helps us prepare the right approach for your floor. You can skip this step." />
               <div className="mt-6">
-                <FloorVisualizer
-                  initialPhoto={(data.photos || [])[0]}
-                  initialColor={data.flake_color ? { code: data.flake_color, color_name: data.flake_color_name, hex: data.flake_color_hex, system: data.desired_system } : null}
-                  onPhotoChange={(url) => update({ photos: url ? [url] : [] })}
-                  onColorSelected={(c) => update({ flake_color: c.code, flake_color_name: c.color_name, flake_color_hex: c.hex, desired_system: c.system })}
-                  onConceptGenerated={(url) => setConceptImage(url)}
-                />
+                <PhotoUpload photos={data.photos || []} onChange={(urls) => update({ photos: urls })} />
               </div>
               <div className="mt-6 space-y-2">
                 <Button
                   onClick={next}
-                  disabled={!data.flake_color}
                   className="h-14 w-full text-base font-bold bg-stone-950 hover:bg-stone-800"
                 >
                   CONTINUE <ArrowRight className="h-5 w-5" />
@@ -398,28 +389,6 @@ export default function Funnel() {
                   </div>
                 </div>
               </div>
-
-              {/* Your floor, visualized with your chosen color */}
-              {(data.photos || [])[0] && conceptImage && (
-                <div>
-                  <h3 className="text-xl font-semibold text-stone-900 mb-3">See your garage transformed</h3>
-                  <ConceptBeforeAfter
-                    beforeUrl={(data.photos || [])[0]}
-                    afterUrl={conceptImage}
-                    colorName={data.flake_color_name}
-                    hex={data.flake_color_hex}
-                  />
-                </div>
-              )}
-
-              {/* Selected color confirmation */}
-              {data.flake_color && (
-                <div className="rounded-2xl border border-stone-200 bg-white p-6">
-                  <div className="text-xs font-bold tracking-[0.2em] text-amber-600">YOUR SELECTED COLOR</div>
-                  <div className="mt-2 text-lg font-semibold text-stone-900">{data.flake_color_name}</div>
-                  <div className="text-sm text-stone-500">{data.flake_color}</div>
-                </div>
-              )}
 
               {/* Xtreme Polishing Systems message */}
               <div className="rounded-2xl bg-amber-50 border border-amber-200 p-7 text-center">
