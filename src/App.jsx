@@ -93,11 +93,6 @@ import ConvergenceEngine from '@/pages/admin/ConvergenceEngine';
 import PipelineBuilder from '@/pages/admin/PipelineBuilder';
 import MasterPipeline from '@/pages/admin/MasterPipeline';
 import SystemIndependence from '@/pages/admin/SystemIndependence';
-import DriveBackup from '@/pages/admin/DriveBackup';
-import NearMeIntelligence from '@/pages/admin/NearMeIntelligence';
-import SystemPerformance from '@/pages/admin/SystemPerformance';
-import DomainOperations from '@/pages/admin/DomainOperations';
-import OwnerDashboard from '@/pages/admin/OwnerDashboard';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -141,7 +136,6 @@ import GoogleWorkspaceOS from '@/pages/admin/GoogleWorkspaceOS';
 import InternalArchitecture from '@/pages/admin/InternalArchitecture';
 import GoogleCommandCenter from '@/pages/admin/GoogleCommandCenter';
 import DynamicPageView from '@/pages/DynamicPageView';
-import EpoxyQuoteNearYou from '@/pages/EpoxyQuoteNearYou';
 import SmaiHome from '@/pages/smai/Home';
 import SmaiServices from '@/pages/smai/Services';
 import SmaiAbout from '@/pages/smai/About';
@@ -209,8 +203,7 @@ const AuthenticatedApp = () => {
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/app-settings" element={<AppSettings />} />
       <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<OwnerDashboard />} />
-        <Route path="owner-dashboard" element={<OwnerDashboard />} />
+        <Route index element={<OpportunityIntelligence />} />
         <Route path="opportunity-intelligence" element={<OpportunityIntelligence />} />
         <Route path="google-workspace-os" element={<GoogleWorkspaceOS />} />
         <Route path="internal-architecture" element={<InternalArchitecture />} />
@@ -293,10 +286,6 @@ const AuthenticatedApp = () => {
         <Route path="pipeline-builder" element={<PipelineBuilder />} />
         <Route path="master-pipeline" element={<MasterPipeline />} />
         <Route path="independence" element={<SystemIndependence />} />
-        <Route path="drive-backup" element={<DriveBackup />} />
-        <Route path="nearme-intelligence" element={<NearMeIntelligence />} />
-        <Route path="system-performance" element={<SystemPerformance />} />
-        <Route path="domain-operations" element={<DomainOperations />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
@@ -320,7 +309,6 @@ const AuthenticatedApp = () => {
       <Route path="/smai/portal" element={<SmaiClientPortal />} />
       <Route path="/smai/admin-portal" element={<SmaiAdminPortal />} />
       <Route path="/p/:slug" element={<DynamicPageView />} />
-      <Route path="/nearyou" element={<EpoxyQuoteNearYou />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </ErrorBoundary>
