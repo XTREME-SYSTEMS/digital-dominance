@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Globe, Loader2, CheckCircle2, AlertCircle, RefreshCw, Database, TrendingUp, MapPin, Sparkles, ChevronDown, ChevronRight, ExternalLink, Zap } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import ScanMap from '@/components/nearme/ScanMap';
 
 const TOTAL_BATCHES = 20;
 const BATCH_SIZE = 5;
@@ -17,6 +18,7 @@ export default function NearMeIntelligence() {
   const [scanResults, setScanResults] = useState([]);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [viewMode, setViewMode] = useState('list');
   const [expandedRows, setExpandedRows] = useState(new Set());
 
   const loadStatus = useCallback(async () => {
@@ -195,23 +197,51 @@ export default function NearMeIntelligence() {
         </div>
       )}
 
-      {/* Filter tabs */}
-      <div className="flex items-center gap-2">
-        {['all', 'complete', 'pending', 'available'].map((f) => (
+      {/* Filter + view toggle */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          {['all', 'complete', 'pending', 'available'].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1.5 rounded-lg text-sm font-semibold capitalize transition ${
+                filter === f ? 'bg-stone-900 text-white' : 'bg-white border border-stone-300 text-stone-600 hover:border-stone-400'
+              }`}
+            >
+              {f === 'available' ? 'Available Domains' : f}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
           <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-semibold capitalize transition ${
-              filter === f ? 'bg-stone-900 text-white' : 'bg-white border border-stone-300 text-stone-600 hover:border-stone-400'
+            onClick={() => setViewMode('list')}
+            className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition ${
+              viewMode === 'list' ? 'bg-amber-500 text-stone-950' : 'bg-white border border-stone-300 text-stone-600 hover:border-stone-400'
             }`}
           >
-            {f === 'available' ? 'Available Domains' : f}
+            List
           </button>
-        ))}
+          <button
+            onClick={() => setViewMode('map')}
+            className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition flex items-center gap-1.5 ${
+              viewMode === 'map' ? 'bg-amber-500 text-stone-950' : 'bg-white border border-stone-300 text-stone-600 hover:border-stone-400'
+            }`}
+          >
+            <MapPin className="h-3.5 w-3.5" />
+            Map
+          </button>
+        </div>
       </div>
 
+      {/* Map view */}
+      {viewMode === 'map' && !loading && geos.length > 0 && (
+        <div className="rounded-xl border border-stone-200 bg-white p-4">
+          <ScanMap geos={geos} />
+        </div>
+      )}
+
       {/* Geography table */}
-      <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
+      <div className={`rounded-xl border border-stone-200 bg-white overflow-hidden ${viewMode === 'map' ? 'hidden' : ''}`}>
         {loading ? (
           <div className="p-12 flex items-center justify-center">
             <Loader2 className="h-6 w-6 text-amber-500 animate-spin" />
