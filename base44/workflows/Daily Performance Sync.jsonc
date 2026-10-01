@@ -1,0 +1,63 @@
+{
+  "name": "Daily Performance Sync",
+  "description": "Syncs Google Search Console, Google Analytics, GoDaddy domains, and lead growth metrics daily at 4 AM ET \u2014 uses free connectors, no Base44 integration credits",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_performance_sync",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_performance": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "systemPerformanceSync",
+            "args": {
+              "action": "sync"
+            }
+          },
+          "then": "sync_godaddy",
+          "x-base44": {
+            "title": "Sync GSC + GA + GoDaddy + Leads",
+            "description": "Pulls Search Console queries, Analytics traffic, GoDaddy portfolio, and lead growth for 3 target properties"
+          }
+        }
+      },
+      {
+        "sync_godaddy": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "syncGoDaddyStatus"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync GoDaddy domain status to NearMe Intelligence",
+            "description": "Cross-references GoDaddy portfolio with available domains and updates registration status"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 4 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}
