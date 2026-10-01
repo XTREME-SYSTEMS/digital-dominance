@@ -9,7 +9,7 @@ const navGroups = [
   {
     label: null,
     items: [
-      { to: "/admin", end: true, icon: Sparkles, label: "Opportunity Intelligence" },
+      { to: "/admin", end: true, icon: Sparkles, label: "Owner Dashboard" },
       { to: "/admin/nearme-intelligence", icon: Globe, label: "NearMe Intelligence" },
       { to: "/admin/system-performance", icon: Activity, label: "System Performance" },
       { to: "/admin/master-pipeline", icon: ListOrdered, label: "Master Pipeline" },

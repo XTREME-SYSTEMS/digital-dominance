@@ -96,6 +96,7 @@ import SystemIndependence from '@/pages/admin/SystemIndependence';
 import DriveBackup from '@/pages/admin/DriveBackup';
 import NearMeIntelligence from '@/pages/admin/NearMeIntelligence';
 import SystemPerformance from '@/pages/admin/SystemPerformance';
+import OwnerDashboard from '@/pages/admin/OwnerDashboard';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -206,7 +207,8 @@ const AuthenticatedApp = () => {
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/app-settings" element={<AppSettings />} />
       <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<OpportunityIntelligence />} />
+        <Route index element={<OwnerDashboard />} />
+        <Route path="owner-dashboard" element={<OwnerDashboard />} />
         <Route path="opportunity-intelligence" element={<OpportunityIntelligence />} />
         <Route path="google-workspace-os" element={<GoogleWorkspaceOS />} />
         <Route path="internal-architecture" element={<InternalArchitecture />} />
