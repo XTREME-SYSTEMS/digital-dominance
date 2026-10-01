@@ -141,6 +141,7 @@ import GoogleWorkspaceOS from '@/pages/admin/GoogleWorkspaceOS';
 import InternalArchitecture from '@/pages/admin/InternalArchitecture';
 import GoogleCommandCenter from '@/pages/admin/GoogleCommandCenter';
 import DynamicPageView from '@/pages/DynamicPageView';
+import EpoxyQuoteNearYou from '@/pages/EpoxyQuoteNearYou';
 import SmaiHome from '@/pages/smai/Home';
 import SmaiServices from '@/pages/smai/Services';
 import SmaiAbout from '@/pages/smai/About';
@@ -319,6 +320,7 @@ const AuthenticatedApp = () => {
       <Route path="/smai/portal" element={<SmaiClientPortal />} />
       <Route path="/smai/admin-portal" element={<SmaiAdminPortal />} />
       <Route path="/p/:slug" element={<DynamicPageView />} />
+      <Route path="/nearyou" element={<EpoxyQuoteNearYou />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </ErrorBoundary>

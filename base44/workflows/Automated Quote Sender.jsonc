@@ -1,0 +1,51 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Lead"
+    }
+  },
+  "description": "When a new lead is created, wait 10 minutes for the client-side email to send, then automatically generate and send a digital quote if one hasn't been sent yet.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "automated_quote_sender",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "wait_for_client": {
+          "wait": "PT10M",
+          "then": "send_quote",
+          "x-base44": {
+            "title": "Wait for client email",
+            "description": "10 min grace period for browser-side send"
+          }
+        }
+      },
+      {
+        "send_quote": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "automatedQuoteSender",
+            "args": {
+              "action": "processLead",
+              "lead_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send digital quote",
+            "description": "Generates estimate + emails quote if not already sent"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Automated Quote Sender"
+}
