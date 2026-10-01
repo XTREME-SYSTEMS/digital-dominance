@@ -2,22 +2,19 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { secrets } from 'base44:runtime';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// nearMeIntelligenceEngine — FULLY DETERMINISTIC NearMe/NearYou Intelligence System
+// nearMeIntelligenceEngine — Deterministic NearMe/NearYou Intelligence System
 //
-// No AI models, no API keys, no rate limits, no deprecation failures.
-// Same input → same output, every time.
-//
-// Pipeline:
+// PHASE 0: Foundation
 //   1. Seed all US states + top 50 cities (deterministic geography list)
-//   2. Check nearme.com/nearyou.com domain availability (DNS-over-HTTPS)
-//   3. Find local businesses (OpenStreetMap Overpass API — free, no key)
-//   4. Generate keywords (deterministic template + hash-based metrics)
-//   5. Generate strategic plan (deterministic template engine)
-//   6. Generate proactive insights (deterministic rule engine)
-//   7. Save intelligence to entity + Google Drive folder
-//   8. Calculate market score (deterministic formula)
+//   2. For each geo: check nearme.com/nearyou.com domain availability (DNS)
+//   3. Find local businesses (Google AI search with web grounding)
+//   4. Pull top 200 keywords (Google AI search with web grounding)
+//   5. Generate strategic plan (Groq LLM)
+//   6. Save intelligence to entity + Google Drive folder
+//   7. Calculate market score
 //
-// Runs daily via workflow in batches. Zero external AI dependencies.
+// Runs daily via workflow in batches to stay within function timeout.
+// All AI calls use FREE-tier providers (Google AI, Groq) — no Base44 credits.
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ── Deterministic seed data ─────────────────────────────────────────────────
@@ -111,216 +108,155 @@ async function checkDomainsForGeo(geoName: string, stateCode: string): Promise<{
   return { nearme, nearyou, available };
 }
 
-// ── Deterministic business discovery (OpenStreetMap Overpass API — free, no key) ─
+// ── Google AI search (Gemini with google_search tool) ───────────────────────
+
+async function googleAISearch(prompt: string): Promise<string> {
+  const key = secrets.get('GOOGLE_AI_API_KEY');
+  if (!key) return '';
+
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30000);
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          tools: [{ google_search: {} }],
+          generationConfig: { temperature: 0.4, maxOutputTokens: 8192 },
+        }),
+        signal: controller.signal,
+      }
+    );
+    clearTimeout(timer);
+    if (!res.ok) return '';
+    const data: any = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  } catch {
+    return '';
+  }
+}
 
 async function findBusinesses(geoName: string, stateCode: string): Promise<any[]> {
-  // OpenStreetMap Overpass API — free, deterministic, no API key required.
-  // Same query returns same results from the same OSM data state.
+  const prompt = `Search the web and list all epoxy flooring, concrete polishing, garage floor coating, and floor coating businesses in ${geoName}, ${stateCode}. For each business, provide: name, type (epoxy/concrete/flooring), website URL, phone number if available, and Google rating if available. Return as a JSON array. If you cannot find specific businesses, return an empty array. Format: [{"name":"...","type":"...","url":"...","phone":"...","rating":4.5}]`;
+  const text = await googleAISearch(prompt);
+  if (!text) return [];
+
+  // Extract JSON array from response
+  const jsonMatch = text.match(/\[[\s\S]*?\]/);
+  if (!jsonMatch) return [];
   try {
-    const query = `[out:json][timeout:15];
-      area["name"="${geoName}"]["admin_level"~"6|7|8|9"]->.a;
-      (
-        node["shop"~"flooring|paint|hardware|doityourself"](area.a);
-        node["craft"~"floorer|painter|carpenter"](area.a);
-        node["office"~"company|business"](area.a);
-        way["shop"~"flooring|paint|hardware|doityourself"](area.a);
-      );
-      out tags 20;`;
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 20000);
-    const res = await fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'data=' + encodeURIComponent(query),
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-
-    if (!res.ok) return [];
-    const data: any = await res.json();
-
-    const businesses: any[] = [];
-    for (const el of (data.elements || []).slice(0, 20)) {
-      const tags = el.tags || {};
-      const name = tags.name || tags.brand || '';
-      if (!name) continue;
-
-      const shopType = tags.shop || tags.craft || tags.office || '';
-      let businessType = 'flooring';
-      if (shopType.includes('paint')) businessType = 'painting';
-      else if (shopType.includes('hardware')) businessType = 'hardware';
-      else if (shopType.includes('floor')) businessType = 'flooring';
-
-      businesses.push({
-        name,
-        type: businessType,
-        url: tags.website || tags['contact:website'] || '',
-        phone: tags.phone || tags['contact:phone'] || '',
-        rating: 0,
-      });
-    }
-    return businesses;
-  } catch (e) {
-    console.error(`[nearMe] Overpass business search failed for ${geoName}:`, e.message);
+    return JSON.parse(jsonMatch[0]);
+  } catch {
     return [];
   }
 }
 
-// ── Deterministic keyword generation (template + hash-based metrics) ────────
+async function getTopKeywords(geoName: string, stateCode: string): Promise<any[]> {
+  const prompt = `What are the top 20 most searched Google keywords for epoxy flooring, garage floor coating, and concrete polishing services in ${geoName}, ${stateCode}? For each keyword provide: the keyword phrase, estimated monthly search volume (number), difficulty score (0-100), search intent (commercial/transactional/informational), and opportunity score (0-100 where higher = better opportunity). Return as a JSON array. Format: [{"keyword":"epoxy flooring near me","volume":1200,"difficulty":45,"intent":"commercial","opportunity":75}]`;
+  const text = await googleAISearch(prompt);
+  if (!text) return [];
 
-// Simple deterministic hash — same string always produces same number
-function hashString(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
-    hash |= 0;
+  const jsonMatch = text.match(/\[[\s\S]*?\]/);
+  if (!jsonMatch) return [];
+  try {
+    return JSON.parse(jsonMatch[0]);
+  } catch {
+    return [];
   }
-  return Math.abs(hash);
 }
 
-const KEYWORD_SERVICES = [
-  { service: 'epoxy flooring', weight: 1.5 },
-  { service: 'garage floor coating', weight: 1.3 },
-  { service: 'concrete polishing', weight: 1.0 },
-  { service: 'floor coating', weight: 0.9 },
-  { service: 'epoxy garage floor', weight: 1.2 },
-];
+// ── Groq LLM for strategic plan ─────────────────────────────────────────────
 
-const KEYWORD_TEMPLATES = [
-  '{service} near me',
-  '{service} {city}',
-  '{service} {city} {state}',
-  '{service} cost',
-  '{service} cost {city}',
-  '{service} contractor {city}',
-  '{service} {state}',
-  'best {service} {city}',
-  'affordable {service} {city}',
-  '{service} installation {city}',
-  '{service} company {city}',
-  '{service} services {city}',
-];
+async function generateStrategicPlan(geoName: string, stateCode: string, data: any): Promise<string> {
+  const key = secrets.get('GROQ_API_KEY');
+  if (!key) return '';
 
-function generateKeywords(geoName: string, stateCode: string, population: number): any[] {
-  const citySlug = geoName.toLowerCase();
-  const stateLower = stateCode.toLowerCase();
-  const keywords: any[] = [];
+  const systemPrompt = `You are a strategic business advisor for the epoxy flooring and home services industry. You analyze market intelligence data and produce actionable strategic plans.`;
+  const prompt = `Based on this market intelligence for ${geoName}, ${stateCode}, create a strategic plan:
 
-  for (const { service, weight } of KEYWORD_SERVICES) {
-    for (const template of KEYWORD_TEMPLATES) {
-      const keyword = template
-        .replace('{service}', service)
-        .replace('{city}', citySlug)
-        .replace('{state}', stateLower);
+DOMAINS:
+- NearMe domains found (registered): ${(data.nearme || []).filter((d: any) => d.registered).map((d: any) => d.domain).join(', ') || 'none'}
+- NearYou domains found (registered): ${(data.nearyou || []).filter((d: any) => d.registered).map((d: any) => d.domain).join(', ') || 'none'}
+- Available domains to purchase: ${(data.available || []).slice(0, 10).join(', ') || 'none'}
 
-      // Deterministic metrics based on hash — same keyword always gets same values
-      const hash = hashString(keyword);
-      const popFactor = Math.log10(population || 1000) / 4; // 0-3 range
-      const volume = Math.max(10, Math.round(popFactor * weight * 100 * (0.5 + (hash % 100) / 100)));
-      const difficulty = Math.min(90, 20 + (hash % 70)); // 20-90
-      const opportunity = Math.max(0, Math.round(100 - difficulty + (volume > 500 ? -10 : 5)));
+BUSINESSES FOUND: ${(data.businesses || []).length} businesses
+${(data.businesses || []).slice(0, 5).map((b: any) => `- ${b.name} (${b.type})`).join('\n')}
 
-      keywords.push({ keyword, volume, difficulty, intent: 'commercial', opportunity });
-    }
+TOP KEYWORDS: ${(data.top_keywords || []).slice(0, 10).map((k: any) => `${k.keyword} (vol:${k.volume}, opp:${k.opportunity})`).join(', ') || 'none'}
+
+Create a strategic plan covering:
+1. MARKET OPPORTUNITY — Is this a good market? Why?
+2. DOMAIN ACQUISITION — Which available domains should we buy first?
+3. PROGRAMMATIC WEBSITE STRATEGY — What sites to build on these domains?
+4. KEYWORD TARGETING — Top 5 keywords to target first and why.
+5. COMPETITIVE POSITIONING — How to differentiate from existing businesses.
+6. REVENUE PROJECTION — Estimated monthly revenue potential.
+7. IMMEDIATE ACTIONS — Top 3 things to do THIS WEEK.
+
+Be specific, actionable, and data-driven. Keep it under 800 words.`;
+
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2048,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) return '';
+    const result: any = await res.json();
+    return result.choices?.[0]?.message?.content || '';
+  } catch {
+    return '';
   }
-
-  // Sort by opportunity descending, take top 20
-  return keywords.sort((a, b) => b.opportunity - a.opportunity).slice(0, 20);
 }
 
-// ── Deterministic strategic plan (template engine — no LLM) ────────────────
+async function generateProactiveInsights(geoName: string, stateCode: string, data: any): Promise<string> {
+  const key = secrets.get('GROQ_API_KEY');
+  if (!key) return '';
 
-function generateStrategicPlan(geoName: string, stateCode: string, data: any, population: number, marketScore: number): string {
-  const available = (data.available || []).slice(0, 10);
-  const registeredNearme = (data.nearme || []).filter((d: any) => d.registered).map((d: any) => d.domain);
-  const registeredNearyou = (data.nearyou || []).filter((d: any) => d.registered).map((d: any) => d.domain);
-  const topKeywords = (data.top_keywords || []).slice(0, 5);
-  const businessCount = (data.businesses || []).length;
+  const prompt = `You are a proactive AI advisor. Based on this intelligence for ${geoName}, ${stateCode}, tell the business owner EXACTLY what to do next. Be direct, specific, and action-oriented. No questions — just instructions.
 
-  const marketRating = marketScore >= 70 ? 'EXCELLENT' : marketScore >= 50 ? 'GOOD' : marketScore >= 30 ? 'MODERATE' : 'LOW';
-  const competition = businessCount > 10 ? 'high' : businessCount > 5 ? 'moderate' : businessCount > 0 ? 'low' : 'minimal';
-  const revLow = Math.round(marketScore * 50 + (population || 0) / 100);
-  const revHigh = Math.round(marketScore * 150 + (population || 0) / 50);
+Available domains: ${(data.available || []).slice(0, 5).join(', ') || 'none'}
+Top keywords: ${(data.top_keywords || []).slice(0, 5).map((k: any) => k.keyword).join(', ') || 'none'}
+Businesses found: ${data.businesses.length}
 
-  return `# Strategic Plan: ${geoName}, ${stateCode}
+Give 3-5 bullet points of IMMEDIATE actions. Start each with a verb. Example: "Buy epoxynearme.com immediately — it's available and gets 1,200 monthly searches."`;
 
-## 1. MARKET OPPORTUNITY — ${marketRating} (Score: ${marketScore}/100)
-- Population: ${population ? population.toLocaleString() : 'N/A'}
-- Competition: ${competition} (${businessCount} businesses found)
-- ${marketScore >= 50 ? 'This is a viable market for NearMe/NearYou domain acquisition and programmatic website deployment.' : 'This market has limited opportunity — monitor but do not prioritize domain acquisition.'}
-
-## 2. DOMAIN ACQUISITION
-- Available domains to purchase: ${available.length}
-${available.slice(0, 5).map((d: string) => `  - ${d} — AVAILABLE (buy now)`).join('\n') || '  - None available'}
-- Already registered NearMe: ${registeredNearme.length} domains
-${registeredNearme.slice(0, 5).map((d: string) => `  - ${d}`).join('\n') || '  - None registered yet'}
-- Already registered NearYou: ${registeredNearyou.length} domains
-${registeredNearyou.slice(0, 5).map((d: string) => `  - ${d}`).join('\n') || '  - None registered yet'}
-- Priority: ${available.length > 0 ? 'Purchase top 3 available domains immediately via GoDaddy API.' : 'No available domains — all key domains are registered.'}
-
-## 3. PROGRAMMATIC WEBSITE STRATEGY
-- ${available.length > 0 ? 'Deploy programmatic SEO sites on purchased domains using the existing template system.' : 'No domains available for deployment.'}
-- Target: 1 homepage + 10-50 location/service pages per domain
-- Content: Auto-generated from NearMe Intelligence data (keywords, businesses, market data)
-- Tech: Vercel deployment + Base44 CMS
-
-## 4. KEYWORD TARGETING — Top 5
-${topKeywords.map((k: any, i: number) => `- ${i + 1}. "${k.keyword}" — Vol: ${k.volume}, Diff: ${k.difficulty}, Opp: ${k.opportunity}`).join('\n') || '- No keyword data available'}
-
-## 5. COMPETITIVE POSITIONING
-- ${businessCount === 0 ? 'No competitors found — first-mover advantage. Build authority quickly.' : `${businessCount} competitors found. Differentiate with instant online estimates and transparent pricing.`}
-- Position as the only provider offering instant, personalized estimates with color preview.
-
-## 6. REVENUE PROJECTION
-- Estimated monthly revenue potential: $${revLow}–$${revHigh}
-- Based on market score (${marketScore}), population (${population ? population.toLocaleString() : 'N/A'}), and keyword opportunity
-- ${marketScore >= 50 ? 'Conservative estimate assumes 2-5 leads/month per deployed domain.' : 'Low confidence — monitor for 30 days before projecting revenue.'}
-
-## 7. IMMEDIATE ACTIONS — This Week
-${available.length > 0 ? `1. Buy ${available.slice(0, 3).join(', ')} via GoDaddy API` : '1. No domains to purchase — monitor for expirations'}
-2. ${businessCount > 0 ? 'Analyze top 3 competitor websites for content gaps' : 'Build foundational content — no competitors to analyze'}
-3. Deploy homepage on highest-priority domain with top 5 keywords as page titles
-4. Submit sitemap to Google Search Console
-5. Set up GA4 tracking on deployed domain`;
-}
-
-// ── Deterministic proactive insights (rule engine — no LLM) ─────────────────
-
-function generateProactiveInsights(geoName: string, stateCode: string, data: any, marketScore: number): string {
-  const available = (data.available || []).slice(0, 5);
-  const topKeywords = (data.top_keywords || []).slice(0, 3);
-  const businessCount = (data.businesses || []).length;
-  const insights: string[] = [];
-
-  if (available.length > 0) {
-    insights.push(`Buy ${available[0]} immediately — it's available and the market score is ${marketScore}/100.`);
-    if (available.length > 1) {
-      insights.push(`Purchase ${available.length - 1} more domains: ${available.slice(1).join(', ')}.`);
-    }
-  } else {
-    insights.push(`No available domains in ${geoName} — all key domains are registered. Monitor for expirations.`);
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.6,
+        max_tokens: 1024,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) return '';
+    const result: any = await res.json();
+    return result.choices?.[0]?.message?.content || '';
+  } catch {
+    return '';
   }
-
-  if (topKeywords.length > 0) {
-    insights.push(`Target "${topKeywords[0].keyword}" first — opportunity score ${topKeywords[0].opportunity}/100 with ${topKeywords[0].volume} monthly searches.`);
-  }
-
-  if (businessCount === 0) {
-    insights.push(`No competitors found in ${geoName} — first-mover advantage. Deploy a site immediately.`);
-  } else if (businessCount < 5) {
-    insights.push(`Low competition: only ${businessCount} businesses found in ${geoName}. Capture market share fast.`);
-  } else {
-    insights.push(`${businessCount} competitors found — differentiate with instant estimates and transparent pricing.`);
-  }
-
-  if (marketScore >= 70) {
-    insights.push(`HIGH PRIORITY: ${geoName} scores ${marketScore}/100 — move this to the top of the deployment queue.`);
-  } else if (marketScore < 30) {
-    insights.push(`LOW PRIORITY: ${geoName} scores ${marketScore}/100 — monitor but don't invest resources yet.`);
-  }
-
-  return insights.join('\n');
 }
 
 // ── Drive helpers ───────────────────────────────────────────────────────────
@@ -430,24 +366,24 @@ async function scanGeo(base44: any, geo: any, driveToken: string, driveFolderId:
   // 1. Check domains
   const domainData = await checkDomainsForGeo(geo_name, state_code);
 
-  // 2. Find businesses (Overpass API — deterministic, free)
+  // 2. Find businesses
   const businesses = await findBusinesses(geo_name, state_code);
 
-  // 3. Generate keywords (deterministic template + hash — no AI)
-  const topKeywords = generateKeywords(geo_name, state_code, population);
+  // 3. Get keywords
+  const topKeywords = await getTopKeywords(geo_name, state_code);
 
-  // 4. Calculate market score (deterministic formula)
+  // 4. Calculate market score
   const marketScore = calculateMarketScore({ ...domainData, businesses, top_keywords: topKeywords }, population);
 
-  // 5. Generate strategic plan (deterministic template — no LLM)
-  const strategicPlan = generateStrategicPlan(geo_name, state_code, {
+  // 5. Generate strategic plan
+  const strategicPlan = await generateStrategicPlan(geo_name, state_code, {
     ...domainData, businesses, top_keywords: topKeywords,
-  }, population, marketScore);
+  });
 
-  // 6. Generate proactive insights (deterministic rules — no LLM)
-  const proactiveInsights = generateProactiveInsights(geo_name, state_code, {
+  // 6. Generate proactive insights
+  const proactiveInsights = await generateProactiveInsights(geo_name, state_code, {
     ...domainData, businesses, top_keywords: topKeywords,
-  }, marketScore);
+  });
 
   // 7. Save to Drive
   let driveFileId: string | null = null;
@@ -651,11 +587,11 @@ export default async function(req: Request): Promise<Response> {
 
       let refreshed = 0;
       for (const geo of page.items || []) {
-        const insights = generateProactiveInsights(geo.geo_name, geo.state_code, {
+        const insights = await generateProactiveInsights(geo.geo_name, geo.state_code, {
           available: geo.available_domains || [],
           businesses: geo.businesses || [],
           top_keywords: geo.top_keywords || [],
-        }, geo.market_score || 0);
+        });
         if (insights) {
           await base44.asServiceRole.entities.NearMeIntelligence.update(geo.id, {
             proactive_insights: insights,
