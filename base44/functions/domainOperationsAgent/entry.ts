@@ -212,42 +212,65 @@ async function checkSiteHealth(domain: string): Promise<any> {
 // ── Competitor discovery + analysis ────────────────────────────────────────
 
 async function findCompetitors(domain: string): Promise<string[]> {
-  const key = secrets.get('GOOGLE_AI_API_KEY');
-  if (!key) { console.error('[domainOps] No GOOGLE_AI_API_KEY'); return []; }
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 30000);
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `Search the web and find the top 5 competitor websites for "${domain}". These should be websites in the same industry that rank for similar keywords. Return ONLY a JSON array of domain names like ["competitor1.com","competitor2.com"]. No other text.` }] }],
-          tools: [{ google_search: {} }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
-        }),
-        signal: controller.signal,
+  // Try Google AI search first (has web search), fall back to Groq (knowledge-based)
+  const googleKey = secrets.get('GOOGLE_AI_API_KEY');
+  if (googleKey) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 30000);
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${googleKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `Search the web and find the top 5 competitor websites for "${domain}". These should be websites in the same industry that rank for similar keywords. Return ONLY a JSON array of domain names like ["competitor1.com","competitor2.com"]. No other text.` }] }],
+            tools: [{ google_search: {} }],
+            generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
+          }),
+          signal: controller.signal,
+        }
+      );
+      clearTimeout(timer);
+      if (res.ok) {
+        const data: any = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const match = text.match(/\[[\s\S]*?\]/);
+        if (match) {
+          const parsed = JSON.parse(match[0]);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed.filter((d: any) => typeof d === 'string');
+        }
+      } else {
+        console.error('[domainOps] Google AI competitor search error:', res.status);
       }
-    );
-    clearTimeout(timer);
-    if (!res.ok) {
-      const errText = await res.text().catch(() => '');
-      console.error('[domainOps] Competitor search API error:', res.status, errText.slice(0, 200));
-      return [];
-    }
-    const data: any = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    if (!text) { console.error('[domainOps] Competitor search: empty response'); return []; }
+    } catch (e) { console.error('[domainOps] Google AI competitor search error:', e.message); }
+  }
+
+  // Fallback: Groq (knowledge-based, no web search)
+  const groqKey = secrets.get('GROQ_API_KEY');
+  if (!groqKey) { console.error('[domainOps] No GROQ_API_KEY for competitor fallback'); return []; }
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` },
+      body: JSON.stringify({
+        model: 'openai/gpt-oss-120b',
+        messages: [{ role: 'user', content: `Based on your knowledge, list the top 5 competitor websites for "${domain}". These should be well-known websites in the same industry or niche. Return ONLY a JSON array of domain names like ["competitor1.com","competitor2.com"]. No explanation.` }],
+        temperature: 0.3,
+        max_tokens: 500,
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) { console.error('[domainOps] Groq competitor fallback error:', res.status); return []; }
+    const result: any = await res.json();
+    const text = result.choices?.[0]?.message?.content || '';
     const match = text.match(/\[[\s\S]*?\]/);
     if (match) {
       const parsed = JSON.parse(match[0]);
-      return Array.isArray(parsed) ? parsed.filter((d: any) => typeof d === 'string') : [];
+      return Array.isArray(parsed) ? parsed.filter((d: any) => typeof d === 'string').slice(0, 5) : [];
     }
-    // Fallback: try to extract domains from text
-    const domainMatches = text.match(/[a-z0-9-]+\.[a-z]{2,}/gi) || [];
-    return [...new Set(domainMatches)].slice(0, 5);
-  } catch (e) { console.error('[domainOps] Competitor search error:', e.message); return []; }
+    return [];
+  } catch (e) { console.error('[domainOps] Groq competitor fallback error:', e.message); return []; }
 }
 
 async function analyzeCompetitor(competitorDomain: string): Promise<any> {
@@ -283,7 +306,7 @@ async function generateInsights(domain: string, data: any): Promise<string> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-120b',
         messages: [{ role: 'user', content: `You are Strategic Insights, an autonomous domain operations agent. Analyze this domain's data and provide actionable next steps.
 
 DOMAIN: ${domain}
