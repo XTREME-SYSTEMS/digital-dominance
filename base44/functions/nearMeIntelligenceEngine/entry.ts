@@ -604,6 +604,129 @@ export default async function(req: Request): Promise<Response> {
       return Response.json({ ok: true, refreshed, total: page.items?.length || 0 });
     }
 
+    // ── SYNC GODADDY STATUS (daily automated) ──
+    if (action === 'syncGoDaddyStatus') {
+      const token = secrets.get('GODADDY_API_KEY');
+      if (!token) return Response.json({ error: 'GODADDY_API_KEY not set' }, { status: 400 });
+
+      const gdRes = await fetch('https://api.godaddy.com/v1/domains', {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      });
+      if (!gdRes.ok) return Response.json({ error: `GoDaddy API error: ${gdRes.status}` }, { status: 502 });
+      const gdDomains = await gdRes.json();
+      const gdDomainSet = new Set(gdDomains.map((d: any) => d.domain.toLowerCase()));
+
+      // Update NearMeIntelligence records — move purchased domains from available to registered
+      const allGeos = await base44.asServiceRole.entities.NearMeIntelligence.filter(
+        { available_domains: { $exists: true, $ne: [] } },
+        { limit: 100 }
+      );
+
+      let updated = 0;
+      for (const geo of allGeos.items || []) {
+        const stillAvailable = (geo.available_domains || []).filter((d: string) => !gdDomainSet.has(d.toLowerCase()));
+        const newlyRegistered = (geo.available_domains || []).filter((d: string) => gdDomainSet.has(d.toLowerCase()));
+
+        if (newlyRegistered.length > 0) {
+          const nearmeDomains = (geo.nearme_domains || []).map((d: any) =>
+            gdDomainSet.has(d.domain.toLowerCase()) ? { ...d, registered: true } : d
+          );
+          const nearyouDomains = (geo.nearyou_domains || []).map((d: any) =>
+            gdDomainSet.has(d.domain.toLowerCase()) ? { ...d, registered: true } : d
+          );
+
+          await base44.asServiceRole.entities.NearMeIntelligence.update(geo.id, {
+            available_domains: stillAvailable,
+            nearme_domains: nearmeDomains,
+            nearyou_domains: nearyouDomains,
+          });
+          updated++;
+        }
+      }
+
+      return Response.json({
+        ok: true,
+        godaddyDomains: gdDomains.length,
+        geosUpdated: updated,
+      });
+    }
+
+    // ── PURCHASE DOMAINS via GoDaddy (manual trigger) ──
+    if (action === 'purchaseDomains') {
+      const minScore = body.minScore || 50;
+      const maxDomains = body.maxDomains || 5;
+      const contacts = body.contacts;
+
+      if (!contacts || !contacts.registrant) {
+        return Response.json({ error: 'contacts.registrant required (name, email, phone, address, city, state, zip, country)' }, { status: 400 });
+      }
+
+      const token = secrets.get('GODADDY_API_KEY');
+      if (!token) return Response.json({ error: 'GODADDY_API_KEY not set' }, { status: 400 });
+
+      // Find geos with available domains and high market scores
+      const page = await base44.asServiceRole.entities.NearMeIntelligence.filter(
+        { scan_status: 'complete', market_score: { $gte: minScore } },
+        { sort: '-market_score', limit: 50 }
+      );
+
+      const allAvailable: string[] = [];
+      for (const geo of page.items || []) {
+        allAvailable.push(...(geo.available_domains || []));
+      }
+      const uniqueDomains = [...new Set(allAvailable)].slice(0, maxDomains);
+
+      const results: any[] = [];
+      for (const domain of uniqueDomains) {
+        try {
+          // Check availability on GoDaddy
+          const availRes = await fetch(`https://api.godaddy.com/v1/domains/available?domain=${encodeURIComponent(domain)}`, {
+            headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+          });
+          const availData = await availRes.json();
+
+          if (!availData.available) {
+            results.push({ domain, status: 'not_available' });
+            continue;
+          }
+
+          // Purchase
+          const purchaseBody = {
+            domain, period: 1,
+            nameServers: ['ns1.vercel-dns.com', 'ns2.vercel-dns.com'],
+            renewAuto: true, privacy: true,
+            contactRegistrant: contacts.registrant,
+            contactTech: contacts.tech || contacts.registrant,
+            contactAdmin: contacts.admin || contacts.registrant,
+            contactBilling: contacts.billing || contacts.registrant,
+          };
+
+          const purchaseRes = await fetch('https://api.godaddy.com/v1/domains', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(purchaseBody),
+          });
+
+          if (purchaseRes.ok) {
+            const purchaseData = await purchaseRes.json();
+            results.push({ domain, status: 'purchased', orderId: purchaseData.orderId });
+          } else {
+            const errText = await purchaseRes.text().catch(() => '');
+            results.push({ domain, status: 'failed', error: `${purchaseRes.status}: ${errText.slice(0, 200)}` });
+          }
+        } catch (err: any) {
+          results.push({ domain, status: 'error', error: err.message });
+        }
+      }
+
+      return Response.json({
+        ok: true,
+        purchased: results.filter(r => r.status === 'purchased').length,
+        checked: uniqueDomains.length,
+        results,
+      });
+    }
+
     return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
   } catch (error) {
     console.error('[nearMeIntelligenceEngine] Fatal:', error.message);
