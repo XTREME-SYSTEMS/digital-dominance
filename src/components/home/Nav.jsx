@@ -32,6 +32,7 @@ export default function Nav({ settings }) {
   const links = [
     { label: "How it works", to: "/how-it-works" },
     { label: "Color charts", to: "/color-charts" },
+    { label: "Visualizer", to: "/visualizer" },
     { label: "Gallery", to: "/gallery" },
     { label: "Reviews", to: "/reviews" },
     { label: "About", to: "/about" },

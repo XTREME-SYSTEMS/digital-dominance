@@ -56,6 +56,7 @@ import Questionnaire from '@/pages/Questionnaire';
 import AppSettings from '@/pages/AppSettings';
 import ToolManager from '@/pages/admin/ToolManager';
 import VisualizerTest from '@/pages/VisualizerTest';
+import Visualizer from '@/pages/Visualizer';
 import ToolHub from '@/pages/ToolHub';
 import WebsiteFactory from '@/pages/admin/WebsiteFactory';
 import TemplateManager from '@/pages/admin/TemplateManager';
@@ -207,7 +208,8 @@ const AuthenticatedApp = () => {
       <Route path="/ThankYou" element={<ThankYou />} />
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/app-settings" element={<AppSettings />} />
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<OwnerDashboard />} />
         <Route path="owner-dashboard" element={<OwnerDashboard />} />
         <Route path="opportunity-intelligence" element={<OpportunityIntelligence />} />
@@ -296,10 +298,12 @@ const AuthenticatedApp = () => {
         <Route path="nearme-intelligence" element={<NearMeIntelligence />} />
         <Route path="system-performance" element={<SystemPerformance />} />
         <Route path="domain-operations" element={<DomainOperations />} />
-        <Route path="settings" element={<SettingsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
       <Route path="/:slug" element={<GeneratedPageView />} />
+      <Route path="/visualizer" element={<Visualizer />} />
       <Route path="/visualizer-test" element={<VisualizerTest />} />
       <Route path="/tool-hub" element={<ToolHub />} />
       <Route path="/portal" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
