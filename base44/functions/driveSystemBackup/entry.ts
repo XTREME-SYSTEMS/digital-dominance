@@ -7,14 +7,19 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 // - Human-readable:   one .csv file per entity (flattened, spreadsheet-friendly)
 // - Organized in: EpoxyQuoteNearMe System Backups / YYYY-MM-DD_HH-MM-SS
 //
+// Batching: 118 entities is too many for one function call (timeout), so the
+// workflow calls this function in BATCHES (batchIndex 0..N). Each batch
+// processes a slice of the entity list and uploads to the same dated folder
+// (findOrCreateFolder is idempotent). The manifest is uploaded on the last
+// batch.
+//
 // Uses the authorized googledrive connector (SHARED mode — builder's account).
-// Admin-only when invoked from the UI; workflow invocations proceed without
-// a user (the platform is trusted).
 // ═══════════════════════════════════════════════════════════════════════════
 
 const ROOT_FOLDER_NAME = 'EpoxyQuoteNearMe System Backups';
-const MAX_PAGES_PER_ENTITY = 10; // 10 × 500 = 5000 records cap per entity
+const MAX_PAGES_PER_ENTITY = 10;
 const PAGE_SIZE = 500;
+const DEFAULT_TOTAL_BATCHES = 4;
 
 const ENTITIES = [
   'AppSettings','IngestedWebsite','TemplateLibrary','AgentPersona','Opportunity',
@@ -154,7 +159,6 @@ export default async function(req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
 
-    // Auth: admin-only when called from UI; workflow calls have no user
     const user = await base44.auth.me().catch(() => null);
     if (user && user.role !== 'admin') {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
@@ -169,8 +173,20 @@ export default async function(req: Request): Promise<Response> {
         entityCount: ENTITIES.length,
         rootFolderName: ROOT_FOLDER_NAME,
         schedule: 'Daily at 2:00 AM ET via workflow',
+        batches: DEFAULT_TOTAL_BATCHES,
       });
     }
+
+    // ── Batching params ──
+    const batchIndex = body.batchIndex ?? 0;
+    const totalBatches = body.totalBatches ?? DEFAULT_TOTAL_BATCHES;
+    const isLastBatch = batchIndex >= totalBatches - 1;
+
+    // ── Slice entities for this batch ──
+    const chunkSize = Math.ceil(ENTITIES.length / totalBatches);
+    const start = batchIndex * chunkSize;
+    const end = Math.min(start + chunkSize, ENTITIES.length);
+    const batchEntities = ENTITIES.slice(start, end);
 
     // ── Get Drive token ──
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('googledrive');
@@ -178,21 +194,19 @@ export default async function(req: Request): Promise<Response> {
       return Response.json({ error: 'Google Drive connector not connected' }, { status: 400 });
     }
 
-    // ── Create folder structure ──
+    // ── Create / find folder structure (idempotent across batches) ──
     const rootId = await findOrCreateFolder(accessToken, ROOT_FOLDER_NAME);
     const now = new Date();
-    const ts = now.toISOString().slice(0, 19).replace(/[T:]/g, '-').split('-').slice(0, 4).join('-') + '_' +
-               now.toISOString().slice(11, 16).replace(':', '-');
     const dateFolder = `${now.toISOString().slice(0, 10)}_${now.toISOString().slice(11, 16).replace(':', '-')}`;
-    const backupId = await createFolder(accessToken, dateFolder, rootId);
+    const backupId = await findOrCreateFolder(accessToken, dateFolder, rootId);
 
-    // ── Process each entity ──
+    // ── Process each entity in this batch ──
     const results: { entity: string; records: number; jsonId?: string; csvId?: string; error?: string }[] = [];
     let totalRecords = 0;
     let totalFiles = 0;
     const errors: string[] = [];
 
-    for (const entityName of ENTITIES) {
+    for (const entityName of batchEntities) {
       const result: any = { entity: entityName, records: 0 };
       try {
         const records = await fetchAllRecords(entityName, base44);
@@ -200,13 +214,11 @@ export default async function(req: Request): Promise<Response> {
         totalRecords += records.length;
 
         if (records.length > 0) {
-          // Upload JSON (machine-readable)
           const jsonContent = JSON.stringify(records, null, 2);
           const jsonId = await uploadTextFile(accessToken, `${entityName}.json`, jsonContent, 'application/json', backupId);
           result.jsonId = jsonId;
           totalFiles++;
 
-          // Upload CSV (human-readable)
           const csvContent = recordsToCsv(records);
           if (csvContent) {
             const csvId = await uploadTextFile(accessToken, `${entityName}.csv`, csvContent, 'text/csv', backupId);
@@ -222,35 +234,43 @@ export default async function(req: Request): Promise<Response> {
       results.push(result);
     }
 
-    // ── Upload manifest ──
-    const manifest = {
-      backupDate: now.toISOString(),
-      rootFolder: ROOT_FOLDER_NAME,
-      dateFolder,
-      entityCount: ENTITIES.length,
-      totalRecords,
-      totalFiles,
-      errors: errors.length,
-      results,
-    };
-    try {
-      await uploadTextFile(accessToken, '_manifest.json', JSON.stringify(manifest, null, 2), 'application/json', backupId);
-      totalFiles++;
-    } catch (err: any) {
-      errors.push(`manifest: ${err.message}`);
+    // ── Upload manifest on last batch ──
+    if (isLastBatch) {
+      const manifest = {
+        backupDate: now.toISOString(),
+        rootFolder: ROOT_FOLDER_NAME,
+        dateFolder,
+        entityCount: ENTITIES.length,
+        totalBatches,
+        batchIndex,
+        totalRecords,
+        totalFiles,
+        errors: errors.length,
+        results,
+      };
+      try {
+        await uploadTextFile(accessToken, '_manifest.json', JSON.stringify(manifest, null, 2), 'application/json', backupId);
+        totalFiles++;
+      } catch (err: any) {
+        errors.push(`manifest: ${err.message}`);
+      }
     }
 
     return Response.json({
       ok: true,
+      batchIndex,
+      totalBatches,
+      isLastBatch,
       backupFolder: dateFolder,
       rootFolderId: rootId,
       backupFolderId: backupId,
-      entityCount: ENTITIES.length,
+      entitiesInBatch: batchEntities.length,
+      entitiesProcessed: results.length,
       totalRecords,
       totalFiles,
       errors: errors.length,
       errorDetails: errors.slice(0, 20),
-      results: results.filter((r) => r.records > 0 || r.error),
+      results,
     });
   } catch (error) {
     console.error('[driveSystemBackup] Fatal:', error.message);

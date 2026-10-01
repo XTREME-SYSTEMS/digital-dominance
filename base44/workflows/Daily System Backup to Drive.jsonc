@@ -1,6 +1,6 @@
 {
   "name": "Daily System Backup to Drive",
-  "description": "Exports every entity's records to Google Drive as JSON + CSV in a dated folder, daily at 2 AM ET",
+  "description": "Exports every entity to Google Drive as JSON + CSV in a dated folder, daily at 2 AM ET \u2014 runs in 4 sequential batches to stay within function timeout",
   "definition": {
     "document": {
       "dsl": "1.0.0",
@@ -10,18 +10,74 @@
     },
     "do": [
       {
-        "run_backup": {
+        "batch_0": {
           "call": "invoke_backend_function",
           "with": {
             "function_name": "driveSystemBackup",
             "args": {
-              "action": "backup"
+              "action": "backup",
+              "batchIndex": 0,
+              "totalBatches": 4
+            }
+          },
+          "then": "batch_1",
+          "x-base44": {
+            "title": "Backup batch 1 of 4",
+            "description": "Entities 0-29 \u2192 Drive"
+          }
+        }
+      },
+      {
+        "batch_1": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "driveSystemBackup",
+            "args": {
+              "action": "backup",
+              "batchIndex": 1,
+              "totalBatches": 4
+            }
+          },
+          "then": "batch_2",
+          "x-base44": {
+            "title": "Backup batch 2 of 4",
+            "description": "Entities 30-59 \u2192 Drive"
+          }
+        }
+      },
+      {
+        "batch_2": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "driveSystemBackup",
+            "args": {
+              "action": "backup",
+              "batchIndex": 2,
+              "totalBatches": 4
+            }
+          },
+          "then": "batch_3",
+          "x-base44": {
+            "title": "Backup batch 3 of 4",
+            "description": "Entities 60-89 \u2192 Drive"
+          }
+        }
+      },
+      {
+        "batch_3": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "driveSystemBackup",
+            "args": {
+              "action": "backup",
+              "batchIndex": 3,
+              "totalBatches": 4
             }
           },
           "then": "end",
           "x-base44": {
-            "title": "Push all entities to Drive",
-            "description": "JSON + CSV backup of every entity"
+            "title": "Backup batch 4 of 4 + manifest",
+            "description": "Entities 90-117 \u2192 Drive"
           }
         }
       }
