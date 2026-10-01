@@ -19,4 +19,7 @@ check('candidate heartbeat is 5 minutes', scheduler.candidate_scheduler.schedule
 check('vercel has one cron', Array.isArray(vercel.crons) && vercel.crons.length === 1);
 check('vercel cron path is canonical', vercel.crons?.[0]?.path === '/api/cron/auto-builder');
 check('vercel cron cadence is 5 minutes', vercel.crons?.[0]?.schedule === '*/5 * * * *');
+const cloudValidator = fs.readFileSync('runtime/cloud-validator.mjs', 'utf8');
+check('preview validator is explicitly non-release', cloudValidator.includes("status === 'PASS'") && cloudValidator.includes('release_eligible'));
+check('production still requires strict PASS', cloudValidator.includes("new Set(['PASS'])"));
 if (failed) process.exit(1);

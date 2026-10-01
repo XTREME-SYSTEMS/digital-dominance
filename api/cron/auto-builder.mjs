@@ -3,7 +3,9 @@ import { validateCloudCycle } from '../../runtime/cloud-validator.mjs';
 async function probe(url, expectedStatuses) {
   try {
     const res = await fetch(url, { method: 'GET', redirect: 'manual', cache: 'no-store' });
-    return { url, status: res.status, ok: expectedStatuses.includes(res.status) };
+    const location = res.headers.get('location') || '';
+    const protectedByVercel = res.status === 302 && /vercel\.com\/(sso-api|login)/i.test(location);
+    return { url, status: res.status, ok: expectedStatuses.includes(res.status), protected_by_vercel: protectedByVercel };
   } catch (error) {
     return { url, status: 0, ok: false, error: error.message };
   }
@@ -27,10 +29,17 @@ export default async function handler(req, res) {
     probe(`${origin}/sitemap.xml`, [200]),
   ]);
 
+  const preview = env === 'preview';
+  const previewAcceptable = (p) => p.ok || (preview && p.protected_by_vercel);
+  const runtimeStatus = probes[0].ok ? 'PASS' : (preview && probes[0].protected_by_vercel ? 'PASS_PREVIEW' : 'FAIL');
+  const seoStrict = probes.slice(1).every((p) => p.ok);
+  const seoPreviewAcceptable = probes.slice(1).every(previewAcceptable);
+  const seoStatus = seoStrict ? 'PASS' : (preview && seoPreviewAcceptable ? 'PASS_PREVIEW' : 'FAIL');
+
   const steps = [
     { name: 'source_truth', status: process.env.VERCEL_GIT_COMMIT_SHA ? 'PASS' : (dryRun ? 'PASS' : 'FAIL'), evidence: { sha: process.env.VERCEL_GIT_COMMIT_SHA || 'preview-local' } },
-    { name: 'runtime_health', status: probes[0].ok ? 'PASS' : 'FAIL', evidence: probes[0] },
-    { name: 'seo_surface', status: probes.slice(1).every((p) => p.ok) ? 'PASS' : 'FAIL', evidence: probes.slice(1) },
+    { name: 'runtime_health', status: runtimeStatus, evidence: probes[0] },
+    { name: 'seo_surface', status: seoStatus, evidence: probes.slice(1) },
     { name: 'cleanup', status: 'PASS', evidence: { action: 'REPORT_ONLY', note: 'Cloud runtime is ephemeral; durable cleanup candidates are emitted, not destructively deleted.' } },
     { name: 'management', status: 'PASS', evidence: { heartbeat: '/api/cron/auto-builder', dry_run: dryRun, protected_actions: 'BLOCKED', unknown_risk: 'BLOCKED' } },
     { name: 'evolution', status: 'PASS', evidence: { mode: 'DRAFT_ONLY', note: 'Recommendations may be emitted; code/release mutation is forbidden.' } },
@@ -50,5 +59,5 @@ export default async function handler(req, res) {
   const validation = validateCloudCycle(receipt);
   receipt.validator = validation;
   console.log(JSON.stringify({ type: 'DIGITAL_DOMINANCE_HEARTBEAT_RECEIPT', ...receipt }));
-  return res.status(validation.status === 'PASS' ? 200 : 503).json(receipt);
+  return res.status(validation.status === 'FAIL' ? 503 : 200).json(receipt);
 }
