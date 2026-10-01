@@ -197,9 +197,189 @@
               "batchSize": 5
             }
           },
-          "then": "refresh_insights",
+          "then": "batch_10",
           "x-base44": {
             "title": "Scan batch 10/20"
+          }
+        }
+      },
+      {
+        "batch_10": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 10,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "batch_11",
+          "x-base44": {
+            "title": "Scan batch 11/20"
+          }
+        }
+      },
+      {
+        "batch_11": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 11,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "batch_12",
+          "x-base44": {
+            "title": "Scan batch 12/20"
+          }
+        }
+      },
+      {
+        "batch_12": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 12,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "batch_13",
+          "x-base44": {
+            "title": "Scan batch 13/20"
+          }
+        }
+      },
+      {
+        "batch_13": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 13,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "batch_14",
+          "x-base44": {
+            "title": "Scan batch 14/20"
+          }
+        }
+      },
+      {
+        "batch_14": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 14,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "batch_15",
+          "x-base44": {
+            "title": "Scan batch 15/20"
+          }
+        }
+      },
+      {
+        "batch_15": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 15,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "batch_16",
+          "x-base44": {
+            "title": "Scan batch 16/20"
+          }
+        }
+      },
+      {
+        "batch_16": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 16,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "batch_17",
+          "x-base44": {
+            "title": "Scan batch 17/20"
+          }
+        }
+      },
+      {
+        "batch_17": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 17,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "batch_18",
+          "x-base44": {
+            "title": "Scan batch 18/20"
+          }
+        }
+      },
+      {
+        "batch_18": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 18,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "batch_19",
+          "x-base44": {
+            "title": "Scan batch 19/20"
+          }
+        }
+      },
+      {
+        "batch_19": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "nearMeIntelligenceEngine",
+            "args": {
+              "action": "scanBatch",
+              "batchIndex": 19,
+              "totalBatches": 20,
+              "batchSize": 5
+            }
+          },
+          "then": "refresh_insights",
+          "x-base44": {
+            "title": "Scan batch 20/20"
           }
         }
       },
@@ -222,7 +402,7 @@
       }
     ]
   },
-  "description": "Daily autonomous scan: seeds geographies, checks nearme.com/nearyou.com domains, finds businesses, pulls keywords, generates strategic plans \u2014 all saved to Google Drive. Runs at 3 AM ET in 20 batches of 5 geographies each.",
+  "description": "Daily autonomous scan: seeds geographies, checks nearme.com/nearyou.com domains, finds businesses, pulls keywords, generates strategic plans — all saved to Google Drive. Runs at 3 AM ET in 20 batches of 5 geographies each.",
   "name": "Daily NearMe Intelligence Scan",
   "trigger": {
     "condition": null,

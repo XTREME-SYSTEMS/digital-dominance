@@ -39,6 +39,27 @@ const AGENTS = [
 ];
 
 const PRIORITY_ORDER = { critical: 0, high: 1, normal: 2, low: 3 };
+const SAFE_AUTONOMOUS_RISK_CLASSES = new Set(['READ', 'DRAFT', 'BRANCH_WRITE', 'TEST', 'INTERNAL_MAINTENANCE']);
+
+// Governance: protected, unknown, or legacy work never runs autonomously.
+// Discovery/queueing may continue, but execution fails closed without an
+// explicit safe risk class or a separately verified operator approval.
+const PROTECTED_TASK_TYPES = new Set([
+  'social_publish',
+  'comms_send',
+  'lead_followup',
+  'site_deploy',
+  'production_deploy',
+  'customer_message',
+  'public_publish',
+]);
+
+function taskNeedsOperatorApproval(task: any): boolean {
+  const params = task?.payload?.params || {};
+  const riskClass = String(params.risk_class || '').toUpperCase();
+  if (PROTECTED_TASK_TYPES.has(task?.task_type) || params.approval_required === true) return true;
+  return !SAFE_AUTONOMOUS_RISK_CLASSES.has(riskClass);
+}
 
 async function logSop(svc, action, description, detail) {
   await svc.entities.SopLog.create({
@@ -143,7 +164,7 @@ export default async function (req: Request): Promise<Response> {
           created_by_agent: 'swarm_orchestrator',
           priority: newLeads.length > 5 ? 'high' : 'normal',
           status: 'pending',
-          payload: { lead_ids: newLeads.map((l) => l.id) },
+          payload: { lead_ids: newLeads.map((l) => l.id), params: { approval_required: true, approval_class: 'CUSTOMER_MESSAGE', risk_class: 'PROTECTED' } },
           spawned_tasks: [],
         });
         spawned.push(task.id);
@@ -160,7 +181,7 @@ export default async function (req: Request): Promise<Response> {
           created_by_agent: 'swarm_orchestrator',
           priority: 'normal',
           status: 'pending',
-          payload: { template_ids: undeployed.map((t) => t.id) },
+          payload: { template_ids: undeployed.map((t) => t.id), params: { approval_required: true, approval_class: 'PRODUCTION_RELEASE', risk_class: 'PROTECTED' } },
           spawned_tasks: [],
         });
         spawned.push(task.id);
@@ -176,7 +197,7 @@ export default async function (req: Request): Promise<Response> {
           created_by_agent: 'swarm_orchestrator',
           priority: 'low',
           status: 'pending',
-          payload: { post_ids: socialPosts.map((p) => p.id) },
+          payload: { post_ids: socialPosts.map((p) => p.id), params: { approval_required: true, approval_class: 'PUBLIC_PUBLISH', risk_class: 'PROTECTED' } },
           spawned_tasks: [],
         });
         spawned.push(task.id);
@@ -194,7 +215,7 @@ export default async function (req: Request): Promise<Response> {
           created_by_agent: 'swarm_orchestrator',
           priority: 'high',
           status: 'pending',
-          payload: { appointment_ids: upcomingAppts.map((a) => a.id) },
+          payload: { appointment_ids: upcomingAppts.map((a) => a.id), params: { approval_required: true, approval_class: 'CUSTOMER_MESSAGE', risk_class: 'PROTECTED' } },
           spawned_tasks: [],
         });
         spawned.push(task.id);
@@ -213,6 +234,10 @@ export default async function (req: Request): Promise<Response> {
       if (!task) return Response.json({ error: 'Task not found' }, { status: 404 });
       if (task.status === 'completed' || task.status === 'in_progress') {
         return Response.json({ ok: true, skipped: true, reason: `already ${task.status}` });
+      }
+      if (taskNeedsOperatorApproval(task)) {
+        await logSop(svc, 'protected_task_blocked', `Approval required: ${task.title}`, JSON.stringify({ task_id: task.id, task_type: task.task_type }));
+        return Response.json({ ok: false, blocked: true, reason: 'PROTECTED_OR_UNCLASSIFIED_ACTION_REQUIRES_APPROVAL', task_id: task.id }, { status: 409 });
       }
 
       // Claim the task
@@ -242,7 +267,7 @@ export default async function (req: Request): Promise<Response> {
           ``,
           `Payload: ${JSON.stringify(task.payload || {})}`,
           ``,
-          `Execute this task now using your available tools. When done, provide a clear summary of what you did and the outcome.`,
+          `Execute only READ, DRAFT, BRANCH_WRITE, TEST, or INTERNAL_MAINTENANCE work. Do not deploy production, publish publicly, contact customers, modify secrets/DNS/payments/permissions, or perform destructive actions without a scoped approval receipt. Return evidence and do not self-certify validation.`,
         ].join('\n');
 
         await base44.agents.addMessage(conversation, { role: 'user', content: messageContent });
@@ -275,10 +300,13 @@ export default async function (req: Request): Promise<Response> {
       const maxDispatch = body.max_dispatch || 5;
       const pending = await svc.entities.SwarmTask.filter({ status: 'pending' }, '-created_date', 100);
 
-      // Sort by priority
-      pending.sort((a, b) => (PRIORITY_ORDER[a.priority] || 2) - (PRIORITY_ORDER[b.priority] || 2));
+      // Fail closed for protected or unclassified legacy actions. They remain queued for operator review.
+      const protectedPending = pending.filter(taskNeedsOperatorApproval);
+      const eligiblePending = pending.filter((t) => !taskNeedsOperatorApproval(t));
 
-      const toDispatch = pending.slice(0, maxDispatch);
+      eligiblePending.sort((a, b) => (PRIORITY_ORDER[a.priority] || 2) - (PRIORITY_ORDER[b.priority] || 2));
+
+      const toDispatch = eligiblePending.slice(0, maxDispatch);
       const dispatched = [];
 
       for (const task of toDispatch) {
@@ -317,6 +345,8 @@ export default async function (req: Request): Promise<Response> {
 
           dispatched.push({
             task_id: task.id,
+            task_type: task.task_type,
+            risk_class: String(task?.payload?.params?.risk_class || '').toUpperCase(),
             title: task.title,
             agent: task.assigned_agent,
             conversation_id: conversation.id,
@@ -336,6 +366,9 @@ export default async function (req: Request): Promise<Response> {
         ok: true,
         cycle_complete: true,
         pending_count: pending.length,
+        eligible_count: eligiblePending.length,
+        protected_blocked_count: protectedPending.length,
+        protected_blocked: protectedPending.map((t) => ({ id: t.id, task_type: t.task_type, title: t.title })),
         dispatched_count: dispatched.length,
         dispatched,
       });
@@ -521,7 +554,17 @@ export default async function (req: Request): Promise<Response> {
           created_by_agent: 'swarm_orchestrator',
           priority: f.severity === 'critical' ? 'critical' : 'high',
           status: 'pending',
-          payload: { cycle_id: cycleId, audit_type: f.audit_type },
+          payload: {
+            cycle_id: cycleId,
+            audit_type: f.audit_type,
+            params: (() => {
+              if (f.audit_type === 'lead_pipeline') return { approval_required: true, approval_class: 'CUSTOMER_MESSAGE', risk_class: 'PROTECTED' };
+              if (f.audit_type === 'site_health') return { approval_required: true, approval_class: 'PRODUCTION_RELEASE', risk_class: 'PROTECTED' };
+              if (f.audit_type === 'content') return { approval_required: true, approval_class: 'PUBLIC_PUBLISH', risk_class: 'PROTECTED' };
+              if (f.audit_type === 'seo' || f.audit_type === 'aeo') return { approval_required: false, risk_class: 'DRAFT' };
+              return { approval_required: false, risk_class: 'INTERNAL_MAINTENANCE' };
+            })(),
+          },
           spawned_tasks: [],
         }).catch(() => {});
       }
@@ -564,13 +607,13 @@ export default async function (req: Request): Promise<Response> {
             fixResult = `Enriched ${Math.min(leadIds.length, 3)} stale leads`;
           } else if (audit.audit_type === 'lead_pipeline' && fixAction.includes('followup')) {
             // Trigger follow-up emails for new leads
-            try { await base44.functions.invoke('sendFollowUpEmail', {}); fixResult = 'Triggered follow-up email batch'; } catch (e: any) { fixResult = `Follow-up failed: ${e.message}`; }
+            fixResult = 'Approval required — customer follow-up batch was NOT sent'; escalated.push(audit.id);
           } else if (audit.audit_type === 'lead_pipeline' && fixAction.includes('reminders')) {
             // Appointment reminders — spawn comms task
             fixResult = 'Spawned reminder task to comms_manager';
           } else if (audit.audit_type === 'content' && fixAction.includes('publish')) {
             // Publish draft social posts
-            try { await base44.functions.invoke('socialStudio', { action: 'publishBatch' }); fixResult = 'Published draft social posts'; } catch (e: any) { fixResult = `Social publish failed: ${e.message}`; }
+            fixResult = 'Approval required — draft social posts were NOT published'; escalated.push(audit.id);
           } else if (audit.audit_type === 'content' && fixAction.includes('generate')) {
             // Generate fresh social content
             try { await base44.functions.invoke('socialStudio', { action: 'generate' }); fixResult = 'Generated fresh social content'; } catch (e: any) { fixResult = `Social gen failed: ${e.message}`; }
@@ -741,19 +784,19 @@ export default async function (req: Request): Promise<Response> {
           created_by_agent: 'swarm_orchestrator',
           priority: 'high',
           status: 'pending',
-          payload: { page_ids: pagesNeedingFaq.map((p) => p.id), optimization_type: 'aeo' },
+          payload: { page_ids: pagesNeedingFaq.map((p) => p.id), optimization_type: 'aeo', params: { approval_required: false, risk_class: 'DRAFT' } },
           spawned_tasks: [],
         }).catch(() => {});
         optimizations.push({ action: 'faq_schema', pages_needing: pagesNeedingFaq.length, status: 'task_spawned' });
       }
 
-      // 3. Submit updated content to AI indexers
-      try {
-        await base44.functions.invoke('submitToIndexers', { type: 'ai' }).catch(() => {});
-        optimizations.push({ action: 'ai_indexer_submission', status: 'submitted' });
-      } catch (e: any) {
-        optimizations.push({ action: 'ai_indexer_submission', status: 'failed', error: e.message });
-      }
+      // 3. Public indexer submission is protected. Emit an approval candidate only.
+      optimizations.push({
+        action: 'ai_indexer_submission',
+        status: 'approval_required',
+        approval_class: 'PUBLIC_PUBLISH',
+        executed: false,
+      });
 
       await logSop(svc, 'swarm_auto_optimize_aeo', `AEO: ${optimizations.length} optimizations`, JSON.stringify(optimizations));
       return Response.json({ ok: true, optimizations_run: optimizations.length, optimizations });
@@ -763,6 +806,7 @@ export default async function (req: Request): Promise<Response> {
     // audit → fix → heal → harden → optimize AEO → health check → dispatch
     if (action === 'autoCycle') {
       const cycleStart = Date.now();
+      const cycleId = `cycle_${new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14)}`;
       const steps: any[] = [];
 
       // Step 1: Audit
@@ -807,12 +851,28 @@ export default async function (req: Request): Promise<Response> {
         steps.push({ step: 'dispatch', result: cycleRes.data });
       } catch (e: any) { steps.push({ step: 'dispatch', error: e.message }); }
 
+      // Step 8: independent postcondition validator. The orchestrator cannot certify itself.
+      let validatorStatus = 'FAIL';
+      try {
+        const validatorRes = await base44.functions.invoke('swarmCycleValidator', { cycle_id: cycleId, steps });
+        validatorStatus = validatorRes.data?.status || 'FAIL';
+        steps.push({ step: 'validator', result: validatorRes.data });
+      } catch (e: any) {
+        steps.push({ step: 'validator', error: e.message });
+      }
+
       const duration = Date.now() - cycleStart;
-      await logSop(svc, 'swarm_auto_cycle', `Full autonomous cycle completed in ${duration}ms`, JSON.stringify(steps.map((s) => s.step)));
+      await logSop(svc, 'swarm_auto_cycle', `Cycle ${cycleId} completed in ${duration}ms with validator=${validatorStatus}`, JSON.stringify(steps.map((s) => s.step)));
+
+      if (validatorStatus !== 'PASS') {
+        return Response.json({ ok: false, cycle_complete: false, cycle_id: cycleId, validator_status: validatorStatus, duration_ms: duration, steps }, { status: 409 });
+      }
 
       return Response.json({
         ok: true,
         cycle_complete: true,
+        cycle_id: cycleId,
+        validator_status: validatorStatus,
         duration_ms: duration,
         steps,
       });

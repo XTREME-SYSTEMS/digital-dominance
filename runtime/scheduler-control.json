@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "mode": "STAGED_CUTOVER",
+  "authoritative_scheduler": {
+    "provider": "base44",
+    "name": "Swarm Autopilot",
+    "schedule": "*/30 * * * *",
+    "active": true,
+    "note": "Existing live scheduler remains authoritative until an approved production cutover."
+  },
+  "candidate_scheduler": {
+    "provider": "vercel",
+    "path": "/api/cron/auto-builder",
+    "schedule": "*/5 * * * *",
+    "active": false,
+    "note": "Branch/preview candidate only. Activate only in the same approved change that disables the Base44 heartbeat."
+  },
+  "rules": {
+    "max_active_heartbeat_schedulers": 1,
+    "validator_required_after_every_cycle": true,
+    "protected_actions_require_operator_approval": true,
+    "unknown_risk_fails_closed": true,
+    "self_certification_forbidden": true,
+    "evolution_mode": "DRAFT_ONLY"
+  }
+}
