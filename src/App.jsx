@@ -94,6 +94,7 @@ import PipelineBuilder from '@/pages/admin/PipelineBuilder';
 import MasterPipeline from '@/pages/admin/MasterPipeline';
 import SystemIndependence from '@/pages/admin/SystemIndependence';
 import DriveBackup from '@/pages/admin/DriveBackup';
+import NearMeIntelligence from '@/pages/admin/NearMeIntelligence';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -288,6 +289,7 @@ const AuthenticatedApp = () => {
         <Route path="master-pipeline" element={<MasterPipeline />} />
         <Route path="independence" element={<SystemIndependence />} />
         <Route path="drive-backup" element={<DriveBackup />} />
+        <Route path="nearme-intelligence" element={<NearMeIntelligence />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
