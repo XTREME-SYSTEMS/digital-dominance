@@ -1,0 +1,48 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 6 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Daily Domain Operations",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_domain_ops",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "process_batch": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "domainOperationsAgent",
+            "args": {
+              "action": "processBatch",
+              "batchSize": 5
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Process domain batch",
+            "description": "Run full pipeline for 5 due domains"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Strategic Insights agent \u2014 autonomously processes all registered domains through the full pipeline (Search Console, Analytics, sitemaps, competitors, site health) every day at 6 AM ET"
+}

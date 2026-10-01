@@ -96,6 +96,7 @@ import SystemIndependence from '@/pages/admin/SystemIndependence';
 import DriveBackup from '@/pages/admin/DriveBackup';
 import NearMeIntelligence from '@/pages/admin/NearMeIntelligence';
 import SystemPerformance from '@/pages/admin/SystemPerformance';
+import DomainOperations from '@/pages/admin/DomainOperations';
 import OwnerDashboard from '@/pages/admin/OwnerDashboard';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
@@ -294,6 +295,7 @@ const AuthenticatedApp = () => {
         <Route path="drive-backup" element={<DriveBackup />} />
         <Route path="nearme-intelligence" element={<NearMeIntelligence />} />
         <Route path="system-performance" element={<SystemPerformance />} />
+        <Route path="domain-operations" element={<DomainOperations />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />

@@ -12,6 +12,7 @@ const navGroups = [
       { to: "/admin", end: true, icon: Sparkles, label: "Owner Dashboard" },
       { to: "/admin/nearme-intelligence", icon: Globe, label: "NearMe Intelligence" },
       { to: "/admin/system-performance", icon: Activity, label: "System Performance" },
+      { to: "/admin/domain-operations", icon: Globe, label: "Domain Operations Agent" },
       { to: "/admin/master-pipeline", icon: ListOrdered, label: "Master Pipeline" },
       { to: "/admin/independence", icon: Shield, label: "System Independence" },
       { to: "/admin/pipeline-builder", icon: Zap, label: "Pipeline Builder" },
