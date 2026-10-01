@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { LayoutDashboard, Users, KanbanSquare, Settings, ExternalLink, Mail, Radar, Globe, ScrollText, Star, Wrench, Factory, Smartphone, Rocket, Layers, Layout, UserCircle, TrendingUp, MessageSquare, Brain, Target, BarChart3, Package, Bot, KeyRound, Share2, Wand2, MapPin, Network, Crown, Building2, Code2, Heart, PhoneCall, Activity, ListOrdered, Database, Workflow, Gauge, Cpu, Sparkles, Boxes, BookOpen, Eye, EyeOff, Zap, Shield, Compass, Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Users, KanbanSquare, Settings, ExternalLink, Mail, Radar, Globe, ScrollText, Star, Wrench, Factory, Smartphone, Rocket, Layers, Layout, UserCircle, TrendingUp, MessageSquare, Brain, Target, BarChart3, Package, Bot, KeyRound, Share2, Wand2, MapPin, Network, Crown, Building2, Code2, Heart, PhoneCall, Activity, ListOrdered, Database, Workflow, Gauge, Cpu, Sparkles, Boxes, BookOpen, Eye, EyeOff, Zap, Shield, Compass, Menu, X, ChevronDown, ChevronRight, HardDrive } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { XTREME_AI_ICON_URL } from "@/components/Logo";
 import AIAssistBubble from "@/components/ai-assist/AIAssistBubble";
@@ -110,6 +110,7 @@ const navGroups = [
       { to: "/admin/autocomplete", icon: Zap, label: "AutoComplete" },
       { to: "/portal", icon: UserCircle, label: "Client Portal" },
       { to: "/admin/settings", icon: Settings, label: "Settings" },
+      { to: "/admin/drive-backup", icon: HardDrive, label: "Drive Backup" },
     ],
   },
 ];

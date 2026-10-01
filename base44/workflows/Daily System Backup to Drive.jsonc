@@ -1,0 +1,47 @@
+{
+  "name": "Daily System Backup to Drive",
+  "description": "Exports every entity's records to Google Drive as JSON + CSV in a dated folder, daily at 2 AM ET",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_drive_backup",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_backup": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "driveSystemBackup",
+            "args": {
+              "action": "backup"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Push all entities to Drive",
+            "description": "JSON + CSV backup of every entity"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 2 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}
