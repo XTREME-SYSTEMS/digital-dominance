@@ -1,0 +1,7 @@
+{
+  "type": "google_classroom",
+  "scopes": [
+    "https://www.googleapis.com/auth/classroom.courses.readonly",
+    "email"
+  ]
+}
