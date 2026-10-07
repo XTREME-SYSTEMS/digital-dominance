@@ -27,6 +27,62 @@ function authenticateToken(req: Request): boolean {
   return false;
 }
 
+const ALLOWED_BRAND_IDS = new Set([
+  "xtremepolishingsystems",
+  "nationalconcretepolishing",
+  "polishedconcreteuniversity",
+  "custom_contractor",
+]);
+
+const ALLOWED_CATEGORIES = new Set([
+  "homepage",
+  "landing_page",
+  "service_page",
+  "location_page",
+  "funnel",
+  "gallery",
+  "about",
+  "contact",
+  "cost_page",
+  "color_charts",
+  "blog_post",
+  "full_site",
+]);
+
+const ALLOWED_NICHES = new Set([
+  "epoxy_garage",
+  "decorative_concrete",
+  "polished_concrete",
+  "epoxy_flooring",
+  "garage_coating",
+  "concrete_resurfacing",
+  "general_contractor",
+]);
+
+function allowedOrFallback(value: string | undefined, allowed: Set<string>, fallback: string): string {
+  return value && allowed.has(value) ? value : fallback;
+}
+
+function compactHtml(input: string): string {
+  return input
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/>\s+</g, "><")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function incrementPatch(version: string | undefined): string {
+  const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(version || "");
+  if (!match) return "1.0.1";
+  return `${match[1]}.${match[2]}.${Number(match[3]) + 1}`;
+}
+
+async function sha256(value: string): Promise<string> {
+  const bytes = new TextEncoder().encode(value);
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 // Translate GPT pack format → BrandTemplate schema
 function translatePack(pack: any) {
   const brandConfig = pack.brand_config || pack.brandConfig || {};
@@ -49,11 +105,12 @@ function translatePack(pack: any) {
   }));
 
   const fullHtml = pack.preview_html || pack.previewHtml || "";
+  const compactPreview = compactHtml(fullHtml);
 
   return {
     template_key: pack.template_key || pack.templateKey,
     name: pack.name || pack.template_name || "Synced Pack",
-    brand_id: pack.brand_id || pack.brandId || "custom_contractor",
+    brand_id: allowedOrFallback(pack.brand_id || pack.brandId, ALLOWED_BRAND_IDS, "custom_contractor"),
     brand_config: {
       brand_name: brandConfig.brand_name || brandConfig.brandName || pack.name || "",
       domain: brandConfig.domain || "",
@@ -67,12 +124,12 @@ function translatePack(pack: any) {
       phone: brandConfig.phone || "",
       tagline: brandConfig.tagline || "",
     },
-    category: pack.category || "homepage",
-    niche: pack.niche || "epoxy_garage",
+    category: allowedOrFallback(pack.category, ALLOWED_CATEGORIES, "homepage"),
+    niche: allowedOrFallback(pack.niche, ALLOWED_NICHES, "general_contractor"),
     sections,
     version: pack.version || "1.0.0",
     status: pack.status || "draft",
-    preview_html: fullHtml.slice(0, 30000),
+    preview_html: compactPreview.slice(0, 30000),
     notes: `Synced from GPT via packSync. Pack type: ${pack.pack_type || "webpack"}`.slice(0, 2000),
   };
 }
