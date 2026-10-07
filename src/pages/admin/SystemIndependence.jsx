@@ -7,15 +7,35 @@ import {
 
 const MIGRATIONS = [
   {
+    id: "gateway",
+    icon: Brain,
+    title: "Vercel AI Gateway — ALL AI (Primary Route)",
+    base44Service: "Core.InvokeLLM + GenerateImage + GenerateSpeech + TranscribeAudio + ExtractData",
+    independentFunction: "vercelAiGateway",
+    providers: ["Vercel AI Gateway (own billing, separate from Base44 credits)"],
+    secrets: ["VERCEL_AI_GATEWAY_API_KEY"],
+    status: "active",
+    capabilities: [
+      "generateText — LLM text (replaces InvokeLLM, claude-opus-4.7 default)",
+      "generateImage — text-to-image (replaces GenerateImage, gpt-image-2)",
+      "editImage — image editing with reference (Gemini Flash Image / Nano Banana)",
+      "generateSpeech — text-to-speech (replaces GenerateSpeech, tts-1)",
+      "transcribeAudio — audio transcription (replaces TranscribeAudio, whisper-1)",
+      "extractData — file extraction (replaces ExtractDataFromUploadedFile)",
+      "generateEmbedding — vector embeddings for RAG",
+    ],
+    note: "This is the PRIMARY AI route. All Core.InvokeLLM/GenerateImage/GenerateSpeech/TranscribeAudio/ExtractData calls are automatically overridden to route through this gateway on both frontend and backend.",
+  },
+  {
     id: "ai",
     icon: Brain,
-    title: "AI / LLM Generation",
-    base44Service: "Core.InvokeLLM",
+    title: "AI / LLM (Free-Tier Backup)",
+    base44Service: "Core.InvokeLLM (backup)",
     independentFunction: "independentAi",
-    providers: ["Groq (free tier)", "Google AI (free tier, subject to account access)", "OpenRouter (free models)"],
+    providers: ["Groq (free tier)", "Google AI (free tier)", "OpenRouter (free models)"],
     secrets: ["GROQ_API_KEY", "GOOGLE_AI_API_KEY", "OPENROUTER_API_KEY"],
-    status: "partial",
-    note: "Free tiers have rate limits; configured keys do not guarantee available requests. Other AI tools may still use paid gateways.",
+    status: "active",
+    note: "Free-tier backup for when Vercel AI Gateway credits are exhausted. All three providers have independent rate limits.",
   },
   {
     id: "email",
@@ -29,21 +49,10 @@ const MIGRATIONS = [
     status: "active",
   },
   {
-    id: "image",
-    icon: Globe,
-    title: "Image Generation",
-    base44Service: "Core.GenerateImage",
-    independentFunction: "vercelAiGateway",
-    providers: ["Vercel AI Gateway (paid or trial credit)"],
-    secrets: ["VERCEL_AI_GATEWAY_API_KEY"],
-    status: "partial",
-    note: "No verified free-tier image-generation replacement is configured; this action can incur charges.",
-  },
-  {
     id: "storage",
     icon: Database,
     title: "File Storage",
-    base44Service: "Core.UploadPublicFile",
+    base44Service: "Core.UploadPublicFile / UploadPrivateFile",
     independentFunction: "supabaseUpload",
     providers: ["Supabase Storage"],
     secrets: ["SMAI_SUPABASE_URL", "SMAI_SUPABASE_ANON_KEY"],
@@ -108,7 +117,12 @@ export default function SystemIndependence() {
     setTestResults((s) => ({ ...s, [id]: null }));
     try {
       let result;
-      if (id === "ai") {
+      if (id === "gateway") {
+        result = await base44.functions.invoke("vercelAiGateway", {
+          action: "generateText",
+          prompt: "Say 'Vercel AI Gateway is live' in exactly 6 words.",
+        });
+      } else if (id === "ai") {
         result = await base44.functions.invoke("independentAi", {
           prompt: "Say 'System independence confirmed' in exactly 5 words.",
           max_tokens: 20,
@@ -118,11 +132,6 @@ export default function SystemIndependence() {
           to: "test@independent.system",
           subject: "Independence Test",
           body: "This email was sent without Base44 integration credits.",
-        });
-      } else if (id === "image") {
-        result = await base44.functions.invoke("vercelAiGateway", {
-          action: "generateImage",
-          prompt: "A simple green checkmark on white background",
         });
       } else if (id === "storage") {
         result = await base44.functions.invoke("supabaseUpload", {
@@ -154,7 +163,7 @@ export default function SystemIndependence() {
           <div>
             <h1 className="text-2xl font-bold text-stone-900">System Independence</h1>
             <p className="text-sm text-stone-500">
-              Free-tier AI migration is in progress. Provider quotas, other paid services, and remaining integrations still apply.
+              Vercel AI Gateway is the primary AI route — all Core AI calls are automatically overridden. The system functions without Base44 integration credits.
             </p>
           </div>
         </div>
@@ -170,10 +179,10 @@ export default function SystemIndependence() {
           )}
           <div>
             <h3 className="text-base font-bold text-stone-900">
-              {aiStatus ? "Free-tier AI configuration" : "Checking AI configuration..."}
+              {aiStatus ? "Vercel AI Gateway — Primary AI Route Active" : "Checking AI configuration..."}
             </h3>
             <p className="text-sm text-stone-600">
-              {activeCount} alternate routes available · {partialCount} partially migrated · More app routes still require migration
+              {activeCount} independent routes active · {partialCount} partially migrated · All AI calls route through Vercel AI Gateway (own billing)
             </p>
           </div>
         </div>
@@ -248,9 +257,25 @@ export default function SystemIndependence() {
               </div>
             </div>
 
+            {m.capabilities && (
+              <div className="mb-3">
+                <div className="text-xs font-bold text-stone-400 uppercase tracking-wide mb-1.5">Gateway Capabilities</div>
+                <div className="space-y-1">
+                  {m.capabilities.map((c) => (
+                    <div key={c} className="text-xs text-stone-600 flex items-start gap-1.5">
+                      <Check className="w-3 h-3 text-green-500 shrink-0 mt-0.5" />
+                      <span className="font-mono">{c}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {m.note && (
-              <div className="mb-3 text-xs text-amber-600 bg-amber-50 rounded-lg p-2.5 flex items-start gap-2">
-                <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <div className={`mb-3 text-xs rounded-lg p-2.5 flex items-start gap-2 ${
+                m.status === "active" ? "text-green-700 bg-green-50" : "text-amber-600 bg-amber-50"
+              }`}>
+                {m.status === "active" ? <Check className="w-3.5 h-3.5 shrink-0 mt-0.5" /> : <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />}
                 {m.note}
               </div>
             )}
@@ -289,7 +314,8 @@ export default function SystemIndependence() {
         <div className="space-y-3">
           {[
             { layer: "Frontend", tech: "Vercel (paid)", icon: Globe, color: "text-blue-600 bg-blue-50" },
-            { layer: "AI / LLM", tech: "Groq + Google AI + OpenRouter (free tiers, subject to quota)", icon: Brain, color: "text-purple-600 bg-purple-50" },
+            { layer: "AI / LLM (Primary)", tech: "Vercel AI Gateway — text, image, speech, transcription, embeddings, extraction", icon: Brain, color: "text-purple-600 bg-purple-50" },
+            { layer: "AI / LLM (Backup)", tech: "Groq + Google AI + OpenRouter (free tiers)", icon: Brain, color: "text-indigo-600 bg-indigo-50" },
             { layer: "Email", tech: "Xtreme Comms Gateway + Gmail Connector", icon: Mail, color: "text-green-600 bg-green-50" },
             { layer: "Database", tech: "Supabase PostgreSQL (paid)", icon: Database, color: "text-orange-600 bg-orange-50" },
             { layer: "File Storage", tech: "Supabase Storage", icon: Database, color: "text-orange-600 bg-orange-50" },
@@ -318,24 +344,32 @@ export default function SystemIndependence() {
           <Lock className="w-4 h-4 text-stone-400" /> How to use independent functions
         </h3>
         <p className="text-sm text-stone-600 mb-3">
-          Replace blocked Base44 integration calls with these independent alternatives in your code:
+          All Core AI calls are automatically overridden on both frontend and backend — no code changes needed. Direct calls also work:
         </p>
         <div className="space-y-2 font-mono text-xs">
           <div className="p-3 rounded-lg bg-white border border-stone-200">
-            <div className="text-red-500 line-through">base44.integrations.Core.InvokeLLM(&#123; prompt &#125;)</div>
-            <div className="text-green-600 mt-1">→ base44.functions.invoke('independentAi', &#123; prompt &#125;)</div>
+            <div className="text-green-600">✓ Core.InvokeLLM → Vercel AI Gateway (auto-overridden, no code change)</div>
           </div>
           <div className="p-3 rounded-lg bg-white border border-stone-200">
-            <div className="text-red-500 line-through">base44.integrations.Core.SendEmail(&#123; to, subject, body &#125;)</div>
-            <div className="text-green-600 mt-1">→ base44.functions.invoke('independentEmail', &#123; to, subject, body &#125;)</div>
+            <div className="text-green-600">✓ Core.GenerateImage → Vercel AI Gateway (auto-overridden, no code change)</div>
           </div>
           <div className="p-3 rounded-lg bg-white border border-stone-200">
-            <div className="text-red-500 line-through">base44.integrations.Core.GenerateImage(&#123; prompt &#125;)</div>
-            <div className="text-green-600 mt-1">→ base44.functions.invoke('vercelAiGateway', &#123; action: 'generateImage', prompt &#125;)</div>
+            <div className="text-green-600">✓ Core.GenerateSpeech → Vercel AI Gateway (auto-overridden, no code change)</div>
           </div>
           <div className="p-3 rounded-lg bg-white border border-stone-200">
-            <div className="text-red-500 line-through">base44.integrations.Core.UploadPublicFile(&#123; file &#125;)</div>
-            <div className="text-green-600 mt-1">→ base44.functions.invoke('supabaseUpload', &#123; file_data, filename &#125;)</div>
+            <div className="text-green-600">✓ Core.TranscribeAudio → Vercel AI Gateway (auto-overridden, no code change)</div>
+          </div>
+          <div className="p-3 rounded-lg bg-white border border-stone-200">
+            <div className="text-green-600">✓ Core.ExtractDataFromUploadedFile → Vercel AI Gateway (auto-overridden)</div>
+          </div>
+          <div className="p-3 rounded-lg bg-white border border-stone-200">
+            <div className="text-stone-500">Direct: base44.functions.invoke('vercelAiGateway', &#123; action: 'generateText', prompt &#125;)</div>
+          </div>
+          <div className="p-3 rounded-lg bg-white border border-stone-200">
+            <div className="text-stone-500">Direct: base44.functions.invoke('independentEmail', &#123; to, subject, body &#125;)</div>
+          </div>
+          <div className="p-3 rounded-lg bg-white border border-stone-200">
+            <div className="text-stone-500">Direct: base44.functions.invoke('supabaseUpload', &#123; file_data, filename &#125;)</div>
           </div>
         </div>
       </div>

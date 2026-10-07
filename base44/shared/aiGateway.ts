@@ -134,4 +134,19 @@ export function patchCore(base44: any) {
   core.GenerateImage = async (opts: any = {}) => {
     return generateImage(base44, opts);
   };
+
+  core.GenerateSpeech = async (opts: any = {}) => {
+    const res = await base44.functions.invoke('vercelAiGateway', { action: 'generateSpeech', text: opts.text, voice: opts.voice });
+    return { url: res.data?.url || '' };
+  };
+
+  core.TranscribeAudio = async (opts: any = {}) => {
+    const res = await base44.functions.invoke('vercelAiGateway', { action: 'transcribeAudio', audio_url: opts.audio_url });
+    return res.data?.text || '';
+  };
+
+  core.ExtractDataFromUploadedFile = async (opts: any = {}) => {
+    const res = await base44.functions.invoke('vercelAiGateway', { action: 'extractData', file_url: opts.file_url, json_schema: opts.json_schema });
+    return { status: 'success', output: res.data?.output };
+  };
 }

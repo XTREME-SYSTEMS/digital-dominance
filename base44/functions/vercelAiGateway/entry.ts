@@ -271,12 +271,124 @@ export default async function(req: Request): Promise<Response> {
       return Response.json({ ok: true, embedding, dims: embedding.length, model: data.model });
     }
 
+    // ── generateSpeech: Text-to-speech (replaces Core.GenerateSpeech) ──
+    if (action === 'generateSpeech') {
+      const { text, voice, model } = body;
+      if (!text) return Response.json({ error: 'text required' }, { status: 400 });
+
+      const speechModel = model || 'openai/tts-1';
+      const payload: any = {
+        model: speechModel,
+        input: text,
+        response_format: 'url',
+      };
+      if (voice) payload.voice = voice;
+
+      const res = await fetch(`${GATEWAY_BASE}/audio/speech`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        return Response.json({ error: `AI Gateway speech error: ${err}`, status: res.status }, { status: 500 });
+      }
+
+      // The response may be a direct audio URL or audio bytes
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const data = await res.json();
+        return Response.json({ ok: true, url: data.url || data.audio_url || null, model: speechModel });
+      }
+      // If it's raw audio, upload to Supabase and return URL
+      const audioBuf = await res.arrayBuffer();
+      const b64 = btoa(String.fromCharCode(...new Uint8Array(audioBuf)));
+      const dataUrl = `data:audio/mp3;base64,${b64}`;
+      const uploadRes = await base44.functions.invoke('supabaseUpload', {
+        file_data: dataUrl,
+        filename: `ai-speech-${Date.now()}.mp3`,
+        content_type: 'audio/mpeg',
+      });
+      return Response.json({ ok: true, url: uploadRes.data?.file_url || null, model: speechModel });
+    }
+
+    // ── transcribeAudio: Audio transcription (replaces Core.TranscribeAudio) ──
+    if (action === 'transcribeAudio') {
+      const { audio_url, model } = body;
+      if (!audio_url) return Response.json({ error: 'audio_url required' }, { status: 400 });
+
+      // Fetch the audio file, then send it to the gateway
+      const audioRes = await fetch(audio_url);
+      if (!audioRes.ok) return Response.json({ error: 'Failed to fetch audio file' }, { status: 500 });
+      const audioBlob = await audioRes.blob();
+
+      const formData = new FormData();
+      formData.append('model', model || 'openai/whisper-1');
+      formData.append('file', audioBlob, 'audio.mp3');
+
+      const res = await fetch(`${GATEWAY_BASE}/audio/transcriptions`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${apiKey}` },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        return Response.json({ error: `AI Gateway transcription error: ${err}`, status: res.status }, { status: 500 });
+      }
+
+      const data = await res.json();
+      const transcript = data.text || '';
+      return Response.json({ ok: true, text: transcript, model: data.model });
+    }
+
+    // ── extractData: Extract structured data from a file (replaces Core.ExtractDataFromUploadedFile) ──
+    if (action === 'extractData') {
+      const { file_url, json_schema, prompt } = body;
+      if (!file_url || !json_schema) return Response.json({ error: 'file_url and json_schema required' }, { status: 400 });
+
+      const extractPrompt = prompt || 'Extract the data from this file into the specified JSON schema. Return only valid JSON.';
+      const payload = {
+        model: 'anthropic/claude-opus-4.7',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: `${extractPrompt}\n\nReturn JSON matching this schema:\n${JSON.stringify(json_schema)}` },
+              { type: 'file_url', file_url: { url: file_url } },
+            ],
+          },
+        ],
+        response_format: { type: 'json_schema', json_schema: { name: 'response', schema: json_schema } },
+      };
+
+      const res = await fetch(`${GATEWAY_BASE}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        return Response.json({ error: `AI Gateway extraction error: ${err}`, status: res.status }, { status: 500 });
+      }
+
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content || '';
+      let parsed: any = text;
+      try { parsed = JSON.parse(text); } catch { /* keep raw text */ }
+      return Response.json({ ok: true, output: parsed, text, model: data.model });
+    }
+
     // ── listModels: List available models (proxy to Vercel) ──
     if (action === 'listModels') {
-      const res = await fetch('https://vercel.com/ai-gateway/models', {
-        headers: { 'Authorization': `Bearer ${apiKey}` },
-      });
-      const html = await res.text();
       return Response.json({ ok: true, note: 'Visit https://vercel.com/ai-gateway/models to browse models' });
     }
 

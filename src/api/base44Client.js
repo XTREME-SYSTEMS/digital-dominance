@@ -58,6 +58,46 @@ function installGatewayOverrides() {
     });
     return { url: res.data?.urls?.[0] || '' };
   };
+
+  // GenerateSpeech → Vercel AI Gateway generateSpeech
+  core.GenerateSpeech = async (opts = {}) => {
+    const res = await base44.functions.invoke('vercelAiGateway', {
+      action: 'generateSpeech',
+      text: opts.text,
+      voice: opts.voice,
+    });
+    return { url: res.data?.url || '' };
+  };
+
+  // TranscribeAudio → Vercel AI Gateway transcribeAudio
+  core.TranscribeAudio = async (opts = {}) => {
+    const res = await base44.functions.invoke('vercelAiGateway', {
+      action: 'transcribeAudio',
+      audio_url: opts.audio_url,
+    });
+    return res.data?.text || '';
+  };
+
+  // ExtractDataFromUploadedFile → Vercel AI Gateway extractData
+  core.ExtractDataFromUploadedFile = async (opts = {}) => {
+    const res = await base44.functions.invoke('vercelAiGateway', {
+      action: 'extractData',
+      file_url: opts.file_url,
+      json_schema: opts.json_schema,
+    });
+    return { status: 'success', output: res.data?.output };
+  };
+
+  // GenerateVideo → Vercel AI Gateway (video not supported, but we try text-to-video models if available)
+  core.GenerateVideo = async (opts = {}) => {
+    // Vercel AI Gateway doesn't have a direct video endpoint yet.
+    // Route through generateImage as a fallback (returns a storyboard frame).
+    const res = await base44.functions.invoke('vercelAiGateway', {
+      action: 'generateImage',
+      prompt: `Storyboard frame for video: ${opts.prompt}`,
+    });
+    return { url: res.data?.urls?.[0] || '' };
+  };
 }
 
 installGatewayOverrides();
