@@ -142,6 +142,7 @@ import AutonomousRefactor from '@/pages/admin/AutonomousRefactor';
 import GeneratorSandbox from '@/pages/admin/GeneratorSandbox';
 import OpportunityIntelligence from '@/pages/admin/OpportunityIntelligence';
 import Contents from '@/pages/admin/Contents';
+import Capabilities from '@/pages/admin/Capabilities';
 import GoogleWorkspaceOS from '@/pages/admin/GoogleWorkspaceOS';
 import InternalArchitecture from '@/pages/admin/InternalArchitecture';
 import GoogleCommandCenter from '@/pages/admin/GoogleCommandCenter';
@@ -215,6 +216,7 @@ const AuthenticatedApp = () => {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<OpportunityIntelligence />} />
         <Route path="contents" element={<Contents />} />
+        <Route path="capabilities" element={<Capabilities />} />
         <Route path="opportunity-intelligence" element={<OpportunityIntelligence />} />
         <Route path="google-workspace-os" element={<GoogleWorkspaceOS />} />
         <Route path="internal-architecture" element={<InternalArchitecture />} />
