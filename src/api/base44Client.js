@@ -98,6 +98,53 @@ function installGatewayOverrides() {
     });
     return { url: res.data?.urls?.[0] || '' };
   };
+
+  // SendEmail → independentEmail function (bypasses Base44 email credits)
+  core.SendEmail = async (opts = {}) => {
+    const res = await base44.functions.invoke('independentEmail', {
+      to: opts.to,
+      subject: opts.subject,
+      body: opts.body,
+      html: opts.html,
+      text: opts.text,
+      template_id: opts.template_id,
+      template_name: opts.template_name,
+      variables: opts.variables,
+      from_name: opts.from_name,
+      attachments: opts.attachments,
+    });
+    return res.data;
+  };
+
+  // UploadPublicFile → supabaseUpload (bypasses Base44 storage credits, returns public URL)
+  core.UploadPublicFile = async (opts = {}) => {
+    const file = opts.file;
+    const dataUrl = await fileToDataUrl(file);
+    const ext = (file.name || 'file').split('.').pop() || 'bin';
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const res = await base44.functions.invoke('supabaseUpload', {
+      file_data: dataUrl,
+      filename: safeName,
+      content_type: file.type || 'application/octet-stream',
+      bucket: 'public',
+    });
+    return { file_url: res.data?.file_url };
+  };
+
+  // UploadPrivateFile → supabaseUpload (bypasses Base44 storage credits, returns private URI)
+  core.UploadPrivateFile = async (opts = {}) => {
+    const file = opts.file;
+    const dataUrl = await fileToDataUrl(file);
+    const ext = (file.name || 'file').split('.').pop() || 'bin';
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const res = await base44.functions.invoke('supabaseUpload', {
+      file_data: dataUrl,
+      filename: safeName,
+      content_type: file.type || 'application/octet-stream',
+      bucket: 'private',
+    });
+    return { file_uri: res.data?.file_uri || res.data?.file_url };
+  };
 }
 
 installGatewayOverrides();
