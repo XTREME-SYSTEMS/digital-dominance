@@ -101,14 +101,12 @@ export default function Contents() {
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["content-menu-items"],
-    queryFn: () => base44.entities.ContentMenuItem.filter({}, { sort: "order", limit: 500 })
-      .then((r) => (Array.isArray(r) ? r : r.items || [])),
+    queryFn: () => base44.entities.ContentMenuItem.list("order", 500),
   });
 
   const { data: categories = [], isLoading: catsLoading } = useQuery({
     queryKey: ["content-menu-categories"],
-    queryFn: () => base44.entities.ContentMenuCategory.filter({}, { sort: "order", limit: 100 })
-      .then((r) => (Array.isArray(r) ? r : r.items || [])),
+    queryFn: () => base44.entities.ContentMenuCategory.list("order", 100),
   });
 
   const categoryMap = useMemo(() => {
