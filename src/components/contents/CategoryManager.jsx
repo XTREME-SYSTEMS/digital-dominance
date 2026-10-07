@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
   Plus, Trash2, Pencil, GripVertical, X, Check, RefreshCw,
-  FolderTree, LayoutGrid,
+  FolderTree, LayoutGrid, Sparkles, Shield, Layers, Boxes, Package, Zap,
+  Globe, Crown, Wand2, Bot, Network, Gauge, Rocket, Wrench, Brain, Building2,
+  Cpu, Compass, Eye, EyeOff, Workflow, BookOpen, Users, KanbanSquare, Mail,
+  Star, Radar, MapPin, MessageSquare, Smartphone, PhoneCall, Share2,
+  BarChart3, Activity, KeyRound, Factory, Layout, ListOrdered, Code2,
+  TrendingUp, Heart, ScrollText, Database, Target, Settings, UserCircle,
+  Menu, Grid3x3, Bookmark, Flag, Tag, Hash, FolderPlus,
 } from "lucide-react";
 
 export const ICON_MAP = {
