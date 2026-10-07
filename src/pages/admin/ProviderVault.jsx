@@ -205,7 +205,13 @@ export default function ProviderVault() {
               providerKey={addingProvider}
               editing={editingEntry}
               onSave={async (payload) => {
-                await base44.entities.VaultEntry.upsert([payload], { key: "id" });
+                if (payload.id) {
+                  const { id, ...updates } = payload;
+                  await base44.entities.VaultEntry.update(id, updates);
+                } else {
+                  const { id, ...createData } = payload;
+                  await base44.entities.VaultEntry.create(createData);
+                }
                 queryClient.invalidateQueries({ queryKey: ["vault-entries"] });
                 setAddingProvider(null);
                 setEditingEntry(null);
