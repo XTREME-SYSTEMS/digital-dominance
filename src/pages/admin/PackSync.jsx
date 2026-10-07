@@ -11,9 +11,8 @@ export default function PackSync() {
   const loadPacks = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await base44.functions.invoke("packSync", { action: "list" });
-      const data = res.data || res;
-      setPacks(data.packs || []);
+      const page = await base44.entities.BrandTemplate.filter({}, { sort: "-updated_date", limit: 100 });
+      setPacks(page.items || []);
     } catch (e) {
       console.error("PackSync list failed:", e.message);
     }
@@ -22,12 +21,12 @@ export default function PackSync() {
 
   useEffect(() => { loadPacks(); }, [loadPacks]);
 
-  const deletePack = async (templateKey) => {
-    if (!confirm(`Delete pack "${templateKey}"?`)) return;
+  const deletePack = async (pack) => {
+    if (!confirm(`Delete pack "${pack.template_key}"?`)) return;
     try {
-      await base44.functions.invoke("packSync", { action: "delete", template_key: templateKey });
+      await base44.entities.BrandTemplate.delete(pack.id);
       loadPacks();
-      if (selected?.template_key === templateKey) setSelected(null);
+      if (selected?.id === pack.id) setSelected(null);
     } catch (e) {
       console.error("Delete failed:", e.message);
     }
@@ -59,7 +58,7 @@ export default function PackSync() {
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-black text-stone-900">GPT Pack Sync</h1>
             <p className="text-sm text-stone-600 mt-1">
-              GPT pushes webpacks, brand packs, and logo packs here. They're translated into BrandTemplate records with 99% visual parity.
+              GPT pushes webpacks, brand packs, logo packs, and app-pack manifests here. Sync preserves the source pack; parity is only PASS after visual and operational validation.
             </p>
           </div>
         </div>
@@ -124,7 +123,7 @@ export default function PackSync() {
                     {p.sections?.length > 0 && <span>{p.sections.length} sections</span>}
                   </div>
                 </div>
-                <button onClick={(e) => { e.stopPropagation(); deletePack(p.template_key); }} className="p-2 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50">
+                <button onClick={(e) => { e.stopPropagation(); deletePack(p); }} className="p-2 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
