@@ -14,7 +14,6 @@ const navGroups = [
       { to: "/admin/master-pipeline", icon: ListOrdered, label: "Master Pipeline" },
       { to: "/admin/provider-vault", icon: Shield, label: "Provider Vault" },
       { to: "/admin/independence", icon: Shield, label: "System Independence" },
-      { to: "/admin/template-empire", icon: Crown, label: "✦ Template Empire" },
       { to: "/admin/template-studio", icon: Layers, label: "Template Studio" },
       { to: "/admin/system-library", icon: Boxes, label: "System Library" },
       { to: "/admin/pack-research", icon: Search, label: "GPT Pack Research" },
@@ -129,15 +128,15 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-stone-100 flex">
       {/* === LEFT SIDEBAR === */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-72 shrink-0 empire-sidebar flex flex-col transition-transform duration-200 ${
+        className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-72 shrink-0 bg-stone-950 flex flex-col transition-transform duration-200 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         {/* Brand header */}
-        <div className="flex items-center gap-3 px-5 h-16 border-b border-white/10 shrink-0">
+        <div className="flex items-center gap-3 px-5 h-16 border-b border-stone-800 shrink-0">
           <img src={XTREME_AI_ICON_URL} alt="Xtreme Polishing Systems" className="h-9 w-9 object-contain shrink-0" />
           <div className="flex flex-col leading-none">
-            <span className="text-[9px] font-bold tracking-[0.18em] text-indigo-400 uppercase">Xtreme Polishing</span>
+            <span className="text-[9px] font-bold tracking-[0.18em] text-amber-500 uppercase">Xtreme Polishing</span>
             <span className="text-sm font-bold text-white tracking-tight">Concrete Command</span>
           </div>
           <button
@@ -172,8 +171,8 @@ export default function AdminLayout() {
                           className={({ isActive }) =>
                             `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all ${
                               isActive
-                                ? "empire-nav-active"
-                                : "empire-nav-item"
+                                ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                                : "text-stone-400 hover:text-white hover:bg-white/5 border border-transparent"
                             }`
                           }
                         >
@@ -189,7 +188,7 @@ export default function AdminLayout() {
             return (
               <div key={gi} className="space-y-1">
                 {group.label && (
-                  <div className="px-3 pt-1 pb-2 text-[10px] font-bold tracking-[0.14em] uppercase text-indigo-400/60">
+                  <div className="px-3 pt-1 pb-2 text-[10px] font-bold tracking-[0.14em] uppercase text-stone-600">
                     {group.label}
                   </div>
                 )}
@@ -202,8 +201,8 @@ export default function AdminLayout() {
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
                         isActive
-                          ? "empire-nav-active"
-                          : "empire-nav-item"
+                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                          : "text-stone-400 hover:text-white hover:bg-white/5 border border-transparent"
                       }`
                     }
                   >
@@ -240,7 +239,7 @@ export default function AdminLayout() {
       {/* === RIGHT CONTENT — more spread out === */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Mobile top bar */}
-        <div className="lg:hidden flex items-center gap-3 px-4 h-14 empire-dark text-white shrink-0 sticky top-0 z-20">
+        <div className="lg:hidden flex items-center gap-3 px-4 h-14 bg-stone-950 text-white shrink-0 sticky top-0 z-20">
           <button onClick={() => setMobileOpen(true)} className="text-stone-400 hover:text-white">
             <Menu className="h-6 w-6" />
           </button>
@@ -249,8 +248,8 @@ export default function AdminLayout() {
           <span className="text-sm font-bold text-white">Concrete Command</span>
         </div>
 
-        {/* Page content — wide canvas for command-center pages */}
-        <div className="flex-1 w-full mx-auto px-4 lg:px-8 py-8 empire-content-bg">
+        {/* Page content — spread out with more padding */}
+        <div className="flex-1 max-w-7xl w-full mx-auto px-8 py-10">
           <Outlet />
         </div>
       </div>
