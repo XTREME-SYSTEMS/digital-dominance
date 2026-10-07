@@ -1554,6 +1554,10 @@
         "update",
         "delete"
       ]
+    },
+    {
+      "function_name": "visualEditorBuild",
+      "description": "Run the Visual Editor builder: takes a natural-language page request and saves a complete DynamicPage draft to the canvas using create_page/update_page tools."
     }
   ],
   "context_files": [],
