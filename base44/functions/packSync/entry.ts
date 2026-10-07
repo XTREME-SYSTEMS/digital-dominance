@@ -1,6 +1,6 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.53";
 import { secrets } from "base44:runtime";
-import { PACK_DESIGN_CONSTITUTION, researchGateFailures } from "../../shared/packDesignConstitution.ts";
+import { PACK_DESIGN_CONSTITUTION, packContentGateFailures, researchGateFailures } from "../../shared/packDesignConstitution.ts";
 
 // PACK SYNC — GPT → Base44 bridge
 // Accepts webpacks, brand packs, and logo packs from GPT/ChatGPT,
@@ -256,6 +256,19 @@ export default async function(req: Request): Promise<Response> {
             bundle_id: bundleId,
           }, { status: 428 });
         }
+
+        const qualityManifest = pack.quality_manifest || pack.qualityManifest || null;
+        const qualityFailures = packContentGateFailures(packType, qualityManifest);
+        if (qualityFailures.length) {
+          return Response.json({
+            error: "Visual pack quality contract is incomplete.",
+            code: "QUALITY_MANIFEST_BLOCKED",
+            pack_type: packType,
+            failures: qualityFailures,
+            required_contract: (PACK_DESIGN_CONSTITUTION.pack_contracts as any)[packType] || PACK_DESIGN_CONSTITUTION.pack_contracts.other_visual_pack,
+            constitution_version: PACK_DESIGN_CONSTITUTION.constitution_version,
+          }, { status: 428 });
+        }
       }
 
       const ownerId = body.owner_id || "pack-sync-system";
@@ -361,6 +374,19 @@ export default async function(req: Request): Promise<Response> {
           content: JSON.stringify(pack.app_manifest || pack.appManifest),
           contentType: "application/json",
           metadata: { receipt_id: receiptId },
+        });
+      }
+      if (pack.quality_manifest || pack.qualityManifest) {
+        artifactCount += await storeTextArtifact(base44, {
+          ownerId,
+          packId,
+          templateKey,
+          version: translated.version,
+          artifactKey: "quality-manifest",
+          artifactType: "quality_manifest",
+          content: JSON.stringify(pack.quality_manifest || pack.qualityManifest),
+          contentType: "application/json",
+          metadata: { receipt_id: receiptId, constitution_version: PACK_DESIGN_CONSTITUTION.constitution_version },
         });
       }
       if (pack.operational_contract || pack.operationalContract) {
