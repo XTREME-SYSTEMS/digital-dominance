@@ -1,0 +1,298 @@
+{
+  "name": "UniversalIndustryTemplate",
+  "type": "object",
+  "properties": {
+    "industry_id": {
+      "type": "string",
+      "description": "Stable slug ID (e.g. epoxy_garage, hvac_repair, med_spa)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "parent_industry": {
+      "type": "string",
+      "description": "Top-level industry category (e.g. Home Improvement, Healthcare, Automotive)"
+    },
+    "sub_industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Sub-niches within this industry"
+    },
+    "niche_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Primary SEO keywords for this industry"
+    },
+    "target_audience": {
+      "type": "string",
+      "description": "Primary customer persona"
+    },
+    "competition_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "extreme"
+      ],
+      "default": "medium"
+    },
+    "avg_order_value": {
+      "type": "number",
+      "description": "Average order value in USD"
+    },
+    "seasonality": {
+      "type": "string",
+      "description": "Peak seasons (e.g. 'Spring/Summer', 'Year-round')"
+    },
+    "brand_config": {
+      "type": "object",
+      "description": "Default brand styling for this industry",
+      "properties": {
+        "primary_color": {
+          "type": "string"
+        },
+        "secondary_color": {
+          "type": "string"
+        },
+        "accent_color": {
+          "type": "string"
+        },
+        "font_heading": {
+          "type": "string"
+        },
+        "font_body": {
+          "type": "string"
+        },
+        "logo_style": {
+          "type": "string",
+          "description": "emblem, wordmark, lettermark, mascot"
+        },
+        "imagery_style": {
+          "type": "string",
+          "description": "photographic, illustrated, 3d, minimalist"
+        }
+      }
+    },
+    "website_sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "section_type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "default": [],
+      "description": "Standard sections for this industry's websites"
+    },
+    "google_requirements": {
+      "type": "object",
+      "description": "Google SEO specs for this industry",
+      "properties": {
+        "schema_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "core_web_vitals_target": {
+          "type": "string"
+        },
+        "content_depth_words": {
+          "type": "number"
+        },
+        "local_seo": {
+          "type": "boolean"
+        },
+        "faq_required": {
+          "type": "boolean"
+        },
+        "review_schema": {
+          "type": "boolean"
+        }
+      }
+    },
+    "social_config": {
+      "type": "object",
+      "description": "Social media automation config",
+      "properties": {
+        "platforms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "posts_per_day": {
+          "type": "number",
+          "default": 3
+        },
+        "content_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hashtag_strategy": {
+          "type": "string"
+        },
+        "best_post_times": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "video_frequency": {
+          "type": "string"
+        }
+      }
+    },
+    "video_config": {
+      "type": "object",
+      "description": "Video generation config",
+      "properties": {
+        "styles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hook_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "duration_seconds": {
+          "type": "number",
+          "default": 15
+        },
+        "aspect_ratios": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cta_style": {
+          "type": "string"
+        }
+      }
+    },
+    "funnel_config": {
+      "type": "object",
+      "description": "Lead funnel configuration",
+      "properties": {
+        "funnel_type": {
+          "type": "string"
+        },
+        "lead_magnet": {
+          "type": "string"
+        },
+        "cta_text": {
+          "type": "string"
+        },
+        "trust_signals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "urgency_level": {
+          "type": "string",
+          "enum": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "emergency"
+          ]
+        }
+      }
+    },
+    "provisioning_config": {
+      "type": "object",
+      "description": "Infrastructure provisioning config",
+      "properties": {
+        "platforms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "domain_pattern": {
+          "type": "string"
+        },
+        "ssl_required": {
+          "type": "boolean",
+          "default": true
+        },
+        "cdn_required": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "template_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "configured",
+        "active",
+        "deprecated"
+      ],
+      "default": "draft"
+    },
+    "site_count_built": {
+      "type": "number",
+      "default": 0,
+      "description": "How many sites have been built from this template"
+    },
+    "last_used_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "industry_id",
+    "name",
+    "parent_industry",
+    "template_status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
