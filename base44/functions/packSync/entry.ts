@@ -218,6 +218,46 @@ export default async function(req: Request): Promise<Response> {
         return Response.json({ error: "template_key is required" }, { status: 400 });
       }
 
+      const packType = normalizePackType(pack.pack_type || pack.packType);
+      const researchDossierId = pack.research_dossier_id || pack.researchDossierId || "";
+      const bundleId = pack.bundle_id || pack.bundleId || "";
+      const variantIndex = Number(pack.variant_index || pack.variantIndex || 0);
+      const governedVisualPack = (PACK_DESIGN_CONSTITUTION.pack_types as readonly string[]).includes(packType);
+
+      if (governedVisualPack) {
+        if (!researchDossierId || !bundleId || variantIndex < 1 || variantIndex > 10) {
+          return Response.json({
+            error: "Pack Research Gate fields are required before visual pack sync.",
+            code: "RESEARCH_GATE_REQUIRED",
+            required: ["research_dossier_id", "bundle_id", "variant_index (1-10)"],
+            constitution_version: PACK_DESIGN_CONSTITUTION.constitution_version,
+          }, { status: 428 });
+        }
+
+        const dossierPage = await base44.asServiceRole.entities.PackResearchDossier.filter({ dossier_id: researchDossierId });
+        const dossier = (dossierPage.items || [])[0];
+        const researchFailures = researchGateFailures(dossier);
+        if (researchFailures.length) {
+          return Response.json({
+            error: "Research gate did not pass. Visual generation/sync is blocked.",
+            code: "RESEARCH_GATE_BLOCKED",
+            research_dossier_id: researchDossierId,
+            failures: researchFailures,
+            constitution_version: PACK_DESIGN_CONSTITUTION.constitution_version,
+          }, { status: 428 });
+        }
+
+        const bundlePage = await base44.asServiceRole.entities.PackGenerationBundle.filter({ bundle_id: bundleId });
+        const bundle = (bundlePage.items || [])[0];
+        if (!bundle || bundle.dossier_id !== researchDossierId || bundle.research_gate_passed !== true) {
+          return Response.json({
+            error: "Generation bundle is missing, mismatched, or not research-approved.",
+            code: "BUNDLE_GATE_BLOCKED",
+            bundle_id: bundleId,
+          }, { status: 428 });
+        }
+      }
+
       const ownerId = body.owner_id || "pack-sync-system";
       const translated = translatePack(pack);
       const fullHtml = pack.preview_html || pack.previewHtml || "";
@@ -258,7 +298,6 @@ export default async function(req: Request): Promise<Response> {
       const packId = pack.pack_id || `pack_${templateKey}_${payloadHash.slice(0, 16)}`;
       const receiptId = `psr_${crypto.randomUUID()}`;
       const validationId = `pvr_${crypto.randomUUID()}`;
-      const packType = normalizePackType(pack.pack_type || pack.packType);
 
       const receiptRecord = await base44.asServiceRole.entities.PackSyncReceipt.create({
         owner_id: ownerId,
