@@ -1,0 +1,58 @@
+{
+  "name": "ContentMenuCategory",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Category display name \u2014 items reference this by name"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "What this category covers"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name for the category header"
+    },
+    "color_class": {
+      "type": "string",
+      "description": "Tailwind border+bg classes for the category card, e.g. 'border-amber-300 bg-amber-50/50'"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "order"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

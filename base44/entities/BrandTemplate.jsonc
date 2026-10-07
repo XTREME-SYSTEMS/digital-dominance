@@ -182,6 +182,26 @@
       "type": "number",
       "minimum": 0,
       "maximum": 100
+    },
+    "research_dossier_id": {
+      "type": "string",
+      "description": "Required Pack Research Dossier that authorized this visual pack"
+    },
+    "bundle_id": {
+      "type": "string",
+      "description": "Pack Generation Bundle id"
+    },
+    "variant_index": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "pack_type": {
+      "type": "string",
+      "description": "logo_pack, brand_pack, web_pack, app_pack, or other governed visual pack"
+    },
+    "constitution_version": {
+      "type": "string"
     }
   },
   "required": [
