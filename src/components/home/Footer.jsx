@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Facebook, Instagram, Youtube, Linkedin, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Facebook, Instagram, Youtube, Linkedin } from "lucide-react";
 import FooterLocations from "@/components/home/FooterLocations";
 import InstallAppButton from "@/components/home/InstallAppButton";
 import { useSettings } from "@/lib/useSettings";
@@ -50,9 +50,6 @@ export default function Footer() {
             <div className="mt-4 space-y-1">
               <a href={`tel:${settings.phone}`} className="flex items-center gap-2 text-xs hover:text-amber-500 transition">
                 <Phone className="h-3.5 w-3.5" /> Call: {settings.phone}
-              </a>
-              <a href={`sms:${settings.automation_phone || "+1-833-700-1239"}`} className="flex items-center gap-2 text-xs text-amber-400 hover:text-amber-300 transition">
-                <Send className="h-3.5 w-3.5" /> Text our AI Assistant: {settings.automation_phone_display || "1-833-700-1239"}
               </a>
               <a href={`mailto:${settings.email}`} className="flex items-center gap-2 text-xs hover:text-amber-500 transition">
                 <Mail className="h-3.5 w-3.5" /> {settings.email}

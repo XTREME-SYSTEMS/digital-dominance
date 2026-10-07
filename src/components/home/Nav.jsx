@@ -88,7 +88,6 @@ export default function Nav({ settings }) {
               : <a key={l.label} href={l.href} onClick={() => setOpen(false)} className="block text-sm font-medium text-stone-200 hover:text-amber-500">{l.label}</a>
           ))}
           <a href={`tel:${settings.phone}`} className="block text-sm font-medium text-stone-200">Call: {settings.phone}</a>
-          <a href={`sms:${settings.automation_phone || "+1-833-700-1239"}`} className="block text-sm font-medium text-amber-400">Text our AI: {settings.automation_phone_display || "1-833-700-1239"}</a>
           <div className="pt-2 border-t border-white/10 space-y-2.5">
             <Link to="/funnel" onClick={() => { trackEvent("funnel_cta_clicked", { location: "home_mobile_nav" }); setOpen(false); }} className="flex h-11 items-center justify-end gap-2 rounded-xl text-sm font-bold transition pr-4" style={{ background: 'linear-gradient(180deg, #FFE25A 0%, #FFD700 45%, #C8A300 100%)', border: '2px solid #000', color: '#1a1a1a', boxShadow: '0 4px 12px rgba(255,215,0,.4), inset 0 1px rgba(255,255,255,.4)' }}>
               Price my Floor + Visualize it <Palette className="h-4 w-4" />
