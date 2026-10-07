@@ -151,6 +151,24 @@ export function requiredCountForPackType(packType: string, appRequested = false)
   return 0;
 }
 
+export function packContentGateFailures(packType: string, qualityManifest: any): string[] {
+  const normalized = (packType || "").toLowerCase().replace(/[\\s-]+/g, "_");
+  const key = normalized === "logo_pack" ? "logo_pack"
+    : normalized === "brand_pack" ? "brand_pack"
+    : normalized === "web_pack" ? "web_pack"
+    : normalized === "app_pack" ? "app_pack"
+    : "other_visual_pack";
+  const required = (PACK_CONTENT_CONTRACTS as any)[key] || [];
+  if (!qualityManifest || typeof qualityManifest !== "object") return ["MISSING_QUALITY_MANIFEST"];
+  const failures: string[] = [];
+  for (const field of required) {
+    const value = qualityManifest[field];
+    const missing = value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0);
+    if (missing) failures.push("MISSING_" + String(field).toUpperCase());
+  }
+  return failures;
+}
+
 export function researchGateFailures(dossier: any): string[] {
   const failures: string[] = [];
   if (!dossier) return ["MISSING_RESEARCH_DOSSIER"];
