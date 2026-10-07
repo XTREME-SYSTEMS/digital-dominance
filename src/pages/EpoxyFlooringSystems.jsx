@@ -11,7 +11,7 @@ const SYSTEMS = [
   {
     num: 1,
     title: "Solid Color Coating",
-    image: "https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?w=400&h=250&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1652305461546-bf0a76934433?w=400&h=250&fit=crop&q=80",
     description: "A single-color epoxy system delivering a clean, uniform finish. Ideal for homeowners seeking a sleek, modern look without decorative elements.",
     specs: [
       { icon: Ruler, label: "10-15 mils thick" },
@@ -45,7 +45,7 @@ const SYSTEMS = [
   {
     num: 3,
     title: "Quartz Aggregate System",
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=250&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1589109807644-924edf14ee09?w=400&h=250&fit=crop&q=80",
     description: "Colored quartz sand bonded with epoxy for a slip-resistant, highly durable surface. Combines safety with aesthetic appeal.",
     specs: [
       { icon: Ruler, label: "30-40 mils thick" },
@@ -62,7 +62,7 @@ const SYSTEMS = [
   {
     num: 4,
     title: "Mortar System",
-    image: "https://images.unsplash.com/photo-1565963292947-fc6f47e3c2a3?w=400&h=250&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1771531072574-af6ed6b954c0?w=400&h=250&fit=crop&q=80",
     description: "Heavy-duty mortar system for high-traffic and impact resistance. Built to withstand forklifts, heavy machinery, and industrial wear.",
     specs: [
       { icon: Ruler, label: "60-125 mils thick" },
@@ -79,7 +79,7 @@ const SYSTEMS = [
   {
     num: 5,
     title: "Chemical-Resistant System",
-    image: "https://images.unsplash.com/photo-1582719471384-894fbb16e334?w=400&h=250&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1772209415876-76ea6cbc2f0c?w=400&h=250&fit=crop&q=80",
     description: "Novolac epoxy formulation engineered for chemical and acid resistance. Protects substrates from spills, stains, and corrosion.",
     specs: [
       { icon: Ruler, label: "30-50 mils thick" },
@@ -96,7 +96,7 @@ const SYSTEMS = [
   {
     num: 6,
     title: "Metallic Epoxy System",
-    image: "https://images.unsplash.com/photo-1551038247-3d9af20df558?w=400&h=250&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1731481562702-0e94ce06ebb3?w=400&h=250&fit=crop&q=80",
     description: "Metallic pigments create a 3D, pearlescent finish that mimics natural stone. A premium decorative option for high-end spaces.",
     specs: [
       { icon: Ruler, label: "20-30 mils thick" },
@@ -127,29 +127,29 @@ const FOOTER_VALUES = [
 
 export default function EpoxyFlooringSystems() {
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-white">
+    <div className="min-h-screen bg-white text-black">
       {/* Header */}
-      <header className="border-b border-stone-800 px-6 py-5">
+      <header className="border-b border-stone-200 px-6 py-5">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <img src={LOGO_URL} alt="Xtreme Polishing Systems" className="h-12 w-12 object-contain" />
             <div>
-              <div className="font-black text-lg text-white">Xtreme Polishing Systems</div>
-              <div className="text-[10px] text-[#F49832] font-bold uppercase tracking-widest">Local-First Concrete Platform</div>
+              <div className="font-black text-lg xps-gold-text">Xtreme Polishing Systems</div>
+              <div className="text-[10px] xps-gold-text font-bold uppercase tracking-widest">Local-First Concrete Platform</div>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-6">
             {FEATURES.map((f, i) => (
               <div key={i} className="flex flex-col items-center gap-1 text-center">
-                <f.icon className="h-6 w-6 text-[#F49832]" />
-                <span className="text-[10px] text-stone-400 font-bold uppercase tracking-wide">{f.label}</span>
+                <f.icon className="h-6 w-6 text-stone-700" />
+                <span className="text-[10px] text-stone-600 font-bold uppercase tracking-wide">{f.label}</span>
               </div>
             ))}
           </div>
         </div>
         <div className="max-w-7xl mx-auto text-center mt-6">
-          <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight">6 Epoxy Flooring Systems</h1>
-          <p className="text-sm md:text-base text-[#F49832] font-bold uppercase tracking-widest mt-2">Built for Every Space. Engineered for Florida.</p>
+          <h1 className="text-3xl md:text-5xl font-black xps-gold-text uppercase tracking-tight">6 Epoxy Flooring Systems</h1>
+          <p className="text-sm md:text-base xps-gold-text font-bold uppercase tracking-widest mt-2">Built for Every Space. Engineered for Florida.</p>
         </div>
       </header>
 
@@ -163,19 +163,19 @@ export default function EpoxyFlooringSystems() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-stone-800 bg-stone-950 px-6 py-8">
+      <footer className="border-t border-stone-200 bg-stone-50 px-6 py-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <MapPin className="h-10 w-10 text-[#F49832]" />
-            <p className="text-white font-bold text-sm uppercase tracking-wide max-w-xs">
+            <MapPin className="h-10 w-10 text-stone-700" />
+            <p className="text-black font-bold text-sm uppercase tracking-wide max-w-xs">
               Engineered for Florida's Heat, Humidity & Daily Wear
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-8">
             {FOOTER_VALUES.map((v, i) => (
               <div key={i} className="flex flex-col items-center gap-1">
-                <v.icon className="h-7 w-7 text-[#F49832]" />
-                <span className="text-xs text-white font-bold uppercase tracking-wide">{v.label}</span>
+                <v.icon className="h-7 w-7 text-stone-700" />
+                <span className="text-xs text-black font-bold uppercase tracking-wide">{v.label}</span>
               </div>
             ))}
           </div>
