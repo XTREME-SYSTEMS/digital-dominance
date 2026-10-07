@@ -426,7 +426,16 @@ export default async function(req: Request): Promise<Response> {
             : packType === "app_pack" ? "app_generated"
             : null;
           if (counterField) {
-            const nextCount = Math.min(10, Math.max(Number(bundle[counterField] || 0), variantIndex));
+            const typeReceipts = await base44.asServiceRole.entities.PackSyncReceipt.filter({
+              bundle_id: bundleId,
+              pack_type: packType,
+            });
+            const uniqueVariants = new Set(
+              (typeReceipts.items || [])
+                .map((r: any) => Number(r.variant_index || 0))
+                .filter((v: number) => v >= 1 && v <= 10)
+            );
+            const nextCount = uniqueVariants.size;
             const prospective = {
               logo_generated: counterField === "logo_generated" ? nextCount : Number(bundle.logo_generated || 0),
               brand_generated: counterField === "brand_generated" ? nextCount : Number(bundle.brand_generated || 0),
@@ -528,7 +537,7 @@ export default async function(req: Request): Promise<Response> {
       return Response.json({ ok: true, service: "packSync", timestamp: new Date().toISOString() });
     }
 
-    return Response.json({ error: "Unknown action. Use: sync, list, get, health" }, { status: 400 });
+    return Response.json({ error: "Unknown action. Use: constitution, sync, list, get, health" }, { status: 400 });
   } catch (e) {
     console.error("[packSync] Error:", e);
     return Response.json({ error: e.message || "Internal error" }, { status: 500 });
