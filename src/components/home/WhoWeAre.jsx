@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Phone, Mail, Calendar, MapPin, GraduationCap, Building2, Award } from "lucide-react";
 import { Image } from "@/components/ui/image";
-import LocationMap from "@/components/home/LocationMap";
 
 const TRAINING_IMG = "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/8bb317033_IMG_8152-min_c55bf5c4-40e1-4893-b5c7-699a395f36c6.jpg";
 const SHOWROOM_IMG = "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/74e7fe427_images1.jpg";
@@ -88,11 +87,6 @@ export default function WhoWeAre({ settings }) {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Find your nearest XPS Xpress store */}
-        <div className="mb-20">
-          <LocationMap />
         </div>
 
         {/* Leadership: Chris + Jeremy */}
