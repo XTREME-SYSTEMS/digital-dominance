@@ -6,8 +6,8 @@ import { createClientFromRequest } from "npm:@base44/sdk@0.8.48";
 const DOMAINS = {
   xtreme: {
     name: "Xtreme Polishing Systems",
-    domain: "epoxyquotenearme.com",
-    property_match: "epoxyquotenearme",
+    domain: "epoxygaragefloorestimate.com",
+    property_match: "epoxygaragefloorestimate",
   },
   strategic_minds: {
     name: "Strategic Minds AI",
