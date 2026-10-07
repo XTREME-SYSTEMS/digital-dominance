@@ -42,8 +42,8 @@ export default function VisualEditor() {
           <h1 className="text-sm font-bold text-stone-900">Visual Editor</h1>
           <p className="text-[10px] text-stone-400">Chat to build, preview updates live</p>
         </div>
-        <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
-          <Zap className="h-3 w-3" /> Direct Edit Enabled
+        <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+          <Zap className="h-3 w-3" /> Vercel AI Gateway
         </div>
         <button
           onClick={() => setChatOpen(!chatOpen)}

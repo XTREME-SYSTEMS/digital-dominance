@@ -220,6 +220,10 @@ export default function AdminLayout() {
 
         {/* Footer actions */}
         <div className="px-4 py-4 border-t border-stone-800 shrink-0 space-y-1">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-2">
+            <Zap className="h-3 w-3 text-emerald-400" />
+            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wide">Vercel AI Gateway</span>
+          </div>
           <BackButton className="text-stone-400 hover:text-white w-full" showLabel={true} />
           <Link
             to="/"
