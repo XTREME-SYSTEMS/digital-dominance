@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, Quote } from "lucide-react";
+import { Quote } from "lucide-react";
 
 const REVIEWS = [
   {
@@ -27,11 +27,6 @@ export default function TestimonialWall() {
     <section className="bg-stone-50 py-16 px-6">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
-          <div className="flex items-center justify-center gap-1 mb-3">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="h-6 w-6 fill-amber-400 text-amber-400" />
-            ))}
-          </div>
           <h2 className="text-3xl md:text-5xl font-black text-black uppercase tracking-tight">
             Loved by <span className="xps-gold-text">2,400+ Customers</span>
           </h2>
@@ -42,12 +37,7 @@ export default function TestimonialWall() {
             <div key={i} className="rounded-2xl bg-white border border-stone-200 p-6 shadow-sm">
               <Quote className="h-8 w-8 text-amber-300 mb-3" />
               <p className="text-sm text-stone-700 leading-relaxed">"{r.text}"</p>
-              <div className="flex items-center gap-1 mt-4 mb-2">
-                {[...Array(r.rating)].map((_, j) => (
-                  <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <div className="border-t border-stone-100 pt-3">
+              <div className="border-t border-stone-100 pt-3 mt-4">
                 <div className="font-black text-black text-sm">{r.name}</div>
                 <div className="text-xs text-stone-500">{r.role}</div>
               </div>

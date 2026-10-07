@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowRight, Phone, Star, Loader2, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Phone, Loader2, CheckCircle2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { LOGO_URL } from "@/components/Logo";
@@ -36,8 +36,8 @@ export default function FunnelHero() {
     <section className="relative overflow-hidden bg-white">
       {/* Top bar */}
       <div className="relative z-20 xps-gold-bg text-black text-center py-2 text-xs font-bold tracking-wide">
-        <span className="hidden sm:inline">📞 (877) 958-5264 — Speak to a Representative Today</span>
-        <span className="sm:hidden">📞 (877) 958-5264</span>
+        <span className="hidden sm:inline">📞 (877) 958-6408 — Speak to a Representative Today</span>
+        <span className="sm:hidden">📞 (877) 958-6408</span>
       </div>
 
       {/* Nav */}
@@ -49,14 +49,13 @@ export default function FunnelHero() {
             <div className="text-[10px] xps-gold-text font-bold uppercase tracking-widest">Floors For Life</div>
           </div>
         </Link>
-        <div className="hidden md:flex items-center gap-2 text-amber-400">
-          <Star className="h-4 w-4 fill-amber-400" />
-          <Star className="h-4 w-4 fill-amber-400" />
-          <Star className="h-4 w-4 fill-amber-400" />
-          <Star className="h-4 w-4 fill-amber-400" />
-          <Star className="h-4 w-4 fill-amber-400" />
-          <span className="text-xs text-stone-400 ml-1">4.9/5 · 2,400+ Projects</span>
-        </div>
+        <a
+          href="tel:+18779586408"
+          className="inline-flex items-center gap-2 xps-gold-bg text-black font-black text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/30 hover:scale-105 transition-all"
+        >
+          <Phone className="h-4 w-4" />
+          Call Now: (877) 958-6408
+        </a>
       </div>
 
       {/* Hero with darkened garage background */}
@@ -101,11 +100,11 @@ export default function FunnelHero() {
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition" />
               </Link>
               <a
-                href="tel:+18779585264"
+                href="tel:+18779586408"
                 className="inline-flex items-center gap-2 bg-black border-2 border-black text-white font-bold text-sm px-5 py-3.5 rounded-2xl hover:border-amber-500 hover:text-amber-400 transition"
               >
                 <Phone className="h-4 w-4" />
-                (877) 958-5264
+                Call Now: (877) 958-6408
               </a>
             </div>
 
