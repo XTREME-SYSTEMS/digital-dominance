@@ -1,0 +1,205 @@
+{
+  "name": "BrandTemplate",
+  "type": "object",
+  "properties": {
+    "owner_id": {
+      "type": "string",
+      "description": "User ID who owns this template"
+    },
+    "template_key": {
+      "type": "string",
+      "description": "Stable unique key (e.g. xps-homepage-v1, ncp-funnel-v2)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "brand_id": {
+      "type": "string",
+      "enum": [
+        "xtremepolishingsystems",
+        "nationalconcretepolishing",
+        "polishedconcreteuniversity",
+        "custom_contractor"
+      ],
+      "description": "Which brand this template belongs to"
+    },
+    "brand_config": {
+      "type": "object",
+      "description": "Brand styling config (colors, logo, fonts, domain, phone)",
+      "properties": {
+        "brand_name": {
+          "type": "string"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "primary_color": {
+          "type": "string"
+        },
+        "secondary_color": {
+          "type": "string"
+        },
+        "accent_color": {
+          "type": "string"
+        },
+        "logo_url": {
+          "type": "string"
+        },
+        "logo_text": {
+          "type": "string"
+        },
+        "font_heading": {
+          "type": "string"
+        },
+        "font_body": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "tagline": {
+          "type": "string"
+        }
+      }
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "homepage",
+        "landing_page",
+        "service_page",
+        "location_page",
+        "funnel",
+        "gallery",
+        "about",
+        "contact",
+        "cost_page",
+        "color_charts",
+        "blog_post",
+        "full_site"
+      ],
+      "default": "homepage"
+    },
+    "niche": {
+      "type": "string",
+      "enum": [
+        "epoxy_garage",
+        "decorative_concrete",
+        "polished_concrete",
+        "epoxy_flooring",
+        "garage_coating",
+        "concrete_resurfacing",
+        "general_contractor"
+      ],
+      "default": "epoxy_garage",
+      "description": "Contractor niche this template targets"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "section_id": {
+            "type": "string"
+          },
+          "section_type": {
+            "type": "string",
+            "description": "hero, stats, problem_solution, showcase, testimonials, cta, gallery, faq, pricing, contact, footer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "content": {
+            "type": "object",
+            "description": "Section-specific content (headline, body, images, items)"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "default": []
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0",
+      "description": "Semantic version"
+    },
+    "parent_version": {
+      "type": "string",
+      "description": "Previous version this was cloned from"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "review",
+        "published",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "preview_html": {
+      "type": "string",
+      "maxLength": 30000,
+      "description": "Cached HTML preview of the rendered template"
+    },
+    "deployed_url": {
+      "type": "string",
+      "description": "URL where this template is deployed"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "required": [
+    "template_key",
+    "name",
+    "brand_id",
+    "category",
+    "niche",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": null,
+    "update": {
+      "$or": [
+        {
+          "data.owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
