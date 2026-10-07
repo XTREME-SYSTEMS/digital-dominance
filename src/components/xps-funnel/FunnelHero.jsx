@@ -45,7 +45,7 @@ export default function FunnelHero() {
         <div className="flex items-center gap-3">
           <img src={LOGO_URL} alt="Xtreme Polishing Systems" className="h-12 w-12 object-contain" />
           <div>
-            <div className="font-black text-lg xps-gold-text">Xtreme Polishing Systems</div>
+            <div className="font-black text-lg xps-gold-text">National Epoxy Pros</div>
             <div className="text-[10px] xps-gold-text font-bold uppercase tracking-widest">Floors For Life</div>
           </div>
         </div>
@@ -82,15 +82,14 @@ export default function FunnelHero() {
             </div>
 
             <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.05]">
-              <span className="xps-gold-text">Epoxy Will</span>
+              <span className="xps-sparkle-white">Epoxy Will</span>
               <br />
-              <span className="xps-gold-text">Change Your </span>
+              <span className="xps-sparkle-white">Change Your </span>
               <span className="xps-sparkle-white">Garage</span>
             </h1>
 
-            <p className="text-lg text-stone-200 mt-5 max-w-md font-medium">
-              Transform your garage with industrial-grade epoxy flooring that lasts decades.
-              Get your <span className="xps-gold-text font-bold">instant estimate</span> in 60 seconds.
+            <p className="text-xl md:text-2xl text-white font-bold mt-5 max-w-md leading-snug">
+              Transform your garage with industrial-grade epoxy flooring that lasts a lifetime.
             </p>
 
             <div className="flex flex-col sm:flex-row items-start gap-4 mt-8">
@@ -103,17 +102,17 @@ export default function FunnelHero() {
               </Link>
               <a
                 href="tel:+18779585264"
-                className="inline-flex items-center gap-2 border-2 border-stone-500 text-white font-bold text-sm px-5 py-3.5 rounded-2xl hover:border-amber-500 hover:text-amber-400 transition"
+                className="inline-flex items-center gap-2 bg-black border-2 border-black text-white font-bold text-sm px-5 py-3.5 rounded-2xl hover:border-amber-500 hover:text-amber-400 transition"
               >
                 <Phone className="h-4 w-4" />
                 (877) 958-5264
               </a>
             </div>
 
-            <div className="flex flex-wrap items-center gap-5 mt-8 text-xs text-stone-400 font-medium">
+            <div className="flex flex-wrap items-center gap-5 mt-8 text-sm text-white font-bold">
               <span>✓ No Obligation</span>
-              <span>✓ Instant Pricing</span>
-              <span>✓ 20-Year Warranty</span>
+              <span>✓ Lifetime Warranty</span>
+              <span>✓ No Peeling</span>
             </div>
           </div>
 
