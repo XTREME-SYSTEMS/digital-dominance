@@ -305,6 +305,10 @@ export default async function(req: Request): Promise<Response> {
         pack_id: packId,
         template_key: templateKey,
         pack_type: packType,
+        research_dossier_id: researchDossierId,
+        bundle_id: bundleId,
+        variant_index: variantIndex || 1,
+        constitution_version: PACK_DESIGN_CONSTITUTION.constitution_version,
         version: translated.version,
         previous_version: previousVersion || "",
         payload_sha256: payloadHash,
@@ -380,6 +384,11 @@ export default async function(req: Request): Promise<Response> {
         ...translated,
         current_pack_id: packId,
         current_receipt_id: receiptId,
+        research_dossier_id: researchDossierId,
+        bundle_id: bundleId,
+        variant_index: variantIndex || 1,
+        pack_type: packType,
+        constitution_version: PACK_DESIGN_CONSTITUTION.constitution_version,
         validation_status: "not_run",
         ...(previousVersion ? { parent_version: previousVersion } : {}),
       };
@@ -403,8 +412,32 @@ export default async function(req: Request): Promise<Response> {
           preview_original_length: fullHtml.length,
           preview_compact_length: compactPreview.length,
           preview_stored_in_template: compactPreview.length <= 30000,
+          research_gate_passed: governedVisualPack ? true : null,
         },
       });
+
+      if (governedVisualPack && bundleId) {
+        const bundlePage = await base44.asServiceRole.entities.PackGenerationBundle.filter({ bundle_id: bundleId });
+        const bundle = (bundlePage.items || [])[0];
+        if (bundle) {
+          const counterField = packType === "logo_pack" ? "logo_generated"
+            : packType === "brand_pack" ? "brand_generated"
+            : packType === "web_pack" ? "web_generated"
+            : packType === "app_pack" ? "app_generated"
+            : null;
+          if (counterField) {
+            const nextCount = Math.min(10, Math.max(Number(bundle[counterField] || 0), variantIndex));
+            const nextStatus = nextCount >= Number(bundle[counterField.replace("_generated", "_required")] || 0) && Number(bundle[counterField.replace("_generated", "_required")] || 0) > 0
+              ? "awaiting_approval"
+              : "generating";
+            await base44.asServiceRole.entities.PackGenerationBundle.update(bundle.id, {
+              [counterField]: nextCount,
+              status: nextStatus,
+              updated_at_iso: new Date().toISOString(),
+            });
+          }
+        }
+      }
 
       // Create a durable validation job record. A separate validator must execute it before parity can become PASS.
       await base44.asServiceRole.entities.PackValidationRun.create({
@@ -446,6 +479,10 @@ export default async function(req: Request): Promise<Response> {
         compact_preview_length: compactPreview.length,
         artifact_count: artifactCount,
         payload_sha256: payloadHash,
+        research_dossier_id: researchDossierId || null,
+        bundle_id: bundleId || null,
+        variant_index: variantIndex || null,
+        constitution_version: PACK_DESIGN_CONSTITUTION.constitution_version,
         message: `Pack "${translated.name}" stored successfully. Validation is queued; parity is not certified until validator PASS.`,
       });
     }
