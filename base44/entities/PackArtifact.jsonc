@@ -34,7 +34,8 @@
         "operational_contract",
         "screenshot_reference",
         "validation_input",
-        "other"
+        "other",
+        "quality_manifest"
       ]
     },
     "chunk_index": {
