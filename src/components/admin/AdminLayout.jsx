@@ -12,6 +12,7 @@ const navGroups = [
       { to: "/admin/contents", icon: LayoutGrid, label: "📋 Contents Menu" },
       { to: "/admin", end: true, icon: Sparkles, label: "Concrete Opportunities" },
       { to: "/admin/capabilities", icon: Crown, label: "Capabilities & Gaps" },
+      { to: "/admin/gap-filler", icon: Zap, label: "Gap Filler Engine" },
       { to: "/admin/master-pipeline", icon: ListOrdered, label: "Master Pipeline" },
       { to: "/admin/provider-vault", icon: Shield, label: "Provider Vault" },
       { to: "/admin/independence", icon: Shield, label: "System Independence" },

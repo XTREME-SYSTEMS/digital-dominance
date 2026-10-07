@@ -1,0 +1,153 @@
+{
+  "name": "CitationListing",
+  "type": "object",
+  "properties": {
+    "citation_id": {
+      "type": "string"
+    },
+    "business_name": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "nap_data": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "hours": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        }
+      }
+    },
+    "directory": {
+      "type": "string",
+      "enum": [
+        "google_business_profile",
+        "yelp",
+        "bing_places",
+        "apple_maps",
+        "facebook_places",
+        "foursquare",
+        "yellowpages",
+        "bbb",
+        "trustpilot",
+        "citysearch",
+        "manta",
+        "hotfrog",
+        "ezlocal",
+        "yp",
+        "superpages",
+        "kudzu",
+        "local_com",
+        "merchantcircle",
+        "brownbook",
+        "tuugo",
+        "cyclopaedia",
+        "freelocalbusinessdirectory",
+        "locanto",
+        "yalwa",
+        "oakdale",
+        "uscity",
+        "bizhwy",
+        "bizcommunity",
+        "localbusinesslist",
+        "mylocalbiz",
+        "smallbizpages",
+        "bizyellowpages",
+        "localyak",
+        "townplanner",
+        "patch",
+        "nearme",
+        "custom_directory"
+      ],
+      "default": "google_business_profile"
+    },
+    "listing_url": {
+      "type": "string",
+      "description": "URL of the live listing once submitted"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "not_submitted",
+        "submitted",
+        "pending_verification",
+        "verified",
+        "rejected",
+        "failed"
+      ],
+      "default": "not_submitted"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "review_count": {
+      "type": "number",
+      "default": 0
+    },
+    "avg_rating": {
+      "type": "number",
+      "default": 0
+    },
+    "error": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "citation_id",
+    "business_name",
+    "directory",
+    "verification_status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

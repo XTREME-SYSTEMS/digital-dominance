@@ -1,0 +1,113 @@
+{
+  "name": "AgentAssignment",
+  "type": "object",
+  "properties": {
+    "assignment_id": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string",
+      "description": "Deployed site this agent is assigned to"
+    },
+    "site_domain": {
+      "type": "string"
+    },
+    "agent_type": {
+      "type": "string",
+      "enum": [
+        "seo_agent",
+        "content_agent",
+        "social_agent",
+        "health_agent",
+        "monitoring_agent",
+        "optimization_agent",
+        "full_suite"
+      ],
+      "default": "full_suite"
+    },
+    "agent_persona_id": {
+      "type": "string",
+      "description": "AgentPersona ID"
+    },
+    "auto_assigned": {
+      "type": "boolean",
+      "default": true,
+      "description": "Auto-assigned on site deploy"
+    },
+    "assigned_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_action_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actions_taken": {
+      "type": "number",
+      "default": 0
+    },
+    "health_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "idle",
+        "error",
+        "disabled"
+      ],
+      "default": "active"
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "check_interval_minutes": {
+          "type": "number",
+          "default": 60
+        },
+        "auto_optimize": {
+          "type": "boolean",
+          "default": true
+        },
+        "auto_publish_content": {
+          "type": "boolean",
+          "default": false
+        },
+        "alert_on_issues": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "assignment_id",
+    "site_id",
+    "agent_type",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

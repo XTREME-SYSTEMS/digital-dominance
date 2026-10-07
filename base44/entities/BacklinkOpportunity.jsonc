@@ -1,0 +1,118 @@
+{
+  "name": "BacklinkOpportunity",
+  "type": "object",
+  "properties": {
+    "opportunity_id": {
+      "type": "string"
+    },
+    "target_domain": {
+      "type": "string"
+    },
+    "source_domain": {
+      "type": "string",
+      "description": "Domain to get a backlink from"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Specific page for the backlink"
+    },
+    "opportunity_type": {
+      "type": "string",
+      "enum": [
+        "directory",
+        "guest_post",
+        "resource_page",
+        "broken_link",
+        "competitor_backlink",
+        "forum_comment",
+        "press_release",
+        "local_citation",
+        "industry_blog",
+        "scholarship"
+      ],
+      "default": "directory"
+    },
+    "domain_authority": {
+      "type": "number",
+      "default": 0,
+      "description": "Moz DA 0-100"
+    },
+    "page_authority": {
+      "type": "number",
+      "default": 0
+    },
+    "relevance_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 relevance to target"
+    },
+    "outreach_status": {
+      "type": "string",
+      "enum": [
+        "identified",
+        "outreach_sent",
+        "responded",
+        "link_placed",
+        "rejected",
+        "expired"
+      ],
+      "default": "identified"
+    },
+    "outreach_email": {
+      "type": "string"
+    },
+    "outreach_sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "link_placed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "anchor_text": {
+      "type": "string"
+    },
+    "follow_status": {
+      "type": "string",
+      "enum": [
+        "dofollow",
+        "nofollow",
+        "ugc",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "required": [
+    "opportunity_id",
+    "target_domain",
+    "source_domain",
+    "opportunity_type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

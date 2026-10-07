@@ -1,0 +1,140 @@
+{
+  "name": "SocialSchedule",
+  "type": "object",
+  "properties": {
+    "schedule_id": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string",
+      "description": "Associated deployed site"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "instagram",
+        "x_twitter",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "google_business"
+      ],
+      "default": "facebook"
+    },
+    "post_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "image",
+        "video",
+        "carousel",
+        "story",
+        "reel"
+      ],
+      "default": "text"
+    },
+    "content_text": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Generated video URL if video post"
+    },
+    "hashtags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "auto_generated": {
+      "type": "boolean",
+      "default": true,
+      "description": "Content auto-generated from site data"
+    },
+    "source_content_id": {
+      "type": "string",
+      "description": "Site content the post was generated from"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "publishing",
+        "published",
+        "failed",
+        "cancelled"
+      ],
+      "default": "draft"
+    },
+    "engagement": {
+      "type": "object",
+      "properties": {
+        "likes": {
+          "type": "number",
+          "default": 0
+        },
+        "comments": {
+          "type": "number",
+          "default": 0
+        },
+        "shares": {
+          "type": "number",
+          "default": 0
+        },
+        "reach": {
+          "type": "number",
+          "default": 0
+        }
+      }
+    },
+    "error": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schedule_id",
+    "platform",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

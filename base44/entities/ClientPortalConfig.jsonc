@@ -1,0 +1,105 @@
+{
+  "name": "ClientPortalConfig",
+  "type": "object",
+  "properties": {
+    "config_id": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "site_domain": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string"
+    },
+    "portal_url": {
+      "type": "string",
+      "description": "Auto-provisioned portal URL"
+    },
+    "auto_provisioned": {
+      "type": "boolean",
+      "default": true
+    },
+    "provisioned_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "social_dashboard": {
+          "type": "boolean",
+          "default": true
+        },
+        "analytics_dashboard": {
+          "type": "boolean",
+          "default": true
+        },
+        "seo_dashboard": {
+          "type": "boolean",
+          "default": true
+        },
+        "content_approval": {
+          "type": "boolean",
+          "default": true
+        },
+        "lead_management": {
+          "type": "boolean",
+          "default": true
+        },
+        "messaging": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "agent_assignment_id": {
+      "type": "string",
+      "description": "Associated AgentAssignment"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "provisioning",
+        "active",
+        "suspended",
+        "archived"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "config_id",
+    "site_id",
+    "site_domain",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

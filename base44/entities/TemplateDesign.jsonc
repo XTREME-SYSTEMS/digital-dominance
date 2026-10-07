@@ -1,0 +1,155 @@
+{
+  "name": "TemplateDesign",
+  "type": "object",
+  "properties": {
+    "design_id": {
+      "type": "string",
+      "description": "Stable slug (industry_id-style-name)"
+    },
+    "industry_id": {
+      "type": "string",
+      "description": "UniversalIndustryTemplate industry_id"
+    },
+    "industry_name": {
+      "type": "string"
+    },
+    "design_name": {
+      "type": "string"
+    },
+    "style_preset": {
+      "type": "string",
+      "enum": [
+        "modern",
+        "classic",
+        "bold",
+        "minimal",
+        "luxury",
+        "industrial",
+        "playful",
+        "corporate",
+        "artisan",
+        "tech"
+      ],
+      "default": "modern"
+    },
+    "color_palette": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "string"
+        },
+        "secondary": {
+          "type": "string"
+        },
+        "accent": {
+          "type": "string"
+        },
+        "bg": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "font_pairing": {
+      "type": "object",
+      "properties": {
+        "heading": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    },
+    "layout_type": {
+      "type": "string",
+      "enum": [
+        "hero_centered",
+        "hero_left",
+        "split",
+        "video_bg",
+        "parallax",
+        "grid",
+        "carousel"
+      ],
+      "default": "hero_centered"
+    },
+    "section_config": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Ordered section types"
+    },
+    "preview_url": {
+      "type": "string",
+      "description": "Generated preview image URL"
+    },
+    "thumbnail_url": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "homepage",
+        "landing",
+        "service",
+        "location",
+        "funnel",
+        "gallery",
+        "full_site"
+      ],
+      "default": "homepage"
+    },
+    "conversion_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 estimated conversion rate"
+    },
+    "mobile_optimized": {
+      "type": "boolean",
+      "default": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many sites use this design"
+    }
+  },
+  "required": [
+    "design_id",
+    "industry_id",
+    "design_name",
+    "style_preset",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "name": "ContentCalendarItem",
+  "type": "object",
+  "properties": {
+    "calendar_id": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "blog_post",
+        "service_page",
+        "location_page",
+        "faq_page",
+        "case_study",
+        "news_update",
+        "howto_guide",
+        "comparison",
+        "checklist"
+      ],
+      "default": "blog_post"
+    },
+    "title": {
+      "type": "string"
+    },
+    "topic_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "target_keyword": {
+      "type": "string"
+    },
+    "content_outline": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "generated_content_id": {
+      "type": "string",
+      "description": "GeneratedPage ID once published"
+    },
+    "scheduled_publish_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "word_count_target": {
+      "type": "number",
+      "default": 1500
+    },
+    "aeo_optimized": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "outlining",
+        "generating",
+        "review",
+        "scheduled",
+        "published",
+        "failed"
+      ],
+      "default": "planned"
+    },
+    "auto_publish": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "calendar_id",
+    "site_id",
+    "content_type",
+    "title",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

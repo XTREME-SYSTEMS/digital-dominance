@@ -1,0 +1,130 @@
+{
+  "name": "ProgrammaticSeoJob",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Stable job ID"
+    },
+    "target_domain": {
+      "type": "string"
+    },
+    "industry_id": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "gsc_queries",
+        "gsc_pages",
+        "google_trends",
+        "keyword_research",
+        "competitor_gaps",
+        "aeo_entities"
+      ],
+      "default": "gsc_queries"
+    },
+    "keywords_identified": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": "string"
+          },
+          "volume": {
+            "type": "number"
+          },
+          "difficulty": {
+            "type": "number"
+          },
+          "intent": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "pages_generated": {
+      "type": "number",
+      "default": 0
+    },
+    "pages_published": {
+      "type": "number",
+      "default": 0
+    },
+    "pages_indexed": {
+      "type": "number",
+      "default": 0
+    },
+    "aeo_optimized": {
+      "type": "boolean",
+      "default": false,
+      "description": "AEO/GEO schema applied"
+    },
+    "geo_schema_added": {
+      "type": "boolean",
+      "default": false
+    },
+    "faq_schema_added": {
+      "type": "boolean",
+      "default": false
+    },
+    "entity_content_structure": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "researching",
+        "generating",
+        "publishing",
+        "indexing",
+        "completed",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "error": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "job_id",
+    "target_domain",
+    "source",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
