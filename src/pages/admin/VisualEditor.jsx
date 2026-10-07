@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Loader2, Bot, Zap, Eye, PanelLeftClose } from "lucide-react";
-import BuilderChat from "@/components/codestudio/BuilderChat";
+import { useQueryClient } from "@tanstack/react-query";
+import VisualEditorChat from "@/components/visual-editor/VisualEditorChat";
 import VisualPreview from "@/components/visual-editor/VisualPreview";
 import ErrorBoundary from "@/components/codestudio/ErrorBoundary";
 
@@ -8,6 +9,20 @@ export default function VisualEditor() {
   const [chatWidth, setChatWidth] = useState(40);
   const [resizing, setResizing] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
+  const [selectedId, setSelectedId] = useState(() => new URLSearchParams(window.location.search).get("page"));
+  const qc = useQueryClient();
+  const selectPage = (id) => {
+    setSelectedId(id);
+    const url = new URL(window.location.href);
+    if (id) url.searchParams.set("page", id); else url.searchParams.delete("page");
+    window.history.replaceState(window.history.state, "", url);
+  };
+  const pageBuilt = (page) => {
+    qc.setQueryData(["visualEditorPage", page.id], page);
+    qc.invalidateQueries({ queryKey: ["visualEditorPages"] });
+    qc.invalidateQueries({ queryKey: ["dynamicPages"] });
+    selectPage(page.id);
+  };
 
   const startResize = (e) => {
     e.preventDefault();
@@ -32,7 +47,7 @@ export default function VisualEditor() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-stone-100">
+    <div className="flex flex-col h-screen h-[100dvh] overflow-hidden bg-stone-100">
       {/* === TOP BAR — Base44 builder style === */}
       <div className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-stone-200 shrink-0">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 grid place-items-center shrink-0">
@@ -55,13 +70,13 @@ export default function VisualEditor() {
       </div>
 
       {/* === SPLIT VIEW === */}
-      <div className="flex flex-1 overflow-hidden relative">
+      <div className="flex flex-1 min-h-0 overflow-hidden relative">
         {/* Chat panel — left */}
         {chatOpen && (
           <>
             <div style={{ width: `${chatWidth}%` }} className="border-r border-stone-200 min-w-0 shrink-0">
               <ErrorBoundary>
-                <BuilderChat />
+                <VisualEditorChat pageId={selectedId} onPageBuilt={pageBuilt} />
               </ErrorBoundary>
             </div>
 
@@ -78,7 +93,7 @@ export default function VisualEditor() {
         {/* Live preview — right */}
         <div className="flex-1 min-w-0 overflow-hidden relative">
           <ErrorBoundary>
-            <VisualPreview />
+            <VisualPreview selectedId={selectedId} onSelectPage={selectPage} />
           </ErrorBoundary>
         </div>
       </div>

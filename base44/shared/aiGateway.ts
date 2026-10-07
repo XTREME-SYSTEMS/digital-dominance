@@ -17,6 +17,20 @@ import { secrets } from 'base44:runtime';
 
 const GATEWAY_BASE = 'https://ai-gateway.vercel.sh/v1';
 
+// Shared transport for text generation and tool-enabled editor requests.
+export async function completeGateway(payload) {
+  const apiKey = secrets.get('VERCEL_AI_GATEWAY_API_KEY');
+  if (!apiKey) throw new Error('VERCEL_AI_GATEWAY_API_KEY secret not set');
+  const res = await fetch(`${GATEWAY_BASE}/chat/completions`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(60000),
+  });
+  if (!res.ok) throw new Error(`Vercel AI Gateway (${res.status}): ${(await res.text()).slice(0, 700)}`);
+  return await res.json();
+}
+
 export async function generateText(opts: {
   prompt: string;
   system_prompt?: string;
@@ -24,9 +38,6 @@ export async function generateText(opts: {
   response_json_schema?: any;
   file_urls?: string[];
 }): Promise<{ text: string; parsed: any; usage: any; model: string }> {
-  const apiKey = secrets.get('VERCEL_AI_GATEWAY_API_KEY') || secrets.get('VERCEL_API_TOKEN');
-  if (!apiKey) throw new Error('VERCEL_AI_GATEWAY_API_KEY secret not set');
-
   const messages: any[] = [];
   if (opts.system_prompt) messages.push({ role: 'system', content: opts.system_prompt });
 
@@ -45,18 +56,7 @@ export async function generateText(opts: {
     payload.response_format = { type: 'json_schema', json_schema: { name: 'response', schema: opts.response_json_schema } };
   }
 
-  const res = await fetch(`${GATEWAY_BASE}/chat/completions`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`AI Gateway error: ${err}`);
-  }
-
-  const data = await res.json();
+  const data = await completeGateway(payload);
   const text = data.choices?.[0]?.message?.content || '';
 
   let parsed: any = text;
