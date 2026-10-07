@@ -14,6 +14,7 @@ const navGroups = [
       { to: "/admin/master-pipeline", icon: ListOrdered, label: "Master Pipeline" },
       { to: "/admin/provider-vault", icon: Shield, label: "Provider Vault" },
       { to: "/admin/independence", icon: Shield, label: "System Independence" },
+      { to: "/admin/template-empire", icon: Crown, label: "✦ Template Empire" },
       { to: "/admin/template-studio", icon: Layers, label: "Template Studio" },
       { to: "/admin/system-library", icon: Boxes, label: "System Library" },
       { to: "/admin/pack-research", icon: Search, label: "GPT Pack Research" },
