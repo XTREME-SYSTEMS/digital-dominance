@@ -55,6 +55,37 @@ export const PACK_GENERATION_REQUIREMENTS = {
   accent_change_supported: true,
 };
 
+export const PACK_CONTENT_CONTRACTS = {
+  logo_pack: [
+    "primary_logo", "horizontal_logo", "stacked_logo", "icon_mark", "favicon",
+    "one_color", "reversed", "transparent_background", "clear_space_rule",
+    "minimum_size_rule", "vector_safe_geometry", "usage_do_dont",
+  ],
+  brand_pack: [
+    "positioning", "audience_segments", "brand_archetype", "core_promise", "taglines",
+    "color_palette_hex", "color_usage_rules", "typography_hierarchy", "fallback_fonts",
+    "logo_usage", "gradients", "textures", "iconography", "photography_direction",
+    "copy_voice", "usage_do_dont", "accessibility_notes", "print_usage", "digital_usage",
+  ],
+  web_pack: [
+    "page_map", "homepage_sections", "mobile_layout", "tablet_layout", "desktop_layout",
+    "pwa_behavior", "component_inventory", "component_variants", "form_logic",
+    "trust_modules", "cta_map", "motion_states", "seo_modules", "schema_modules",
+    "backend_dependencies", "analytics_events", "loading_states", "empty_states",
+    "error_states", "accessibility", "acceptance_criteria", "reference_screenshots",
+  ],
+  app_pack: [
+    "screen_map", "navigation_model", "mobile_layout", "tablet_layout", "desktop_layout",
+    "pwa_shell", "auth_states", "data_model_bindings", "form_logic", "offline_behavior",
+    "loading_states", "empty_states", "error_states", "notifications", "analytics_events",
+    "accessibility", "operational_contract", "acceptance_criteria", "reference_screenshots",
+  ],
+  other_visual_pack: [
+    "purpose", "asset_inventory", "dimensions", "safe_zones", "responsive_or_export_rules",
+    "brand_bindings", "acceptance_criteria", "reference_screenshots",
+  ],
+};
+
 export const PACK_QUALITY_GATES = {
   visual_score_min: 99,
   operational_score_required: 100,
@@ -106,6 +137,7 @@ export const PACK_DESIGN_CONSTITUTION = {
   quality: PACK_QUALITY_GATES,
   sequence: PACK_RESEARCH_SEQUENCE,
   pack_types: VISUAL_PACK_TYPES,
+  pack_contracts: PACK_CONTENT_CONTRACTS,
   acceptance:
     "No visual pack is compliant without a READY PackResearchDossier. No implementation is certified until independent validation records visual >=99 and operational =100.",
 };
