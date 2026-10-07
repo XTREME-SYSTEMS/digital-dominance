@@ -15,9 +15,12 @@ export default function IngestionPanel() {
     try {
       const res = await base44.functions.invoke("xpsSiteIngestor", { action: "status" });
       const data = res.data || res;
-      setRecords(data.records || []);
+      const recs = data.records || [];
+      setRecords(recs);
+      return recs;
     } catch (e) {
       console.error("Ingestion status failed:", e.message);
+      return [];
     }
     setLoading(false);
   };
@@ -28,11 +31,21 @@ export default function IngestionPanel() {
     setRunning(true);
     try {
       await base44.functions.invoke("xpsSiteIngestor", { action: "start", maxPages: 15 });
-      setTimeout(() => loadStatus(), 2000);
+      // Poll every 5s until the crawl finishes (~25-30s)
+      const poll = setInterval(async () => {
+        const recs = await loadStatus();
+        const latest = recs[0];
+        if (latest?.stage === "organized" || latest?.stage === "failed") {
+          clearInterval(poll);
+          setRunning(false);
+        }
+      }, 5000);
+      // Safety timeout — stop polling after 90s
+      setTimeout(() => { clearInterval(poll); setRunning(false); }, 90000);
     } catch (e) {
       console.error("Ingestion start failed:", e.message);
+      setRunning(false);
     }
-    setRunning(false);
   };
 
   const loadDetail = async (website_id) => {
@@ -48,8 +61,8 @@ export default function IngestionPanel() {
     setDetailLoading(false);
   };
 
-  const organized = selectedDetail?.organized_content ? (() => {
-    try { return JSON.parse(selectedDetail.organized_content); } catch { return null; }
+  const organized = selectedDetail?.organized_data ? (() => {
+    try { return JSON.parse(selectedDetail.organized_data); } catch { return null; }
   })() : null;
 
   return (
@@ -89,7 +102,7 @@ export default function IngestionPanel() {
             <div key={r.id} className={`rounded-xl border p-3 cursor-pointer transition-all ${selected === r.website_id ? "border-amber-500 bg-amber-50" : "border-stone-200 hover:border-stone-300"}`} onClick={() => loadDetail(r.website_id)}>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${r.stage === "completed" ? "bg-green-100 text-green-700" : r.stage === "failed" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
+                  <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${r.stage === "organized" ? "bg-green-100 text-green-700" : r.stage === "failed" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
                     {r.stage}
                   </span>
                   <div className="min-w-0">
@@ -97,7 +110,7 @@ export default function IngestionPanel() {
                     <div className="text-[11px] text-stone-500">{new Date(r.created_date || r.created_at).toLocaleString()}</div>
                   </div>
                 </div>
-                {r.stage === "completed" && <span className="text-[10px] text-green-600 font-bold">✓ Ready</span>}
+                {r.stage === "organized" && <span className="text-[10px] text-green-600 font-bold">✓ Ready</span>}
               </div>
             </div>
           ))}

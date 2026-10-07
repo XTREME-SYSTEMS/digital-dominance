@@ -152,7 +152,7 @@ async function runIngestion(base44, userId, options) {
     source_url: XPS_BASE,
     industry: "epoxy_flooring",
     template_type: "full_site",
-    stage: "ingesting",
+    stage: "uploaded",
     created_at: new Date().toISOString(),
   });
 
@@ -210,9 +210,9 @@ async function runIngestion(base44, userId, options) {
           product_count: r.products?.length || 0,
           color_chart_count: r.colorCharts?.length || 0,
         })),
-        images: imageList.slice(0, 500),
-        color_charts: colorChartList,
-        products: productList.slice(0, 200).map((url) => {
+        images: imageList.slice(0, 40),
+        color_charts: colorChartList.slice(0, 30),
+        products: productList.slice(0, 30).map((url) => {
           const slug = url.split("/products/")[1];
           return { slug, url, name: slug?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "" };
         }),
@@ -227,9 +227,9 @@ async function runIngestion(base44, userId, options) {
       await svc.entities.IngestedWebsite.update(record.id, {
         raw_content: JSON.stringify(pageResults.map((r) => ({ path: r.page.path, meta: r.meta, ok: r.ok })).slice(0, 50)).slice(0, 49000),
         cleaned_content: JSON.stringify(organized.pages).slice(0, 49000),
-        parsed_structure: JSON.stringify({ stats: organized.stats }).slice(0, 29000),
-        organized_content: JSON.stringify(organized).slice(0, 49000),
-        stage: "completed",
+        parsed_structure: JSON.stringify({ stats: organized.stats, pages: organized.pages.map(p => ({ path: p.path, title: p.title, h1: p.h1 })) }).slice(0, 29000),
+        organized_data: JSON.stringify(organized).slice(0, 29000),
+        stage: "organized",
         processed_at: new Date().toISOString(),
         screenshot_url: imageList[0] || "",
       });
