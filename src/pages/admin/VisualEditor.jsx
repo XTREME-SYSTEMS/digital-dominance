@@ -32,7 +32,7 @@ export default function VisualEditor() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-128px)] bg-stone-100">
+    <div className="flex flex-col h-screen bg-stone-100">
       {/* === TOP BAR — Base44 builder style === */}
       <div className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-stone-200 shrink-0">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 grid place-items-center shrink-0">

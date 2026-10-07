@@ -220,7 +220,6 @@ const AuthenticatedApp = () => {
         <Route path="contents" element={<Contents />} />
         <Route path="capabilities" element={<Capabilities />} />
         <Route path="gap-filler" element={<GapFiller />} />
-        <Route path="visual-editor" element={<VisualEditor />} />
         <Route path="opportunity-intelligence" element={<OpportunityIntelligence />} />
         <Route path="google-workspace-os" element={<GoogleWorkspaceOS />} />
         <Route path="internal-architecture" element={<InternalArchitecture />} />
@@ -314,6 +313,7 @@ const AuthenticatedApp = () => {
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
       <Route path="/:slug" element={<GeneratedPageView />} />
+      <Route path="/visual-editor" element={<VisualEditor />} />
       <Route path="/visualizer-test" element={<VisualizerTest />} />
       <Route path="/epoxy-systems" element={<EpoxyFlooringSystems />} />
       <Route path="/xps-funnel" element={<XpsFunnel />} />
