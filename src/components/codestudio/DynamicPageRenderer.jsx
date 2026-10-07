@@ -139,7 +139,7 @@ function SpacerSection({ height }) {
   return <div style={{ height: height || 40 }} />;
 }
 
-const RENDERERS = {
+export const RENDERERS = {
   hero: HeroSection, text: TextSection, gallery: GallerySection, cta: CtaSection,
   faq: FaqSection, testimonials: TestimonialsSection, html: HtmlSection,
   form: FormSection, spacer: SpacerSection,
