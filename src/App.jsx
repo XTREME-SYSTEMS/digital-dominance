@@ -92,6 +92,8 @@ import MetaAgent from '@/pages/admin/MetaAgent';
 import ConvergenceEngine from '@/pages/admin/ConvergenceEngine';
 import PipelineBuilder from '@/pages/admin/PipelineBuilder';
 import MasterPipeline from '@/pages/admin/MasterPipeline';
+import ABTesting from '@/pages/admin/ABTesting';
+import EpoxyFlooringSystems from '@/pages/EpoxyFlooringSystems';
 import SystemIndependence from '@/pages/admin/SystemIndependence';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
@@ -285,12 +287,14 @@ const AuthenticatedApp = () => {
         <Route path="convergence" element={<ConvergenceEngine />} />
         <Route path="pipeline-builder" element={<PipelineBuilder />} />
         <Route path="master-pipeline" element={<MasterPipeline />} />
+        <Route path="ab-testing" element={<ABTesting />} />
         <Route path="independence" element={<SystemIndependence />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
       <Route path="/:slug" element={<GeneratedPageView />} />
       <Route path="/visualizer-test" element={<VisualizerTest />} />
+      <Route path="/epoxy-systems" element={<EpoxyFlooringSystems />} />
       <Route path="/tool-hub" element={<ToolHub />} />
       <Route path="/portal" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route index element={<CustomerPortal />} />

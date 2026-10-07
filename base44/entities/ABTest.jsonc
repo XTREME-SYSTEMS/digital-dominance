@@ -1,0 +1,133 @@
+{
+  "name": "ABTest",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Test name"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "page_path": {
+      "type": "string",
+      "description": "URL path to test (e.g. /, /funnel, /estimate)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "running",
+        "paused",
+        "completed"
+      ],
+      "default": "draft"
+    },
+    "traffic_split": {
+      "type": "number",
+      "default": 50,
+      "description": "Percentage of traffic sent to variant A (rest goes to B)"
+    },
+    "variant_a_label": {
+      "type": "string",
+      "default": "Control (A)"
+    },
+    "variant_b_label": {
+      "type": "string",
+      "default": "Variant (B)"
+    },
+    "variant_a_headline": {
+      "type": "string",
+      "description": "Override headline for variant A (blank = use page default)"
+    },
+    "variant_a_subheadline": {
+      "type": "string"
+    },
+    "variant_a_cta_text": {
+      "type": "string"
+    },
+    "variant_a_cta_color": {
+      "type": "string",
+      "description": "Tailwind color class for CTA button (e.g. bg-amber-500)"
+    },
+    "variant_b_headline": {
+      "type": "string"
+    },
+    "variant_b_subheadline": {
+      "type": "string"
+    },
+    "variant_b_cta_text": {
+      "type": "string"
+    },
+    "variant_b_cta_color": {
+      "type": "string"
+    },
+    "conversion_event": {
+      "type": "string",
+      "default": "funnel_started",
+      "description": "Analytics event that counts as a conversion"
+    },
+    "impressions_a": {
+      "type": "number",
+      "default": 0
+    },
+    "conversions_a": {
+      "type": "number",
+      "default": 0
+    },
+    "impressions_b": {
+      "type": "number",
+      "default": 0
+    },
+    "conversions_b": {
+      "type": "number",
+      "default": 0
+    },
+    "winner": {
+      "type": "string",
+      "enum": [
+        "none",
+        "a",
+        "b",
+        "inconclusive"
+      ],
+      "default": "none"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "name",
+    "page_path",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
