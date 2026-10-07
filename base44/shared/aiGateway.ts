@@ -110,3 +110,28 @@ export async function generateImage(base44: any, opts: {
   const res = await base44.functions.invoke('vercelAiGateway', { action: 'generateImage', ...opts });
   return { url: res.data?.urls?.[0] || '' };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// patchCore — Override Core.InvokeLLM / GenerateImage on a server-side base44
+// client so backend functions route through the Vercel AI Gateway without
+// changing their call sites.
+//
+// Usage in a backend function:
+//   import { patchCore } from '../../shared/aiGateway.ts';
+//   const base44 = createClientFromRequest(req);
+//   patchCore(base44);
+//   // now base44.integrations.Core.InvokeLLM(...) hits the gateway, not Core
+// ─────────────────────────────────────────────────────────────────────────────
+export function patchCore(base44: any) {
+  const core = base44?.integrations?.Core;
+  if (!core) return;
+
+  core.InvokeLLM = async (opts: any = {}) => {
+    const { text, parsed } = await generateText(sanitizeOpts(opts));
+    return opts.response_json_schema ? parsed : text;
+  };
+
+  core.GenerateImage = async (opts: any = {}) => {
+    return generateImage(base44, opts);
+  };
+}

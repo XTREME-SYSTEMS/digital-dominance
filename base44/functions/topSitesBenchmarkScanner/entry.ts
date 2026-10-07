@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { patchCore } from '../../shared/aiGateway.ts';
 import { browseStealth } from '../../shared/cloudBrowser.ts';
 
 // TOP SITES BENCHMARK SCANNER
@@ -24,6 +25,8 @@ export default async function(req: Request): Promise<Response> {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
     const svc = base44.asServiceRole;
+    patchCore(base44);
+    patchCore(svc);
 
     const body = await req.json().catch(() => ({}));
     const action = body.action || 'status';

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { patchCore } from '../../shared/aiGateway.ts';
 import { browseSession, browseStealth, str } from '../../shared/cloudBrowser.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -18,6 +19,7 @@ import { browseSession, browseStealth, str } from '../../shared/cloudBrowser.ts'
 export default async function(req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+    patchCore(base44);
     const user = await base44.auth.me();
     if (!user || user.role !== 'admin') return Response.json({ error: 'Owner only' }, { status: 403 });
 
