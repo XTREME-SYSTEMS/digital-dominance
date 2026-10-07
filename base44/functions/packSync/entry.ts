@@ -427,12 +427,22 @@ export default async function(req: Request): Promise<Response> {
             : null;
           if (counterField) {
             const nextCount = Math.min(10, Math.max(Number(bundle[counterField] || 0), variantIndex));
-            const nextStatus = nextCount >= Number(bundle[counterField.replace("_generated", "_required")] || 0) && Number(bundle[counterField.replace("_generated", "_required")] || 0) > 0
-              ? "awaiting_approval"
-              : "generating";
+            const prospective = {
+              logo_generated: counterField === "logo_generated" ? nextCount : Number(bundle.logo_generated || 0),
+              brand_generated: counterField === "brand_generated" ? nextCount : Number(bundle.brand_generated || 0),
+              web_generated: counterField === "web_generated" ? nextCount : Number(bundle.web_generated || 0),
+              app_generated: counterField === "app_generated" ? nextCount : Number(bundle.app_generated || 0),
+            };
+            const requiredPairs = [
+              ["logo_generated", Number(bundle.logo_required || 0)],
+              ["brand_generated", Number(bundle.brand_required || 0)],
+              ["web_generated", Number(bundle.web_required || 0)],
+              ["app_generated", Number(bundle.app_required || 0)],
+            ] as const;
+            const allRequiredComplete = requiredPairs.every(([field, required]) => required === 0 || prospective[field] >= required);
             await base44.asServiceRole.entities.PackGenerationBundle.update(bundle.id, {
               [counterField]: nextCount,
-              status: nextStatus,
+              status: allRequiredComplete ? "awaiting_approval" : "generating",
               updated_at_iso: new Date().toISOString(),
             });
           }
