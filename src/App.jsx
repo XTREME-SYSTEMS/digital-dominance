@@ -98,6 +98,7 @@ import XpsFunnel from '@/pages/XpsFunnel';
 import SystemIndependence from '@/pages/admin/SystemIndependence';
 import UniversalTemplateStudio from '@/pages/admin/UniversalTemplateStudio';
 import SystemLibrary from '@/pages/admin/SystemLibrary';
+import PackSync from '@/pages/admin/PackSync';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -294,6 +295,7 @@ const AuthenticatedApp = () => {
         <Route path="independence" element={<SystemIndependence />} />
         <Route path="template-studio" element={<UniversalTemplateStudio />} />
         <Route path="system-library" element={<SystemLibrary />} />
+        <Route path="pack-sync" element={<PackSync />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />

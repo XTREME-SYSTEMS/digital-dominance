@@ -14,6 +14,7 @@ const navGroups = [
       { to: "/admin/independence", icon: Shield, label: "System Independence" },
       { to: "/admin/template-studio", icon: Layers, label: "Template Studio" },
       { to: "/admin/system-library", icon: Boxes, label: "System Library" },
+      { to: "/admin/pack-sync", icon: Package, label: "GPT Pack Sync" },
       { to: "/admin/pipeline-builder", icon: Zap, label: "Pipeline Builder" },
       { to: "/admin/google-workspace-os", icon: Globe, label: "Google Workspace OS" },
       { to: "/admin/internal-architecture", icon: Layers, label: "Internal Architecture" },
