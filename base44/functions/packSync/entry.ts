@@ -85,6 +85,58 @@ async function sha256(value: string): Promise<string> {
   return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function chunkText(value: string, size = 27000): string[] {
+  if (!value) return [];
+  const chunks: string[] = [];
+  for (let i = 0; i < value.length; i += size) chunks.push(value.slice(i, i + size));
+  return chunks;
+}
+
+function normalizePackType(value: string | undefined): string {
+  const v = (value || "other").toLowerCase().replace(/[\s-]+/g, "_");
+  if (v === "logo_pack" || v === "logopack") return "logo_pack";
+  if (v === "brand_pack" || v === "brandpack") return "brand_pack";
+  if (v === "web_pack" || v === "webpack") return "web_pack";
+  if (v === "app_pack" || v === "apppack") return "app_pack";
+  return "other";
+}
+
+async function storeTextArtifact(base44: any, args: {
+  ownerId: string;
+  packId: string;
+  templateKey: string;
+  version: string;
+  artifactKey: string;
+  artifactType: string;
+  content: string;
+  contentType: string;
+  source?: string;
+  metadata?: Record<string, any>;
+}): Promise<number> {
+  const chunks = chunkText(args.content);
+  if (!chunks.length) return 0;
+  const fullHash = await sha256(args.content);
+  for (let i = 0; i < chunks.length; i++) {
+    await base44.asServiceRole.entities.PackArtifact.create({
+      owner_id: args.ownerId,
+      pack_id: args.packId,
+      template_key: args.templateKey,
+      version: args.version,
+      artifact_key: args.artifactKey,
+      artifact_type: args.artifactType,
+      chunk_index: i,
+      chunk_count: chunks.length,
+      content: chunks[i],
+      content_type: args.contentType,
+      size_bytes: new TextEncoder().encode(chunks[i]).length,
+      sha256: await sha256(chunks[i]),
+      metadata: { ...(args.metadata || {}), full_sha256: fullHash },
+      source: args.source || "gpt",
+    });
+  }
+  return chunks.length;
+}
+
 // Translate GPT pack format → BrandTemplate schema
 function translatePack(pack: any) {
   const brandConfig = pack.brand_config || pack.brandConfig || {};
@@ -147,7 +199,7 @@ export default async function(req: Request): Promise<Response> {
     const body = await req.json().catch(() => ({}));
     const action = body.action || "sync";
 
-    // === SYNC: receive a pack from GPT and upsert into BrandTemplate ===
+    // === SYNC V2: receive a GPT pack, preserve the full source, and upsert BrandTemplate ===
     if (action === "sync") {
       const pack = body.pack || body;
       const templateKey = pack.template_key || pack.templateKey;
@@ -155,58 +207,196 @@ export default async function(req: Request): Promise<Response> {
         return Response.json({ error: "template_key is required" }, { status: 400 });
       }
 
+      const ownerId = body.owner_id || "pack-sync-system";
       const translated = translatePack(pack);
       const fullHtml = pack.preview_html || pack.previewHtml || "";
       const compactPreview = compactHtml(fullHtml);
-      if (compactPreview.length > 30000) {
-        return Response.json({
-          error: "preview_html is too large after compaction",
-          code: "PREVIEW_TOO_LARGE",
-          original_length: fullHtml.length,
-          compact_length: compactPreview.length,
-          max_length: 30000,
-          message: "Do not truncate parity-critical HTML. Split the pack into smaller templates or send a compact preview plus section HTML/CSS.",
-        }, { status: 413 });
-      }
-      translated.preview_html = compactPreview;
-      const payloadHash = await sha256(JSON.stringify(pack));
+      const manifestJson = JSON.stringify(pack);
+      const payloadHash = await sha256(manifestJson);
 
-      // Upsert by template_key
-      const existing = await base44.asServiceRole.entities.BrandTemplate.filter({
-        template_key: translated.template_key,
+      // Idempotency: an identical pack payload returns the existing receipt instead of duplicating artifacts.
+      const priorReceipts = await base44.asServiceRole.entities.PackSyncReceipt.filter({
+        template_key: templateKey,
+        payload_sha256: payloadHash,
       });
-
-      let record;
-      if (existing.items && existing.items.length > 0) {
-        const previousVersion = existing.items[0].version || "1.0.0";
-        if (!pack.version) translated.version = incrementPatch(previousVersion);
-        translated.notes = `${translated.notes} | sha256:${payloadHash} | preview:${compactPreview.length} chars`.slice(0, 2000);
-        record = await base44.asServiceRole.entities.BrandTemplate.update(
-          existing.items[0].id,
-          { ...translated, parent_version: previousVersion }
-        );
-      } else {
-        translated.notes = `${translated.notes} | sha256:${payloadHash} | preview:${compactPreview.length} chars`.slice(0, 2000);
-        record = await base44.asServiceRole.entities.BrandTemplate.create({
-          ...translated,
-          owner_id: body.owner_id || "pack-sync-system",
+      const priorReceipt = (priorReceipts.items || [])[0];
+      if (priorReceipt) {
+        return Response.json({
+          ok: true,
+          idempotent_replay: true,
+          receipt_id: priorReceipt.receipt_id,
+          pack_id: priorReceipt.pack_id,
+          template_id: priorReceipt.template_id || null,
+          template_key: templateKey,
+          version: priorReceipt.version,
+          sync_status: priorReceipt.status,
+          visual_status: priorReceipt.visual_status || "not_run",
+          operational_status: priorReceipt.operational_status || "not_run",
+          payload_sha256: payloadHash,
+          message: "Identical pack already stored; no duplicate artifacts were created.",
         });
       }
 
+      const existing = await base44.asServiceRole.entities.BrandTemplate.filter({
+        template_key: translated.template_key,
+      });
+      const existingRecord = (existing.items || [])[0];
+      const previousVersion = existingRecord?.version || null;
+      if (existingRecord && !pack.version) translated.version = incrementPatch(previousVersion || "1.0.0");
+
+      const packId = pack.pack_id || `pack_${templateKey}_${payloadHash.slice(0, 16)}`;
+      const receiptId = `psr_${crypto.randomUUID()}`;
+      const validationId = `pvr_${crypto.randomUUID()}`;
+      const packType = normalizePackType(pack.pack_type || pack.packType);
+
+      const receiptRecord = await base44.asServiceRole.entities.PackSyncReceipt.create({
+        owner_id: ownerId,
+        receipt_id: receiptId,
+        pack_id: packId,
+        template_key: templateKey,
+        pack_type: packType,
+        version: translated.version,
+        previous_version: previousVersion || "",
+        payload_sha256: payloadHash,
+        status: "accepted",
+        artifact_count: 0,
+        visual_status: "not_run",
+        operational_status: "not_run",
+        repair_attempts: 0,
+        blockers: [],
+        evidence_refs: [],
+        received_at: new Date().toISOString(),
+        metadata: {
+          source: "gpt-pack-sync-v2",
+          preview_original_length: fullHtml.length,
+          preview_compact_length: compactPreview.length,
+        },
+      });
+
+      let artifactCount = 0;
+      artifactCount += await storeTextArtifact(base44, {
+        ownerId,
+        packId,
+        templateKey,
+        version: translated.version,
+        artifactKey: "source-manifest",
+        artifactType: "source_manifest",
+        content: manifestJson,
+        contentType: "application/json",
+        metadata: { receipt_id: receiptId },
+      });
+      artifactCount += await storeTextArtifact(base44, {
+        ownerId,
+        packId,
+        templateKey,
+        version: translated.version,
+        artifactKey: "source-preview-html",
+        artifactType: "source_html",
+        content: compactPreview,
+        contentType: "text/html",
+        metadata: { receipt_id: receiptId },
+      });
+      if (pack.app_manifest || pack.appManifest) {
+        artifactCount += await storeTextArtifact(base44, {
+          ownerId,
+          packId,
+          templateKey,
+          version: translated.version,
+          artifactKey: "app-manifest",
+          artifactType: "app_manifest",
+          content: JSON.stringify(pack.app_manifest || pack.appManifest),
+          contentType: "application/json",
+          metadata: { receipt_id: receiptId },
+        });
+      }
+      if (pack.operational_contract || pack.operationalContract) {
+        artifactCount += await storeTextArtifact(base44, {
+          ownerId,
+          packId,
+          templateKey,
+          version: translated.version,
+          artifactKey: "operational-contract",
+          artifactType: "operational_contract",
+          content: JSON.stringify(pack.operational_contract || pack.operationalContract),
+          contentType: "application/json",
+          metadata: { receipt_id: receiptId },
+        });
+      }
+
+      // BrandTemplate remains the editable Base44 representation. Large previews live losslessly in PackArtifact.
+      translated.preview_html = compactPreview.length <= 30000 ? compactPreview : "";
+      translated.notes = `${translated.notes} | sha256:${payloadHash} | pack:${packId} | receipt:${receiptId}`.slice(0, 2000);
+      const templatePayload = {
+        ...translated,
+        current_pack_id: packId,
+        current_receipt_id: receiptId,
+        validation_status: "not_run",
+        ...(previousVersion ? { parent_version: previousVersion } : {}),
+      };
+
+      let record;
+      if (existingRecord) {
+        record = await base44.asServiceRole.entities.BrandTemplate.update(existingRecord.id, templatePayload);
+      } else {
+        record = await base44.asServiceRole.entities.BrandTemplate.create({
+          ...templatePayload,
+          owner_id: ownerId,
+        });
+      }
+
+      await base44.asServiceRole.entities.PackSyncReceipt.update(receiptRecord.id, {
+        template_id: record.id,
+        status: "stored",
+        artifact_count: artifactCount,
+        metadata: {
+          source: "gpt-pack-sync-v2",
+          preview_original_length: fullHtml.length,
+          preview_compact_length: compactPreview.length,
+          preview_stored_in_template: compactPreview.length <= 30000,
+        },
+      });
+
+      // Create a durable validation job record. A separate validator must execute it before parity can become PASS.
+      await base44.asServiceRole.entities.PackValidationRun.create({
+        owner_id: ownerId,
+        validation_id: validationId,
+        receipt_id: receiptId,
+        pack_id: packId,
+        template_key: templateKey,
+        target_url: record.deployed_url || "",
+        run_type: "full",
+        status: "queued",
+        validator_name: "pack-parity-validator",
+        validator_version: "2.0.0",
+        failures: [],
+        evidence_refs: [],
+        repair_attempt: 0,
+        max_repairs: 3,
+        notes: "Queued by packSync V2. PASS requires >=99 visual score and 100 operational score.",
+      });
+
       return Response.json({
         ok: true,
+        receipt_id: receiptId,
+        validation_id: validationId,
+        pack_id: packId,
         template_id: record.id,
         template_key: translated.template_key,
         name: translated.name,
         status: translated.status,
+        sync_status: "stored",
+        validation_status: "queued",
+        parity_certified: false,
         sections_count: translated.sections.length,
         version: translated.version,
-        parent_version: record.parent_version || null,
-        preview_truncated: false,
+        parent_version: previousVersion,
+        preview_stored_losslessly: true,
+        preview_stored_in_template: compactPreview.length <= 30000,
         preview_length: fullHtml.length,
         compact_preview_length: compactPreview.length,
+        artifact_count: artifactCount,
         payload_sha256: payloadHash,
-        message: `Pack "${translated.name}" synced successfully`,
+        message: `Pack "${translated.name}" stored successfully. Validation is queued; parity is not certified until validator PASS.`,
       });
     }
 
