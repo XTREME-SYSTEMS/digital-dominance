@@ -5,6 +5,7 @@ import { trackEvent } from "@/lib/tracking";
 import { Phone, Clock, MapPin, ChevronRight, ArrowRight, Calculator, BadgeCheck, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import Nav from "@/components/home/Nav";
+import ConsultationForm from "@/components/home/ConsultationForm";
 import BeforeAfterShowcase from "@/components/home/BeforeAfterShowcase";
 import FloorTypeGallery from "@/components/home/FloorTypeGallery";
 import ApplicationSpaces from "@/components/home/ApplicationSpaces";
@@ -79,6 +80,8 @@ export default function EpoxyContractorTemplate({ city, stateCode, stateName, se
           </div>
         </div>
       </section>
+
+      <ConsultationForm settings={settings} />
 
       {/* === City cost snapshot === */}
       <section className="bg-stone-50 border-b border-stone-200">
