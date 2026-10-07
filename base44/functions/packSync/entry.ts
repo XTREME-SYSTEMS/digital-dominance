@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.53";
 import { secrets } from "base44:runtime";
+import { PACK_DESIGN_CONSTITUTION, researchGateFailures } from "../../shared/packDesignConstitution.ts";
 
 // PACK SYNC — GPT → Base44 bridge
 // Accepts webpacks, brand packs, and logo packs from GPT/ChatGPT,
@@ -98,6 +99,12 @@ function normalizePackType(value: string | undefined): string {
   if (v === "brand_pack" || v === "brandpack") return "brand_pack";
   if (v === "web_pack" || v === "webpack") return "web_pack";
   if (v === "app_pack" || v === "apppack") return "app_pack";
+  if (v === "graphic_pack" || v === "graphicpack") return "graphic_pack";
+  if (v === "social_pack" || v === "socialpack") return "social_pack";
+  if (v === "motion_pack" || v === "motionpack") return "motion_pack";
+  if (v === "pwa_pack" || v === "pwapack") return "pwa_pack";
+  if (v === "component_pack" || v === "componentpack") return "component_pack";
+  if (v === "design_system_pack" || v === "designsystempack") return "design_system_pack";
   return "other";
 }
 
@@ -198,6 +205,10 @@ export default async function(req: Request): Promise<Response> {
     const base44 = createClientFromRequest(req);
     const body = await req.json().catch(() => ({}));
     const action = body.action || "sync";
+
+    if (action === "constitution") {
+      return Response.json({ ok: true, constitution: PACK_DESIGN_CONSTITUTION });
+    }
 
     // === SYNC V2: receive a GPT pack, preserve the full source, and upsert BrandTemplate ===
     if (action === "sync") {
