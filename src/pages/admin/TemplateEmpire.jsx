@@ -88,7 +88,7 @@ export default function TemplateEmpire() {
   };
 
   return (
-    <div className="te-root" style={{ padding: "16px 20px 100px" }}>
+    <div className="te-root" style={{ padding: "8px 4px 100px" }}>
       <style>{EMPIRE_CSS}</style>
 
       <EmpireHero

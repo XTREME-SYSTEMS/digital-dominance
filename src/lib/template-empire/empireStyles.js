@@ -44,7 +44,7 @@ export const EMPIRE_CSS = `
 .te-hero-card-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.1);margin-top:10px;overflow:hidden}
 .te-hero-card-bar span{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,#6366f1,#a5b4fc)}
 
-@media(max-width:900px){.te-hero-cards{display:none}.te-hero{min-height:340px;padding:40px 24px}.te-hero h1{font-size:32px}}
+@media(max-width:1100px){.te-hero-cards{display:none}.te-herocopy{max-width:none}.te-hero{min-height:340px;padding:40px 24px}.te-hero h1{font-size:32px}}
 
 /* ── Stats bar ── */
 .te-stats{display:grid;grid-template-columns:repeat(4,1fr);background:#07070d;border-radius:16px;overflow:hidden;margin-top:16px}

@@ -249,8 +249,8 @@ export default function AdminLayout() {
           <span className="text-sm font-bold text-white">Concrete Command</span>
         </div>
 
-        {/* Page content — spread out with more padding */}
-        <div className="flex-1 max-w-7xl w-full mx-auto px-6 py-8 empire-content-bg">
+        {/* Page content — wide canvas for command-center pages */}
+        <div className="flex-1 w-full mx-auto px-4 lg:px-8 py-8 empire-content-bg">
           <Outlet />
         </div>
       </div>
