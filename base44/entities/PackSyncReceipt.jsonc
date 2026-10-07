@@ -1,0 +1,156 @@
+{
+  "name": "PackSyncReceipt",
+  "type": "object",
+  "properties": {
+    "owner_id": {
+      "type": "string"
+    },
+    "receipt_id": {
+      "type": "string"
+    },
+    "pack_id": {
+      "type": "string"
+    },
+    "template_id": {
+      "type": "string"
+    },
+    "template_key": {
+      "type": "string"
+    },
+    "pack_type": {
+      "type": "string",
+      "enum": [
+        "logo_pack",
+        "brand_pack",
+        "web_pack",
+        "app_pack",
+        "webpack",
+        "brandpack",
+        "logopack",
+        "other"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "previous_version": {
+      "type": "string"
+    },
+    "payload_sha256": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "stored",
+        "validating",
+        "pass",
+        "fail",
+        "blocked",
+        "unknown"
+      ],
+      "default": "accepted"
+    },
+    "artifact_count": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "visual_status": {
+      "type": "string",
+      "enum": [
+        "not_run",
+        "pass",
+        "fail",
+        "blocked"
+      ],
+      "default": "not_run"
+    },
+    "visual_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "operational_status": {
+      "type": "string",
+      "enum": [
+        "not_run",
+        "pass",
+        "fail",
+        "blocked"
+      ],
+      "default": "not_run"
+    },
+    "operational_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "repair_attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "validator_version": {
+      "type": "string"
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "received_at": {
+      "type": "string"
+    },
+    "completed_at": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 4000
+    }
+  },
+  "required": [
+    "receipt_id",
+    "pack_id",
+    "template_key",
+    "version",
+    "payload_sha256",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

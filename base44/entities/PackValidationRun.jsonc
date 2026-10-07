@@ -1,0 +1,138 @@
+{
+  "name": "PackValidationRun",
+  "type": "object",
+  "properties": {
+    "owner_id": {
+      "type": "string"
+    },
+    "validation_id": {
+      "type": "string"
+    },
+    "receipt_id": {
+      "type": "string"
+    },
+    "pack_id": {
+      "type": "string"
+    },
+    "template_key": {
+      "type": "string"
+    },
+    "target_url": {
+      "type": "string"
+    },
+    "run_type": {
+      "type": "string",
+      "enum": [
+        "visual",
+        "operational",
+        "full"
+      ],
+      "default": "full"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "pass",
+        "fail",
+        "blocked"
+      ],
+      "default": "queued"
+    },
+    "validator_name": {
+      "type": "string"
+    },
+    "validator_version": {
+      "type": "string"
+    },
+    "visual_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "operational_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "breakpoint_results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "operational_checks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "repair_attempt": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "max_repairs": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 3
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "completed_at": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 4000
+    }
+  },
+  "required": [
+    "validation_id",
+    "receipt_id",
+    "pack_id",
+    "template_key",
+    "run_type",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

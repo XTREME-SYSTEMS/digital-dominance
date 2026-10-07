@@ -1,0 +1,114 @@
+{
+  "name": "PackArtifact",
+  "type": "object",
+  "properties": {
+    "owner_id": {
+      "type": "string"
+    },
+    "pack_id": {
+      "type": "string",
+      "description": "Stable GPT/Base44 pack identifier"
+    },
+    "template_key": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "artifact_key": {
+      "type": "string",
+      "description": "Stable artifact key within a pack"
+    },
+    "artifact_type": {
+      "type": "string",
+      "enum": [
+        "source_manifest",
+        "source_html",
+        "section_html",
+        "section_css",
+        "image_reference",
+        "logo_reference",
+        "font_reference",
+        "compiled_preview",
+        "app_manifest",
+        "operational_contract",
+        "screenshot_reference",
+        "validation_input",
+        "other"
+      ]
+    },
+    "chunk_index": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "chunk_count": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+    "content": {
+      "type": "string",
+      "maxLength": 28000,
+      "description": "Chunked artifact payload; large assets are split across records"
+    },
+    "content_url": {
+      "type": "string"
+    },
+    "content_type": {
+      "type": "string"
+    },
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sha256": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "gpt",
+        "base44",
+        "validator",
+        "operator",
+        "system"
+      ],
+      "default": "gpt"
+    }
+  },
+  "required": [
+    "pack_id",
+    "template_key",
+    "artifact_key",
+    "artifact_type",
+    "chunk_index",
+    "chunk_count",
+    "sha256"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

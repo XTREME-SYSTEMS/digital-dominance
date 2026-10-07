@@ -153,6 +153,35 @@
     "notes": {
       "type": "string",
       "maxLength": 2000
+    },
+    "current_pack_id": {
+      "type": "string",
+      "description": "Current Pack Sync V2 pack id"
+    },
+    "current_receipt_id": {
+      "type": "string",
+      "description": "Current Pack Sync V2 receipt id"
+    },
+    "validation_status": {
+      "type": "string",
+      "enum": [
+        "not_run",
+        "validating",
+        "pass",
+        "fail",
+        "blocked"
+      ],
+      "default": "not_run"
+    },
+    "visual_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "operational_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
     }
   },
   "required": [
