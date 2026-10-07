@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { uploadFile } from "@/lib/gateway";
 import { Upload, Plus, Trash2, Loader2, Share2, FileText, Search, Brain } from "lucide-react";
 
 const INTEL_CATEGORIES = ["market_research","competitor_analysis","industry_trends","customer_insights","product_knowledge","sales_playbook","technical_docs","company_policy","brand_guidelines","seo_strategy","domain_strategy","operational_data","training_material","custom"];
@@ -57,7 +58,7 @@ export default function IntelligenceTab({ agent, agents }) {
 
   const handleFileUpload = async (file) => {
     try {
-      const res = await base44.integrations.Core.UploadPublicFile({ file });
+      const res = await uploadFile(file);
       setForm(prev => ({ ...prev, file_url: res.file_url, file_type: file.name.split(".").pop(), source: "operator_upload" }));
     } catch (e) { console.error(e); }
   };

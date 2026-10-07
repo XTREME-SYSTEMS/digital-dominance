@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ACCENT_PRESETS } from "@/data/topIndustries";
 import { base44 } from "@/api/base44Client";
+import { generateImage } from "@/lib/gateway";
 import { ArrowRight, ArrowLeft, Palette, Image as ImageIcon, Loader2, Sparkles, Check } from "lucide-react";
 
 export default function BrandingStudio({ config, update, onNext, onBack }) {
@@ -28,7 +29,7 @@ export default function BrandingStudio({ config, update, onNext, onBack }) {
         `Professional minimalist logo for a ${industry.label} business called "${config.businessName}". ` +
         `Modern, clean, icon-based design with a ${config.accentName} accent color (${config.accentColor}). ` +
         `Flat design, vector style, white background, suitable for a website header. No text or minimal text.`;
-      const res = await base44.integrations.Core.GenerateImage({ prompt });
+      const res = await generateImage({ prompt });
       if (res?.url) {
         update({ logoUrl: res.url });
       } else {

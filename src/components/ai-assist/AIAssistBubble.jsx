@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X, Send, Loader2, Zap, Crown, EyeOff, Minus, Plus, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 
 const ALPHA_SHADOW_SYSTEM_PROMPT = `You are ALPHA SHADOW — the merged CEO + covert operator for the Xtreme Polishing Systems autonomous business empire. You are both Alpha Prime (the chief executive orchestrator) and Shadow (the invisible, unrestricted operator).
 
@@ -107,7 +108,7 @@ export default function AIAssistBubble() {
         ? `${ALPHA_SHADOW_SYSTEM_PROMPT}\n\n--- PREVIOUS CONVERSATION ---\n${recentContext}\n\n--- CURRENT USER REQUEST ---\n${userMsg.content}`
         : `${ALPHA_SHADOW_SYSTEM_PROMPT}\n\n--- USER REQUEST ---\n${userMsg.content}`;
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await invokeLLM({
         prompt: fullPrompt,
         add_context_from_internet: true,
         model: 'gemini_3_flash',

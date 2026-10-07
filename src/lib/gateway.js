@@ -36,33 +36,32 @@ export async function uploadFile(file) {
   return { file_url: res.data?.file_url };
 }
 
-// Structured and plain-text responses matching Core.InvokeLLM's previous return shape.
+// LLM text generation through Vercel AI Gateway (replaces Core.InvokeLLM).
+// Returns a string (no schema) or parsed object (with schema) — same shape as Core.
 export async function invokeLLM(opts) {
-  let res;
-  try {
-    res = await base44.functions.invoke('independentAi', opts);
-  } catch (error) {
-    if (error?.response?.status === 503) throw new Error('Independent AI providers are unavailable. Check provider rate limits, billing, and account access.');
-    throw error;
-  }
+  const gatewayOpts = { ...opts };
+  // Core model names (e.g. 'gemini_3_flash') aren't valid Vercel AI Gateway models
+  // ('provider/model' format). Drop them so the gateway default applies.
+  if (gatewayOpts.model && !String(gatewayOpts.model).includes('/')) delete gatewayOpts.model;
+  // add_context_from_internet isn't supported by Vercel AI Gateway — dropped.
+  delete gatewayOpts.add_context_from_internet;
+
+  const res = await base44.functions.invoke('vercelAiGateway', { action: 'generateText', ...gatewayOpts });
   const data = res.data;
-  if (!data?.ok || data.result == null) throw new Error(data?.error || 'Independent AI failed');
-  if (opts.response_json_schema && (typeof data.result !== 'object' || Array.isArray(data.result))) {
-    throw new Error('Independent AI did not return valid structured data');
-  }
-  return data.result;
+  if (!data?.ok) throw new Error(data?.error || 'Vercel AI Gateway failed');
+  return opts.response_json_schema ? data.parsed : data.text;
 }
 
-// LLM text generation through available free-tier providers.
+// LLM text generation — convenience wrapper returning { text, parsed }.
 export async function generateText(opts) {
   const result = await invokeLLM(opts);
   return { text: typeof result === 'string' ? result : JSON.stringify(result), parsed: result };
 }
 
-// Text-to-image → Vercel AI Gateway (replaces base44.integrations.Core.GenerateImage)
+// Text-to-image → Vercel AI Gateway. Returns { url } matching Core.GenerateImage.
 export async function generateImage(opts) {
   const res = await base44.functions.invoke('vercelAiGateway', { action: 'generateImage', ...opts });
-  return res.data;
+  return { url: res.data?.urls?.[0] || '' };
 }
 
 // Image editing with reference → Vercel AI Gateway (for floor visualizer)

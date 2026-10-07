@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { invokeLLM } from '@/lib/gateway';
 import { Sparkles, Loader2, Star, History, Trash2, X } from 'lucide-react';
 
 // ── 10 Vision Prompts researched from top entrepreneur/wealth-builder topics ──
@@ -155,7 +156,7 @@ export default function VisionStep({ vision, setVision, onAnalyze, analyzing }) 
   const handleAiAssist = async () => {
     setAiLoading(true);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `You are a visionary business architect. Generate ONE powerful, specific vision statement (2-4 sentences) for an autonomous AI agent system that a business owner or entrepreneur could build. 
 
 The system can create: AI tools, mobile apps, lead generation funnels, content factories, prediction engines, crypto creators, agent swarms, SEO dominators, and autonomous workflows — all powered by deterministic, infinitely capable AI agents.

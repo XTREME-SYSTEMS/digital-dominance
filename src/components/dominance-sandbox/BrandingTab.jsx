@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Sparkles, Globe, CheckCircle2, Loader2, User, Image as ImageIcon, RefreshCw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { invokeLLM, generateImage } from "@/lib/gateway";
 import { useSandbox } from "./SandboxContext";
 import SandboxCard, { StatusBadge } from "./SandboxCard";
 
@@ -38,7 +39,7 @@ export default function BrandingTab() {
     if (!selectedName) return;
     setGenLogo(true);
     try {
-      const res = await base44.integrations.Core.GenerateImage({
+      const res = await generateImage({
         prompt: `Professional minimalist logo for "${selectedName}", a ${campaign.keyword} company. Bold, modern, construction/trade industry aesthetic. Colors: amber/gold and dark charcoal. Clean vector style, transparent background.`,
       });
       updateCampaign({ logo: res?.url });
@@ -53,7 +54,7 @@ export default function BrandingTab() {
     if (!selectedName) return;
     setGenPersona(true);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt: `Create a founder persona for "${selectedName}", a ${campaign.keyword} business in ${campaign.city || "the US"}. Generate: persona_name, persona_bio (2 paragraphs establishing authority), persona_credentials (array). Return JSON.`,
         add_context_from_internet: true,
         model: "gemini_3_flash",

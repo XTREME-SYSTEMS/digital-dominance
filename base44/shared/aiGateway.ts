@@ -66,3 +66,47 @@ export async function generateText(opts: {
 
   return { text, parsed, usage: data.usage, model: data.model };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Drop-in replacements for base44.integrations.Core.InvokeLLM / GenerateImage.
+//
+// These match the Core return shapes so backend functions can swap one line:
+//   const r = await base44.integrations.Core.InvokeLLM({ ... });
+//   →
+//   const r = await invokeLLM({ ... });
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Normalize Core model names (e.g. 'gemini_3_flash') — Vercel AI Gateway uses
+// 'provider/model' names. Unknown Core names are dropped so the gateway default
+// (claude-opus-4.7) applies. add_context_from_internet is not supported by the
+// gateway and is silently dropped.
+function sanitizeOpts(opts: any) {
+  const out: any = { ...opts };
+  if (out.model && !String(out.model).includes('/')) delete out.model;
+  delete out.add_context_from_internet;
+  return out;
+}
+
+// Returns a string (no schema) or the parsed object (with schema) — same as Core.InvokeLLM.
+export async function invokeLLM(opts: {
+  prompt: string;
+  system_prompt?: string;
+  model?: string;
+  response_json_schema?: any;
+  file_urls?: string[];
+}): Promise<any> {
+  const { text, parsed } = await generateText(sanitizeOpts(opts));
+  return opts.response_json_schema ? parsed : text;
+}
+
+// Returns { url } — same as Core.GenerateImage. Needs the base44 client to upload
+// the generated image to Supabase Storage via the vercelAiGateway function.
+export async function generateImage(base44: any, opts: {
+  prompt: string;
+  model?: string;
+  n?: number;
+  size?: string;
+}): Promise<{ url: string }> {
+  const res = await base44.functions.invoke('vercelAiGateway', { action: 'generateImage', ...opts });
+  return { url: res.data?.urls?.[0] || '' };
+}

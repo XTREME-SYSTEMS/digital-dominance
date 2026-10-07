@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { invokeLLM } from "@/lib/gateway";
 import { ArrowRight, ArrowLeft, FileText, Loader2, Sparkles, Check, Copy } from "lucide-react";
 
 export default function ContentStudio({ config, update, onNext, onBack }) {
@@ -33,7 +34,7 @@ Generate a complete website content package as JSON with these fields:
 Make it specific to the ${industry.label} industry. Use urgency and trust language appropriate for ${industry.emergency} emergency level.
 Return ONLY valid JSON.`;
 
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await invokeLLM({
         prompt,
         response_json_schema: {
           type: "object",
