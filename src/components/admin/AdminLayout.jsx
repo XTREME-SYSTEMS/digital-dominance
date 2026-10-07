@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { LayoutDashboard, Users, KanbanSquare, Settings, ExternalLink, Mail, Radar, Globe, ScrollText, Star, Wrench, Factory, Smartphone, Rocket, Layers, Layout, UserCircle, TrendingUp, MessageSquare, Brain, Target, BarChart3, Package, Bot, KeyRound, Share2, Wand2, MapPin, Network, Crown, Building2, Code2, Heart, PhoneCall, Activity, ListOrdered, Database, Workflow, Gauge, Cpu, Sparkles, Boxes, BookOpen, Eye, EyeOff, Zap, Shield, Compass, Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Users, KanbanSquare, Settings, ExternalLink, Mail, Radar, Globe, ScrollText, Star, Wrench, Factory, Smartphone, Rocket, Layers, Layout, UserCircle, TrendingUp, MessageSquare, Brain, Target, BarChart3, Package, Bot, KeyRound, Share2, Wand2, MapPin, Network, Crown, Building2, Code2, Heart, PhoneCall, Activity, ListOrdered, Database, Workflow, Gauge, Cpu, Sparkles, Boxes, BookOpen, Eye, EyeOff, Zap, Shield, Compass, Menu, X, ChevronDown, ChevronRight, LayoutGrid } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { XTREME_AI_ICON_URL } from "@/components/Logo";
 import AIAssistBubble from "@/components/ai-assist/AIAssistBubble";
@@ -9,6 +9,7 @@ const navGroups = [
   {
     label: null,
     items: [
+      { to: "/admin/contents", icon: LayoutGrid, label: "📋 Contents Menu" },
       { to: "/admin", end: true, icon: Sparkles, label: "Concrete Opportunities" },
       { to: "/admin/master-pipeline", icon: ListOrdered, label: "Master Pipeline" },
       { to: "/admin/provider-vault", icon: Shield, label: "Provider Vault" },

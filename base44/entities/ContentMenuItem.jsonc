@@ -1,0 +1,63 @@
+{
+  "name": "ContentMenuItem",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display label for the menu item"
+    },
+    "path": {
+      "type": "string",
+      "description": "Route path this item links to (e.g. /admin/leads)"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name (e.g. Users, Shield, Crown)"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category grouping for the menu"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Short description of what this item does"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order within category"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "path",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
