@@ -94,6 +94,7 @@ import PipelineBuilder from '@/pages/admin/PipelineBuilder';
 import MasterPipeline from '@/pages/admin/MasterPipeline';
 import ABTesting from '@/pages/admin/ABTesting';
 import EpoxyFlooringSystems from '@/pages/EpoxyFlooringSystems';
+import XpsFunnel from '@/pages/XpsFunnel';
 import SystemIndependence from '@/pages/admin/SystemIndependence';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
@@ -295,6 +296,7 @@ const AuthenticatedApp = () => {
       <Route path="/:slug" element={<GeneratedPageView />} />
       <Route path="/visualizer-test" element={<VisualizerTest />} />
       <Route path="/epoxy-systems" element={<EpoxyFlooringSystems />} />
+      <Route path="/xps-funnel" element={<XpsFunnel />} />
       <Route path="/tool-hub" element={<ToolHub />} />
       <Route path="/portal" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route index element={<CustomerPortal />} />
