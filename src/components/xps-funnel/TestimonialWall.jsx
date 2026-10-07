@@ -24,21 +24,21 @@ const REVIEWS = [
 
 export default function TestimonialWall() {
   return (
-    <section className="empire-page-bg py-16 px-6">
+    <section className="bg-stone-50 py-16 px-6">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10 empire-fade-in">
-          <h2 className="text-3xl md:text-5xl font-black text-stone-900 uppercase tracking-tight">
-            Loved by <span className="empire-gold-text">2,400+ Customers</span>
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-5xl font-black text-black uppercase tracking-tight">
+            Loved by <span className="xps-gold-text">2,400+ Customers</span>
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {REVIEWS.map((r, i) => (
-            <div key={i} className="empire-card p-6">
-              <Quote className="h-8 w-8 text-indigo-400 mb-3" />
+            <div key={i} className="rounded-2xl bg-white border border-stone-200 p-6 shadow-sm">
+              <Quote className="h-8 w-8 text-amber-300 mb-3" />
               <p className="text-sm text-stone-700 leading-relaxed">"{r.text}"</p>
               <div className="border-t border-stone-100 pt-3 mt-4">
-                <div className="font-black text-stone-900 text-sm">{r.name}</div>
+                <div className="font-black text-black text-sm">{r.name}</div>
                 <div className="text-xs text-stone-500">{r.role}</div>
               </div>
             </div>

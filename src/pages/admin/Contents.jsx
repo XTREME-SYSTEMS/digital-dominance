@@ -45,7 +45,6 @@ const DEFAULT_CATEGORIES = [
 
 const DEFAULT_ITEMS = [
   { name: "Concrete Opportunities", path: "/admin", icon: "Sparkles", category: "Command & Control", description: "Opportunity intelligence dashboard" },
-  { name: "✦ Template Empire", path: "/admin/template-empire", icon: "Crown", category: "Command & Control", description: "Visual template gallery with AI site generator and batch launch" },
   { name: "Master Pipeline", path: "/admin/master-pipeline", icon: "ListOrdered", category: "Command & Control", description: "Master pipeline view" },
   { name: "Command Center", path: "/admin/command-center", icon: "Crown", category: "Command & Control", description: "Central command hub" },
   { name: "Settings", path: "/admin/settings", icon: "Settings", category: "Command & Control", description: "Admin settings" },
