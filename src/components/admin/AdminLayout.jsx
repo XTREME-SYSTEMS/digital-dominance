@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { LayoutDashboard, Users, KanbanSquare, Settings, ExternalLink, Mail, Radar, Globe, ScrollText, Star, Wrench, Factory, Smartphone, Rocket, Layers, Layout, UserCircle, TrendingUp, MessageSquare, Brain, Target, BarChart3, Package, Bot, KeyRound, Share2, Wand2, MapPin, Network, Crown, Building2, Code2, Heart, PhoneCall, Activity, ListOrdered, Database, Workflow, Gauge, Cpu, Sparkles, Boxes, BookOpen, Eye, EyeOff, Zap, Shield, Compass, Menu, X, ChevronDown, ChevronRight, LayoutGrid } from "lucide-react";
+import { LayoutDashboard, Users, KanbanSquare, Settings, ExternalLink, Mail, Radar, Globe, ScrollText, Star, Wrench, Factory, Smartphone, Rocket, Layers, Layout, UserCircle, TrendingUp, MessageSquare, Brain, Target, BarChart3, Package, Bot, KeyRound, Share2, Wand2, MapPin, Network, Crown, Building2, Code2, Heart, PhoneCall, Activity, ListOrdered, Database, Workflow, Gauge, Cpu, Sparkles, Boxes, BookOpen, Eye, EyeOff, Zap, Shield, Compass, Menu, X, ChevronDown, ChevronRight, LayoutGrid, Search } from "lucide-react";
 import BackButton from "@/components/BackButton";
 import { XTREME_AI_ICON_URL } from "@/components/Logo";
 import AIAssistBubble from "@/components/ai-assist/AIAssistBubble";
@@ -16,6 +16,7 @@ const navGroups = [
       { to: "/admin/independence", icon: Shield, label: "System Independence" },
       { to: "/admin/template-studio", icon: Layers, label: "Template Studio" },
       { to: "/admin/system-library", icon: Boxes, label: "System Library" },
+      { to: "/admin/pack-research", icon: Search, label: "GPT Pack Research" },
       { to: "/admin/pack-sync", icon: Package, label: "GPT Pack Sync" },
       { to: "/admin/pipeline-builder", icon: Zap, label: "Pipeline Builder" },
       { to: "/admin/google-workspace-os", icon: Globe, label: "Google Workspace OS" },
