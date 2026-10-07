@@ -21,6 +21,15 @@ export const base44 = createClient({
 // through the Vercel AI Gateway automatically — no per-component edits needed.
 // The gateway has its own billing, separate from Base44 integration credits.
 // ─────────────────────────────────────────────────────────────────────────────
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 function installGatewayOverrides() {
   const core = base44?.integrations?.Core;
   if (!core) return;

@@ -149,4 +149,74 @@ export function patchCore(base44: any) {
     const res = await base44.functions.invoke('vercelAiGateway', { action: 'extractData', file_url: opts.file_url, json_schema: opts.json_schema });
     return { status: 'success', output: res.data?.output };
   };
+
+  // SendEmail → independentEmail function (bypasses Base44 email credits)
+  core.SendEmail = async (opts: any = {}) => {
+    const res = await base44.functions.invoke('independentEmail', {
+      to: opts.to,
+      subject: opts.subject,
+      body: opts.body,
+      html: opts.html,
+      text: opts.text,
+      template_id: opts.template_id,
+      template_name: opts.template_name,
+      variables: opts.variables,
+      from_name: opts.from_name,
+      attachments: opts.attachments,
+    });
+    return res.data;
+  };
+
+  // UploadPublicFile → supabaseUpload (bypasses Base44 storage credits, returns public URL)
+  core.UploadPublicFile = async (opts: any = {}) => {
+    const file = opts.file;
+    const ext = (file.name || 'file').split('.').pop() || 'bin';
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const res = await base44.functions.invoke('supabaseUpload', {
+      file_data: await fileToDataUrl(file),
+      filename: safeName,
+      content_type: file.type || 'application/octet-stream',
+      bucket: 'public',
+    });
+    return { file_url: res.data?.file_url };
+  };
+
+  // UploadPrivateFile → supabaseUpload (bypasses Base44 storage credits, returns private URI)
+  core.UploadPrivateFile = async (opts: any = {}) => {
+    const file = opts.file;
+    const ext = (file.name || 'file').split('.').pop() || 'bin';
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const res = await base44.functions.invoke('supabaseUpload', {
+      file_data: await fileToDataUrl(file),
+      filename: safeName,
+      content_type: file.type || 'application/octet-stream',
+      bucket: 'private',
+    });
+    return { file_uri: res.data?.file_uri || res.data?.file_url };
+  };
+
+  // CreateFileSignedUrl → supabaseUpload signed URL (bypasses Base44 credits)
+  core.CreateFileSignedUrl = async (opts: any = {}) => {
+    const res = await base44.functions.invoke('supabaseUpload', {
+      action: 'signedUrl',
+      file_uri: opts.file_uri,
+      expires_in: opts.expires_in || 300,
+    });
+    return { signed_url: res.data?.signed_url || res.data?.file_url || '' };
+  };
+}
+
+// Helper: convert File to data URL (server-side compatible)
+async function fileToDataUrl(file: any): Promise<string> {
+  if (typeof file === 'string') return file;
+  if (file.arrayBuffer) {
+    const buf = await file.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    const b64 = btoa(binary);
+    const ext = (file.name || 'file').split('.').pop() || 'bin';
+    return `data:${file.type || 'application/octet-stream'};base64,${b64}`;
+  }
+  return String(file);
 }
