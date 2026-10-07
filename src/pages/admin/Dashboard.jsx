@@ -20,16 +20,16 @@ const PRIMARY_ACTIONS = [
   {
     to: "/admin/site-builder",
     icon: Crown,
-    label: "Universal Site Builder",
-    desc: "Full pipeline — pick industry, branding, logo, content, URL, launch everything",
+    label: "Concrete Site Builder",
+    desc: "Full pipeline — epoxy, polished concrete, or decorative concrete site with branding, logo, content, URL, launch",
     gradient: "from-amber-500 via-amber-600 to-amber-700",
     glow: "shadow-amber-500/30",
   },
   {
     to: "/admin/domain-rush",
     icon: Crown,
-    label: "Launch Dominance Campaign",
-    desc: "One-click automated pipeline — domain, site, content, social, SEO",
+    label: "Launch Concrete Dominance",
+    desc: "One-click automated pipeline — domain, site, content, social, SEO for concrete markets",
     gradient: "from-orange-500 via-orange-600 to-orange-700",
     glow: "shadow-orange-500/30",
   },
@@ -37,15 +37,15 @@ const PRIMARY_ACTIONS = [
     to: "/admin/dominance-sandbox",
     icon: Rocket,
     label: "Dominance Sandbox",
-    desc: "7-tab command center — discovery, branding, funnel, content, social, simulation, launch",
+    desc: "7-tab command center — discovery, branding, funnel, content, social, simulation, launch for concrete niches",
     gradient: "from-emerald-500 via-emerald-600 to-emerald-700",
     glow: "shadow-emerald-500/30",
   },
   {
     to: "/admin/website-factory",
     icon: Rocket,
-    label: "Launch New Website",
-    desc: "Create & deploy a new site from a template — pick niche, configure, go live",
+    label: "Launch Concrete Website",
+    desc: "Create & deploy a new epoxy, polished concrete, or decorative concrete site from a template",
     gradient: "from-blue-500 via-blue-600 to-blue-700",
     glow: "shadow-blue-500/30",
   },
@@ -53,7 +53,7 @@ const PRIMARY_ACTIONS = [
 
 const LAUNCH_SECTIONS = [
   {
-    title: "Dominance System",
+    title: "Concrete Market Dominance",
     icon: Crown,
     color: "amber",
     items: [
@@ -65,7 +65,7 @@ const LAUNCH_SECTIONS = [
     ],
   },
   {
-    title: "Launch Websites",
+    title: "Launch Concrete Sites",
     icon: Rocket,
     color: "blue",
     items: [
@@ -78,7 +78,7 @@ const LAUNCH_SECTIONS = [
     ],
   },
   {
-    title: "Automate",
+    title: "Automate Concrete Marketing",
     icon: Bot,
     color: "purple",
     items: [
@@ -91,7 +91,7 @@ const LAUNCH_SECTIONS = [
     ],
   },
   {
-    title: "Pipeline",
+    title: "Concrete Lead Pipeline",
     icon: Users,
     color: "green",
     items: [
@@ -104,7 +104,7 @@ const LAUNCH_SECTIONS = [
     ],
   },
   {
-    title: "Intelligence",
+    title: "Concrete Intelligence",
     icon: Compass,
     color: "stone",
     items: [
@@ -149,11 +149,11 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* Branded header */}
       <div className="xa-electric-hover rounded-2xl bg-stone-950 p-6 flex items-center gap-5">
-        <img src={XTREME_AI_ICON_URL} alt="Xtreme AI Systems" className="h-16 w-16 object-contain shrink-0" />
+        <img src={XTREME_AI_ICON_URL} alt="Xtreme Polishing Systems" className="h-16 w-16 object-contain shrink-0" />
         <div>
-          <div className="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase">Xtreme AI Systems</div>
-          <h1 className="text-2xl font-bold text-white tracking-tight mt-0.5">Command Center</h1>
-          <p className="text-sm text-stone-400 mt-1">Launch websites, dominate search, automate everything</p>
+          <div className="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase">Xtreme Polishing Systems</div>
+          <h1 className="text-2xl font-bold text-white tracking-tight mt-0.5">Concrete Command Center</h1>
+          <p className="text-sm text-stone-400 mt-1">Epoxy, polished concrete & decorative concrete — launch sites, dominate search, automate everything</p>
         </div>
         <div className="ml-auto hidden md:flex items-center gap-2 text-xs text-stone-500">
           <Zap className="h-4 w-4 text-amber-500" />

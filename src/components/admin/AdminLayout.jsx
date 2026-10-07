@@ -9,7 +9,7 @@ const navGroups = [
   {
     label: null,
     items: [
-      { to: "/admin", end: true, icon: Sparkles, label: "Opportunity Intelligence" },
+      { to: "/admin", end: true, icon: Sparkles, label: "Concrete Opportunities" },
       { to: "/admin/master-pipeline", icon: ListOrdered, label: "Master Pipeline" },
       { to: "/admin/independence", icon: Shield, label: "System Independence" },
       { to: "/admin/pipeline-builder", icon: Zap, label: "Pipeline Builder" },
@@ -21,7 +21,7 @@ const navGroups = [
     ],
   },
   {
-    label: "THE LOOP — Vision → Agents → Convergence",
+    label: "CONCRETE OPS — Vision → Agents → Convergence",
     items: [
       { to: "/admin/vision-studio", icon: Wand2, label: "Vision Studio" },
       { to: "/admin/agent-builder", icon: Bot, label: "Agent Builder" },
@@ -33,7 +33,7 @@ const navGroups = [
     ],
   },
   {
-    label: "DOMINANCE — The Output",
+    label: "MARKET DOMINANCE — National Concrete Reach",
     items: [
       { to: "/admin/digital-dominance", icon: Crown, label: "Digital Dominance" },
       { to: "/admin/autonomous-dominance", icon: Crown, label: "Autonomous Dominance" },
@@ -42,7 +42,7 @@ const navGroups = [
     ],
   },
   {
-    label: "GENERATOR — The System",
+    label: "SYSTEM GENERATOR — Build & Scale Concrete Sites",
     items: [
       { to: "/admin/builder-library", icon: Sparkles, label: "Builder Library" },
       { to: "/admin/meta-agent", icon: Brain, label: "Meta Agent" },
@@ -128,10 +128,10 @@ export default function AdminLayout() {
       >
         {/* Brand header */}
         <div className="flex items-center gap-3 px-5 h-16 border-b border-stone-800 shrink-0">
-          <img src={XTREME_AI_ICON_URL} alt="Xtreme AI Systems" className="h-9 w-9 object-contain shrink-0" />
+          <img src={XTREME_AI_ICON_URL} alt="Xtreme Polishing Systems" className="h-9 w-9 object-contain shrink-0" />
           <div className="flex flex-col leading-none">
-            <span className="text-[9px] font-bold tracking-[0.18em] text-amber-500 uppercase">Xtreme AI</span>
-            <span className="text-sm font-bold text-white tracking-tight">Generator</span>
+            <span className="text-[9px] font-bold tracking-[0.18em] text-amber-500 uppercase">Xtreme Polishing</span>
+            <span className="text-sm font-bold text-white tracking-tight">Concrete Command</span>
           </div>
           <button
             onClick={() => setMobileOpen(false)}
@@ -238,8 +238,8 @@ export default function AdminLayout() {
             <Menu className="h-6 w-6" />
           </button>
           <BackButton className="text-stone-400 hover:text-white px-2" showLabel={false} />
-          <img src={XTREME_AI_ICON_URL} alt="Xtreme AI" className="h-7 w-7 object-contain" />
-          <span className="text-sm font-bold text-white">Generator</span>
+          <img src={XTREME_AI_ICON_URL} alt="Xtreme Polishing" className="h-7 w-7 object-contain" />
+          <span className="text-sm font-bold text-white">Concrete Command</span>
         </div>
 
         {/* Page content — spread out with more padding */}

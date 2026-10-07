@@ -6,20 +6,20 @@ import {
 } from 'lucide-react';
 
 export const SCANNERS = [
-  { key: 'scan_google_trends', label: 'Google Trends', desc: 'Live trending topics & breakout searches', icon: TrendingUp, color: 'amber' },
-  { key: 'scan_github_trending', label: 'GitHub Top Repos', desc: 'Highest-rated repos across all categories', icon: Github, color: 'stone' },
-  { key: 'scan_social_media_trends', label: 'Social Media Trends', desc: 'Top complaints & needs on social platforms', icon: Share2, color: 'blue' },
-  { key: 'scan_construction_trends', label: 'Construction Trends', desc: 'Industry problems & opportunities', icon: HardHat, color: 'amber' },
-  { key: 'scan_real_estate_trends', label: 'Real Estate Trends', desc: 'Agent, investor & homeowner pain points', icon: Home, color: 'green' },
-  { key: 'scan_ai_demand', label: 'AI Demand by Industry', desc: 'Industries actively seeking AI tools', icon: Brain, color: 'violet' },
-  { key: 'scan_ai_problems', label: 'AI Industry Problems', desc: 'All problems & complaints in AI right now', icon: AlertTriangle, color: 'red' },
-  { key: 'scan_ai_saturation', label: 'AI Saturation', desc: 'Market saturation by AI category', icon: Gauge, color: 'stone' },
-  { key: 'scan_south_florida_competitors', label: 'South Florida Competitors', desc: 'Vero Beach to Miami tech & AI companies', icon: MapPin, color: 'amber' },
-  { key: 'scan_craigslist', label: 'Craigslist Scanner', desc: 'Listings may be unavailable when Craigslist blocks access', icon: Search, color: 'blue' },
-  { key: 'scan_social_groups', label: 'South Florida Groups', desc: 'Publicly indexed group and community mentions', icon: Users, color: 'violet' },
-  { key: 'scan_construction_demand', label: 'Construction Demand', desc: 'Social posts needing AI & app solutions', icon: Building2, color: 'amber' },
-  { key: 'scan_networking_events', label: 'Networking Events', desc: 'Public news of dated business & tech events', icon: CalendarDays, color: 'green' },
-  { key: 'restaurant_ai_growth', label: 'Restaurant AI Growth', desc: 'AI systems to help restaurants grow', icon: UtensilsCrossed, color: 'red' },
+  { key: 'scan_google_trends', label: 'Concrete Search Trends', desc: 'Trending epoxy, polished concrete & decorative concrete searches', icon: TrendingUp, color: 'amber' },
+  { key: 'scan_github_trending', label: 'Concrete Tech Tools', desc: 'Top concrete & flooring tech repos and tools', icon: Github, color: 'stone' },
+  { key: 'scan_social_media_trends', label: 'Concrete Social Trends', desc: 'Homeowner complaints & needs around garage floors, epoxy, concrete', icon: Share2, color: 'blue' },
+  { key: 'scan_construction_trends', label: 'Construction Trends', desc: 'Concrete & flooring industry problems & opportunities', icon: HardHat, color: 'amber' },
+  { key: 'scan_real_estate_trends', label: 'Real Estate Trends', desc: 'Homeowner & investor pain points driving concrete coating demand', icon: Home, color: 'green' },
+  { key: 'scan_ai_demand', label: 'Concrete Contractor AI Demand', desc: 'Contractors seeking AI tools for epoxy & concrete businesses', icon: Brain, color: 'violet' },
+  { key: 'scan_ai_problems', label: 'Concrete Industry Problems', desc: 'Pain points & complaints in epoxy, polished & decorative concrete', icon: AlertTriangle, color: 'red' },
+  { key: 'scan_ai_saturation', label: 'Concrete Market Saturation', desc: 'Market saturation by concrete coating category & region', icon: Gauge, color: 'stone' },
+  { key: 'scan_south_florida_competitors', label: 'South Florida Concrete Competitors', desc: 'Vero Beach to Miami epoxy & concrete coating companies', icon: MapPin, color: 'amber' },
+  { key: 'scan_craigslist', label: 'Craigslist Concrete Leads', desc: 'Concrete & flooring service listings (may be blocked by Craigslist)', icon: Search, color: 'blue' },
+  { key: 'scan_social_groups', label: 'Concrete Community Groups', desc: 'Publicly indexed concrete & flooring group and community mentions', icon: Users, color: 'violet' },
+  { key: 'scan_construction_demand', label: 'Concrete Coating Demand', desc: 'Social posts from homeowners needing epoxy & concrete solutions', icon: Building2, color: 'amber' },
+  { key: 'scan_networking_events', label: 'Concrete Industry Events', desc: 'Public news of concrete, flooring & construction trade events', icon: CalendarDays, color: 'green' },
+  { key: 'restaurant_ai_growth', label: 'Polished Concrete University', desc: 'Training & education demand for polished concrete professionals', icon: UtensilsCrossed, color: 'red' },
 ];
 
 const COLOR_MAP = {
@@ -46,8 +46,8 @@ export default function ScannerGrid({ onScan, activeScan, scanning, onFullScan, 
       {/* Full scan button */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-xl font-black text-stone-900">Opportunity Scanners</h2>
-          <p className="text-sm text-stone-500 mt-0.5">14 scanners using public feeds and free-tier AI analysis — source coverage and provider quotas vary</p>
+          <h2 className="text-xl font-black text-stone-900">Concrete Opportunity Scanners</h2>
+          <p className="text-sm text-stone-500 mt-0.5">14 scanners tracking epoxy, polished concrete & decorative concrete market opportunities — public feeds, free-tier AI</p>
         </div>
         <button
           onClick={onFullScan}

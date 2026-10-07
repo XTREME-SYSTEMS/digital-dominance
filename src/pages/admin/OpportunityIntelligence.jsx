@@ -58,8 +58,8 @@ export default function OpportunityIntelligence() {
           <Sparkles className="h-6 w-6 text-stone-950" />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-stone-900">Opportunity Intelligence</h1>
-          <p className="text-sm text-stone-500">Find real problems people are complaining about — then build apps to solve them.</p>
+          <h1 className="text-2xl font-black text-stone-900">Concrete Opportunity Intelligence</h1>
+          <p className="text-sm text-stone-500">Find epoxy, polished concrete & decorative concrete market opportunities — then launch sites to capture them.</p>
         </div>
       </div>
 

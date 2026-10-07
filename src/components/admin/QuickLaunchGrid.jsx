@@ -9,8 +9,8 @@ import {
 
 const SECTIONS = [
   {
-    title: "Digital Dominance",
-    subtitle: "One-click automated dominance engine & strategy",
+    title: "Concrete Market Dominance",
+    subtitle: "One-click automated dominance engine for epoxy & concrete markets",
     accent: "from-amber-500 to-amber-600",
     icon: Crown,
     items: [
@@ -21,8 +21,8 @@ const SECTIONS = [
     ],
   },
   {
-    title: "Launch Sites",
-    subtitle: "Build, template, and deploy websites fast",
+    title: "Launch Concrete Sites",
+    subtitle: "Build, template, and deploy epoxy & concrete coating websites fast",
     accent: "from-blue-500 to-blue-600",
     icon: Rocket,
     items: [
@@ -35,8 +35,8 @@ const SECTIONS = [
     ],
   },
   {
-    title: "Automate",
-    subtitle: "Social media, comms, and autonomous workflows",
+    title: "Automate Concrete Marketing",
+    subtitle: "Social media, comms, and autonomous workflows for concrete contractors",
     accent: "from-purple-500 to-purple-600",
     icon: Bot,
     items: [
@@ -49,8 +49,8 @@ const SECTIONS = [
     ],
   },
   {
-    title: "Pipeline",
-    subtitle: "Leads, appointments, and revenue tracking",
+    title: "Concrete Lead Pipeline",
+    subtitle: "Epoxy & concrete coating leads, appointments, and revenue tracking",
     accent: "from-green-500 to-green-600",
     icon: Users,
     items: [
@@ -63,8 +63,8 @@ const SECTIONS = [
     ],
   },
   {
-    title: "Intelligence",
-    subtitle: "SEO, analytics, and system health",
+    title: "Concrete Intelligence",
+    subtitle: "SEO, analytics, and system health for concrete markets",
     accent: "from-stone-600 to-stone-700",
     icon: Compass,
     items: [
