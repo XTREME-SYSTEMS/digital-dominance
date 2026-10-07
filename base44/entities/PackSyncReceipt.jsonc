@@ -24,9 +24,12 @@
         "brand_pack",
         "web_pack",
         "app_pack",
-        "webpack",
-        "brandpack",
-        "logopack",
+        "graphic_pack",
+        "social_pack",
+        "motion_pack",
+        "pwa_pack",
+        "component_pack",
+        "design_system_pack",
         "other"
       ]
     },
@@ -121,6 +124,20 @@
     "notes": {
       "type": "string",
       "maxLength": 4000
+    },
+    "research_dossier_id": {
+      "type": "string"
+    },
+    "bundle_id": {
+      "type": "string"
+    },
+    "variant_index": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "constitution_version": {
+      "type": "string"
     }
   },
   "required": [
