@@ -41,7 +41,7 @@ export default function FunnelHero() {
       </div>
 
       {/* Nav */}
-      <div className="relative z-20 flex items-center justify-between px-6 py-4 bg-stone-950 border-b border-stone-800">
+      <div className="relative z-20 flex items-center justify-between px-6 py-4 empire-dark border-b border-white/10">
         <Link to="/" className="flex items-center gap-3">
           <img src={LOGO_URL} alt="National Epoxy Pros" className="h-12 w-12 object-contain" />
           <div>
@@ -69,15 +69,18 @@ export default function FunnelHero() {
           />
           {/* Light overlay — image stays visible */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/35 to-black/20" />
+          {/* Empire grid overlay */}
+          <div className="empire-grid-overlay" />
+          {/* Empire radial glow */}
+          <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 50% at 80% 30%, rgba(99,102,241,.15), transparent 55%)" }} />
         </div>
 
         {/* Content split */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-16 md:py-20 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* LEFT — Hero text */}
           <div className="text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-4 py-1.5 mb-6">
-              <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Over 70+ Locations Nationwide</span>
+            <div className="empire-badge-gold mb-6">
+              <span className="text-xs font-bold uppercase tracking-wider">Over 70+ Locations Nationwide</span>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.05]">
@@ -117,7 +120,7 @@ export default function FunnelHero() {
 
           {/* RIGHT — Contact form */}
           <div className="flex justify-center lg:justify-end">
-            <div className="w-full max-w-sm rounded-2xl bg-white/95 backdrop-blur-sm border border-amber-500/30 shadow-2xl p-6">
+            <div className="w-full max-w-sm rounded-2xl bg-white/95 backdrop-blur-md border border-indigo-500/20 shadow-2xl p-6" style={{ boxShadow: "0 30px 80px -20px rgba(79,70,229,.3)" }}>
               {done ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <CheckCircle2 className="h-14 w-14 text-green-500 mb-4" />

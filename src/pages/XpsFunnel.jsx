@@ -8,7 +8,7 @@ import FinalCta from "@/components/xps-funnel/FinalCta";
 
 export default function XpsFunnel() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen empire-page-bg">
       <FunnelHero />
       <StatsBar />
       <ProblemSolution />

@@ -25,12 +25,12 @@ const SYSTEMS = [
 
 export default function SystemShowcase() {
   return (
-    <section className="bg-white py-16 px-6">
+    <section className="empire-page-bg py-16 px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="text-xs font-bold xps-gold-text uppercase tracking-widest mb-2">A System For Every Customer</div>
-          <h2 className="text-3xl md:text-5xl font-black text-black uppercase tracking-tight">
-            Find Your Perfect <span className="xps-gold-text">Floor System</span>
+        <div className="text-center mb-10 empire-fade-in">
+          <div className="empire-label mb-2">A System For Every Customer</div>
+          <h2 className="text-3xl md:text-5xl font-black text-stone-900 uppercase tracking-tight">
+            Find Your Perfect <span className="empire-gold-text">Floor System</span>
           </h2>
           <p className="text-stone-500 mt-3 max-w-xl mx-auto">
             From budget-friendly solids to premium metallics — we have the right system for your space and budget.
@@ -41,7 +41,7 @@ export default function SystemShowcase() {
           {SYSTEMS.map((s, i) => (
             <div
               key={i}
-              className="group rounded-2xl border border-stone-200 overflow-hidden hover:border-[#D4A92E] hover:shadow-xl transition-all"
+              className="empire-card group overflow-hidden"
             >
               <div className="relative h-44 overflow-hidden">
                 <img
@@ -49,12 +49,12 @@ export default function SystemShowcase() {
                   alt={s.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                 />
-                <div className="absolute top-3 right-3 xps-gold-bg text-black text-xs font-black px-3 py-1 rounded-full">
+                <div className="absolute top-3 right-3 empire-btn-gold text-xs font-black" style={{ padding: "4px 12px" }}>
                   {s.price}
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-black text-black text-lg">{s.title}</h3>
+                <h3 className="font-black text-stone-900 text-lg">{s.title}</h3>
                 <p className="text-sm text-stone-500 mt-1">{s.desc}</p>
               </div>
             </div>
