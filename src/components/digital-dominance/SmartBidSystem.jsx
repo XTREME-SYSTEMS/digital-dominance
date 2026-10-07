@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { invokeLLM } from '@/lib/gateway';
 import { DollarSign, Loader2, FileText, TrendingUp, Calculator } from 'lucide-react';
 
 export default function SmartBidSystem() {

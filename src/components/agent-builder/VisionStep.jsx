@@ -156,7 +156,7 @@ export default function VisionStep({ vision, setVision, onAnalyze, analyzing }) 
   const handleAiAssist = async () => {
     setAiLoading(true);
     try {
-      const res = await invokeLLM({
+      const res = await base44.integrations.Core.InvokeLLM({
         prompt: `You are a visionary business architect. Generate ONE powerful, specific vision statement (2-4 sentences) for an autonomous AI agent system that a business owner or entrepreneur could build. 
 
 The system can create: AI tools, mobile apps, lead generation funnels, content factories, prediction engines, crypto creators, agent swarms, SEO dominators, and autonomous workflows — all powered by deterministic, infinitely capable AI agents.
