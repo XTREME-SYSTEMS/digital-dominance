@@ -7,6 +7,10 @@ export default function PackSync() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [fullPreview, setFullPreview] = useState("");
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [receipt, setReceipt] = useState(null);
+  const [validation, setValidation] = useState(null);
 
   const loadPacks = useCallback(async () => {
     setLoading(true);
@@ -20,6 +24,46 @@ export default function PackSync() {
   }, []);
 
   useEffect(() => { loadPacks(); }, [loadPacks]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadV2Details = async () => {
+      if (!selected) {
+        setFullPreview("");
+        setReceipt(null);
+        setValidation(null);
+        return;
+      }
+      setFullPreview(selected.preview_html || "");
+      setReceipt(null);
+      setValidation(null);
+      setPreviewLoading(true);
+      try {
+        const jobs = [];
+        if (selected.current_pack_id) {
+          jobs.push(base44.entities.PackArtifact.filter({ pack_id: selected.current_pack_id, artifact_type: "source_html" }, { limit: 500 }));
+        } else jobs.push(Promise.resolve({ items: [] }));
+        if (selected.current_receipt_id) {
+          jobs.push(base44.entities.PackSyncReceipt.filter({ receipt_id: selected.current_receipt_id }, { limit: 1 }));
+          jobs.push(base44.entities.PackValidationRun.filter({ receipt_id: selected.current_receipt_id }, { sort: "-created_date", limit: 1 }));
+        } else {
+          jobs.push(Promise.resolve({ items: [] }));
+          jobs.push(Promise.resolve({ items: [] }));
+        }
+        const [artifactPage, receiptPage, validationPage] = await Promise.all(jobs);
+        if (cancelled) return;
+        const chunks = [...(artifactPage.items || [])].sort((a, b) => (a.chunk_index || 0) - (b.chunk_index || 0));
+        if (chunks.length) setFullPreview(chunks.map((x) => x.content || "").join(""));
+        setReceipt((receiptPage.items || [])[0] || null);
+        setValidation((validationPage.items || [])[0] || null);
+      } catch (e) {
+        console.error("PackSync V2 detail load failed:", e.message);
+      }
+      if (!cancelled) setPreviewLoading(false);
+    };
+    loadV2Details();
+    return () => { cancelled = true; };
+  }, [selected?.id, selected?.current_pack_id, selected?.current_receipt_id]);
 
   const deletePack = async (pack) => {
     if (!confirm(`Delete pack "${pack.template_key}"?`)) return;
@@ -142,6 +186,22 @@ export default function PackSync() {
             </div>
           </div>
 
+          {/* V2 receipt + validation state */}
+          {selected.current_pack_id && (
+            <div className="px-4 py-3 border-b border-stone-100 bg-stone-950 text-white">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <StatusField label="Pack" value={selected.current_pack_id} mono />
+                <StatusField label="Receipt" value={receipt?.status || "loading"} />
+                <StatusField label="Validation" value={validation?.status || selected.validation_status || "not_run"} />
+                <StatusField label="Visual" value={validation?.visual_score != null ? `${validation.visual_score}%` : "NOT CERTIFIED"} />
+                <StatusField label="Operational" value={validation?.operational_score != null ? `${validation.operational_score}%` : "NOT CERTIFIED"} />
+              </div>
+              <div className="mt-2 text-[10px] text-stone-400">
+                PASS gate: visual ≥99% and operational =100%. Stored or queued never means certified.
+              </div>
+            </div>
+          )}
+
           {/* Brand config */}
           {selected.brand_config && (
             <div className="px-4 py-3 border-b border-stone-100 bg-white">
@@ -161,14 +221,19 @@ export default function PackSync() {
             </div>
           )}
 
-          {/* Preview HTML */}
-          {selected.preview_html ? (
+          {/* Preview HTML / lossless V2 artifact reconstruction */}
+          {previewLoading ? (
+            <div className="px-4 py-10 flex items-center justify-center gap-2 text-stone-500 text-sm">
+              <Loader2 className="w-4 h-4 animate-spin" /> Loading lossless pack preview…
+            </div>
+          ) : fullPreview ? (
             <div>
-              <div className="px-4 py-2 border-b border-stone-100 bg-stone-50 text-[10px] font-bold uppercase tracking-wide text-stone-500">
-                Visual Preview ({selected.preview_html.length.toLocaleString()} chars)
+              <div className="px-4 py-2 border-b border-stone-100 bg-stone-50 text-[10px] font-bold uppercase tracking-wide text-stone-500 flex items-center justify-between gap-3">
+                <span>Visual Preview ({fullPreview.length.toLocaleString()} chars)</span>
+                {selected.current_pack_id && <span className="text-emerald-700">V2 artifact source</span>}
               </div>
               <iframe
-                srcDoc={selected.preview_html}
+                srcDoc={fullPreview}
                 title="Pack Preview"
                 className="w-full"
                 style={{ height: "600px", border: 0, background: "#fff" }}
@@ -176,10 +241,19 @@ export default function PackSync() {
               />
             </div>
           ) : (
-            <div className="px-4 py-8 text-center text-stone-500 text-sm">No preview HTML in this pack.</div>
+            <div className="px-4 py-8 text-center text-stone-500 text-sm">No preview HTML artifact is available for this pack.</div>
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function StatusField({ label, value, mono = false }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[9px] uppercase tracking-wide text-stone-500 font-bold">{label}</div>
+      <div className={`text-xs text-white truncate ${mono ? "font-mono" : "font-bold"}`}>{value || "—"}</div>
     </div>
   );
 }
