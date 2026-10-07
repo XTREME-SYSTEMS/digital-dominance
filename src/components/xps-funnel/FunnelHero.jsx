@@ -42,13 +42,13 @@ export default function FunnelHero() {
 
       {/* Nav */}
       <div className="relative z-20 flex items-center justify-between px-6 py-4 bg-stone-950 border-b border-stone-800">
-        <div className="flex items-center gap-3">
-          <img src={LOGO_URL} alt="Xtreme Polishing Systems" className="h-12 w-12 object-contain" />
+        <Link to="/" className="flex items-center gap-3">
+          <img src={LOGO_URL} alt="National Epoxy Pros" className="h-12 w-12 object-contain" />
           <div>
             <div className="font-black text-lg xps-gold-text">National Epoxy Pros</div>
             <div className="text-[10px] xps-gold-text font-bold uppercase tracking-widest">Floors For Life</div>
           </div>
-        </div>
+        </Link>
         <div className="hidden md:flex items-center gap-2 text-amber-400">
           <Star className="h-4 w-4 fill-amber-400" />
           <Star className="h-4 w-4 fill-amber-400" />

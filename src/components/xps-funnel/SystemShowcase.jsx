@@ -61,14 +61,7 @@ export default function SystemShowcase() {
           ))}
         </div>
 
-        <div className="text-center mt-10">
-          <Link
-            to="/epoxy-systems"
-            className="inline-flex items-center gap-2 text-sm font-bold xps-gold-text hover:underline"
-          >
-            See All 6 Systems <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
+
       </div>
     </section>
   );
