@@ -4,8 +4,9 @@ import { base44 } from "@/api/base44Client";
 import {
   Shield, Database, Globe, Zap, Server, KeyRound, Plus, Trash2,
   Eye, EyeOff, Check, RefreshCw, AlertCircle, Lock, Copy,
-  ExternalLink, Cpu, ArrowRight, Sparkles,
+  ExternalLink, Cpu, ArrowRight, Sparkles, UploadCloud,
 } from "lucide-react";
+import BatchUpload from "@/components/provider-vault/BatchUpload";
 
 const PROVIDERS = {
   supabase: {
@@ -86,6 +87,7 @@ export default function ProviderVault() {
   const [addingProvider, setAddingProvider] = useState(null);
   const [editingEntry, setEditingEntry] = useState(null);
   const [revealed, setRevealed] = useState({});
+  const [showBatchUpload, setShowBatchUpload] = useState(false);
 
   const { data: entries = [], isLoading } = useQuery({
     queryKey: ["vault-entries"],
@@ -132,6 +134,7 @@ export default function ProviderVault() {
           { id: "providers", label: "Provider Accounts", icon: Database },
           { id: "api", label: "API Generator", icon: KeyRound },
           { id: "mcp", label: "MCP / GPT Sync", icon: Cpu },
+          { id: "batch", label: "Batch Upload", icon: UploadCloud },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -227,6 +230,27 @@ export default function ProviderVault() {
 
       {/* === MCP / GPT SYNC === */}
       {activeTab === "mcp" && <McpSyncSection />}
+
+      {/* === BATCH UPLOAD === */}
+      {activeTab === "batch" && (
+        showBatchUpload ? (
+          <BatchUpload onClose={() => { setShowBatchUpload(false); setActiveTab("providers"); }} />
+        ) : (
+          <div className="text-center py-12">
+            <UploadCloud className="h-12 w-12 mx-auto mb-3 text-stone-300" />
+            <h3 className="text-lg font-bold text-stone-700 mb-1">Batch Upload Secrets</h3>
+            <p className="text-sm text-stone-500 mb-4 max-w-md mx-auto">
+              Upload .env, .txt, .md, .json, or .csv files. Secrets are parsed in your browser and auto-categorized by keyword. New categories are created automatically.
+            </p>
+            <button
+              onClick={() => setShowBatchUpload(true)}
+              className="h-10 px-5 rounded-lg bg-amber-500 text-stone-950 text-sm font-bold inline-flex items-center gap-2 hover:bg-amber-400"
+            >
+              <UploadCloud className="h-4 w-4" /> Start Batch Upload
+            </button>
+          </div>
+        )
+      )}
     </div>
   );
 }
