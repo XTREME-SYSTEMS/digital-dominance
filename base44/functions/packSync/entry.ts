@@ -59,6 +59,8 @@ const ALLOWED_NICHES = new Set([
   "general_contractor",
 ]);
 
+const ALLOWED_STATUSES = new Set(["draft", "review", "published", "archived"]);
+
 function allowedOrFallback(value: string | undefined, allowed: Set<string>, fallback: string): string {
   return value && allowed.has(value) ? value : fallback;
 }
@@ -128,7 +130,7 @@ function translatePack(pack: any) {
     niche: allowedOrFallback(pack.niche, ALLOWED_NICHES, "general_contractor"),
     sections,
     version: pack.version || "1.0.0",
-    status: pack.status || "draft",
+    status: allowedOrFallback(pack.status, ALLOWED_STATUSES, "draft"),
     preview_html: compactPreview.slice(0, 30000),
     notes: `Synced from GPT via packSync. Pack type: ${pack.pack_type || "webpack"}`.slice(0, 2000),
   };
@@ -155,6 +157,19 @@ export default async function(req: Request): Promise<Response> {
 
       const translated = translatePack(pack);
       const fullHtml = pack.preview_html || pack.previewHtml || "";
+      const compactPreview = compactHtml(fullHtml);
+      if (compactPreview.length > 30000) {
+        return Response.json({
+          error: "preview_html is too large after compaction",
+          code: "PREVIEW_TOO_LARGE",
+          original_length: fullHtml.length,
+          compact_length: compactPreview.length,
+          max_length: 30000,
+          message: "Do not truncate parity-critical HTML. Split the pack into smaller templates or send a compact preview plus section HTML/CSS.",
+        }, { status: 413 });
+      }
+      translated.preview_html = compactPreview;
+      const payloadHash = await sha256(JSON.stringify(pack));
 
       // Upsert by template_key
       const existing = await base44.asServiceRole.entities.BrandTemplate.filter({
@@ -163,11 +178,15 @@ export default async function(req: Request): Promise<Response> {
 
       let record;
       if (existing.items && existing.items.length > 0) {
+        const previousVersion = existing.items[0].version || "1.0.0";
+        if (!pack.version) translated.version = incrementPatch(previousVersion);
+        translated.notes = `${translated.notes} | sha256:${payloadHash} | preview:${compactPreview.length} chars`.slice(0, 2000);
         record = await base44.asServiceRole.entities.BrandTemplate.update(
           existing.items[0].id,
-          { ...translated, parent_version: existing.items[0].version }
+          { ...translated, parent_version: previousVersion }
         );
       } else {
+        translated.notes = `${translated.notes} | sha256:${payloadHash} | preview:${compactPreview.length} chars`.slice(0, 2000);
         record = await base44.asServiceRole.entities.BrandTemplate.create({
           ...translated,
           owner_id: body.owner_id || "pack-sync-system",
@@ -181,8 +200,12 @@ export default async function(req: Request): Promise<Response> {
         name: translated.name,
         status: translated.status,
         sections_count: translated.sections.length,
-        preview_truncated: fullHtml.length > 30000,
+        version: translated.version,
+        parent_version: record.parent_version || null,
+        preview_truncated: false,
         preview_length: fullHtml.length,
+        compact_preview_length: compactPreview.length,
+        payload_sha256: payloadHash,
         message: `Pack "${translated.name}" synced successfully`,
       });
     }
@@ -191,7 +214,7 @@ export default async function(req: Request): Promise<Response> {
     if (action === "list") {
       const page = await base44.asServiceRole.entities.BrandTemplate.filter(
         {},
-        { sort: "-created_date", limit: 50 }
+        { sort: "-updated_date", limit: 50 }
       );
       return Response.json({ packs: page.items || [], count: (page.items || []).length });
     }
@@ -204,15 +227,13 @@ export default async function(req: Request): Promise<Response> {
       return Response.json({ pack: (page.items || [])[0] || null });
     }
 
-    // === DELETE: remove a pack ===
+    // DELETE is intentionally not exposed through the shared external sync token.
+    // Deletion remains an authenticated admin action in the Base44 UI.
     if (action === "delete") {
-      const { template_key } = body;
-      if (!template_key) return Response.json({ error: "template_key required" }, { status: 400 });
-      const page = await base44.asServiceRole.entities.BrandTemplate.filter({ template_key });
-      const rec = (page.items || [])[0];
-      if (!rec) return Response.json({ error: "Pack not found" }, { status: 404 });
-      await base44.asServiceRole.entities.BrandTemplate.delete(rec.id);
-      return Response.json({ ok: true, deleted: template_key });
+      return Response.json({
+        error: "External delete is disabled. Delete packs from the authenticated admin UI.",
+        code: "ADMIN_ONLY_DELETE",
+      }, { status: 403 });
     }
 
     // === HEALTH: ping for GPT to verify connectivity ===
@@ -220,7 +241,7 @@ export default async function(req: Request): Promise<Response> {
       return Response.json({ ok: true, service: "packSync", timestamp: new Date().toISOString() });
     }
 
-    return Response.json({ error: "Unknown action. Use: sync, list, get, delete, health" }, { status: 400 });
+    return Response.json({ error: "Unknown action. Use: sync, list, get, health" }, { status: 400 });
   } catch (e) {
     console.error("[packSync] Error:", e);
     return Response.json({ error: e.message || "Internal error" }, { status: 500 });
