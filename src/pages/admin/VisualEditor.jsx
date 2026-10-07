@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Loader2, Bot, Zap, Eye, PanelLeftClose } from "lucide-react";
+import { Loader2, Bot, Zap, Eye, PanelLeftClose, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import VisualEditorChat from "@/components/visual-editor/VisualEditorChat";
 import VisualPreview from "@/components/visual-editor/VisualPreview";
@@ -9,6 +10,7 @@ export default function VisualEditor() {
   const [chatWidth, setChatWidth] = useState(40);
   const [resizing, setResizing] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
+  const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState(() => new URLSearchParams(window.location.search).get("page"));
   const qc = useQueryClient();
   const selectPage = (id) => {
@@ -50,6 +52,14 @@ export default function VisualEditor() {
     <div className="flex flex-col h-screen h-[100dvh] overflow-hidden bg-stone-100">
       {/* === TOP BAR — Base44 builder style === */}
       <div className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-stone-200 shrink-0">
+        <button
+          onClick={() => navigate("/admin/contents")}
+          aria-label="Back"
+          className="p-1.5 rounded-lg border border-stone-200 text-stone-400 hover:text-stone-600 hover:border-stone-300 transition-colors shrink-0"
+          title="Back to admin"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </button>
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 grid place-items-center shrink-0">
           <Eye className="h-4 w-4 text-stone-950" />
         </div>
