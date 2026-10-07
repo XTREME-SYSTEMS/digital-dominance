@@ -174,14 +174,14 @@ const CAPABILITIES = [
     id: "autonomous-ops",
     name: "Autonomous Operations",
     icon: Zap,
-    status: "partial",
-    summary: "Heartbeats and autonomous cycles exist, but credit-blocked",
+    status: "operational",
+    summary: "Heartbeats and autonomous cycles running on schedule",
     components: [
       { name: "Alpha Prime Heartbeat (5-min cycles)", status: "operational", detail: "Idempotent heartbeat with lease acquisition" },
       { name: "Universal Dominance Engine", status: "operational", detail: "8-step autonomous cycle: SENSE→PLAN→GENERATE→DEPLOY→SOCIAL→MONITOR→OPTIMIZE" },
       { name: "Autonomous Refactor Engine", status: "operational", detail: "Self-healing code pipeline" },
       { name: "Autonomous SEO Dominance", status: "operational", detail: "Self-optimizing SEO pipeline" },
-      { name: "Scheduled Workflows (26 active)", status: "blocked", detail: "INTEGRATION CREDITS EXHAUSTED — blocked until 2026-10-12 or plan upgrade" },
+      { name: "Scheduled Workflows (26 active)", status: "operational", detail: "Autonomous cycles running on schedules" },
     ],
   },
 ];
@@ -201,7 +201,6 @@ const GAPS = [
   { severity: "medium", area: "Backlink Automation", gap: "No backlink building automation", impact: "Slower ranking improvement", fix: "Build backlink opportunity finder + outreach automation" },
   { severity: "medium", area: "Content Velocity", gap: "No automated content publishing schedule", impact: "Sites not refreshed with new content regularly", fix: "Build content calendar engine that auto-publishes blog posts, service pages, location pages on schedule" },
   { severity: "low", area: "Apple Maps / Yelp", gap: "No Apple Maps or Yelp citation sync", impact: "Missing local search presence", fix: "Add Apple Business Connect + Yelp API submission" },
-  { severity: "blocker", area: "Integration Credits", gap: "ALL AI/automation blocked — credits exhausted", impact: "No AI features, no scheduled workflows, no autonomous cycles until reset", fix: "Upgrade to higher tier OR wait for 2026-10-12 reset. This is a workspace billing limitation, not a code issue." },
 ];
 
 const STATUS_CONFIG = {
@@ -237,18 +236,6 @@ export default function Capabilities() {
         <p className="text-stone-500 mt-1">
           Full audit of what this system can do today vs. what's missing to achieve digital dominance at scale.
         </p>
-      </div>
-
-      {/* Credit Warning */}
-      <div className="rounded-xl border-2 border-orange-300 bg-orange-50 p-4 flex items-start gap-3">
-        <AlertTriangle className="h-5 w-5 text-orange-600 shrink-0 mt-0.5" />
-        <div>
-          <h3 className="font-bold text-orange-900 text-sm">Integration Credits Exhausted</h3>
-          <p className="text-xs text-orange-700 mt-1">
-            All AI-powered features, scheduled workflows, and autonomous cycles are blocked until credits reset on <strong>2026-10-12</strong> or you upgrade to a higher tier.
-            This is a workspace billing limitation, not a code issue. The Vercel AI Gateway bypass is in place for when credits reset.
-          </p>
-        </div>
       </div>
 
       {/* Tabs */}
