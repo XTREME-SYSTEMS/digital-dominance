@@ -78,7 +78,7 @@ export default function FunnelHero() {
           <div className="text-left">
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-4 py-1.5 mb-6">
               <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">#1 National Distributor</span>
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Over 70+ Locations Nationwide</span>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.05]">

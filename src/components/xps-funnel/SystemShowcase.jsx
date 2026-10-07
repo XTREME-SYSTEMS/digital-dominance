@@ -4,28 +4,22 @@ import { ArrowRight } from "lucide-react";
 
 const SYSTEMS = [
   {
-    title: "Solid Color",
-    desc: "Clean, uniform finish for garages & basements",
-    image: "https://images.unsplash.com/photo-1652305461546-bf0a76934433?w=400&h=300&fit=crop&q=80",
-    price: "$",
-  },
-  {
     title: "Broadcast Flake",
     desc: "Textured, slip-resistant — hides imperfections",
-    image: "https://images.unsplash.com/photo-1486406146926-c690a1a3a3a3?w=400&h=300&fit=crop&q=80",
+    image: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/2ddeba0a6_image.png",
     price: "$$",
-  },
-  {
-    title: "Quartz Aggregate",
-    desc: "Slip-resistant for kitchens & locker rooms",
-    image: "https://images.unsplash.com/photo-1589109807644-924edf14ee09?w=400&h=300&fit=crop&q=80",
-    price: "$$$",
   },
   {
     title: "Metallic Epoxy",
     desc: "3D pearlescent finish for showrooms & lobbies",
-    image: "https://images.unsplash.com/photo-1731481562702-0e94ce06ebb3?w=400&h=300&fit=crop&q=80",
+    image: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/955b67c0f_images.jpg",
     price: "$$$",
+  },
+  {
+    title: "Solid Color",
+    desc: "Clean, uniform finish for garages & basements",
+    image: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/76835d4ad_IMG_1593-min.webp",
+    price: "$",
   },
 ];
 
@@ -43,7 +37,7 @@ export default function SystemShowcase() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {SYSTEMS.map((s, i) => (
             <div
               key={i}
