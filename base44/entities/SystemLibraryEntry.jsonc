@@ -1,0 +1,177 @@
+{
+  "name": "SystemLibraryEntry",
+  "type": "object",
+  "properties": {
+    "system_id": {
+      "type": "string",
+      "description": "Stable deterministic ID (e.g. xtreme-visualizer, autobuilder, seo-generator)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "visualizer",
+        "website_builder",
+        "seo_generator",
+        "swarm",
+        "cloud_browser",
+        "prompt_system",
+        "super_agents",
+        "ai_hub",
+        "communications",
+        "digital_dominance",
+        "template_studio",
+        "provisioning",
+        "other"
+      ],
+      "description": "What kind of system this is"
+    },
+    "source_zip": {
+      "type": "string",
+      "description": "Original uploaded zip filename"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "analyzed",
+        "integrating",
+        "integrated",
+        "partial",
+        "failed_download",
+        "pending"
+      ],
+      "default": "analyzed"
+    },
+    "file_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "entity_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "function_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "agent_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "page_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Key capabilities this system provides"
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Identified gaps or missing functionality"
+    },
+    "integration_points": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "How this system connects to the unified platform"
+    },
+    "key_entities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "key_functions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "key_agents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "audit_notes": {
+      "type": "string",
+      "maxLength": 5000,
+      "description": "Forensic audit findings"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium",
+      "description": "Integration priority for the unified platform"
+    },
+    "target_industry": {
+      "type": "string",
+      "description": "Primary industry this system targets (epoxy, concrete, universal, etc.)"
+    },
+    "health_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0,
+      "description": "Functional health score from audit (0-100)"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name for visual display"
+    },
+    "accent_color": {
+      "type": "string",
+      "description": "Hex accent color for visual display"
+    }
+  },
+  "required": [
+    "system_id",
+    "name",
+    "category",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
