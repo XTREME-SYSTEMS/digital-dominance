@@ -68,8 +68,8 @@ export default function FunnelHero() {
             alt="Luxury garage with epoxy floor"
             className="w-full h-full object-cover"
           />
-          {/* Dark overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/50" />
+          {/* Light overlay — image stays visible */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/35 to-black/20" />
         </div>
 
         {/* Content split */}
@@ -84,7 +84,8 @@ export default function FunnelHero() {
             <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-[1.05]">
               <span className="xps-gold-text">Epoxy Will</span>
               <br />
-              <span className="xps-gold-text">Change Your Life</span>
+              <span className="xps-gold-text">Change Your </span>
+              <span className="xps-sparkle-white">Garage</span>
             </h1>
 
             <p className="text-lg text-stone-200 mt-5 max-w-md font-medium">

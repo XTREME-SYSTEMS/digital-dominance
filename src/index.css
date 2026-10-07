@@ -470,6 +470,22 @@
     border-color: #D4A92E;
   }
 
+  /* Sparkle white + metallic gold — for "Garage" headline accent */
+  @keyframes xps-sparkle-shine {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .xps-sparkle-white {
+    background: linear-gradient(110deg, #FFFFFF 0%, #FFF6D5 25%, #D4A92E 45%, #FFFFFF 55%, #F8E71C 70%, #FFFFFF 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: xps-sparkle-shine 3.5s linear infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35)) drop-shadow(0 0 14px rgba(212, 169, 46, 0.3));
+  }
+
   /* Dark shell cards */
   .xa-card { background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 14px; padding: 16px; }
   .xa-card-hover { transition: border-color 0.15s, box-shadow 0.15s; }
