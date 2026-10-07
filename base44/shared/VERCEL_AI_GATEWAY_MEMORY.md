@@ -3,6 +3,15 @@
 **Last updated:** 2026-10-07
 **Status:** ACTIVE — ALL AI integrations route through Vercel AI Gateway
 
+## 🛑 STOP TELLING THE USER INTEGRATIONS ARE DOWN
+
+The workspace's Base44 integration credits reset on **2026-10-12** (5 days from now).
+The user already knows this. Do NOT open replies by saying "your integrations are exhausted" or "credits are blocked." Do NOT list blocked Core integrations. Do NOT suggest upgrading.
+
+This is a known, temporary, workspace-billing state — not an implementation bug, and not something the user needs reminding of on every turn. The Vercel AI Gateway (AI) and independent providers (email, storage, SMS) keep working regardless, so most app functionality is unaffected.
+
+Only mention credits if the user explicitly asks about them, or if a specific action genuinely fails because of them — and even then, one short line, not a preamble.
+
 ## ⚠️ MANDATORY RULE
 
 **ALL AI-capable integrations (text generation, image generation, embeddings) MUST route through the Vercel AI Gateway — NEVER use Base44 Core integrations (Core.InvokeLLM, Core.GenerateImage) directly.**
