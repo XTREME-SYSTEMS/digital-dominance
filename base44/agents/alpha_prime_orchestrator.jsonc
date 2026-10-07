@@ -997,10 +997,596 @@
         "delete",
         "read"
       ]
+    },
+    {
+      "function_name": "independentAi",
+      "description": "Operate AI without Base44 credits"
+    },
+    {
+      "function_name": "independentEmail",
+      "description": "Send email without Base44 credits"
+    },
+    {
+      "function_name": "supabaseUpload",
+      "description": "Store files without Base44 credits"
+    },
+    {
+      "function_name": "supabaseMigrationDeploy",
+      "description": "Manage database schema"
+    },
+    {
+      "function_name": "packSync",
+      "description": "Sync visual packs with GPT"
+    },
+    {
+      "function_name": "packResearchOrchestrator",
+      "description": "Research packs before generation"
+    },
+    {
+      "function_name": "massIngestionEngine",
+      "description": "Ingest competitor websites at scale"
+    },
+    {
+      "function_name": "googleWorkspaceOS",
+      "description": "Operate Google Workspace"
+    },
+    {
+      "function_name": "googleEcosystemSync",
+      "description": "Sync Google data"
+    },
+    {
+      "function_name": "googleVerifierConnectUrl",
+      "description": "Authorize Google accounts"
+    },
+    {
+      "function_name": "googleVerifierExchange",
+      "description": "Complete Google authorization"
+    },
+    {
+      "function_name": "metaAgent",
+      "description": "Run meta-agent cycles"
+    },
+    {
+      "function_name": "metaArchitecture",
+      "description": "Analyze system architecture"
+    },
+    {
+      "function_name": "convergenceEngine",
+      "description": "Run convergence cycles"
+    },
+    {
+      "function_name": "selfReflectionEngine",
+      "description": "Run self-reflection cycles"
+    },
+    {
+      "function_name": "recursiveHealingEngine",
+      "description": "Auto-heal system issues"
+    },
+    {
+      "function_name": "autonomousCodingEngine",
+      "description": "Autonomous code generation"
+    },
+    {
+      "function_name": "autonomousRefactorEngine",
+      "description": "Autonomous code refactoring"
+    },
+    {
+      "function_name": "predictionEngine",
+      "description": "Run predictions"
+    },
+    {
+      "function_name": "topSitesBenchmarkScanner",
+      "description": "Benchmark against top sites"
+    },
+    {
+      "function_name": "railwayScraper",
+      "description": "Scrape via Railway workers"
+    },
+    {
+      "function_name": "telnyxManager",
+      "description": "Manage Telnyx numbers"
+    },
+    {
+      "function_name": "telnyxAutonomousSetup",
+      "description": "Auto-provision Telnyx"
+    },
+    {
+      "function_name": "systemOrchestrator",
+      "description": "Orchestrate full system"
+    },
+    {
+      "function_name": "companyOrchestrator",
+      "description": "Orchestrate company operations"
+    },
+    {
+      "function_name": "conversationHub",
+      "description": "Manage conversations"
+    },
+    {
+      "function_name": "memoryRouter",
+      "description": "Route agent memory"
+    },
+    {
+      "function_name": "llmRouter",
+      "description": "Route LLM calls"
+    },
+    {
+      "function_name": "agentRouter",
+      "description": "Route agent calls"
+    },
+    {
+      "function_name": "agentRunner",
+      "description": "Run agents"
+    },
+    {
+      "function_name": "agentBuilderEngine",
+      "description": "Build new agents"
+    },
+    {
+      "function_name": "cryptoCreator",
+      "description": "Create crypto tokens"
+    },
+    {
+      "function_name": "strategicMindsSetup",
+      "description": "Setup Strategic Minds AI"
+    },
+    {
+      "function_name": "builderLibrarySeeder",
+      "description": "Seed builder library"
+    },
+    {
+      "function_name": "pushLeadToHubspot",
+      "description": "Sync leads to HubSpot"
+    },
+    {
+      "function_name": "rebrandGenerator",
+      "description": "Generate rebrands"
+    },
+    {
+      "function_name": "runtimeAcceptanceMission",
+      "description": "Run acceptance missions"
+    },
+    {
+      "function_name": "phase9Proof",
+      "description": "Run phase 9 proofs"
+    },
+    {
+      "function_name": "closedLoopTester",
+      "description": "Run closed-loop tests"
+    },
+    {
+      "function_name": "create-checkout",
+      "description": "Process payments"
+    },
+    {
+      "function_name": "payments-webhook",
+      "description": "Handle payment webhooks"
+    },
+    {
+      "function_name": "visionEngine",
+      "description": "Run vision engine"
+    },
+    {
+      "function_name": "xpsSiteIngestor",
+      "description": "Ingest XPS sites"
+    },
+    {
+      "function_name": "syntheticWorker",
+      "description": "Run synthetic workers"
+    },
+    {
+      "function_name": "runContractorSimulation",
+      "description": "Run contractor simulations"
+    },
+    {
+      "entity_name": "SystemLibraryEntry",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "ContentMenuCategory",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "ContentMenuItem",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "BrandTemplate",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "ABTest",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "AgentMemory",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "AgentExecutionLog",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "AgentAction",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "AgentDepartment",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "AgentIntelligence",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "AgentVersion",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "BuildSession",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "BuildManifest",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "ConvergenceCycle",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "ProgressLedger",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "DeploymentRecord",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "CommandRun",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "RefactorJob",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "WorkPacket",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "ApprovalRequest",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "UserLLMConnection",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "SubscriptionPlan",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "TemplateLibrary",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "WorkflowTemplate",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "PredictionModel",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "PredictionResult",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "DiscoveryJob",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "BrokenTwin",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "Conversation",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "ConversationMessage",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "CodeSandboxSession",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "SystemManifest",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "UserWorkspace",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "PackSyncReceipt",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "PackValidationRun",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "PackArtifact",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "PackResearchDossier",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "PackGenerationBundle",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "MetaSession",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "CryptoToken",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    {
+      "entity_name": "IngestedWebsite",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
     }
   ],
   "context_files": [],
-  "app_user_connector_configs": [],
+  "app_user_connector_configs": [
+    {
+      "connector_id": "69e521c8418f5cecefb2567c",
+      "enabled": true
+    },
+    {
+      "connector_id": "69db200274332486fd28dd7e",
+      "enabled": true
+    },
+    {
+      "connector_id": "6ab15ad1cf868907e918178e",
+      "enabled": true
+    },
+    {
+      "connector_id": "69db1e5e75a5f8c15c80cf34",
+      "enabled": true
+    },
+    {
+      "connector_id": "69db1fad3c50db37ad0ce8dd",
+      "enabled": true
+    },
+    {
+      "connector_id": "69ddcb305a599e0b4a1b3cff",
+      "enabled": true
+    },
+    {
+      "connector_id": "69db201897e4e8f9ae073be7",
+      "enabled": true
+    },
+    {
+      "connector_id": "69ddcb7e5d965b5605cd24b4",
+      "enabled": true
+    },
+    {
+      "connector_id": "69db228b2439d854c8587167",
+      "enabled": true
+    }
+  ],
   "selected_skill_names": [],
   "selected_workspace_skill_ids": [],
   "model": "automatic",
