@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { patchCore } from '../../shared/aiGateway.ts';
 
 // ============================================================
 // X1 AI Hub — Autonomous Coding Engine
@@ -62,6 +63,8 @@ export default async function(req) {
     if (!user) return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
     const svc = base44.asServiceRole;
+    patchCore(base44);
+    patchCore(svc);
 
     switch (action) {
 

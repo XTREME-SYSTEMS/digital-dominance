@@ -16,6 +16,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { patchCore } from '../../shared/aiGateway.ts';
 import { searchPromptLibrary } from '../../shared/engineeringPromptLibrary.ts';
 
 // ── Deterministic intent patterns ─────────────────────────────────────────
@@ -567,6 +568,8 @@ export default async function (req: Request): Promise<Response> {
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
 
     const svc = base44.asServiceRole;
+    patchCore(base44);
+    patchCore(svc);
     const body = await req.json().catch(() => ({}));
     const action = body.action || 'list';
 

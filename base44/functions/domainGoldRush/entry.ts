@@ -1,4 +1,5 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.48";
+import { patchCore } from '../../shared/aiGateway.ts';
 import { secrets } from "base44:runtime";
 
 // ============================================================
@@ -313,6 +314,7 @@ Be conservative — if you find a real, active business with this exact name, ma
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+    patchCore(base44);
     const body = await req.json().catch(() => ({}));
     const { action } = body;
 

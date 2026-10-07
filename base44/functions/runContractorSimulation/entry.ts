@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { patchCore } from '../../shared/aiGateway.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // runContractorSimulation
@@ -59,6 +60,8 @@ export default async function (req: Request): Promise<Response> {
     }
 
     const svc = base44.asServiceRole;
+    patchCore(base44);
+    patchCore(svc);
     const result = await svc.integrations.Core.InvokeLLM({
       prompt,
       response_json_schema: SCHEMAS[simulation_type],
