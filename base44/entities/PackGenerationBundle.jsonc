@@ -1,0 +1,140 @@
+{
+  "name": "PackGenerationBundle",
+  "type": "object",
+  "properties": {
+    "owner_id": {
+      "type": "string"
+    },
+    "bundle_id": {
+      "type": "string"
+    },
+    "dossier_id": {
+      "type": "string"
+    },
+    "project_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "research_ready",
+        "generating",
+        "awaiting_approval",
+        "approved",
+        "building",
+        "validating",
+        "pass",
+        "fail",
+        "blocked"
+      ],
+      "default": "planned"
+    },
+    "logo_required": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 10
+    },
+    "brand_required": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 10
+    },
+    "web_required": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 10
+    },
+    "app_required": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "logo_generated": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "brand_generated": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "web_generated": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "app_generated": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "selected_logo_key": {
+      "type": "string"
+    },
+    "selected_brand_key": {
+      "type": "string"
+    },
+    "selected_web_key": {
+      "type": "string"
+    },
+    "selected_app_key": {
+      "type": "string"
+    },
+    "research_gate_passed": {
+      "type": "boolean",
+      "default": false
+    },
+    "visual_quality_floor": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 99
+    },
+    "operational_quality_floor": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 100
+    },
+    "created_at_iso": {
+      "type": "string"
+    },
+    "updated_at_iso": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 4000
+    }
+  },
+  "required": [
+    "bundle_id",
+    "dossier_id",
+    "project_name",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "name": "PackResearchDossier",
+  "type": "object",
+  "properties": {
+    "owner_id": {
+      "type": "string"
+    },
+    "dossier_id": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "project_name": {
+      "type": "string"
+    },
+    "requested_pack_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "industry": {
+      "type": "string"
+    },
+    "sub_industry": {
+      "type": "string"
+    },
+    "geography": {
+      "type": "string"
+    },
+    "browser_executor": {
+      "type": "string"
+    },
+    "research_started_at": {
+      "type": "string"
+    },
+    "research_completed_at": {
+      "type": "string"
+    },
+    "research_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "researching",
+        "ready",
+        "blocked",
+        "stale"
+      ],
+      "default": "draft"
+    },
+    "source_count": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "source_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "benchmark_competitors": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "competitor_research": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "industry_research": {
+      "type": "object"
+    },
+    "financial_research": {
+      "type": "object"
+    },
+    "business_model_research": {
+      "type": "object"
+    },
+    "niche_research": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "trend_research": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "keyword_research": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "target_market": {
+      "type": "object"
+    },
+    "retail_pricing": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "top_products_services": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "design_patterns": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "funnel_patterns": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "seo_aeo_geo_findings": {
+      "type": "object"
+    },
+    "verified_claims": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "evidence_sha256": {
+      "type": "string"
+    },
+    "freshness_hours": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 24
+    },
+    "expires_at": {
+      "type": "string"
+    },
+    "quality_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 8000
+    }
+  },
+  "required": [
+    "dossier_id",
+    "project_name",
+    "industry",
+    "research_status",
+    "benchmark_competitors",
+    "source_urls"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
