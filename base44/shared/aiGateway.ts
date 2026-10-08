@@ -205,6 +205,31 @@ export function patchCore(base44: any) {
     });
     return { signed_url: res.data?.signed_url || res.data?.file_url || '' };
   };
+
+  // GenerateVideo → vercelAiGateway (bypasses Base44 credits, uses Veo 3.x via Vercel AI Gateway)
+  core.GenerateVideo = async (opts: any = {}) => {
+    const res = await base44.functions.invoke('vercelAiGateway', {
+      action: 'generateVideo',
+      prompt: opts.prompt,
+      duration: opts.duration,
+      aspect_ratio: opts.aspect_ratio,
+      generate_audio: opts.generate_audio,
+    });
+    return { url: res.data?.url || '' };
+  };
+
+  // SendPushNotification → xtremeComms (bypasses Base44 credits, uses Telnyx)
+  core.SendPushNotification = async (opts: any = {}) => {
+    const res = await base44.functions.invoke('xtremeComms', {
+      action: 'sendPush',
+      user_id: opts.user_id,
+      title: opts.title,
+      content: opts.content,
+      action_label: opts.action_label,
+      action_url: opts.action_url,
+    });
+    return res.data;
+  };
 }
 
 // Helper: convert File to data URL (server-side compatible)

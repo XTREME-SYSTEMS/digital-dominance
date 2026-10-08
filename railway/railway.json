@@ -67,7 +67,13 @@
           "name": "social-autopilot",
           "schedule": "0 9,12,15,18 * * *",
           "command": "node worker.js social_autopilot",
-          "description": "Social posts 4x daily"
+          "description": "Social posts 4x daily (Vercel AI Gateway — NOT Base44 credits)"
+        },
+        {
+          "name": "social-autopilot-independent",
+          "schedule": "30 9,12,15,18 * * *",
+          "command": "node worker.js social_autopilot_independent",
+          "description": "Independent social generation 4x daily via Vercel AI Gateway"
         },
         {
           "name": "swarm-autopilot",
