@@ -79,11 +79,14 @@
       "enum": [
         "pending",
         "researching",
-        "generating",
+        "candidate_generation",
+        "validation",
+        "eligible",
         "publishing",
         "indexing",
         "completed",
-        "failed"
+        "failed",
+        "blocked"
       ],
       "default": "pending"
     },
@@ -96,6 +99,34 @@
       "format": "date-time"
     },
     "error": {
+      "type": "string"
+    },
+    "execution_mode": {
+      "type": "string",
+      "enum": [
+        "research_only",
+        "candidate_generation",
+        "validated_release"
+      ],
+      "default": "research_only"
+    },
+    "candidates_created": {
+      "type": "number",
+      "default": 0
+    },
+    "pages_eligible": {
+      "type": "number",
+      "default": 0
+    },
+    "production_publish_authorized": {
+      "type": "boolean",
+      "default": false
+    },
+    "evidence_state": {
+      "type": "string",
+      "default": "unknown"
+    },
+    "validation_work_packet_id": {
       "type": "string"
     }
   },
