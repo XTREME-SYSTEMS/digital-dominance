@@ -121,10 +121,7 @@ export function validatePreviewBuildPlan(plan, options = {}) {
     errors.push("EVIDENCE_COVERAGE_BELOW_55");
   }
 
-  const blocked =
-    errors.some((x) => /LOCATION_|SERVICEABILITY|LOCAL_VALUE|PHYSICAL_LOCATION/.test(x)) ||
-    errors.includes("OPPORTUNITY_NOT_ELIGIBLE_FOR_PREVIEW_PLAN") ||
-    errors.includes("EVIDENCE_COVERAGE_BELOW_55");
+  const blocked = errors.length > 0;
 
   return {
     policy_version: DDV3_BUILD_POLICY_VERSION,
