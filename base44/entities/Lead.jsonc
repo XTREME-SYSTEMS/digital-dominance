@@ -68,6 +68,71 @@
     "utm_content": {
       "type": "string"
     },
+    "session_id": {
+      "type": "string",
+      "description": "Stable browser-session identifier used to join FunnelEvent records to this lead"
+    },
+    "site_id": {
+      "type": "string",
+      "description": "Hostname/site that captured the lead"
+    },
+    "build_sha": {
+      "type": "string",
+      "description": "Source/build SHA when available"
+    },
+    "deployment_id": {
+      "type": "string",
+      "description": "Deployment identifier when available"
+    },
+    "first_referrer": {
+      "type": "string"
+    },
+    "first_landing_page": {
+      "type": "string"
+    },
+    "first_utm_source": {
+      "type": "string"
+    },
+    "first_utm_medium": {
+      "type": "string"
+    },
+    "first_utm_campaign": {
+      "type": "string"
+    },
+    "first_utm_term": {
+      "type": "string"
+    },
+    "first_utm_content": {
+      "type": "string"
+    },
+    "last_referrer": {
+      "type": "string"
+    },
+    "last_landing_page": {
+      "type": "string"
+    },
+    "last_utm_source": {
+      "type": "string"
+    },
+    "last_utm_medium": {
+      "type": "string"
+    },
+    "last_utm_campaign": {
+      "type": "string"
+    },
+    "last_utm_term": {
+      "type": "string"
+    },
+    "last_utm_content": {
+      "type": "string"
+    },
+    "conversion_page": {
+      "type": "string"
+    },
+    "attribution_captured_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "device": {
       "type": "string"
     },
@@ -193,6 +258,37 @@
     },
     "won_value": {
       "type": "number"
+    },
+    "hubspot_contact_id": {
+      "type": "string"
+    },
+    "hubspot_deal_id": {
+      "type": "string"
+    },
+    "closed_won_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actual_revenue": {
+      "type": "number",
+      "description": "Verified realized revenue. Never substitute estimate_mid for this field."
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD"
+    },
+    "revenue_source": {
+      "type": "string",
+      "enum": [
+        "hubspot",
+        "manual",
+        "stripe",
+        "other"
+      ]
+    },
+    "revenue_synced_at": {
+      "type": "string",
+      "format": "date-time"
     },
     "notes": {
       "type": "string"
