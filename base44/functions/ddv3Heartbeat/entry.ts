@@ -11,9 +11,9 @@ function bucket5(now: Date) {
   return d;
 }
 
-async function authorized(req: Request, base44: any) {
+async function authorized(req: Request, base44: any, body: any) {
   const expected = secrets.get("RAILWAY_CRON_KEY") || secrets.get("ENGINE_API_KEY") || "";
-  const supplied = req.headers.get("x-cron-key") || "";
+  const supplied = req.headers.get("x-cron-key") || body?.internal_cron_key || "";
   if (expected && supplied && expected === supplied) return true;
   try {
     const user = await base44.auth.me();
@@ -35,7 +35,8 @@ export default async function(req: Request): Promise<Response> {
     if (req.method !== "POST") return Response.json({ error: "POST required" }, { status: 405 });
 
     const base44 = createClientFromRequest(req);
-    if (!(await authorized(req, base44))) {
+    const body = await req.json().catch(() => ({}));
+    if (!(await authorized(req, base44, body))) {
       return Response.json({ error: "Authorized heartbeat/admin required" }, { status: 401 });
     }
 
