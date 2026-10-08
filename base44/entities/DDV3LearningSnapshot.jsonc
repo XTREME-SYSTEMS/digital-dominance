@@ -1,0 +1,51 @@
+{
+  "name": "DDV3LearningSnapshot",
+  "type": "object",
+  "properties": {
+    "snapshot_id": { "type": "string" },
+    "period_days": { "type": "number" },
+    "window_start": { "type": "string", "format": "date-time" },
+    "window_end": { "type": "string", "format": "date-time" },
+    "source_class": {
+      "type": "string",
+      "enum": ["FIRST_PARTY"],
+      "default": "FIRST_PARTY"
+    },
+    "sessions": { "type": "number", "default": 0 },
+    "funnel_events": { "type": "number", "default": 0 },
+    "linked_funnel_events": { "type": "number", "default": 0 },
+    "leads": { "type": "number", "default": 0 },
+    "session_linked_leads": { "type": "number", "default": 0 },
+    "utm_attributed_leads": { "type": "number", "default": 0 },
+    "qualified_leads": { "type": "number", "default": 0 },
+    "qualified_lead_threshold": { "type": "number", "default": 60 },
+    "won_leads": { "type": "number", "default": 0 },
+    "booked_closed_won_revenue": { "type": "number", "default": 0 },
+    "collected_revenue": { "type": "number", "default": 0 },
+    "verified_gross_profit": { "type": "number", "default": 0 },
+    "lead_conversion_rate": { "type": "number", "default": 0 },
+    "qualified_lead_rate": { "type": "number", "default": 0 },
+    "attribution_coverage_pct": { "type": "number", "default": 0 },
+    "event_link_coverage_pct": { "type": "number", "default": 0 },
+    "booked_revenue_per_session": { "type": "number", "default": 0 },
+    "collected_revenue_per_session": { "type": "number", "default": 0 },
+    "gross_profit_per_session": { "type": "number", "default": 0 },
+    "validation_receipts": { "type": "number", "default": 0 },
+    "validation_pass_rate": { "type": "number", "default": 0 },
+    "data_quality_state": {
+      "type": "string",
+      "enum": ["insufficient", "partial", "decision_grade"],
+      "default": "insufficient"
+    },
+    "recommendations_json": { "type": "string", "maxLength": 10000 },
+    "sample_capped": { "type": "boolean", "default": false },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "required": ["snapshot_id", "period_days", "window_start", "window_end", "source_class"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
