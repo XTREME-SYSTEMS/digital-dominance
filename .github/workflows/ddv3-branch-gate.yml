@@ -1,0 +1,48 @@
+name: DDV3 Branch Gate
+
+on:
+  push:
+    branches:
+      - "feat/ddv3-*"
+      - "audit/ddv3-*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ddv3-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Diff hygiene
+        run: git diff --check
+
+      - name: DDV3 measurement regression
+        run: npm run test:ddv3-measurement
+
+      - name: DDV3 evidence regression
+        run: npm run test:ddv3-evidence
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
