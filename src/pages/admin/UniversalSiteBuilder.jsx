@@ -12,7 +12,7 @@ const STEPS = [
   { id: 2, label: "Branding", icon: Crown },
   { id: 3, label: "Content", icon: Crown },
   { id: 4, label: "URL", icon: Crown },
-  { id: 5, label: "Pipeline", icon: Crown },
+  { id: 5, label: "Preview Build", icon: Crown },
 ];
 
 export default function UniversalSiteBuilder() {
@@ -40,9 +40,9 @@ export default function UniversalSiteBuilder() {
         </div>
         <div>
           <div className="text-[10px] font-bold tracking-[0.2em] text-amber-500 uppercase">Universal Site Builder</div>
-          <h1 className="text-2xl font-bold text-white tracking-tight mt-0.5">One-Click Website & Pipeline Factory</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight mt-0.5">Governed Website Preview Factory</h1>
           <p className="text-sm text-stone-400 mt-1">
-            Pick an industry → customize branding → generate content → find the best URL → launch the full admin tool pipeline
+            Pick an industry → customize branding → generate content → evaluate a URL → compile a branch-safe preview BuildPacket
           </p>
         </div>
         <Link to="/admin/dominance-sandbox" className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400 text-sm font-semibold hover:bg-amber-500/30 transition-colors shrink-0">
