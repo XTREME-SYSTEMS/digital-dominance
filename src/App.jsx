@@ -141,6 +141,7 @@ import AutonomousDominance from '@/pages/admin/AutonomousDominance';
 import AutonomousRefactor from '@/pages/admin/AutonomousRefactor';
 import GeneratorSandbox from '@/pages/admin/GeneratorSandbox';
 import OpportunityIntelligence from '@/pages/admin/OpportunityIntelligence';
+import DDV3WebsitePreview from '@/pages/admin/DDV3WebsitePreview';
 import Contents from '@/pages/admin/Contents';
 import Capabilities from '@/pages/admin/Capabilities';
 import GapFiller from '@/pages/admin/GapFiller';
@@ -225,6 +226,7 @@ const AuthenticatedApp = () => {
         <Route path="concept-to-completion" element={<ConceptToCompletion />} />
         <Route path="system-audit" element={<SystemAudit />} />
         <Route path="opportunity-intelligence" element={<OpportunityIntelligence />} />
+        <Route path="ddv3-preview/:planId" element={<DDV3WebsitePreview />} />
         <Route path="google-workspace-os" element={<GoogleWorkspaceOS />} />
         <Route path="internal-architecture" element={<InternalArchitecture />} />
         <Route path="google-command-center" element={<GoogleCommandCenter />} />

@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Bookmark, Trash2, Loader2, ChevronDown, ChevronUp, FileCode2, ShieldCheck } from 'lucide-react';
+import { Bookmark, Trash2, Loader2, ChevronDown, ChevronUp, FileCode2, ShieldCheck, Eye } from 'lucide-react';
 
 const STATUS_COLORS = {
   saved: 'bg-stone-100 text-stone-600',
@@ -43,6 +44,24 @@ export default function SavedOpportunities() {
         return { plan, validation: validationRes.data || validationRes };
       }
       return { plan };
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['savedOpportunities'] }),
+  });
+
+  const generatePreviewMutation = useMutation({
+    mutationFn: async (opp) => {
+      if (!opp.build_plan_id) throw new Error('Validated build plan required');
+      const generationRes = await base44.functions.invoke('generateWebsitePreviewV3', {
+        build_plan_id: opp.build_plan_id,
+      });
+      const generation = generationRes.data || generationRes;
+      if (!generation?.artifact_id) {
+        throw new Error(generation?.error || 'Preview generation did not return an artifact');
+      }
+      const validationRes = await base44.functions.invoke('validateWebsitePreviewV3', {
+        artifact_id: generation.artifact_id,
+      });
+      return { generation, validation: validationRes.data || validationRes };
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['savedOpportunities'] }),
   });
@@ -115,22 +134,42 @@ export default function SavedOpportunities() {
                 )}
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                <button
-                  onClick={() => previewPlanMutation.mutate(opp)}
-                  disabled={
-                    previewPlanMutation.isPending ||
-                    !['preview_candidate', 'release_candidate'].includes(opp.automation_eligibility || '')
-                  }
-                  title={
-                    ['preview_candidate', 'release_candidate'].includes(opp.automation_eligibility || '')
-                      ? 'Create and independently validate a preview-only build specification. This does not deploy or publish.'
-                      : 'Needs DDV3 preview_candidate evidence before a website build plan can be prepared.'
-                  }
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded border border-sky-200 text-[10px] font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 disabled:opacity-40"
-                >
-                  {previewPlanMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : opp.build_plan_status === 'validated_for_preview' ? <ShieldCheck className="h-3 w-3" /> : <FileCode2 className="h-3 w-3" />}
-                  {opp.build_plan_status === 'validated_for_preview' ? 'Plan Ready' : 'Prepare Preview'}
-                </button>
+                {opp.preview_status === 'validated' && opp.build_plan_id ? (
+                  <Link
+                    to={`/admin/ddv3-preview/${opp.build_plan_id}`}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded border border-emerald-200 text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100"
+                    title="Open the authenticated private noindex preview."
+                  >
+                    <Eye className="h-3 w-3" /> Open Preview
+                  </Link>
+                ) : ['validated_for_preview', 'preview_failed'].includes(opp.build_plan_status || '') && opp.build_plan_id ? (
+                  <button
+                    onClick={() => generatePreviewMutation.mutate(opp)}
+                    disabled={generatePreviewMutation.isPending}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded border border-violet-200 text-[10px] font-bold text-violet-700 bg-violet-50 hover:bg-violet-100 disabled:opacity-40"
+                    title="Generate a private, noindex artifact with Vercel AI Gateway, then run the independent preview validator."
+                  >
+                    {generatePreviewMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Eye className="h-3 w-3" />}
+                    {opp.build_plan_status === 'preview_failed' ? 'Repair Preview' : 'Generate Preview'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => previewPlanMutation.mutate(opp)}
+                    disabled={
+                      previewPlanMutation.isPending ||
+                      !['preview_candidate', 'release_candidate'].includes(opp.automation_eligibility || '')
+                    }
+                    title={
+                      ['preview_candidate', 'release_candidate'].includes(opp.automation_eligibility || '')
+                        ? 'Create and independently validate a preview-only build specification. This does not deploy or publish.'
+                        : 'Needs DDV3 preview_candidate evidence before a website build plan can be prepared.'
+                    }
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded border border-sky-200 text-[10px] font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 disabled:opacity-40"
+                  >
+                    {previewPlanMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : opp.build_plan_status === 'validated_for_preview' ? <ShieldCheck className="h-3 w-3" /> : <FileCode2 className="h-3 w-3" />}
+                    {opp.build_plan_status === 'validated_for_preview' ? 'Plan Ready' : 'Prepare Preview'}
+                  </button>
+                )}
                 <select
                   value={opp.status}
                   onChange={(e) => statusMutation.mutate({ id: opp.id, status: e.target.value })}
