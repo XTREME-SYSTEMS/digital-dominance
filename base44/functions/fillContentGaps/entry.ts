@@ -63,36 +63,31 @@ ${gapText}`,
       return Response.json({ ok: true, generated: 0, found: keywords.length, note: "All identified topics already have pages." });
     }
 
-    // 5. Generate a page for each new topic keyword (max 5 per run to control cost).
-    const toGenerate = newKeywords.slice(0, 5);
-    const generated = [];
-
-    for (const keyword of toGenerate) {
-      try {
-        const pageRes = await base44.functions.invoke("generateSeoPage", { keyword });
-        const page = (pageRes as any)?.data || pageRes;
-        if (page?.page?.slug) {
-          generated.push({ keyword, slug: page.page.slug });
-        }
-      } catch {
-        // Skip failures, continue with next keyword
-      }
-    }
+    // 5. DDV3: return content-gap hypotheses only.
+    // Creating/publishing pages from model-generated topic ideas is intentionally disabled.
+    const candidates = newKeywords.slice(0, 10).map((keyword: string) => ({
+      keyword,
+      source_class: "MODEL_ESTIMATE",
+      evidence_state: "hypothesis",
+      automation_eligibility: "research_only",
+    }));
 
     await logStep(base44, {
       category: "content",
-      action: `Content gap auto-fill: generated ${generated.length} pages`,
-      detail: `Topics: ${generated.map((g) => g.keyword).join(", ")}`,
-      meta: JSON.stringify({ found: keywords.length, generated: generated.length }),
+      action: `Content gap research: ${candidates.length} candidate topics`,
+      detail: `Topics: ${candidates.map((g) => g.keyword).join(", ")}`,
+      meta: JSON.stringify({ found: keywords.length, candidates: candidates.length, pages_created: 0 }),
       source: "fillContentGaps",
     });
 
     return Response.json({
       ok: true,
       found: keywords.length,
-      generated: generated.length,
-      pages: generated,
-      skipped: keywords.length - newKeywords.length,
+      candidates: candidates.length,
+      pages_created: 0,
+      topics: candidates,
+      mode: "research_only",
+      note: "No GeneratedPage records were created. Candidate topics require evidence before page compilation.",
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
