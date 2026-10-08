@@ -1,0 +1,130 @@
+{
+  "name": "WebsitePreviewArtifact",
+  "type": "object",
+  "properties": {
+    "artifact_id": { "type": "string" },
+    "build_plan_id": { "type": "string" },
+    "opportunity_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "generated", "validating", "validated", "blocked", "archived"],
+      "default": "draft"
+    },
+    "preview_only": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": false
+    },
+    "robots_policy": {
+      "type": "string",
+      "enum": ["noindex"],
+      "default": "noindex"
+    },
+    "brand": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "tagline": { "type": "string" },
+        "style_direction": { "type": "string" },
+        "primary_cta": { "type": "string" }
+      }
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string" },
+          "page_type": { "type": "string" },
+          "title": { "type": "string" },
+          "meta_description": { "type": "string" },
+          "h1": { "type": "string" },
+          "subhead": { "type": "string" },
+          "cta_text": { "type": "string" },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "section_type": {
+                  "type": "string",
+                  "enum": ["hero", "text", "benefits", "process", "proof", "pricing", "faq", "cta"]
+                },
+                "heading": { "type": "string" },
+                "body": { "type": "string" },
+                "bullets": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "default": []
+                },
+                "claim_class": {
+                  "type": "string",
+                  "enum": ["generic", "evidence_backed", "placeholder"],
+                  "default": "generic"
+                },
+                "claim_evidence_ids": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "default": []
+                }
+              }
+            },
+            "default": []
+          }
+        }
+      },
+      "default": []
+    },
+    "source_evidence_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "generation_provider": { "type": "string" },
+    "generation_model": { "type": "string" },
+    "generation_usage": { "type": "string", "maxLength": 3000 },
+    "validation_state": {
+      "type": "string",
+      "enum": ["unvalidated", "passed", "failed"],
+      "default": "unvalidated"
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "validation_warnings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "validation_receipt": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "artifact_id",
+    "build_plan_id",
+    "opportunity_id",
+    "preview_only",
+    "is_public"
+  ],
+  "rls": {
+    "create": { "user_condition": { "role": "admin" } },
+    "read": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
