@@ -41,6 +41,9 @@ jobs:
       - name: DDV3 evidence regression
         run: npm run test:ddv3-evidence
 
+      - name: DDV3 factory regression
+        run: npm run test:ddv3-factory
+
       - name: Lint
         run: npm run lint
 
