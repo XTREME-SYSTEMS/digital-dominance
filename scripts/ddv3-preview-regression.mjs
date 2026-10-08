@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { validateWebsitePreviewArtifact } from "../base44/shared/ddv3PreviewGuardrails.js";
 
 const plan = {
@@ -269,4 +270,26 @@ console.log("PASS | proof requires first-party evidence");
 console.log("PASS | proof with first-party evidence accepted");
 console.log("PASS | unverified physical office language rejected");
 console.log("PASS | unknown evidence ID rejected");
-console.log("\nDDV3 private preview regression: 13/13 passed");
+
+const vercel = JSON.parse(fs.readFileSync("vercel.json", "utf8"));
+assert.ok(
+  vercel.rewrites?.some((rule) =>
+    rule.source === "/admin/ddv3-preview/:path*" &&
+    rule.destination === "/index.html"
+  ),
+  "Private preview deep links must rewrite to index.html"
+);
+assert.ok(
+  vercel.headers?.some((rule) =>
+    rule.source === "/admin/ddv3-preview/:path*" &&
+    rule.headers?.some((header) =>
+      header.key === "X-Robots-Tag" &&
+      /noindex/i.test(header.value || "")
+    )
+  ),
+  "Private preview deep links must be noindex at the Vercel edge"
+);
+
+console.log("PASS | private preview deep links rewrite to the SPA shell");
+console.log("PASS | private preview deep links carry edge noindex");
+console.log("\nDDV3 private preview regression: 15/15 passed");
