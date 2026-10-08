@@ -4,21 +4,12 @@ import { generateText } from '../../shared/aiGateway.ts';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // autonomousSeoDominance
-// The aggressive, persistent, autonomous SEO/AEO dominance engine.
+// DDV3 evidence-led SEO opportunity research engine.
 //
-// Runs the full closed-loop cycle:
-//   1. Pull fresh Google Search Console data (page+query attributed)
-//   2. Discover opportunity keywords (impressions > threshold, position > 10 = page 2+)
-//   3. For NEW keywords → auto-generate SEO pages targeting them
-//   4. For EXISTING underperforming pages → re-optimize titles/meta/FAQ
-//   5. Submit all changed/new URLs to IndexNow for instant crawling
-//   6. Return a dominance report
-//
-// Invoke: base44.functions.invoke('autonomousSeoDominance', { max_new_pages?: 5 })
-// ═══════════════════════════════════════════════════════════════════════════
-
-const INDEXNOW_KEY = 'a3e6350908f1c2d4e6b8a0123456789a';
-const INDEXNOW_SITE = 'epoxyquotenearme.base44.app';
+// Pulls first-party Search Console evidence and identifies candidate queries.
+ // It is deliberately non-publishing: candidate pages must pass DDV3 evidence,
+ // preview, validation, approval, and release gates before indexing.
+ // ═══════════════════════════════════════════════════════════════════════════
 
 function slugify(s: string): string {
   return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -142,119 +133,49 @@ Each keyword should be a specific long-tail phrase a homeowner would search (e.g
       new_keyword_ideas: newKeywords.length,
     });
 
-    // ── STEP 3: Auto-generate pages for NEW keywords ──
+    // ── DDV3 SAFE MODE: recommendations only ──
+    // This function no longer creates pages, rewrites content, or submits URLs.
+    // It produces evidence-backed candidate work for governed downstream workflows.
     const existingPages = await svc.entities.GeneratedPage.list(500);
-    const existingSlugs = new Set(existingPages.map((p) => p.slug?.toLowerCase()));
-    const existingKeywordsSet = new Set(existingPages.map((p) => (p.keyword || '').toLowerCase()));
+    const existingKeywordsSet = new Set(existingPages.map((p) => (p.keyword || "").toLowerCase()));
+    const recommendedCandidates = newKeywords
+      .filter((keyword) => keyword && !existingKeywordsSet.has(keyword.toLowerCase()))
+      .slice(0, maxNewPages)
+      .map((keyword) => ({
+        keyword,
+        source_class: "MODEL_ESTIMATE",
+        evidence_state: "hypothesis",
+        automation_eligibility: "research_only",
+        recommended_next_action: "Record supporting evidence, then compileProgrammaticPageCandidate.",
+      }));
 
-    const urlsToSubmit: string[] = [];
-    const generatedPages: any[] = [];
-
-    for (const keyword of newKeywords.slice(0, maxNewPages)) {
-      const kwLower = keyword.toLowerCase();
-      if (existingKeywordsSet.has(kwLower)) continue;
-
-      try {
-        const pageRes = await base44.functions.invoke('generateSeoPage', { keyword });
-        const page = pageRes.data || pageRes;
-        if (page?.page?.slug) {
-          generatedPages.push({ keyword, slug: page.page.slug });
-          urlsToSubmit.push(`https://${INDEXNOW_SITE}/${page.page.slug}`);
-          existingSlugs.add(page.page.slug.toLowerCase());
-          existingKeywordsSet.add(kwLower);
-        }
-      } catch (e: any) {
-        report.errors.push(`Page generation failed for "${keyword}": ${e.message}`);
-      }
-    }
-
-    report.pages_generated = generatedPages.length;
+    report.pages_generated = 0;
+    report.pages_reoptimized = 0;
+    report.urls_submitted = 0;
     report.steps.push({
-      step: 'generate_new_pages',
+      step: "candidate_recommendations",
       ok: true,
-      generated: generatedPages.length,
-      keywords: generatedPages.map((g) => g.keyword),
+      mode: "research_only",
+      candidates: recommendedCandidates.length,
+      keywords: recommendedCandidates.map((g) => g.keyword),
     });
-
-    // ── STEP 4: Re-optimize underperforming existing pages ──
-    // Pages with position > 10 or CTR < 2% or no performance data
-    const underperforming = seoContents.filter((rec) => {
-      const perf = rec.performance_snapshot || {};
-      const hasData = perf.impressions || perf.clicks || perf.avg_position;
-      if (!hasData) return false; // skip pages with no data
-      const pos = perf.avg_position || 100;
-      const ctr = perf.ctr || 0;
-      return pos > 10 || ctr < 0.02;
-    });
-
-    let reoptimized = 0;
-    if (underperforming.length > 0) {
-      try {
-        const optRes = await base44.functions.invoke('optimizeSeo', {});
-        const optData = optRes.data || optRes;
-        reoptimized = optData.improved || 0;
-        report.steps.push({
-          step: 'reoptimize_underperforming',
-          ok: !optData.error,
-          reoptimized,
-          underperforming_count: underperforming.length,
-        });
-      } catch (e: any) {
-        report.steps.push({ step: 'reoptimize_underperforming', ok: false, error: e.message });
-        report.errors.push(`Re-optimization error: ${e.message}`);
-      }
-    } else {
-      report.steps.push({ step: 'reoptimize_underperforming', ok: true, reoptimized: 0, underperforming_count: 0 });
-    }
-
-    report.pages_reoptimized = reoptimized;
-
-    // ── STEP 5: Submit all changed/new URLs to IndexNow ──
-    // Also submit the underperforming pages that were re-optimized
-    for (const rec of underperforming.slice(0, 20)) {
-      const path = rec.route || '';
-      if (path) {
-        urlsToSubmit.push(`https://${INDEXNOW_SITE}${path}`);
-      }
-    }
-
-    // Deduplicate URLs
-    const uniqueUrls = [...new Set(urlsToSubmit)];
-    await pingIndexNow(uniqueUrls);
-
-    report.urls_submitted = uniqueUrls.length;
-    report.steps.push({
-      step: 'submit_to_indexers',
-      ok: true,
-      urls_submitted: uniqueUrls.length,
-    });
-
-    // ── STEP 6: Run content gap analysis if competitor data exists ──
-    try {
-      const gapRes = await base44.functions.invoke('fillContentGaps', {});
-      const gapData = gapRes.data || gapRes;
-      report.steps.push({
-        step: 'fill_content_gaps',
-        ok: !gapData.error,
-        found: gapData.found || 0,
-        generated: gapData.generated || 0,
-      });
-    } catch (e: any) {
-      // Non-fatal — skip if no competitor data
-      report.steps.push({ step: 'fill_content_gaps', ok: false, skipped: true, error: e.message });
-    }
-
     report.completed_at = new Date().toISOString();
 
     await logStep(base44, {
-      category: 'seo',
-      action: 'Autonomous SEO Dominance cycle completed',
-      detail: `Opportunities: ${report.opportunities_found}, Pages generated: ${report.pages_generated}, Re-optimized: ${report.pages_reoptimized}, URLs submitted: ${report.urls_submitted}`,
-      meta: JSON.stringify({ steps: report.steps.length, errors: report.errors.length }),
-      source: 'autonomousSeoDominance',
+      category: "seo",
+      action: "DDV3 SEO opportunity research completed",
+      detail: `Opportunities: ${report.opportunities_found}, Candidate topics: ${recommendedCandidates.length}, Pages generated: 0, URLs submitted: 0`,
+      meta: JSON.stringify({ mode: "research_only", steps: report.steps.length, errors: report.errors.length }),
+      source: "autonomousSeoDominance",
     });
 
-    return Response.json({ ok: true, ...report });
+    return Response.json({
+      ok: true,
+      ...report,
+      mode: "research_only",
+      candidates: recommendedCandidates,
+      note: "No pages were created or modified and no URLs were submitted to indexers.",
+    });
   } catch (error) {
     console.error('[autonomousSeoDominance] Error:', error.message);
     return Response.json({ error: error.message }, { status: 500 });
