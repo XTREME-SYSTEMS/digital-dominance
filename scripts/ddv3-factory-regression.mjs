@@ -10,6 +10,7 @@ const builder = read("src/pages/admin/UniversalSiteBuilder.jsx");
 const compiler = read("base44/functions/compileWebsiteBuildPacket/entry.ts");
 const packetSchema = read("base44/entities/WebsiteBuildPacket.jsonc");
 const legacyEngine = read("base44/functions/universalDominanceEngine/entry.ts");
+const vercelConfig = read("vercel.json");
 
 const forbiddenLauncherMarkers = [
   'functions.invoke("dominanceEngine"',
@@ -128,6 +129,13 @@ check(
   compiler.includes('user.role !== "admin"') &&
     compiler.includes("Admin access required"),
   "Creating a build packet is an authenticated admin action."
+);
+
+check(
+  "Vercel preview supports SPA deep links",
+  vercelConfig.includes('"source": "/(.*)"') &&
+    vercelConfig.includes('"destination": "/index.html"'),
+  "Direct navigation to admin and client-side routes must resolve to the Vite SPA."
 );
 
 const failed = checks.filter((c) => !c.pass);
