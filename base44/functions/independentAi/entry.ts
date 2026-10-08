@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
 import { secrets } from 'base44:runtime';
+import { completeGateway } from '../../shared/aiGateway.ts';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // independentAi — Drop-in replacement for Base44 Core.InvokeLLM.
@@ -31,7 +32,7 @@ function withTimeout(ms) {
   return { controller, cleanup: () => clearTimeout(timer) };
 }
 
-async function tryGroq(prompt, systemPrompt, options, model = 'qwen/qwen3.8-27b') {
+async function tryGroq(prompt, systemPrompt, options, model = 'llama-3.3-70b-versatile') {
   const key = secrets.get('GROQ_API_KEY');
   if (!key) return null;
 
@@ -49,21 +50,22 @@ async function tryGroq(prompt, systemPrompt, options, model = 'qwen/qwen3.8-27b'
         messages,
         temperature: options.temperature ?? 0.7,
         max_tokens: options.max_tokens || 4096,
+        response_format: options.response_json_schema ? { type: 'json_object' } : undefined,
       }),
       signal: controller.signal,
     });
     cleanup();
-    if (!res.ok) return model === 'qwen/qwen3.8-27b' ? tryGroq(prompt, systemPrompt, options, 'openai/gpt-oss-20b') : null;
+    if (!res.ok) return model === 'llama-3.3-70b-versatile' ? tryGroq(prompt, systemPrompt, options, 'llama-3.1-8b-instant') : null;
     const data = await res.json();
     return data.choices?.[0]?.message?.content || null;
-  } catch { cleanup(); return model === 'qwen/qwen3.8-27b' ? tryGroq(prompt, systemPrompt, options, 'openai/gpt-oss-20b') : null; }
+  } catch { cleanup(); return model === 'llama-3.3-70b-versatile' ? tryGroq(prompt, systemPrompt, options, 'llama-3.1-8b-instant') : null; }
 }
 
 async function tryGoogleAI(prompt, systemPrompt, fileUrls, options) {
   const key = secrets.get('GOOGLE_AI_API_KEY');
   if (!key) return null;
 
-  const model = 'gemini-2.5-flash';
+  const model = 'gemini-2.0-flash';
   const parts = [{ text: (systemPrompt || '') + '\n\n' + prompt }];
   if (fileUrls && Array.isArray(fileUrls)) {
     for (const url of fileUrls) {
@@ -112,7 +114,7 @@ async function tryOpenRouter(prompt, systemPrompt, options) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'qwen/qwen3.8-27b:free',
+        model: 'meta-llama/llama-3.1-8b-instruct:free',
         messages,
         temperature: options.temperature ?? 0.7,
         max_tokens: options.max_tokens || 4096,
@@ -216,6 +218,24 @@ export default async function(req: Request): Promise<Response> {
       result = await tryOpenRouter(prompt, system_prompt, options);
       if (result) provider = 'openrouter';
       else errors.push('openrouter: unavailable or failed');
+    }
+
+    // 4. Vercel AI Gateway (separate billing, highest reliability)
+    if (!result) {
+      try {
+        const messages = [];
+        if (system_prompt) messages.push({ role: 'system', content: system_prompt });
+        messages.push({ role: 'user', content: prompt });
+        const gwRes = await completeGateway({
+          model: 'anthropic/claude-sonnet-4-6',
+          messages,
+          max_tokens: options.max_tokens || 4096,
+          ...(response_json_schema ? { response_format: { type: 'json_object' } } : {}),
+        });
+        result = gwRes.choices?.[0]?.message?.content || null;
+        if (result) provider = 'vercel-gateway';
+        else errors.push('vercel-gateway: no content returned');
+      } catch (e) { errors.push(`vercel-gateway: ${e.message}`); }
     }
 
     if (!result) {

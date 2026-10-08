@@ -50,10 +50,11 @@ export async function generateText(opts: {
   const payload: any = {
     model: opts.model || 'anthropic/claude-opus-4.7',
     messages,
+    max_tokens: (opts as any).max_tokens || 8000,
   };
 
   if (opts.response_json_schema) {
-    payload.response_format = { type: 'json_schema', json_schema: { name: 'response', schema: opts.response_json_schema } };
+    payload.response_format = { type: 'json_object' };
   }
 
   const data = await completeGateway(payload);
