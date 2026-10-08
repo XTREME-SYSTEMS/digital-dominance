@@ -50,7 +50,7 @@
     "score": {
       "type": "number",
       "default": 0,
-      "description": "Opportunity score 0-10"
+      "description": "Legacy scanner/model hypothesis score 0-10. Not validated demand; use decision_score for V3 prioritization."
     },
     "status": {
       "type": "string",
@@ -80,6 +80,88 @@
       "format": "date-time"
     },
     "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "service": {
+      "type": "string",
+      "description": "Service or product category this opportunity targets"
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "transactional",
+        "commercial",
+        "informational",
+        "navigational",
+        "mixed",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "geography": {
+      "type": "string",
+      "description": "Geography this opportunity applies to"
+    },
+    "buyer_archetype": {
+      "type": "string",
+      "description": "Normalized buyer archetype"
+    },
+    "hypothesis_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-10 scanner/model hypothesis score. Never treated as validated demand."
+    },
+    "decision_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 DDV3 evidence-adjusted decision score"
+    },
+    "evidence_state": {
+      "type": "string",
+      "enum": [
+        "hypothesis",
+        "partially_verified",
+        "verified",
+        "blocked",
+        "expired"
+      ],
+      "default": "hypothesis"
+    },
+    "evidence_count": {
+      "type": "number",
+      "default": 0
+    },
+    "evidence_coverage_pct": {
+      "type": "number",
+      "default": 0,
+      "description": "Percent of weighted V3 score dimensions supported by active scored evidence"
+    },
+    "evidence_quality_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 aggregate quality of supporting evidence"
+    },
+    "score_version": {
+      "type": "string"
+    },
+    "score_breakdown": {
+      "type": "string",
+      "maxLength": 5000,
+      "description": "Serialized deterministic score breakdown by dimension"
+    },
+    "automation_eligibility": {
+      "type": "string",
+      "enum": [
+        "research_only",
+        "preview_candidate",
+        "release_candidate",
+        "blocked"
+      ],
+      "default": "research_only",
+      "description": "Eligibility only. Never authorizes protected production actions."
+    },
+    "last_scored_at": {
       "type": "string",
       "format": "date-time"
     }
