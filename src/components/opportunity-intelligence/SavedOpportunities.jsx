@@ -81,9 +81,20 @@ export default function SavedOpportunities() {
                   {opp.scanner_label && (
                     <span className="text-[10px] text-stone-400 font-mono">{opp.scanner_label}</span>
                   )}
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700">
+                    V3 {Math.round(opp.decision_score || 0)}/100
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700">
+                    {opp.evidence_state || 'hypothesis'}
+                  </span>
                 </div>
                 {opp.problem && <p className="text-xs text-stone-500 line-clamp-1">{opp.problem}</p>}
                 {opp.app_idea && <p className="text-xs text-amber-600 line-clamp-1 mt-0.5">💡 {opp.app_idea}</p>}
+                <p className="text-[10px] text-stone-400 mt-1">
+                  Evidence: {opp.evidence_count || 0} records · {Math.round(opp.evidence_coverage_pct || 0)}% coverage
+                  {Number(opp.hypothesis_score || opp.score) > 0 ? ` · AI hypothesis ${opp.hypothesis_score || opp.score}/10` : ''}
+                  {' · '}{opp.automation_eligibility || 'research_only'}
+                </p>
               </div>
               <div className="flex items-center gap-1 shrink-0">
                 <select
@@ -93,7 +104,7 @@ export default function SavedOpportunities() {
                 >
                   <option value="saved">Saved</option>
                   <option value="reviewing">Reviewing</option>
-                  <option value="validated">Validated</option>
+                  <option value="validated" disabled={opp.evidence_state !== 'verified'}>Validated {opp.evidence_state !== 'verified' ? '(needs verified evidence)' : ''}</option>
                   <option value="building">Building</option>
                   <option value="launched">Launched</option>
                   <option value="archived">Archived</option>
