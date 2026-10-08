@@ -68,9 +68,97 @@
       "type": "string",
       "enum": [
         "draft",
-        "published"
+        "preview",
+        "validated",
+        "published",
+        "archived"
       ],
-      "default": "published"
+      "default": "draft"
+    },
+    "content": {
+      "type": "string",
+      "maxLength": 30000,
+      "description": "Rendered draft body/content when used by generators"
+    },
+    "seo_title": {
+      "type": "string"
+    },
+    "seo_description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "canonical_path": {
+      "type": "string",
+      "description": "Canonical route candidate for this page"
+    },
+    "source_opportunity_id": {
+      "type": "string"
+    },
+    "source_evidence_state": {
+      "type": "string",
+      "default": "unknown"
+    },
+    "validation_work_packet_id": {
+      "type": "string"
+    },
+    "unique_value_summary": {
+      "type": "string",
+      "maxLength": 3000
+    },
+    "robots_directive": {
+      "type": "string",
+      "default": "noindex, follow"
+    },
+    "index_eligible": {
+      "type": "boolean",
+      "default": false
+    },
+    "sitemap_eligible": {
+      "type": "boolean",
+      "default": false
+    },
+    "release_authorized": {
+      "type": "boolean",
+      "default": false
+    },
+    "serviceability_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "local_value_score": {
+      "type": "number",
+      "default": 0
+    },
+    "eligibility_state": {
+      "type": "string",
+      "enum": [
+        "research_only",
+        "candidate",
+        "blocked",
+        "eligible"
+      ],
+      "default": "research_only"
+    },
+    "eligibility_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "eligibility_evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "programmatic_job_id": {
+      "type": "string"
+    },
+    "location_id": {
+      "type": "string"
     }
   },
   "required": [

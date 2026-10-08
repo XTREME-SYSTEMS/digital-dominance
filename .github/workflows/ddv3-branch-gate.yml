@@ -44,6 +44,9 @@ jobs:
       - name: DDV3 factory regression
         run: npm run test:ddv3-factory
 
+      - name: DDV3 index eligibility regression
+        run: npm run test:ddv3-index
+
       - name: Lint
         run: npm run lint
 

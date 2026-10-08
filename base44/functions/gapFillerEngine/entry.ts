@@ -70,6 +70,31 @@ export default async function(req) {
     const body = await req.json().catch(() => ({}));
     const action = body.action || "status";
 
+    // DDV3 quarantine: these legacy actions either fabricate evidence, mark
+    // generated content as published, schedule external-facing activity, or
+    // bypass the evidence -> validation -> approval release chain.
+    const quarantinedActions = new Set([
+      "run_programmatic_seo",
+      "accelerate_first_page",
+      "run_full_gap_fill",
+      "submit_mass_citations",
+      "find_backlink_opportunities",
+      "generate_content_calendar",
+      "generate_social_content",
+      "submit_apple_yelp",
+      "sync_gbp",
+      "submit_to_bing",
+    ]);
+    if (quarantinedActions.has(action)) {
+      return Response.json({
+        success: false,
+        blocked: true,
+        code: "DDV3_GOVERNED_EVIDENCE_REQUIRED",
+        action,
+        error: "Legacy direct action quarantined. Use evidence-backed DDV3 candidate, validation, and approval workflows.",
+      }, { status: 403 });
+    }
+
     switch (action) {
 
       // === 1. TEMPLATE GALLERY GENERATION ===

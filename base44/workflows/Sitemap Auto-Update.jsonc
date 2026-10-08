@@ -1,15 +1,16 @@
 {
-  "name": "Sitemap Auto-Update",
-  "description": "When a new GeneratedPage is created, pings IndexNow so search engines discover the new page immediately, then regenerates the dynamic sitemap.",
+  "name": "DDV3 Released Page Discovery Update",
+  "description": "Only after a GeneratedPage becomes explicitly published, release-authorized, index-eligible, and sitemap-eligible, ping IndexNow and regenerate the sitemap.",
   "trigger": {
     "config": {
       "trigger_type": "entity",
       "entity_name": "GeneratedPage",
       "events": [
-        "create"
+        "create",
+        "update"
       ]
     },
-    "condition": "${ .trigger.data.status != \"draft\" }"
+    "condition": "${ .trigger.data.status == \"published\" && .trigger.data.release_authorized == true && .trigger.data.index_eligible == true && .trigger.data.sitemap_eligible == true }"
   },
   "definition": {
     "document": {
@@ -25,13 +26,13 @@
           "with": {
             "function_name": "pingIndexNow",
             "args": {
-              "url": "https://epoxygaragefloorestimate.com/${ .trigger.data.slug }"
+              "url": "https://epoxyquotenearme.com/${ .trigger.data.slug }"
             }
           },
           "then": "regenerate_sitemap",
           "x-base44": {
             "title": "Ping IndexNow",
-            "description": "Notify Bing, Yandex, Seznam of the new URL"
+            "description": "Notify IndexNow only after DDV3 release and index eligibility are explicit"
           }
         }
       },

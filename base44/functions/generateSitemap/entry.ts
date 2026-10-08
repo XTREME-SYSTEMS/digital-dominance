@@ -30,7 +30,12 @@ export default async function (req: Request): Promise<Response> {
 
     // Fetch all published GeneratedPage entries for dynamic content URLs.
     const generated = await base44.asServiceRole.entities.GeneratedPage.list(500);
-    const published = generated.filter((g) => g.status !== "draft");
+    const published = generated.filter((g) =>
+      g.status === "published" &&
+      g.index_eligible !== false &&
+      g.sitemap_eligible !== false &&
+      g.release_authorized !== false
+    );
 
     // Fetch CanonicalLocationRegistry — canonical 2-letter state code URLs only
     // Alpha Prime 6B fix: use registry instead of raw WebsiteTemplate URLs (which contain non-canonical state slugs)
@@ -54,8 +59,15 @@ export default async function (req: Request): Promise<Response> {
       seenPaths.add(path);
     }
 
-    // Location pages from CanonicalLocationRegistry — canonical 2-letter state code URLs only
-    for (const loc of locationRegistry) {
+    // Location pages must earn index eligibility. Unvalidated/low-value locations
+    // remain accessible for QA but are excluded from sitemap discovery.
+    const eligibleLocations = locationRegistry.filter((loc) =>
+      loc.content_status === "published" &&
+      loc.validation_status === "passed" &&
+      loc.serviceability_status === "serviceable" &&
+      Number(loc.local_value_score || 0) >= 70
+    );
+    for (const loc of eligibleLocations) {
       const path = loc.canonical_path;
       if (path && !seenPaths.has(path)) {
         entries.push(urlEntry(path, now, "0.8", "monthly"));
@@ -80,7 +92,7 @@ ${entries.join("\n")}
     await logStep(base44, {
       category: "seo",
       action: "Generated dynamic sitemap",
-      detail: `${entries.length} URLs (${STATIC_PATHS.length} static, ${locationRegistry.length} location, ${published.length} generated)`,
+      detail: `${entries.length} URLs (${STATIC_PATHS.length} static, ${eligibleLocations.length} eligible locations, ${published.length} released generated)`,
       source: "generateSitemap",
     });
 
