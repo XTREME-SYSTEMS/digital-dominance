@@ -1,4 +1,4 @@
-import { scoreOpportunityEvidence } from "./ddv3OpportunityScoring.ts";
+import { scoreOpportunityEvidence } from "./ddv3OpportunityScoring.js";
 
 export async function recomputeOpportunityV3(svc: any, opportunityId: string) {
   const opportunity = await svc.entities.Opportunity.get(opportunityId);
