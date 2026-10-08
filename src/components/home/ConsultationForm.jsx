@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { captureAttribution } from "@/lib/estimatorStore";
-import { getDeviceType, trackEvent } from "@/lib/tracking";
+import { getDeviceType, linkLeadAttribution } from "@/lib/tracking";
 import { Link } from "react-router-dom";
 
 export default function ConsultationForm({ settings }) {
@@ -15,13 +15,14 @@ export default function ConsultationForm({ settings }) {
     setBusy(true);
     setError("");
     try {
+      const attribution = captureAttribution();
       const lead = await base44.entities.Lead.create({
         first_name: form.first_name.trim(), email: form.email.trim(), phone: form.phone.trim(),
         lead_type: "homeowner", status: "NEW ESTIMATE", notes: "Homepage callback request — estimate not yet calculated; contact requested.",
-        device: getDeviceType(), ...captureAttribution()
+        device: getDeviceType(), ...attribution
       });
       setSent(true);
-      trackEvent("lead_created", { lead_id: lead.id, source: "homepage_callback" });
+      linkLeadAttribution(lead.id, { source: "homepage_callback" });
       base44.functions.invoke("pushLeadToHubspot", { lead_id: lead.id }).catch(() => {});
       base44.functions.invoke("syncLeadToSheet", { action: "appendLead", lead_id: lead.id }).catch(() => {});
     } catch (err) {
