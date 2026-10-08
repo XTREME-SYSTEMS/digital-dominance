@@ -22,100 +22,10 @@
     "cron": {
       "jobs": [
         {
-          "name": "alpha-prime-heartbeat",
+          "name": "ddv3-heartbeat",
           "schedule": "*/5 * * * *",
-          "command": "node worker.js alpha_prime_heartbeat",
-          "description": "5-min Alpha Prime governance cycle"
-        },
-        {
-          "name": "fleet-heartbeat",
-          "schedule": "*/10 * * * *",
-          "command": "node worker.js fleet_heartbeat",
-          "description": "Fleet health check"
-        },
-        {
-          "name": "daily-lead-engine",
-          "schedule": "0 8 * * *",
-          "command": "node worker.js daily_lead_engine",
-          "description": "Daily lead processing at 8am"
-        },
-        {
-          "name": "weekly-opportunity-scanner",
-          "schedule": "0 9 * * 1",
-          "command": "node worker.js weekly_opportunity_scanner",
-          "description": "Weekly opportunity scan Mondays 9am"
-        },
-        {
-          "name": "competitor-scanner",
-          "schedule": "0 */6 * * *",
-          "command": "node worker.js competitor_scanner",
-          "description": "Competitor monitoring every 6 hours"
-        },
-        {
-          "name": "seo-optimizer",
-          "schedule": "0 2 * * *",
-          "command": "node worker.js seo_optimizer",
-          "description": "SEO optimization at 2am daily"
-        },
-        {
-          "name": "sitemap-update",
-          "schedule": "0 3 * * *",
-          "command": "node worker.js sitemap_update",
-          "description": "Sitemap update at 3am daily"
-        },
-        {
-          "name": "social-autopilot",
-          "schedule": "0 9,12,15,18 * * *",
-          "command": "node worker.js social_autopilot",
-          "description": "Social posts 4x daily (Vercel AI Gateway — NOT Base44 credits)"
-        },
-        {
-          "name": "social-autopilot-independent",
-          "schedule": "30 9,12,15,18 * * *",
-          "command": "node worker.js social_autopilot_independent",
-          "description": "Independent social generation 4x daily via Vercel AI Gateway"
-        },
-        {
-          "name": "swarm-autopilot",
-          "schedule": "*/15 * * * *",
-          "command": "node worker.js swarm_autopilot",
-          "description": "Swarm dispatch every 15 min"
-        },
-        {
-          "name": "autonomous-sprint",
-          "schedule": "0 */4 * * *",
-          "command": "node worker.js autonomous_sprint",
-          "description": "Autonomous sprint every 4 hours"
-        },
-        {
-          "name": "autonomous-refactor",
-          "schedule": "0 1 * * *",
-          "command": "node worker.js autonomous_refactor",
-          "description": "Code refactoring at 1am daily"
-        },
-        {
-          "name": "digital-dominance",
-          "schedule": "0 6 * * *",
-          "command": "node worker.js digital_dominance",
-          "description": "Digital dominance compilation at 6am"
-        },
-        {
-          "name": "review-request",
-          "schedule": "0 10 * * *",
-          "command": "node worker.js review_request",
-          "description": "Review requests at 10am daily"
-        },
-        {
-          "name": "lead-follow-up",
-          "schedule": "0 11,16 * * *",
-          "command": "node worker.js lead_follow_up",
-          "description": "Lead follow-ups at 11am and 4pm"
-        },
-        {
-          "name": "entity-event-processor",
-          "schedule": "* * * * *",
-          "command": "node worker.js process_entity_events",
-          "description": "Process entity event queue every minute"
+          "command": "node worker.js ddv3_heartbeat",
+          "description": "Single DDV3 authoritative scheduler tick: entity queue + queue/lease/learning reconciliation"
         }
       ]
     }
