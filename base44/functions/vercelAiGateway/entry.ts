@@ -184,6 +184,69 @@ export default async function(req: Request): Promise<Response> {
       return Response.json({ ok: true, urls, count: urls.length, model: imageModel });
     }
 
+    // ── generateVideo: Text-to-video generation (replaces Core.GenerateVideo) ──
+    // Routes through Vercel AI Gateway's video generation endpoint.
+    // Supports Veo 3.x models via the gateway, uploaded to Supabase Storage.
+    if (action === 'generateVideo') {
+      const { prompt, model, duration, aspect_ratio, generate_audio } = body;
+      if (!prompt) return Response.json({ error: 'prompt required' }, { status: 400 });
+
+      const videoModel = model || 'google/veo-3.1-generate-001';
+      const dur = duration || 6;
+      const ratio = aspect_ratio || '16:9';
+      const audio = generate_audio !== undefined ? generate_audio : true;
+
+      const payload: any = {
+        model: videoModel,
+        prompt,
+        duration: dur,
+        aspect_ratio: ratio,
+        generate_audio: audio,
+      };
+
+      const res = await fetch(`${GATEWAY_BASE}/videos/generations`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        return Response.json({ error: `AI Gateway video error: ${err}`, status: res.status }, { status: 500 });
+      }
+
+      const data = await res.json();
+
+      // Extract video URL from response — gateway may return it directly or as base64
+      let videoUrl: string | null = null;
+      if (data.url) {
+        videoUrl = data.url;
+      } else if (data.video_url) {
+        videoUrl = data.video_url;
+      } else if (data.data?.[0]?.url) {
+        videoUrl = data.data[0].url;
+      } else if (data.data?.[0]?.b64_json) {
+        // Upload base64 video to Supabase
+        const b64 = data.data[0].b64_json;
+        const dataUrl = `data:video/mp4;base64,${b64}`;
+        const uploadRes = await base44.functions.invoke('supabaseUpload', {
+          file_data: dataUrl,
+          filename: `ai-video-${Date.now()}.mp4`,
+          content_type: 'video/mp4',
+        });
+        videoUrl = uploadRes.data?.file_url || null;
+      }
+
+      if (!videoUrl) {
+        return Response.json({ error: 'No video URL in gateway response', raw: JSON.stringify(data).slice(0, 500) }, { status: 500 });
+      }
+
+      return Response.json({ ok: true, url: videoUrl, model: videoModel, duration: dur, aspect_ratio: ratio });
+    }
+
     // ── editImage: Image editing with a reference image (floor visualizer) ──
     // Uses a multimodal LLM (Nano Banana / Gemini Flash Image) via chat completions.
     // The reference image is sent as input, and the model generates a new edited image.

@@ -286,7 +286,7 @@ export const CORE_INTEGRATIONS = [
   { name: 'UploadPublicFile', status: 'blocked', replacement: 'supabaseUpload', note: 'Credits exhausted — routed to Supabase Storage' },
   { name: 'UploadPrivateFile', status: 'blocked', replacement: 'supabaseUpload', note: 'Credits exhausted — routed to Supabase Storage' },
   { name: 'CreateFileSignedUrl', status: 'blocked', replacement: 'supabaseUpload', note: 'Credits exhausted — routed to Supabase Storage' },
-  { name: 'GenerateVideo', status: 'blocked', replacement: null, note: 'Credits exhausted — no independent replacement yet' },
+  { name: 'GenerateVideo', status: 'blocked', replacement: 'vercelAiGateway', note: 'Credits exhausted — auto-overridden to Vercel AI Gateway (Veo 3.x)' },
 ];
 
 // ── INDEPENDENT ROUTES (replacements for blocked Core integrations) ─────────────
@@ -305,7 +305,7 @@ export const INDEPENDENT_ROUTES = [
 
 // ── SYSTEM GAPS (what we don't have / needs building) ───────────────────────────
 export const SYSTEM_GAPS = [
-  { gap: 'Video generation has no independent replacement', severity: 'high', action: 'Route GenerateVideo through Vercel AI Gateway or external provider' },
+
   { gap: 'Main app database still on Base44 entities', severity: 'high', action: 'Complete Supabase migration for all entities' },
   { gap: 'Railway workers not deployed', severity: 'medium', action: 'Deploy background job workers to Railway' },
   { gap: 'In-app agent chat tied to Base44 billing', severity: 'medium', action: 'Migrate agent runtime to independent infrastructure' },
