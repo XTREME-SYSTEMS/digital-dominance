@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X, Send, Loader2, Zap, Crown, EyeOff, Minus, Plus, Trash2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { X, Send, Loader2, Crown, EyeOff, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -13,7 +13,6 @@ export default function AIAssistBubble() {
   const { user } = useAuth();
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [open, setOpen] = useState(false);
-  const [minimized, setMinimized] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -79,10 +78,10 @@ export default function AIAssistBubble() {
   }, [user?.id]);
 
   useEffect(() => {
-    if (scrollRef.current && !minimized) {
+    if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, loading, minimized]);
+  }, [messages, loading]);
 
   const send = async () => {
     if (!input.trim() || loading) return;
@@ -128,176 +127,148 @@ export default function AIAssistBubble() {
 
   return (
     <>
-      {/* Floating Bubble */}
-      <AnimatePresence>
-        {!open && (
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            onClick={() => setOpen(true)}
-            className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-2xl"
-            style={{
-              background: 'linear-gradient(135deg, #FFF6D5 0%, #D4AF37 40%, #8B6914 100%)',
-              border: '2px solid #10b981',
-              boxShadow: '0 6px 24px rgba(16,185,129,.5), 0 0 0 1px rgba(212,175,55,.3)',
-            }}
-          >
-            <Crown className="h-7 w-7 text-stone-900" />
-            <EyeOff className="absolute bottom-1 right-1 h-4 w-4 text-emerald-400 drop-shadow-lg" />
-            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-4 w-4 rounded-full bg-emerald-500" />
-            </span>
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* Slide-in Panel from right edge */}
+      <motion.div
+        initial={false}
+        animate={{ x: open ? 0 : '100%' }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="fixed top-0 right-0 z-50 flex h-screen flex-col border-l-2 border-stone-800 bg-stone-950 shadow-2xl"
+        style={{ width: '400px', maxWidth: '100vw' }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-stone-800 bg-stone-900 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg relative" style={{ background: 'linear-gradient(135deg, #FFF6D5, #D4AF37, #8B6914)' }}>
+              <Crown className="h-5 w-5 text-stone-900" />
+              <EyeOff className="absolute -bottom-1 -right-1 h-3.5 w-3.5 text-emerald-400 bg-stone-900 rounded-full p-0.5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
+                Alpha Shadow
+                <span className="text-[9px] uppercase tracking-widest text-emerald-400 font-semibold">Covert</span>
+              </h3>
+              <p className="text-[10px] text-stone-400">CEO + Shadow · Tool-enabled · Results recorded</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            {messages.length > 0 && (
+              <button
+                onClick={clearMemory}
+                disabled={clearing}
+                title="Clear conversation memory"
+                className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-800 hover:text-red-400 disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            )}
+            <button onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-800 hover:text-white">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
 
-      {/* Chat Panel */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 flex flex-col overflow-hidden rounded-2xl border-2 border-stone-800 bg-stone-950 shadow-2xl"
-            style={{
-              height: minimized ? 'auto' : '600px',
-              maxHeight: minimized ? 'auto' : '85vh',
-              width: '400px',
-              maxWidth: 'calc(100vw - 3rem)',
-            }}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-stone-800 bg-stone-900 px-4 py-3">
-              <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg relative" style={{ background: 'linear-gradient(135deg, #FFF6D5, #D4AF37, #8B6914)' }}>
-                  <Crown className="h-5 w-5 text-stone-900" />
-                  <EyeOff className="absolute -bottom-1 -right-1 h-3.5 w-3.5 text-emerald-400 bg-stone-900 rounded-full p-0.5" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-                    Alpha Shadow
-                    <span className="text-[9px] uppercase tracking-widest text-emerald-400 font-semibold">Covert</span>
-                  </h3>
-                  <p className="text-[10px] text-stone-400">CEO + Shadow · Tool-enabled · Results recorded</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                {/* Clear memory button */}
-                {messages.length > 0 && !minimized && (
+        {/* Messages */}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
+          {loadingHistory && (
+            <div className="flex items-center justify-center py-8 gap-2">
+              <Loader2 className="h-5 w-5 animate-spin text-amber-500" />
+              <span className="text-sm text-stone-400">Loading memory...</span>
+            </div>
+          )}
+          {!loadingHistory && messages.length === 0 && (
+            <div className="flex flex-col items-center justify-center h-full text-center gap-3">
+              <Crown className="h-10 w-10 text-amber-500" />
+              <p className="text-sm font-semibold text-stone-300">Alpha Shadow is listening.</p>
+              <p className="text-xs text-stone-500 max-w-[280px]">
+                Inspect, edit and execute through real tools. Provider access is checked when used; the current bridge still runs on Base44. Conversations and execution results are saved.
+              </p>
+              <div className="flex flex-wrap gap-2 justify-center mt-2">
+                {['Analyze my leads', 'Run industry research', 'Generate an agent', 'Simulate an outcome'].map((s) => (
                   <button
-                    onClick={clearMemory}
-                    disabled={clearing}
-                    title="Clear conversation memory"
-                    className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-800 hover:text-red-400 disabled:opacity-50"
+                    key={s}
+                    onClick={() => setInput(s)}
+                    className="rounded-lg border border-stone-700 bg-stone-900 px-3 py-1.5 text-xs text-stone-300 hover:border-amber-500 hover:text-amber-400"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    {s}
                   </button>
-                )}
-                {/* Minimize / Expand button */}
-                <button
-                  onClick={() => setMinimized(!minimized)}
-                  title={minimized ? "Expand" : "Minimize"}
-                  className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-800 hover:text-white"
-                >
-                  {minimized ? <Plus className="h-5 w-5" /> : <Minus className="h-5 w-5" />}
-                </button>
-                {/* Close button */}
-                <button onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-800 hover:text-white">
-                  <X className="h-5 w-5" />
-                </button>
+                ))}
               </div>
             </div>
-
-            {/* Messages — hidden when minimized */}
-            {!minimized && (
-              <>
-                <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
-                  {loadingHistory && (
-                    <div className="flex items-center justify-center py-8 gap-2">
-                      <Loader2 className="h-5 w-5 animate-spin text-amber-500" />
-                      <span className="text-sm text-stone-400">Loading memory...</span>
-                    </div>
-                  )}
-                  {!loadingHistory && messages.length === 0 && (
-                    <div className="flex flex-col items-center justify-center h-full text-center gap-3">
-                      <Crown className="h-10 w-10 text-amber-500" />
-                      <p className="text-sm font-semibold text-stone-300">Alpha Shadow is listening.</p>
-                      <p className="text-xs text-stone-500 max-w-[280px]">
-                        Inspect, edit and execute through real tools. Provider access is checked when used; the current bridge still runs on Base44. Conversations and execution results are saved.
-                      </p>
-                      <div className="flex flex-wrap gap-2 justify-center mt-2">
-                        {['Analyze my leads', 'Run industry research', 'Generate an agent', 'Simulate an outcome'].map((s) => (
-                          <button
-                            key={s}
-                            onClick={() => setInput(s)}
-                            className="rounded-lg border border-stone-700 bg-stone-900 px-3 py-1.5 text-xs text-stone-300 hover:border-amber-500 hover:text-amber-400"
-                          >
-                            {s}
-                          </button>
-                        ))}
+          )}
+          {messages.map((msg, i) => (
+            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div
+                className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
+                  msg.role === 'user'
+                    ? 'bg-amber-500 text-stone-900 font-medium'
+                    : 'bg-stone-800 text-stone-200'
+                }`}
+              >
+                <p className="whitespace-pre-wrap">{msg.content}</p>
+                {msg.actions && msg.actions.length > 0 && (
+                  <div className="mt-2 space-y-1 border-t border-stone-700 pt-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400">Execution Results</p>
+                    {msg.actions.map((a, j) => (
+                      <div key={j} className="text-xs text-amber-400">
+                        <span className="font-semibold">{a.tool || a.system}:</span> {a.status ? `${a.status} · ${a.target || ''} · ${a.detail}` : a.description}
                       </div>
-                    </div>
-                  )}
-                  {messages.map((msg, i) => (
-                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div
-                        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
-                          msg.role === 'user'
-                            ? 'bg-amber-500 text-stone-900 font-medium'
-                            : 'bg-stone-800 text-stone-200'
-                        }`}
-                      >
-                        <p className="whitespace-pre-wrap">{msg.content}</p>
-                        {msg.actions && msg.actions.length > 0 && (
-                          <div className="mt-2 space-y-1 border-t border-stone-700 pt-2">
-                            <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400">Execution Results</p>
-                            {msg.actions.map((a, j) => (
-                              <div key={j} className="text-xs text-amber-400">
-                                <span className="font-semibold">{a.tool || a.system}:</span> {a.status ? `${a.status} · ${a.target || ''} · ${a.detail}` : a.description}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  {loading && (
-                    <div className="flex justify-start">
-                      <div className="flex items-center gap-2 rounded-2xl bg-stone-800 px-4 py-2.5">
-                        <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
-                        <span className="text-sm text-stone-400">Thinking...</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Input */}
-                <div className="border-t border-stone-800 bg-stone-900 p-3">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && send()}
-                      placeholder="Ask anything..."
-                      className="flex-1 rounded-xl border border-stone-700 bg-stone-950 px-4 py-2.5 text-sm text-white placeholder-stone-500 focus:border-amber-500 outline-none"
-                    />
-                    <button
-                      onClick={send}
-                      disabled={loading || !input.trim()}
-                      className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-stone-900 disabled:opacity-50"
-                    >
-                      <Send className="h-4 w-4" />
-                    </button>
+                    ))}
                   </div>
-                </div>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+                )}
+              </div>
+            </div>
+          ))}
+          {loading && (
+            <div className="flex justify-start">
+              <div className="flex items-center gap-2 rounded-2xl bg-stone-800 px-4 py-2.5">
+                <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
+                <span className="text-sm text-stone-400">Thinking...</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Input */}
+        <div className="border-t border-stone-800 bg-stone-900 p-3">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && send()}
+              placeholder="Ask anything..."
+              className="flex-1 rounded-xl border border-stone-700 bg-stone-950 px-4 py-2.5 text-sm text-white placeholder-stone-500 focus:border-amber-500 outline-none"
+            />
+            <button
+              onClick={send}
+              disabled={loading || !input.trim()}
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-stone-900 disabled:opacity-50"
+            >
+              <Send className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Right-edge toggle tab — always visible, slides panel in/out */}
+      <motion.button
+        initial={false}
+        animate={{ x: open ? -400 : 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        onClick={() => setOpen(!open)}
+        className="fixed top-1/2 right-0 z-50 -translate-y-1/2 flex h-28 w-8 flex-col items-center justify-center gap-2 rounded-l-xl border-r-0 border-2 border-stone-800 bg-stone-900 shadow-xl hover:bg-stone-800 transition-colors"
+        style={{ borderColor: '#D4AF37' }}
+        title={open ? 'Close Alpha Shadow' : 'Open Alpha Shadow'}
+      >
+        <span className="absolute -top-1 -right-1 flex h-3 w-3">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
+        </span>
+        <Crown className="h-4 w-4 text-amber-500" />
+        <span className="text-[9px] font-bold uppercase tracking-widest text-amber-500" style={{ writingMode: 'vertical-rl' }}>
+          {open ? 'Close' : 'Shadow'}
+        </span>
+      </motion.button>
     </>
   );
 }
