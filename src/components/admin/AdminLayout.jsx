@@ -11,6 +11,7 @@ const navGroups = [
     items: [
       { to: "/admin/contents", icon: LayoutGrid, label: "📋 Contents Menu" },
       { to: "/admin", end: true, icon: Sparkles, label: "Concrete Opportunities" },
+      { to: "/admin/system-audit", icon: Shield, label: "🔍 Full System Audit" },
       { to: "/admin/capabilities", icon: Crown, label: "Capabilities & Gaps" },
       { to: "/admin/concept-to-completion", icon: Sparkles, label: "Concept → Completion" },
       { to: "/admin/gap-filler", icon: Zap, label: "Gap Filler Engine" },
