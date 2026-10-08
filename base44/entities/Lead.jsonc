@@ -286,6 +286,17 @@
         "other"
       ]
     },
+    "revenue_evidence_class": {
+      "type": "string",
+      "enum": [
+        "closed_won_booked",
+        "collected",
+        "refunded",
+        "unknown"
+      ],
+      "default": "unknown",
+      "description": "Distinguishes booked CRM value from actually collected revenue"
+    },
     "revenue_synced_at": {
       "type": "string",
       "format": "date-time"
