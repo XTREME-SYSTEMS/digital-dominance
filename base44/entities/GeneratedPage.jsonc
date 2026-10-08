@@ -153,6 +153,12 @@
     "published_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "programmatic_job_id": {
+      "type": "string"
+    },
+    "location_id": {
+      "type": "string"
     }
   },
   "required": [
