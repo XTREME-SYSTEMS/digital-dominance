@@ -32,6 +32,26 @@ export default async function (req: Request): Promise<Response> {
     const body = await req.json().catch(() => ({}));
     const action = body.action || "get_status";
 
+    // DDV3 hard gate: these legacy actions bypass the governed
+    // BuildPacket -> preview -> validate -> approval release flow.
+    // They are retired as direct execution paths rather than protected by
+    // a caller-supplied boolean/token that an old agent could accidentally set.
+    const retiredDirectActions = new Set([
+      "provision_site",
+      "schedule_social",
+      "queue_batch",
+      "run_autonomous_cycle",
+    ]);
+    if (retiredDirectActions.has(action)) {
+      return Response.json({
+        ok: false,
+        blocked: true,
+        code: "DDV3_GOVERNED_FACTORY_REQUIRED",
+        error: "Legacy direct action retired. Use compileWebsiteBuildPacket and the governed preview/validation/approval workflow.",
+        action,
+      }, { status: 403 });
+    }
+
     switch (action) {
       // ═══════════════════════════════════════════════════════════════════
       // GET STATUS
