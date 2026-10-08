@@ -1,0 +1,71 @@
+{
+  "name": "WebsiteBuildPacket",
+  "type": "object",
+  "properties": {
+    "packet_id": { "type": "string", "description": "Deterministic DDV3 website build packet ID" },
+    "template_id": { "type": "string" },
+    "work_packet_id": { "type": "string" },
+    "opportunity_id": { "type": "string" },
+    "business_name": { "type": "string" },
+    "industry_id": { "type": "string" },
+    "industry_label": { "type": "string" },
+    "city": { "type": "string" },
+    "state": { "type": "string" },
+    "proposed_domain": { "type": "string" },
+    "build_mode": {
+      "type": "string",
+      "enum": ["preview_only", "production_after_approval"],
+      "default": "preview_only"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "PREVIEW_QUEUED",
+        "PREVIEW_BUILDING",
+        "PREVIEW_READY",
+        "VALIDATION_FAILED",
+        "VALIDATED",
+        "WAITING_APPROVAL",
+        "RELEASE_APPROVED",
+        "RELEASED",
+        "ARCHIVED"
+      ],
+      "default": "DRAFT"
+    },
+    "source_evidence_state": { "type": "string" },
+    "source_decision_score": { "type": "number", "default": 0 },
+    "source_automation_eligibility": { "type": "string" },
+    "source_config_json": { "type": "string", "maxLength": 10000 },
+    "build_packet_json": { "type": "string", "maxLength": 20000 },
+    "route_manifest_json": { "type": "string", "maxLength": 10000 },
+    "validation_requirements_json": { "type": "string", "maxLength": 10000 },
+    "preview_branch": { "type": "string" },
+    "preview_url": { "type": "string" },
+    "build_sha": { "type": "string" },
+    "validation_status": {
+      "type": "string",
+      "enum": ["PENDING", "PASS", "FAIL", "BLOCKED", "MISSING_EVIDENCE"],
+      "default": "PENDING"
+    },
+    "release_authorized": { "type": "boolean", "default": false },
+    "domain_purchase_authorized": { "type": "boolean", "default": false },
+    "production_deploy_authorized": { "type": "boolean", "default": false },
+    "public_publish_authorized": { "type": "boolean", "default": false },
+    "social_publish_authorized": { "type": "boolean", "default": false },
+    "customer_message_authorized": { "type": "boolean", "default": false },
+    "indexable_programmatic_pages_authorized": { "type": "boolean", "default": false },
+    "requested_by": { "type": "string" },
+    "requested_at": { "type": "string", "format": "date-time" },
+    "validated_at": { "type": "string", "format": "date-time" },
+    "released_at": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string", "maxLength": 5000 }
+  },
+  "required": ["packet_id", "business_name", "industry_id", "build_mode", "status"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

@@ -18,7 +18,7 @@ function liveUrlFor(t) {
 export default function WebsiteFactory() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
-  const [deploying, setDeploying] = useState(null);
+  const [compiling, setCompiling] = useState(null);
   const [form, setForm] = useState({
     name: "",
     slug: "",
@@ -55,23 +55,46 @@ export default function WebsiteFactory() {
     queryClient.invalidateQueries({ queryKey: ["websiteTemplates"] });
   };
 
-  const deploy = async (template) => {
-    setDeploying(template.id);
+  const compilePreview = async (template) => {
+    setCompiling(template.id);
     try {
-      // Simulate deployment — in production this would clone the Base44 app
-      // and configure it with the template's settings.
-      await new Promise((r) => setTimeout(r, 2000));
-      const liveUrl = liveUrlFor(template) || PUBLISHED_URL;
+      const cfg = template.config || {};
+      const response = await base44.functions.invoke("compileWebsiteBuildPacket", {
+        config: {
+          businessName: cfg.company_name || template.name,
+          industry: {
+            id: cfg.industry || "generic_local_service",
+            label: cfg.industry_label || "Local Service",
+            services: cfg.services || [],
+            heroHeadline: cfg.hero_headline || "",
+            heroSubhead: cfg.hero_subhead || "",
+            ctaText: cfg.cta_text || "",
+          },
+          city: cfg.primary_city || "",
+          state: cfg.primary_state || "",
+          domain: cfg.domain || "",
+          accentColor: cfg.accent_color || "",
+          accentName: cfg.color_scheme || "",
+          logoUrl: cfg.logo_url || "",
+          content: cfg.content || {},
+        },
+      });
+      const data = response?.data || response;
+      if (data?.error) throw new Error(data.error);
       await base44.entities.WebsiteTemplate.update(template.id, {
-        status: "live",
-        generated_url: liveUrl,
-        deploy_log: JSON.stringify({ steps: ["clone", "configure", "deploy", "verify"], completed: true }),
+        status: "configured",
+        deploy_log: JSON.stringify({
+          state: "preview_packet_compiled",
+          packet_id: data.packet_id,
+          work_packet_id: data.work_packet_id,
+          production_mutation: false,
+        }),
       });
       queryClient.invalidateQueries({ queryKey: ["websiteTemplates"] });
     } catch (e) {
-      console.error("Deploy failed:", e);
+      console.error("Preview packet failed:", e);
     }
-    setDeploying(null);
+    setCompiling(null);
   };
 
   const clone = async (template) => {
@@ -97,7 +120,7 @@ export default function WebsiteFactory() {
           <h1 className="text-2xl font-bold text-stone-900 flex items-center gap-2">
             <Factory className="h-6 w-6 text-amber-500" /> Website Factory
           </h1>
-          <p className="text-sm text-stone-500 mt-1">Create, configure, and deploy website variants from this template.</p>
+          <p className="text-sm text-stone-500 mt-1">Create, configure, and compile validated preview builds from this template.</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -143,8 +166,7 @@ export default function WebsiteFactory() {
               <label className="text-xs font-bold text-stone-500 uppercase tracking-wide">Launch Mode</label>
               <select value={form.launch_mode} onChange={(e) => setForm({ ...form, launch_mode: e.target.value })} className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:border-amber-500 outline-none">
                 <option value="manual">Manual — I control every step</option>
-                <option value="automated">Automated — Step-by-step with prompts</option>
-                <option value="autonomous">Autonomous — Full auto-deploy</option>
+                <option value="automated">Governed — Build preview, validate, then request approval</option>
               </select>
             </div>
           </div>
@@ -187,12 +209,12 @@ export default function WebsiteFactory() {
               <div className="flex gap-2 mt-4">
                 {t.status !== "live" ? (
                   <button
-                    onClick={() => deploy(t)}
-                    disabled={deploying === t.id}
+                    onClick={() => compilePreview(t)}
+                    disabled={compiling === t.id}
                     className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500 text-stone-950 text-xs font-bold hover:bg-amber-400 disabled:opacity-60"
                   >
-                    {deploying === t.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Rocket className="h-3.5 w-3.5" />}
-                    {deploying === t.id ? "Deploying..." : "Deploy"}
+                    {compiling === t.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Rocket className="h-3.5 w-3.5" />}
+                    {compiling === t.id ? "Compiling..." : "Create Preview"}
                   </button>
                 ) : (
                   <a href={liveUrlFor(t) || PUBLISHED_URL} target="_blank" rel="noopener" className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-stone-900 text-white text-xs font-bold hover:bg-stone-800">
