@@ -54,12 +54,14 @@ const productionMode = validatePreviewBuildPlan(
   { opportunityEligibility: "release_candidate", evidenceCoveragePct: 100 }
 );
 assert.ok(productionMode.errors.includes("BUILD_MODE_MUST_BE_PREVIEW_ONLY"));
+assert.equal(productionMode.blocked, true);
 
 const releaseSelfAuth = validatePreviewBuildPlan(
   { ...validBase, release_authorized: true },
   { opportunityEligibility: "release_candidate", evidenceCoveragePct: 100 }
 );
 assert.ok(releaseSelfAuth.errors.includes("PLANNER_CANNOT_AUTHORIZE_RELEASE"));
+assert.equal(releaseSelfAuth.blocked, true);
 
 const prematureIndex = validatePreviewBuildPlan(
   {
@@ -71,6 +73,7 @@ const prematureIndex = validatePreviewBuildPlan(
   { opportunityEligibility: "preview_candidate", evidenceCoveragePct: 80 }
 );
 assert.ok(prematureIndex.errors.includes("PAGE_1_INDEX_ELIGIBILITY_PREMATURE"));
+assert.equal(prematureIndex.blocked, true);
 
 const thin = validatePreviewBuildPlan(
   {
