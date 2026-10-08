@@ -1,7 +1,7 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.40";
 import { logStep } from "../../shared/sopLog.ts";
 
-const SITE = "https://epoxygaragefloorestimate.com";
+const SITE = "https://epoxyquotenearme.com";
 
 function esc(s: string): string {
   return String(s ?? "").replace(/[&<>"']/g, (c) =>
@@ -18,7 +18,12 @@ export default async function (req: Request): Promise<Response> {
 
     const pages = await base44.asServiceRole.entities.GeneratedPage.list(50);
     const published = pages
-      .filter((g) => g.status !== "draft")
+      .filter((g) =>
+        g.status === "published" &&
+        g.index_eligible !== false &&
+        g.sitemap_eligible !== false &&
+        g.release_authorized !== false
+      )
       .sort((a, b) => new Date(b.updated_date || b.created_date).getTime() - new Date(a.updated_date || a.created_date).getTime());
 
     const items = published.map((g) => {
