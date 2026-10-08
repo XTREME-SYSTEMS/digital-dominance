@@ -6,16 +6,23 @@ import ScanEvidence from '@/components/opportunity-intelligence/ScanEvidence';
 function ScoreBadge({ score }) {
   if (!score && score !== 0) return null;
   const color = score >= 8 ? 'bg-green-100 text-green-700' : score >= 5 ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-600';
-  return <span className={`text-xs font-black px-2 py-0.5 rounded-full ${color}`}>{score}/10</span>;
+  return (
+    <span
+      className={`text-[10px] font-black px-2 py-0.5 rounded-full ${color}`}
+      title="AI hypothesis only. V3 decision score is calculated after evidence is saved and classified."
+    >
+      AI hypothesis {score}/10
+    </span>
+  );
 }
 
-function FindingCard({ finding, scannerKey, scannerLabel }) {
+function FindingCard({ finding, scannerKey, scannerLabel, searchedAt }) {
   return (
     <div className="rounded-xl border border-stone-200 bg-white p-4 hover:border-stone-300 transition">
       <div className="flex items-start justify-between gap-2 mb-2">
         <h4 className="text-sm font-bold text-stone-900 flex-1">{finding.title}</h4>
         <div className="flex items-center gap-2 shrink-0">
-          <SaveButton finding={finding} scannerKey={scannerKey} scannerLabel={scannerLabel} />
+          <SaveButton finding={finding} scannerKey={scannerKey} scannerLabel={scannerLabel} searchedAt={searchedAt} />
           <ScoreBadge score={finding.score} />
         </div>
       </div>
@@ -104,7 +111,7 @@ export default function ScanResults({ results, loading, activeScan, fullScanProg
                   {!data.findings?.length && <p className="text-xs text-muted-foreground">No source-backed findings met this scanner’s criteria.</p>}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {(data.findings || []).map((f, i) => (
-                      <FindingCard key={i} finding={f} scannerKey={key} scannerLabel={label} />
+                      <FindingCard key={i} finding={f} scannerKey={key} scannerLabel={label} searchedAt={data.searched_at} />
                     ))}
                   </div>
                 </>
@@ -134,7 +141,7 @@ export default function ScanResults({ results, loading, activeScan, fullScanProg
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {findings.map((f, i) => (
-          <FindingCard key={i} finding={f} scannerKey={activeScan} scannerLabel={activeScan} />
+          <FindingCard key={i} finding={f} scannerKey={activeScan} scannerLabel={activeScan} searchedAt={results.searched_at} />
         ))}
       </div>
       {findings.length === 0 && !results.error && (
