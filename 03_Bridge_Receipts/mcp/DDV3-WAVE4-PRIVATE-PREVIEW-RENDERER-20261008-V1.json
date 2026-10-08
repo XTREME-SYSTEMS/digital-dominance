@@ -1,0 +1,47 @@
+{
+  "receipt_id": "DDV3-WAVE4-PRIVATE-PREVIEW-RENDERER-20261008-V1",
+  "system": "XTREME-SYSTEMS/digital-dominance",
+  "wave": "DDV3 Wave 4",
+  "environment": "branch_preview",
+  "branch": "feat/ddv3-private-preview-renderer-20261008",
+  "base_sha": "78e42f192ec5188307a24e02cd9fe7c83cdba2f6",
+  "validated_head_sha": "eae4435d53e654b6ff6cc9ed2b0a3e6aa3da0902",
+  "pr": 8,
+  "status": "PASS",
+  "evidence": {
+    "regression": "15/15 PASS",
+    "vercel_deployment_id": "dpl_F1LQNMJ4JxPTq8wdF6765qq6aMAe",
+    "vercel_state": "READY",
+    "github_vercel_status": "success",
+    "root_preview_http": 200,
+    "private_deep_link_http": 200,
+    "private_deep_link_robots": "noindex, nofollow, noarchive",
+    "deep_link_app_shell": true,
+    "policy_scan": {
+      "public_page_writes": false,
+      "deployment_hooks": false,
+      "domain_purchase": false,
+      "indexing_mutation": false,
+      "customer_communications": false,
+      "social_publish": false,
+      "private_preview_artifact_write": true,
+      "vercel_ai_gateway_generation": true
+    }
+  },
+  "protected_actions_executed": [],
+  "protected_actions_remaining": [
+    "production schema publish",
+    "default-branch merge",
+    "production deployment",
+    "public publishing",
+    "domain purchase",
+    "indexing request",
+    "customer messaging",
+    "live social publishing"
+  ],
+  "rollback": {
+    "production_mutation": false,
+    "default_branch_unchanged": true,
+    "action": "close PR #8 and abandon feat/ddv3-private-preview-renderer-20261008"
+  }
+}
