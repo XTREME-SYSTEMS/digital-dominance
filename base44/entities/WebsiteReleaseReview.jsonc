@@ -1,0 +1,105 @@
+{
+  "name": "WebsiteReleaseReview",
+  "type": "object",
+  "properties": {
+    "review_id": {
+      "type": "string",
+      "description": "Stable deterministic DDV3 release-review identifier"
+    },
+    "opportunity_id": { "type": "string" },
+    "build_plan_id": { "type": "string" },
+    "preview_artifact_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "blocked",
+        "ready_for_approval",
+        "approval_pending",
+        "approved",
+        "denied",
+        "expired",
+        "executed",
+        "rolled_back"
+      ],
+      "default": "draft"
+    },
+    "release_authorized": {
+      "type": "boolean",
+      "default": false,
+      "description": "Preparation/validation code must never set this true"
+    },
+    "approval_request_id": { "type": "string" },
+    "target_environment": {
+      "type": "string",
+      "enum": ["production"],
+      "default": "production"
+    },
+    "target_repository": { "type": "string" },
+    "target_branch": { "type": "string" },
+    "target_vercel_project": { "type": "string" },
+    "target_domain": { "type": "string" },
+    "protected_actions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "deferred_actions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "release_manifest": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "rollback_plan": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "validation_state": {
+      "type": "string",
+      "enum": ["unvalidated", "passed", "failed"],
+      "default": "unvalidated"
+    },
+    "validation_receipt": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "prepared_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "review_id",
+    "opportunity_id",
+    "build_plan_id",
+    "preview_artifact_id",
+    "target_environment"
+  ],
+  "rls": {
+    "create": { "user_condition": { "role": "admin" } },
+    "read": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
