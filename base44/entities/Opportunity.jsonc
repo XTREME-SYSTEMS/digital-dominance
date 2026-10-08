@@ -164,6 +164,17 @@
     "last_scored_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "build_plan_id": {
+      "type": "string",
+      "description": "Latest DDV3 WebsiteBuildPlan ID"
+    },
+    "build_plan_status": {
+      "type": "string",
+      "description": "Latest preview build-plan status"
+    },
+    "build_plan_policy_version": {
+      "type": "string"
     }
   },
   "required": [
