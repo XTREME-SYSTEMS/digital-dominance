@@ -2,16 +2,13 @@ import { createClientFromRequest } from "npm:@base44/sdk@0.8.40";
 import { logStep } from "../../shared/sopLog.ts";
 import { generateText } from "../../shared/aiGateway.ts";
 
-const SITE = "https://epoxygaragefloorestimate.com";
-const INDEXNOW_KEY = "a3e6350908f1c2d4e6b8a0123456789a";
-
 function slugify(s) {
   return (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-// AI Content Factory — generates a complete, original, SEO-optimized page
-// for a keyword (optionally localized to a city), saves it as a GeneratedPage,
-// and pings IndexNow so crawlers pick up the new URL immediately.
+// Legacy AI content-draft generator.
+// DDV3 rule: this function may create draft/noindex candidates only.
+// It never publishes, enters a sitemap, or pings an indexer.
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
@@ -88,26 +85,26 @@ Return only JSON matching the schema.`;
       intro: page.intro || "",
       sections: Array.isArray(page.sections) ? page.sections : [],
       faq: Array.isArray(page.faq) ? page.faq : [],
-      status: "published",
+      status: "draft",
+      robots_directive: "noindex, follow",
+      index_eligible: false,
+      sitemap_eligible: false,
+      release_authorized: false,
+      eligibility_state: "research_only",
+      eligibility_reasons: ["Legacy AI draft generator. DDV3 evidence and independent validation required."],
     });
 
-    // Best-effort: notify IndexNow (Bing + Yandex + partners) about the new URL.
-    try {
-      await fetch("https://api.indexnow.org/IndexNow", {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          host: "epoxygaragefloorestimate.com",
-          key: INDEXNOW_KEY,
-          keyLocation: `${SITE}/${INDEXNOW_KEY}.txt`,
-          urlList: [`${SITE}/${slug}`],
-        }),
-      });
-    } catch {}
+    await logStep(base44, { category: "content", action: "Generated DDV3 SEO draft candidate", detail: `${topic} → /${slug} (draft/noindex)`, source: "generateSeoPage" });
 
-    await logStep(base44, { category: "content", action: "Generated SEO page", detail: `${topic} → /${slug}`, source: "generateSeoPage" });
-
-    return Response.json({ ok: true, page: created });
+    return Response.json({
+      ok: true,
+      page: created,
+      candidate_only: true,
+      index_eligible: false,
+      sitemap_eligible: false,
+      release_authorized: false,
+      note: "Draft/noindex only. Governed evidence and eligibility evaluation are required before release."
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
