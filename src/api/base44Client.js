@@ -30,9 +30,8 @@ function fileToDataUrl(file) {
   });
 }
 
-function installGatewayOverrides() {
-  const core = base44?.integrations?.Core;
-  if (!core) return;
+function patchCoreMethods(core) {
+  if (!core || core.__gatewayPatched) return core;
 
   // InvokeLLM → Vercel AI Gateway generateText
   core.InvokeLLM = async (opts = {}) => {
@@ -154,6 +153,54 @@ function installGatewayOverrides() {
     });
     return { file_uri: res.data?.file_uri || res.data?.file_url };
   };
+
+  // CreateFileSignedUrl → supabaseUpload signedUrl (bypasses Base44 credits)
+  core.CreateFileSignedUrl = async (opts = {}) => {
+    const res = await base44.functions.invoke('supabaseUpload', {
+      action: 'signedUrl',
+      file_uri: opts.file_uri,
+      expires_in: opts.expires_in || 300,
+    });
+    return { signed_url: res.data?.signed_url || res.data?.file_url || '' };
+  };
+
+  // SendPushNotification → no-op fallback (mobile push needs native build + Base44 credits)
+  core.SendPushNotification = async () => ({ skipped: 'Push notifications require a native mobile build.' });
+
+  core.__gatewayPatched = true;
+  return core;
+}
+
+// Resilient installer: patch Core synchronously if present, otherwise intercept
+// lazy access via a Proxy on base44.integrations so the overrides land whenever
+// the SDK materialises Core (it may not exist at import time).
+function installGatewayOverrides() {
+  const integrations = base44?.integrations;
+  if (!integrations) return;
+  const core = integrations.Core;
+  if (core) { patchCoreMethods(core); return; }
+  // Core not ready yet — wrap integrations in a Proxy that patches Core on first access.
+  try {
+    const target = integrations;
+    const proxied = new Proxy(target, {
+      get(t, prop) {
+        const value = Reflect.get(t, prop);
+        if (prop === 'Core' && value && typeof value === 'object') {
+          return patchCoreMethods(value);
+        }
+        return value;
+      },
+    });
+    Object.defineProperty(base44, 'integrations', { value: proxied, writable: true, configurable: true });
+  } catch (e) { /* Proxy unsupported — fall through; retry below */ }
+  // Fallback retry: poll briefly for Core to appear (SDK lazy init).
+  let tries = 0;
+  const retry = setInterval(() => {
+    tries += 1;
+    const c = base44?.integrations?.Core;
+    if (c) { patchCoreMethods(c); clearInterval(retry); }
+    else if (tries > 20) clearInterval(retry);
+  }, 100);
 }
 
 installGatewayOverrides();
