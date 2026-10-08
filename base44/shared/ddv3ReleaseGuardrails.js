@@ -114,10 +114,21 @@ export function validateWebsiteReleaseReview({
   let manifest = {};
   try { manifest = JSON.parse(review?.release_manifest || "{}"); } catch { errors.push("RELEASE_MANIFEST_INVALID_JSON"); }
   if (!manifest || typeof manifest !== "object") errors.push("RELEASE_MANIFEST_REQUIRED");
-  if (!clean(manifest.source_branch)) errors.push("RELEASE_MANIFEST_SOURCE_BRANCH_REQUIRED");
-  if (!clean(manifest.source_sha)) errors.push("RELEASE_MANIFEST_SOURCE_SHA_REQUIRED");
-  if (!clean(manifest.preview_deployment_id)) errors.push("RELEASE_MANIFEST_PREVIEW_DEPLOYMENT_REQUIRED");
+
+  if (!["preview_artifact", "git_branch", "release_package"].includes(manifest.source_type)) {
+    errors.push("RELEASE_MANIFEST_SOURCE_TYPE_REQUIRED");
+  }
+  if (!clean(manifest.source_ref)) errors.push("RELEASE_MANIFEST_SOURCE_REF_REQUIRED");
+  if (!clean(manifest.source_hash)) errors.push("RELEASE_MANIFEST_SOURCE_HASH_REQUIRED");
+  if (!clean(manifest.preview_validation_receipt)) errors.push("RELEASE_MANIFEST_PREVIEW_VALIDATION_REQUIRED");
+  if (manifest.deployable_artifact_ready !== true) errors.push("DEPLOYABLE_ARTIFACT_NOT_READY");
   if (manifest.production_mutation_performed === true) errors.push("RELEASE_MANIFEST_ALREADY_MUTATED_PRODUCTION");
+
+  if (manifest.source_type === "git_branch") {
+    if (!clean(manifest.source_repository)) errors.push("RELEASE_MANIFEST_SOURCE_REPOSITORY_REQUIRED");
+    if (!clean(manifest.source_branch)) errors.push("RELEASE_MANIFEST_SOURCE_BRANCH_REQUIRED");
+    if (!clean(manifest.source_sha)) errors.push("RELEASE_MANIFEST_SOURCE_SHA_REQUIRED");
+  }
 
   if (approvalRequest) {
     if (approvalRequest.risk_class !== "PROTECTED") errors.push("APPROVAL_RISK_CLASS_MUST_BE_PROTECTED");
