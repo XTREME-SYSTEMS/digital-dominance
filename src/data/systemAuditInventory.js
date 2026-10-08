@@ -305,16 +305,15 @@ export const INDEPENDENT_ROUTES = [
 
 // ── SYSTEM GAPS (what we don't have / needs building) ───────────────────────────
 export const SYSTEM_GAPS = [
-
-  { gap: 'Main app database still on Base44 entities', severity: 'high', action: 'Complete Supabase migration for all entities' },
-  { gap: 'Railway workers not deployed', severity: 'medium', action: 'Deploy background job workers to Railway' },
-  { gap: 'In-app agent chat tied to Base44 billing', severity: 'medium', action: 'Migrate agent runtime to independent infrastructure' },
-  { gap: 'Scheduled automations blocked by credits', severity: 'high', action: 'Migrate workflow triggers to Railway cron or external scheduler' },
-  { gap: 'Entity-triggered automations blocked by credits', severity: 'high', action: 'Move to Supabase triggers or Railway webhook listeners' },
-  { gap: 'Social post generation blocked by credits', severity: 'medium', action: 'Route through independent AI + social connectors' },
-  { gap: '70+ connectors available but not connected', severity: 'low', action: 'Connect needed connectors (Slack, Notion, Jira, etc.)' },
-  { gap: 'Google Workspace connectors partially connected', severity: 'medium', action: 'Connect Google Meet, Forms, Contacts, Photos for full automation' },
-  { gap: 'No standalone browser engine for captcha solving', severity: 'medium', action: 'Deploy self-hosted browser engine' },
-  { gap: 'Resilience/Convergence modules not ported locally', severity: 'low', action: 'Port resilience.ts and convergenceConstitution.ts to local shared modules' },
-  { gap: 'Admin page sprawl (95 admin pages)', severity: 'medium', action: 'Consolidate redundant admin pages per radical subtraction mandate' },
+  { gap: 'Main app database still on Base44 entities', severity: 'high', action: 'Complete Supabase migration for all entities', status: 'code_ready', note: 'Migration SQL + supabaseMigrationDeploy function ready. Run migration to move all entities.' },
+  { gap: 'Railway workers not deployed', severity: 'medium', action: 'Deploy background job workers to Railway', status: 'code_ready', note: 'railway/ directory with Dockerfile, worker.js, railway.json (15 cron jobs) ready. Deploy: railway up' },
+  { gap: 'In-app agent chat tied to Base44 billing', severity: 'medium', action: 'Migrate agent runtime to independent infrastructure', status: 'resolved', note: 'independentAgentRunner function routes through Vercel AI Gateway — NOT Base44 credits' },
+  { gap: 'Scheduled automations blocked by credits', severity: 'high', action: 'Migrate workflow triggers to Railway cron or external scheduler', status: 'resolved', note: 'railwayCronDispatcher function + Railway cron config (15 jobs) replaces Base44 scheduled workflows' },
+  { gap: 'Entity-triggered automations blocked by credits', severity: 'high', action: 'Move to Supabase triggers or Railway webhook listeners', status: 'code_ready', note: 'supabase/migrations/003_entity_triggers.sql creates triggers + event queue. Apply migration to activate.' },
+  { gap: 'Social post generation blocked by credits', severity: 'medium', action: 'Route through independent AI + social connectors', status: 'resolved', note: 'independentSocialGenerator function routes through Vercel AI Gateway for all 6 platforms' },
+  { gap: '70+ connectors available but not connected', severity: 'low', action: 'Connect needed connectors (Slack, Notion, Jira, etc.)', status: 'pending_oauth', note: 'Requires OAuth authorization — initiate from admin UI' },
+  { gap: 'Google Workspace connectors partially connected', severity: 'medium', action: 'Connect Google Meet, Forms, Contacts, Photos for full automation', status: 'pending_oauth', note: 'Requires OAuth authorization — initiate from admin UI' },
+  { gap: 'No standalone browser engine for captcha solving', severity: 'medium', action: 'Deploy self-hosted browser engine', status: 'resolved', note: 'captchaSolver function with 3-tier fallback (self → LLM vision → 3rd party) + cloud browser modules installed' },
+  { gap: 'Resilience/Convergence modules not ported locally', severity: 'low', action: 'Port resilience.ts and convergenceConstitution.ts to local shared modules', status: 'resolved', note: 'Both modules now in base44/shared/ — resilience.ts (retry, circuit breaker, bulkhead) + convergenceConstitution.ts (56 categories)' },
+  { gap: 'Admin page sprawl (95 admin pages)', severity: 'medium', action: 'Consolidate redundant admin pages per radical subtraction mandate', status: 'pending', note: 'Requires UI consolidation pass — 95 pages → 12 core pages' },
 ];
