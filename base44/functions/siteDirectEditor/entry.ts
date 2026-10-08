@@ -344,7 +344,7 @@ export default async function (req: Request): Promise<Response> {
             CLOUD_BROWSER_ENGINE_URL: !!secrets.get('CLOUD_BROWSER_ENGINE_URL'),
             ENGINE_API_KEY: !!secrets.get('ENGINE_API_KEY'),
           },
-          message: 'You have FULL direct site editing capability. You can push live changes to any site end-to-end. NEVER say you cannot edit a site.',
+          message: 'These operations are implemented. Secret presence is configuration only, not verified provider authorization. GitHub changes target the configured external repository; they do not edit this hosted Base44 app. Report live success only after the relevant write and deployment have succeeded.',
         });
       }
 

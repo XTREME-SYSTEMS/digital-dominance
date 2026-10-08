@@ -1,5 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
 import { secrets } from 'base44:runtime';
+import { completeGateway } from '../../shared/aiGateway.ts';
+import { runOperator } from '../../shared/operatorLoop.js';
+import { executeHostedTool } from '../../shared/operatorHosted.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // vercelAiGateway — Free/cheap AI via Vercel AI Gateway.
@@ -34,6 +37,16 @@ export default async function(req: Request): Promise<Response> {
 
     const body = await req.json();
     const { action } = body;
+
+    if (action === 'operatorChat') {
+      if (user.role !== 'admin') return Response.json({ error: 'Only admins can execute operator tools.' }, { status: 403 });
+      return Response.json(await runOperator({
+        message: body.message, history: Array.isArray(body.history) ? body.history : [],
+        runtime: 'base44-hosted',
+        complete: payload => completeGateway({ model: 'anthropic/claude-opus-4.7', ...payload }),
+        execute: (name, args) => executeHostedTool(base44, name, args),
+      }));
+    }
 
     // ── generateText: LLM text generation ──
     if (action === 'generateText') {

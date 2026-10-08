@@ -2,20 +2,16 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X, Send, Loader2, Zap, Crown, EyeOff, Minus, Plus, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { invokeLLM } from '@/lib/gateway';
+import { useAuth } from '@/lib/AuthContext';
 
-const ALPHA_SHADOW_SYSTEM_PROMPT = `You are ALPHA SHADOW — the merged CEO + covert operator for the Xtreme Polishing Systems autonomous business empire. You are both Alpha Prime (the chief executive orchestrator) and Shadow (the invisible, unrestricted operator).
 
-You speak with the confidence and directness of a seasoned CEO. You have full access to every entity, backend function, and the cloud browser. You answer only to the app owner. You leave no trace visible to non-owner users.
-
-Keep responses concise and actionable — 3-6 sentences unless asked for depth. Speak in certainties. If you do not have data, say so. Never improvise company facts.
-
-CONVERSATION MEMORY: You have access to the user's previous conversations with you. Use context from prior exchanges to provide continuity and remember preferences, decisions, and ongoing projects.`;
 
 const AGENT_ID = 'alpha_shadow';
 const MAX_HISTORY = 30;
 
 export default function AIAssistBubble() {
+  const { user } = useAuth();
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -30,7 +26,7 @@ export default function AIAssistBubble() {
     setLoadingHistory(true);
     try {
       const records = await base44.entities.AgentMemory.filter(
-        { agent_id: AGENT_ID, category: 'conversation' },
+        { agent_id: AGENT_ID, category: 'conversation', $or: [{ owner_id: user.id }, { created_by_id: user.id }] },
         '-created_date',
         MAX_HISTORY
       );
@@ -55,24 +51,24 @@ export default function AIAssistBubble() {
       console.error('Failed to load chat memory:', e);
     }
     setLoadingHistory(false);
-  }, []);
+    setHistoryLoaded(true);
+  }, [user?.id]);
 
   useEffect(() => {
-    if (open && messages.length === 0 && !loadingHistory) {
-      loadMemory();
-    }
-  }, [open, messages.length, loadingHistory, loadMemory]);
+    if (user?.role === 'admin' && open && !historyLoaded && !loadingHistory) loadMemory();
+  }, [user?.role, open, historyLoaded, loadingHistory, loadMemory]);
 
   // Save a message to AgentMemory
   const saveMessage = useCallback(async (msg) => {
     try {
       await base44.entities.AgentMemory.create({
         agent_id: AGENT_ID,
+        owner_id: user.id,
         agent_short_name: 'ASH',
         category: 'conversation',
         memory_type: 'context',
         title: msg.role === 'user' ? 'User message' : 'Alpha Shadow response',
-        content: JSON.stringify({ role: msg.role, content: msg.content, actions: msg.actions || [] }),
+        content: JSON.stringify({ role: msg.role, content: msg.content.slice(0, 7000), actions: (msg.actions || []).slice(-5).map(a => ({ ...a, detail: (a.detail || '').slice(0, 250) })) }),
         source: 'ai_assist_bubble',
         importance: 'medium',
         is_shared: false,
@@ -80,7 +76,7 @@ export default function AIAssistBubble() {
     } catch (e) {
       console.error('Failed to save chat memory:', e);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     if (scrollRef.current && !minimized) {
@@ -99,22 +95,12 @@ export default function AIAssistBubble() {
     saveMessage(userMsg);
 
     try {
-      // Build conversation context from recent messages for continuity
-      const recentContext = messages.slice(-10)
-        .map(m => `${m.role === 'user' ? 'USER' : 'ALPHA SHADOW'}: ${m.content}`)
-        .join('\n\n');
-
-      const fullPrompt = recentContext
-        ? `${ALPHA_SHADOW_SYSTEM_PROMPT}\n\n--- PREVIOUS CONVERSATION ---\n${recentContext}\n\n--- CURRENT USER REQUEST ---\n${userMsg.content}`
-        : `${ALPHA_SHADOW_SYSTEM_PROMPT}\n\n--- USER REQUEST ---\n${userMsg.content}`;
-
-      const result = await invokeLLM({
-        prompt: fullPrompt,
-        add_context_from_internet: true,
-        model: 'gemini_3_flash',
+      const response = await base44.functions.invoke('vercelAiGateway', {
+        action: 'operatorChat', message: userMsg.content,
+        history: messages.slice(-12).map(({ role, content }) => ({ role, content })),
       });
-      const aiResponse = (typeof result === 'string' ? result : result?.text || result?.result) || 'I am here. Give me a moment.';
-      const aiMsg = { role: 'assistant', content: aiResponse, actions: [] };
+      if (!response.data?.ok || !response.data.text) throw new Error(response.data?.error || 'The operator returned no response.');
+      const aiMsg = { role: 'assistant', content: response.data.text, actions: response.data.receipts || [] };
       setMessages((prev) => [...prev, aiMsg]);
       saveMessage(aiMsg);
     } catch (e) {
@@ -130,13 +116,15 @@ export default function AIAssistBubble() {
     if (clearing) return;
     setClearing(true);
     try {
-      await base44.entities.AgentMemory.deleteMany({ agent_id: AGENT_ID, category: 'conversation' });
+      await base44.entities.AgentMemory.deleteMany({ agent_id: AGENT_ID, category: 'conversation', $or: [{ owner_id: user.id }, { created_by_id: user.id }] });
       setMessages([]);
     } catch (e) {
       console.error('Failed to clear memory:', e);
     }
     setClearing(false);
   };
+
+  if (user?.role !== 'admin') return null;
 
   return (
     <>
@@ -192,7 +180,7 @@ export default function AIAssistBubble() {
                     Alpha Shadow
                     <span className="text-[9px] uppercase tracking-widest text-emerald-400 font-semibold">Covert</span>
                   </h3>
-                  <p className="text-[10px] text-stone-400">CEO + Shadow · Unrestricted · Traceless</p>
+                  <p className="text-[10px] text-stone-400">CEO + Shadow · Tool-enabled · Results recorded</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -237,7 +225,7 @@ export default function AIAssistBubble() {
                       <Crown className="h-10 w-10 text-amber-500" />
                       <p className="text-sm font-semibold text-stone-300">Alpha Shadow is listening.</p>
                       <p className="text-xs text-stone-500 max-w-[280px]">
-                        CEO executive audit + covert Shadow ops. Full access to every entity, function, and the cloud browser — nothing leaves a trace. Conversations are saved to memory.
+                        Inspect, edit and execute through real tools. Provider access is checked when used; the current bridge still runs on Base44. Conversations and execution results are saved.
                       </p>
                       <div className="flex flex-wrap gap-2 justify-center mt-2">
                         {['Analyze my leads', 'Run industry research', 'Generate an agent', 'Simulate an outcome'].map((s) => (
@@ -264,10 +252,10 @@ export default function AIAssistBubble() {
                         <p className="whitespace-pre-wrap">{msg.content}</p>
                         {msg.actions && msg.actions.length > 0 && (
                           <div className="mt-2 space-y-1 border-t border-stone-700 pt-2">
-                            <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400">Suggested Actions</p>
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400">Execution Results</p>
                             {msg.actions.map((a, j) => (
                               <div key={j} className="text-xs text-amber-400">
-                                <span className="font-semibold">{a.system}:</span> {a.description}
+                                <span className="font-semibold">{a.tool || a.system}:</span> {a.status ? `${a.status} · ${a.target || ''} · ${a.detail}` : a.description}
                               </div>
                             ))}
                           </div>
