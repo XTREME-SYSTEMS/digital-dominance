@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Bookmark, Trash2, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Bookmark, Trash2, Loader2, ChevronDown, ChevronUp, FileCode2, ShieldCheck } from 'lucide-react';
 
 const STATUS_COLORS = {
   saved: 'bg-stone-100 text-stone-600',
@@ -31,6 +31,19 @@ export default function SavedOpportunities() {
 
   const statusMutation = useMutation({
     mutationFn: async ({ id, status }) => base44.entities.Opportunity.update(id, { status }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['savedOpportunities'] }),
+  });
+
+  const previewPlanMutation = useMutation({
+    mutationFn: async (opp) => {
+      const planRes = await base44.functions.invoke('planOpportunityWebsiteV3', { opportunity_id: opp.id });
+      const plan = planRes.data || planRes;
+      if (plan?.status === 'spec_ready' && plan?.build_plan_id) {
+        const validationRes = await base44.functions.invoke('validateWebsiteBuildPlanV3', { build_plan_id: plan.build_plan_id });
+        return { plan, validation: validationRes.data || validationRes };
+      }
+      return { plan };
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['savedOpportunities'] }),
   });
 
@@ -95,8 +108,29 @@ export default function SavedOpportunities() {
                   {Number(opp.hypothesis_score || opp.score) > 0 ? ` · AI hypothesis ${opp.hypothesis_score || opp.score}/10` : ''}
                   {' · '}{opp.automation_eligibility || 'research_only'}
                 </p>
+                {opp.build_plan_status && (
+                  <p className="text-[10px] text-sky-700 mt-1 font-semibold">
+                    Preview plan: {opp.build_plan_status}
+                  </p>
+                )}
               </div>
               <div className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={() => previewPlanMutation.mutate(opp)}
+                  disabled={
+                    previewPlanMutation.isPending ||
+                    !['preview_candidate', 'release_candidate'].includes(opp.automation_eligibility || '')
+                  }
+                  title={
+                    ['preview_candidate', 'release_candidate'].includes(opp.automation_eligibility || '')
+                      ? 'Create and independently validate a preview-only build specification. This does not deploy or publish.'
+                      : 'Needs DDV3 preview_candidate evidence before a website build plan can be prepared.'
+                  }
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded border border-sky-200 text-[10px] font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 disabled:opacity-40"
+                >
+                  {previewPlanMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : opp.build_plan_status === 'validated_for_preview' ? <ShieldCheck className="h-3 w-3" /> : <FileCode2 className="h-3 w-3" />}
+                  {opp.build_plan_status === 'validated_for_preview' ? 'Plan Ready' : 'Prepare Preview'}
+                </button>
                 <select
                   value={opp.status}
                   onChange={(e) => statusMutation.mutate({ id: opp.id, status: e.target.value })}
@@ -105,8 +139,15 @@ export default function SavedOpportunities() {
                   <option value="saved">Saved</option>
                   <option value="reviewing">Reviewing</option>
                   <option value="validated" disabled={opp.evidence_state !== 'verified'}>Validated {opp.evidence_state !== 'verified' ? '(needs verified evidence)' : ''}</option>
-                  <option value="building">Building</option>
-                  <option value="launched">Launched</option>
+                  <option
+                    value="building"
+                    disabled={!['validated_for_preview', 'preview_ready', 'release_review'].includes(opp.build_plan_status || '')}
+                  >
+                    Building {!['validated_for_preview', 'preview_ready', 'release_review'].includes(opp.build_plan_status || '') ? '(needs preview plan)' : ''}
+                  </option>
+                  <option value="launched" disabled={opp.build_plan_status !== 'release_review'}>
+                    Launched {opp.build_plan_status !== 'release_review' ? '(needs release review)' : ''}
+                  </option>
                   <option value="archived">Archived</option>
                 </select>
                 <button
