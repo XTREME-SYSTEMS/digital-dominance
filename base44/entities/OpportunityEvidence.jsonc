@@ -1,0 +1,138 @@
+{
+  "name": "OpportunityEvidence",
+  "type": "object",
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "description": "Stable deterministic evidence identifier"
+    },
+    "opportunity_id": {
+      "type": "string",
+      "description": "Opportunity this evidence supports"
+    },
+    "signal_type": {
+      "type": "string",
+      "enum": [
+        "urgency",
+        "buyer_value",
+        "repeat_demand",
+        "buyer_density",
+        "compliance_ease",
+        "fulfillment",
+        "cpc_proxy",
+        "cpl_proxy",
+        "demand",
+        "serp_opportunity",
+        "first_party_conversion",
+        "first_party_revenue",
+        "competitor",
+        "trend",
+        "overall_hypothesis"
+      ]
+    },
+    "source_class": {
+      "type": "string",
+      "enum": [
+        "FIRST_PARTY",
+        "AUTHORITATIVE_PUBLIC",
+        "VERIFIED_THIRD_PARTY",
+        "MODEL_ESTIMATE",
+        "OPERATOR_ASSUMPTION",
+        "UNKNOWN"
+      ],
+      "default": "UNKNOWN"
+    },
+    "verification_state": {
+      "type": "string",
+      "enum": [
+        "retrieved",
+        "corroborated",
+        "operator_verified",
+        "disputed",
+        "expired"
+      ],
+      "default": "retrieved"
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "source_name": {
+      "type": "string"
+    },
+    "source_title": {
+      "type": "string"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "geography": {
+      "type": "string"
+    },
+    "service": {
+      "type": "string"
+    },
+    "intent": {
+      "type": "string"
+    },
+    "metric_name": {
+      "type": "string"
+    },
+    "metric_value": {
+      "type": "number"
+    },
+    "metric_unit": {
+      "type": "string"
+    },
+    "normalized_score": {
+      "type": "number",
+      "description": "0-100 normalized signal strength. Must be evidence-derived, never silently inferred."
+    },
+    "confidence": {
+      "type": "number",
+      "default": 50,
+      "description": "0-100 confidence in this evidence record"
+    },
+    "evidence_summary": {
+      "type": "string",
+      "maxLength": 3000
+    },
+    "raw_evidence": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "verified_by": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "expired", "disputed"],
+      "default": "active"
+    }
+  },
+  "required": [
+    "evidence_id",
+    "opportunity_id",
+    "signal_type",
+    "source_class"
+  ],
+  "rls": {
+    "create": { "user_condition": { "role": "admin" } },
+    "read": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
