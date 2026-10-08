@@ -48,7 +48,7 @@ export async function generateText(opts: {
   messages.push({ role: 'user', content });
 
   const payload: any = {
-    model: opts.model || 'anthropic/claude-sonnet-4-6',
+    model: opts.model || 'openai/gpt-5.4',
     messages,
     max_tokens: (opts as any).max_tokens || 8000,
   };
@@ -82,19 +82,19 @@ export async function generateText(opts: {
 // equivalents; unknown names are dropped so the gateway default applies.
 // add_context_from_internet is not supported by the gateway and is silently dropped.
 const MODEL_MAP: Record<string, string> = {
-  'gemini_3_flash': 'google/gemini-2.0-flash-001',
-  'gemini_3_1_pro': 'google/gemini-2.5-pro',
-  'gpt_5_mini': 'openai/gpt-4o-mini',
-  'gpt_5_4': 'openai/gpt-4o',
-  'gpt_5_6_sol': 'openai/gpt-4o',
-  'gpt_5_6_luna': 'openai/gpt-4o',
+  'gemini_3_flash': 'openai/gpt-5.4-mini',
+  'gemini_3_1_pro': 'openai/gpt-5.4',
+  'gpt_5_mini': 'openai/gpt-5.4-mini',
+  'gpt_5_4': 'openai/gpt-5.4',
+  'gpt_5_6_sol': 'openai/gpt-5.4',
+  'gpt_5_6_luna': 'openai/gpt-5.4',
   'claude_sonnet_4_6': 'anthropic/claude-sonnet-4-6',
   'claude_opus_4_6': 'anthropic/claude-opus-4-6',
   'claude_opus_4_7': 'anthropic/claude-opus-4-7',
   'claude_opus_4_8': 'anthropic/claude-opus-4-8',
   'claude_opus_5': 'anthropic/claude-opus-5',
   'claude-sonnet-5': 'anthropic/claude-sonnet-5',
-  'automatic': 'anthropic/claude-sonnet-4-6',
+  'automatic': 'openai/gpt-5.4',
 };
 
 function sanitizeOpts(opts: any) {
