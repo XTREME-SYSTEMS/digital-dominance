@@ -1,16 +1,25 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { secrets } from 'base44:runtime';
 import { MIGRATION_CHUNKS, SUPABASE_PROJECT_REF } from '../../shared/supabaseMigrationSql.ts';
 
 // ════════════════════════════════════════════════════════════════
 // supabaseMigrationDeploy
 // Deploys hardened control-plane migrations to the canonical Supabase
-// project: Xtreme OS (msnsyhpakeujypqxugpz).
+// project. Uses the Supabase connector OAuth token for the Management API,
+// falling back to the SMAI service role key for the database REST API.
 //
 // Actions:
 //   deploy  — Execute all migration chunks sequentially
 //   verify  — Check that key tables and functions exist
 //   seed    — Insert the default organization and a bootstrap system
 // ════════════════════════════════════════════════════════════════
+
+// Extract project ref from the SMAI Supabase URL (https://{ref}.supabase.co)
+function getProjectRef(): string {
+  const url = secrets.get('SMAI_SUPABASE_URL') || '';
+  const match = url.match(/https:\/\/([a-z0-9]+)\.supabase\.(co|net|in)/);
+  return match?.[1] || SUPABASE_PROJECT_REF;
+}
 
 export default async function (req: Request): Promise<Response> {
   try {
@@ -22,11 +31,71 @@ export default async function (req: Request): Promise<Response> {
     const body = await req.json().catch(() => ({}));
     const action = body.action || 'deploy';
 
-    // ── Get Supabase OAuth access token ──
-    const { accessToken } = await base44.asServiceRole.connectors.getConnection('supabase');
-    if (!accessToken) return Response.json({ error: 'Supabase connector not connected' }, { status: 500 });
+    const projectRef = getProjectRef();
+    const smaiUrl = secrets.get('SMAI_SUPABASE_URL') || '';
+    const smaiKey = secrets.get('SMAI_SUPABASE_SERVICE_ROLE_KEY') || '';
 
-    const supabaseApiBase = `https://api.supabase.com/v1/projects/${SUPABASE_PROJECT_REF}`;
+    // ── Get Supabase OAuth access token (for Management API) ──
+    let mgmtToken: string | null = null;
+    try {
+      const conn = await base44.asServiceRole.connectors.getConnection('supabase');
+      mgmtToken = conn.accessToken;
+    } catch { /* connector might not be connected */ }
+
+    const supabaseApiBase = `https://api.supabase.com/v1/projects/${projectRef}`;
+
+    // Execute SQL via Management API (preferred) or database REST API (fallback)
+    async function executeSql(sql: string): Promise<{ ok: boolean; data: any; method: string }> {
+      // Method 1: Supabase Management API (requires OAuth token)
+      if (mgmtToken) {
+        try {
+          const res = await fetch(`${supabaseApiBase}/database/query`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${mgmtToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query: sql }),
+          });
+          if (res.ok) {
+            const data = await res.json().catch(() => ({}));
+            return { ok: true, data, method: 'management_api' };
+          }
+          // If Forbidden, fall through to Method 2
+          const errText = await res.text();
+          if (!errText.includes('Forbidden') && !errText.includes('forbidden')) {
+            return { ok: false, data: errText, method: 'management_api' };
+          }
+        } catch (e: any) {
+          // Fall through to Method 2
+        }
+      }
+
+      // Method 2: Supabase database REST API via pg_meta (requires service role key)
+      if (smaiUrl && smaiKey) {
+        try {
+          const res = await fetch(`${smaiUrl}/pg/meta/${projectRef}/query`, {
+            method: 'POST',
+            headers: {
+              'apikey': smaiKey,
+              'Authorization': `Bearer ${smaiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query: sql }),
+          });
+          if (res.ok) {
+            const data = await res.json().catch(() => ({}));
+            return { ok: true, data, method: 'pg_meta' };
+          }
+          const errText = await res.text();
+          return { ok: false, data: errText, method: 'pg_meta' };
+        } catch (e: any) {
+          return { ok: false, data: e.message, method: 'pg_meta' };
+        }
+      }
+
+      return { ok: false, data: 'No Supabase access method available (need connector or service role key)', method: 'none' };
+    }
 
     // ── DEPLOY: Execute all migration chunks ──
     if (action === 'deploy') {
@@ -35,28 +104,21 @@ export default async function (req: Request): Promise<Response> {
 
       for (const chunk of MIGRATION_CHUNKS) {
         try {
-          const res = await fetch(`${supabaseApiBase}/database/query`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query: chunk.sql }),
-          });
+          const execRes = await executeSql(chunk.sql);
 
-          if (!res.ok) {
-            const errText = await res.text();
+          if (!execRes.ok) {
+            const errText = typeof execRes.data === 'string' ? execRes.data : JSON.stringify(execRes.data);
             // Some errors are expected (e.g., "relation already exists" on rerun)
-            // Only fail on unexpected errors
             const isExpected = errText.includes('already exists') || errText.includes('duplicate');
             results.push({
               chunk: chunk.name,
               status: isExpected ? 'already_exists' : 'failed',
               error: errText.slice(0, 500),
+              method: execRes.method,
             });
             if (!isExpected) allOk = false;
           } else {
-            results.push({ chunk: chunk.name, status: 'applied' });
+            results.push({ chunk: chunk.name, status: 'applied', method: execRes.method });
           }
         } catch (e: any) {
           results.push({ chunk: chunk.name, status: 'error', error: e.message });
@@ -66,7 +128,7 @@ export default async function (req: Request): Promise<Response> {
 
       return Response.json({
         ok: allOk,
-        project_ref: SUPABASE_PROJECT_REF,
+        project_ref: projectRef,
         project_name: 'Xtreme OS',
         chunks_total: MIGRATION_CHUNKS.length,
         chunks_applied: results.filter(r => r.status === 'applied').length,
@@ -89,20 +151,12 @@ export default async function (req: Request): Promise<Response> {
   (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='organizations') as orgs_table,
   (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='organization_members') as org_members_table;`;
 
-      const res = await fetch(`${supabaseApiBase}/database/query`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: verifySql }),
-      });
-
-      const data = await res.json();
+      const execRes = await executeSql(verifySql);
       return Response.json({
-        ok: res.ok,
-        project_ref: SUPABASE_PROJECT_REF,
-        verification: data,
+        ok: execRes.ok,
+        project_ref: projectRef,
+        method: execRes.method,
+        verification: execRes.data,
       });
     }
 
@@ -122,20 +176,12 @@ ON CONFLICT (system_id) DO NOTHING;
 
 SELECT 'seeded' as status;`;
 
-      const res = await fetch(`${supabaseApiBase}/database/query`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: seedSql }),
-      });
-
-      const data = await res.json();
+      const execRes = await executeSql(seedSql);
       return Response.json({
-        ok: res.ok,
-        project_ref: SUPABASE_PROJECT_REF,
-        seed_result: data,
+        ok: execRes.ok,
+        project_ref: projectRef,
+        method: execRes.method,
+        seed_result: execRes.data,
       });
     }
 
