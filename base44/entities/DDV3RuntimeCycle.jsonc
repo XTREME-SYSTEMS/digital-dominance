@@ -2,37 +2,113 @@
   "name": "DDV3RuntimeCycle",
   "type": "object",
   "properties": {
-    "cycle_id": { "type": "string" },
-    "started_at": { "type": "string", "format": "date-time" },
-    "completed_at": { "type": "string", "format": "date-time" },
-    "duration_ms": { "type": "number" },
-    "cadence": { "type": "string", "default": "5min" },
+    "cycle_id": {
+      "type": "string"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_ms": {
+      "type": "number"
+    },
+    "cadence": {
+      "type": "string",
+      "default": "5min"
+    },
     "status": {
       "type": "string",
-      "enum": ["completed", "failed", "skipped_duplicate"],
+      "enum": [
+        "completed",
+        "failed",
+        "skipped_duplicate"
+      ],
       "default": "completed"
     },
-    "safe_ready_count": { "type": "number", "default": 0 },
-    "protected_waiting_count": { "type": "number", "default": 0 },
-    "blocked_count": { "type": "number", "default": 0 },
-    "stale_leases_reconciled": { "type": "number", "default": 0 },
-    "eligible_packet_ids": { "type": "array", "items": { "type": "string" }, "default": [] },
-    "protected_packet_ids": { "type": "array", "items": { "type": "string" }, "default": [] },
-    "learning_snapshot_id": { "type": "string" },
-    "legacy_scheduled_workflows_detected": { "type": "number", "default": 0 },
-    "legacy_railway_crons_detected": { "type": "number", "default": 0 },
+    "safe_ready_count": {
+      "type": "number",
+      "default": 0
+    },
+    "protected_waiting_count": {
+      "type": "number",
+      "default": 0
+    },
+    "blocked_count": {
+      "type": "number",
+      "default": 0
+    },
+    "stale_leases_reconciled": {
+      "type": "number",
+      "default": 0
+    },
+    "eligible_packet_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "protected_packet_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "learning_snapshot_id": {
+      "type": "string"
+    },
     "cutover_state": {
       "type": "string",
-      "enum": ["shadow", "ready_for_cutover", "authoritative"],
+      "enum": [
+        "shadow",
+        "ready_for_cutover",
+        "authoritative"
+      ],
       "default": "shadow"
     },
-    "notes": { "type": "string", "maxLength": 5000 }
+    "notes": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "legacy_scheduled_workflows_manifest_count": {
+      "type": "number",
+      "default": 0
+    },
+    "legacy_railway_crons_manifest_count": {
+      "type": "number",
+      "default": 0
+    }
   },
-  "required": ["cycle_id", "started_at", "status"],
+  "required": [
+    "cycle_id",
+    "started_at",
+    "status"
+  ],
   "rls": {
-    "read": { "user_condition": { "role": "admin" } },
-    "create": { "user_condition": { "role": "admin" } },
-    "update": { "user_condition": { "role": "admin" } },
-    "delete": { "user_condition": { "role": "admin" } }
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
   }
 }
