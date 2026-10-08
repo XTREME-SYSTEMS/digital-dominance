@@ -11,26 +11,6 @@ import { generateText } from '../../shared/aiGateway.ts';
  // preview, validation, approval, and release gates before indexing.
  // ═══════════════════════════════════════════════════════════════════════════
 
-function slugify(s: string): string {
-  return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-}
-
-async function pingIndexNow(urls: string[]): Promise<void> {
-  if (urls.length === 0) return;
-  try {
-    await fetch('https://api.indexnow.org/IndexNow', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({
-        host: INDEXNOW_SITE,
-        key: INDEXNOW_KEY,
-        keyLocation: `https://${INDEXNOW_SITE}/${INDEXNOW_KEY}.txt`,
-        urlList: urls,
-      }),
-    });
-  } catch {}
-}
-
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
