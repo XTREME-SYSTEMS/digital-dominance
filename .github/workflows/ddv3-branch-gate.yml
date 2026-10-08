@@ -47,6 +47,12 @@ jobs:
       - name: DDV3 index eligibility regression
         run: npm run test:ddv3-index
 
+      - name: DDV3 learning regression
+        run: npm run test:ddv3-learning
+
+      - name: DDV3 runtime regression
+        run: npm run test:ddv3-runtime
+
       - name: Lint
         run: npm run lint
 

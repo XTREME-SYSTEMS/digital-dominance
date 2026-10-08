@@ -1,104 +1,79 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
-import { secrets } from 'base44:runtime';
+import { createClientFromRequest } from "npm:@base44/sdk@0.8.52";
+import { secrets } from "base44:runtime";
 
-// ═══════════════════════════════════════════════════════════════════════════
-// railwayCronDispatcher — Replaces Base44 scheduled workflow triggers.
-//
-// Railway cron calls this function on a schedule. It then dispatches to the
-// appropriate backend function, bypassing Base44's credit-blocked workflow engine.
-//
-// Railway cron config (in railway.json or Railway dashboard):
-//   */5 * * * * → curl -X POST $DEPLOY_URL -H "x-cron-key: $CRON_KEY" -d '{"task":"alpha_prime_heartbeat"}'
-//   0 * * * *   → curl -X POST $DEPLOY_URL -H "x-cron-key: $CRON_KEY" -d '{"task":"daily_lead_engine"}'
-//   0 9 * * 1   → curl -X POST $DEPLOY_URL -H "x-cron-key: $CRON_KEY" -d '{"task":"weekly_opportunity_scanner"}'
-// ═══════════════════════════════════════════════════════════════════════════
+// DDV3 single-heartbeat dispatcher.
+// Legacy cron task names are deliberately retired from this dispatch surface.
+const CRON_KEY = () => secrets.get("RAILWAY_CRON_KEY") || secrets.get("ENGINE_API_KEY");
 
-const CRON_KEY = () => secrets.get('RAILWAY_CRON_KEY') || secrets.get('ENGINE_API_KEY');
-
-// Task registry — maps cron task names to backend functions
-const TASK_REGISTRY: Record<string, { function: string; description: string }> = {
-  alpha_prime_heartbeat: { function: 'alphaPrimeHeartbeat', description: '5-min Alpha Prime governance cycle' },
-  fleet_heartbeat: { function: 'fleetAlphaPrime', description: 'Fleet health check' },
-  daily_lead_engine: { function: 'dailyLeadEngine', description: 'Daily lead processing' },
-  weekly_opportunity_scanner: { function: 'opportunityIntelligenceEngine', description: 'Weekly opportunity scan' },
-  competitor_scanner: { function: 'scanCompetitors', description: 'Competitor monitoring' },
-  seo_optimizer: { function: 'optimizeSeo', description: 'SEO content optimization' },
-  sitemap_update: { function: 'generateSitemap', description: 'Sitemap auto-update' },
-  social_autopilot: { function: 'independentSocialGenerator', description: 'Social media autopilot (Vercel AI Gateway — NOT Base44 credits)' },
-  social_autopilot_independent: { function: 'independentSocialGenerator', description: 'Independent social media generation via Vercel AI Gateway' },
-  swarm_autopilot: { function: 'swarmOrchestrator', description: 'Swarm task dispatch' },
-  autonomous_sprint: { function: 'autonomousSprint', description: 'Autonomous sprint supervisor' },
-  autonomous_refactor: { function: 'autonomousRefactorEngine', description: 'Autonomous code refactoring' },
-  autonomous_seo: { function: 'autonomousSeoDominance', description: 'Autonomous SEO dominance' },
-  digital_dominance: { function: 'digitalDominanceCompiler', description: 'Digital dominance compilation' },
-  x1_company_cycle: { function: 'companyOrchestrator', description: 'X1 company autonomous cycle' },
-  universal_generator_sync: { function: 'xtremeUniversalGeneratorBridge', description: 'Universal generator sync' },
-  review_request: { function: 'sendReviewRequest', description: 'Send review requests to customers' },
-  lead_follow_up: { function: 'sendFollowUpEmail', description: 'Lead follow-up emails' },
-  skip_trace: { function: 'skipTrace', description: 'Autonomous skip trace' },
-  autocomplete: { function: 'autoComplete', description: 'Autonomous autocomplete' },
-  coding_pipeline: { function: 'autonomousCodingEngine', description: 'Autonomous coding pipeline' },
+const TASK_REGISTRY = {
+  ddv3_heartbeat: {
+    function: "ddv3Heartbeat",
+    description: "DDV3 5-minute queue/lease/learning supervisor",
+  },
 };
+
+const RETIRED_LEGACY_TASKS = new Set([
+  "alpha_prime_heartbeat","fleet_heartbeat","daily_lead_engine","weekly_opportunity_scanner",
+  "competitor_scanner","seo_optimizer","sitemap_update","social_autopilot",
+  "social_autopilot_independent","swarm_autopilot","autonomous_sprint","autonomous_refactor",
+  "autonomous_seo","digital_dominance","x1_company_cycle","universal_generator_sync",
+  "review_request","lead_follow_up","skip_trace","autocomplete","coding_pipeline",
+  "process_entity_events"
+]);
 
 export default async function(req: Request): Promise<Response> {
   try {
-    // Verify cron key (Railway cron passes this header)
-    const cronKey = req.headers.get('x-cron-key');
-    if (cronKey !== CRON_KEY()) {
-      return Response.json({ error: 'Invalid cron key' }, { status: 401 });
+    const cronKey = req.headers.get("x-cron-key");
+    const expected = CRON_KEY();
+    if (!expected || cronKey !== expected) {
+      return Response.json({ error: "Invalid cron key" }, { status: 401 });
     }
 
     const body = await req.json().catch(() => ({}));
-    const { task } = body;
+    const task = String(body?.task || "");
 
     if (!task) {
       return Response.json({
         ok: true,
         tasks: Object.keys(TASK_REGISTRY),
-        note: 'Pass { task: "<task_name>" } to dispatch. This replaces Base44 scheduled workflows.',
+        retired_legacy_tasks: RETIRED_LEGACY_TASKS.size,
+        note: "DDV3 permits one scheduled dispatcher task: ddv3_heartbeat.",
       });
+    }
+
+    if (RETIRED_LEGACY_TASKS.has(task)) {
+      return Response.json({
+        ok: false,
+        blocked: true,
+        code: "DDV3_SINGLE_HEARTBEAT_REQUIRED",
+        task,
+        error: "Legacy independent cron task retired from dispatcher. Route work through WorkPacket eligibility under ddv3_heartbeat.",
+      }, { status: 409 });
     }
 
     const taskConfig = TASK_REGISTRY[task];
     if (!taskConfig) {
-      return Response.json({ error: `Unknown task: ${task}`, available: Object.keys(TASK_REGISTRY) }, { status: 400 });
+      return Response.json({ error: "Unknown task", available: Object.keys(TASK_REGISTRY) }, { status: 400 });
     }
 
-    // Dispatch to the backend function — runs WITHOUT Base44 workflow credits
     const base44 = createClientFromRequest(req);
     const startTime = Date.now();
+    const result = await base44.asServiceRole.functions.invoke(taskConfig.function, {
+      trigger: "railway_cron",
+      task,
+      timestamp: new Date().toISOString(),
+      internal_cron_key: expected,
+    });
 
-    try {
-      const result = await base44.asServiceRole.functions.invoke(taskConfig.function, {
-        trigger: 'railway_cron',
-        task,
-        timestamp: new Date().toISOString(),
-        ...body.args,
-      });
-
-      const durationMs = Date.now() - startTime;
-
-      return Response.json({
-        ok: true,
-        task,
-        function: taskConfig.function,
-        duration_ms: durationMs,
-        result: result.data || result,
-        independent: true, // did NOT use Base44 workflow credits
-      });
-    } catch (fnErr) {
-      const durationMs = Date.now() - startTime;
-      return Response.json({
-        ok: false,
-        task,
-        function: taskConfig.function,
-        duration_ms: durationMs,
-        error: fnErr.message,
-        independent: true,
-      }, { status: 500 });
-    }
-  } catch (error) {
-    console.error('[railwayCronDispatcher] Error:', error.message);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({
+      ok: true,
+      task,
+      function: taskConfig.function,
+      duration_ms: Date.now() - startTime,
+      result: result?.data || result,
+      runtime: "ddv3_single_heartbeat",
+    });
+  } catch (error: any) {
+    return Response.json({ error: error?.message || String(error) }, { status: 500 });
   }
 }

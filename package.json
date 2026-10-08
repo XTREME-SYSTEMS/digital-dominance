@@ -17,7 +17,9 @@
     "test:ddv3-measurement": "node scripts/ddv3-measurement-regression.mjs",
     "test:ddv3-evidence": "node scripts/ddv3-evidence-regression.mjs",
     "test:ddv3-factory": "node scripts/ddv3-factory-regression.mjs",
-    "test:ddv3-index": "node scripts/ddv3-index-eligibility-regression.mjs"
+    "test:ddv3-index": "node scripts/ddv3-index-eligibility-regression.mjs",
+    "test:ddv3-learning": "node scripts/ddv3-learning-regression.mjs",
+    "test:ddv3-runtime": "node scripts/ddv3-runtime-regression.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.53",

@@ -313,7 +313,27 @@
         "unknown"
       ],
       "default": "unknown",
-      "description": "Whether this lead is test data or real business data \u2014 excludes test records from business KPIs"
+      "description": "Whether this lead is test data or real business data — excludes test records from business KPIs"
+    },
+    "actual_fulfillment_cost": {
+      "type": "number",
+      "description": "Verified actual fulfillment cost when available. Never inferred from estimates."
+    },
+    "actual_gross_profit": {
+      "type": "number",
+      "description": "Verified gross profit derived from collected revenue and verified fulfillment cost."
+    },
+    "margin_evidence_class": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "margin_synced_at": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [
