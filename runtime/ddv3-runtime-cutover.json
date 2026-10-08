@@ -1,0 +1,85 @@
+{
+  "version": "ddv3-runtime-cutover-v1",
+  "authority": {
+    "scheduler": "Railway",
+    "heartbeat_task": "ddv3_heartbeat",
+    "cadence": "*/5 * * * *",
+    "state": "STAGED_ONLY_NOT_PRODUCTION"
+  },
+  "base44_scheduled_workflows_to_retire": [
+    "Daily Lead Engine",
+    "X1 Autonomous Company Cycle",
+    "Autonomous Skip Trace",
+    "Autonomous Sprint Supervisor",
+    "Questionnaire Enforcement",
+    "Swarm Autopilot",
+    "Weekly Opportunity Scanner",
+    "XTREME Universal Generator Sync Supervisor",
+    "Autonomous AutoComplete",
+    "XTREME Digital Dominance Compiler",
+    "Alpha Prime Completion Sprint",
+    "Autonomous SEO Dominance",
+    "Autonomous Dominance 24/7 Cycle",
+    "SEO Update Notifier",
+    "Competitor Scanner",
+    "Fleet Alpha Prime Heartbeat",
+    "SEO Optimizer",
+    "Social Media Autopilot",
+    "Recursive Production Readiness Engine",
+    "Alpha Prime Heartbeat",
+    "Autonomous Coding Pipeline",
+    "Autonomous Refactor Cycle"
+  ],
+  "entity_workflows": {
+    "preserve_if_governed": [
+      {
+        "name": "DDV3 Released Page Discovery Update",
+        "reason": "Event-driven, not scheduled; only fires after exact release/index eligibility."
+      }
+    ],
+    "quarantine_customer_messaging": [
+      "Lead Follow-Up",
+      "Immediate Lead Follow-Up",
+      "Review Request"
+    ]
+  },
+  "railway_crons_to_replace": [
+    "alpha-prime-heartbeat",
+    "fleet-heartbeat",
+    "daily-lead-engine",
+    "weekly-opportunity-scanner",
+    "competitor-scanner",
+    "seo-optimizer",
+    "sitemap-update",
+    "social-autopilot",
+    "social-autopilot-independent",
+    "swarm-autopilot",
+    "autonomous-sprint",
+    "autonomous-refactor",
+    "digital-dominance",
+    "review-request",
+    "lead-follow-up",
+    "entity-event-processor"
+  ],
+  "desired_railway_crons": [
+    {
+      "name": "ddv3-heartbeat",
+      "schedule": "*/5 * * * *",
+      "command": "node worker.js ddv3_heartbeat",
+      "responsibilities": [
+        "process internal entity-event queue",
+        "invoke DDV3 heartbeat",
+        "reconcile expired leases",
+        "surface eligible safe WorkPackets",
+        "write runtime and learning receipts"
+      ]
+    }
+  ],
+  "protected_cutover_steps": [
+    "disable Base44 scheduled workflows",
+    "replace Railway cron list",
+    "activate authoritative DDV3 heartbeat",
+    "quarantine customer-message event workflows until separately approved"
+  ],
+  "production_mutation": false
+}
