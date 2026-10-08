@@ -14,7 +14,8 @@
     "test:seo-parity": "node --test scripts/seo-parity.test.mjs",
     "test:semrush-evidence": "node --test scripts/semrush-evidence.test.mjs",
     "preview": "vite preview",
-    "test:ddv3-measurement": "node scripts/ddv3-measurement-regression.mjs"
+    "test:ddv3-measurement": "node scripts/ddv3-measurement-regression.mjs",
+    "test:ddv3-evidence": "node scripts/ddv3-evidence-regression.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.53",
