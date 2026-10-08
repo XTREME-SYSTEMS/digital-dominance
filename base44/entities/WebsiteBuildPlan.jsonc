@@ -28,7 +28,9 @@
     },
     "build_mode": {
       "type": "string",
-      "enum": ["preview_only"],
+      "enum": [
+        "preview_only"
+      ],
       "default": "preview_only"
     },
     "release_authorized": {
@@ -69,7 +71,9 @@
     },
     "source_evidence_ids": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "default": []
     },
     "canonical_location_id": {
@@ -88,7 +92,9 @@
       "items": {
         "type": "object",
         "properties": {
-          "path": { "type": "string" },
+          "path": {
+            "type": "string"
+          },
           "page_type": {
             "type": "string",
             "enum": [
@@ -103,9 +109,15 @@
               "resource"
             ]
           },
-          "primary_query": { "type": "string" },
-          "search_intent": { "type": "string" },
-          "canonical_path": { "type": "string" },
+          "primary_query": {
+            "type": "string"
+          },
+          "search_intent": {
+            "type": "string"
+          },
+          "canonical_path": {
+            "type": "string"
+          },
           "index_eligibility": {
             "type": "string",
             "enum": [
@@ -126,17 +138,23 @@
           },
           "unique_value_requirements": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "default": []
           },
           "evidence_ids": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "default": []
           },
           "visible_schema_types": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "default": []
           }
         }
@@ -145,22 +163,30 @@
     },
     "proof_requirements": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "default": []
     },
     "schema_policy": {
       "type": "string",
-      "enum": ["visible_content_only"],
+      "enum": [
+        "visible_content_only"
+      ],
       "default": "visible_content_only"
     },
     "canonical_policy": {
       "type": "string",
-      "enum": ["self_canonical"],
+      "enum": [
+        "self_canonical"
+      ],
       "default": "self_canonical"
     },
     "robots_policy": {
       "type": "string",
-      "enum": ["noindex_until_preview_validated"],
+      "enum": [
+        "noindex_until_preview_validated"
+      ],
       "default": "noindex_until_preview_validated"
     },
     "pilot_page_limit": {
@@ -169,17 +195,25 @@
     },
     "validation_state": {
       "type": "string",
-      "enum": ["unvalidated", "passed", "failed"],
+      "enum": [
+        "unvalidated",
+        "passed",
+        "failed"
+      ],
       "default": "unvalidated"
     },
     "validation_errors": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "default": []
     },
     "validation_warnings": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "default": []
     },
     "validation_receipt": {
@@ -193,6 +227,21 @@
     "validated_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Explicit planning assumptions that must not be presented as verified facts"
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
     }
   },
   "required": [
@@ -202,9 +251,25 @@
     "build_mode"
   ],
   "rls": {
-    "create": { "user_condition": { "role": "admin" } },
-    "read": { "user_condition": { "role": "admin" } },
-    "update": { "user_condition": { "role": "admin" } },
-    "delete": { "user_condition": { "role": "admin" } }
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
   }
 }
