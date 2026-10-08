@@ -175,6 +175,14 @@
     },
     "build_plan_policy_version": {
       "type": "string"
+    },
+    "preview_artifact_id": {
+      "type": "string",
+      "description": "Latest private WebsitePreviewArtifact ID"
+    },
+    "preview_status": {
+      "type": "string",
+      "description": "Latest private preview status"
     }
   },
   "required": [
