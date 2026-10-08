@@ -25,7 +25,7 @@ export async function completeGateway(payload) {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(60000),
+    signal: AbortSignal.timeout(120000),
   });
   if (!res.ok) throw new Error(`Vercel AI Gateway (${res.status}): ${(await res.text()).slice(0, 700)}`);
   return await res.json();
@@ -48,7 +48,7 @@ export async function generateText(opts: {
   messages.push({ role: 'user', content });
 
   const payload: any = {
-    model: opts.model || 'anthropic/claude-opus-4.7',
+    model: opts.model || 'anthropic/claude-sonnet-4-6',
     messages,
     max_tokens: (opts as any).max_tokens || 8000,
   };
@@ -78,12 +78,32 @@ export async function generateText(opts: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Normalize Core model names (e.g. 'gemini_3_flash') — Vercel AI Gateway uses
-// 'provider/model' names. Unknown Core names are dropped so the gateway default
-// (claude-opus-4.7) applies. add_context_from_internet is not supported by the
-// gateway and is silently dropped.
+// 'provider/model' names. Map known Base44 Core model names to their gateway
+// equivalents; unknown names are dropped so the gateway default applies.
+// add_context_from_internet is not supported by the gateway and is silently dropped.
+const MODEL_MAP: Record<string, string> = {
+  'gemini_3_flash': 'google/gemini-2.0-flash-001',
+  'gemini_3_1_pro': 'google/gemini-2.5-pro',
+  'gpt_5_mini': 'openai/gpt-4o-mini',
+  'gpt_5_4': 'openai/gpt-4o',
+  'gpt_5_6_sol': 'openai/gpt-4o',
+  'gpt_5_6_luna': 'openai/gpt-4o',
+  'claude_sonnet_4_6': 'anthropic/claude-sonnet-4-6',
+  'claude_opus_4_6': 'anthropic/claude-opus-4-6',
+  'claude_opus_4_7': 'anthropic/claude-opus-4-7',
+  'claude_opus_4_8': 'anthropic/claude-opus-4-8',
+  'claude_opus_5': 'anthropic/claude-opus-5',
+  'claude-sonnet-5': 'anthropic/claude-sonnet-5',
+  'automatic': 'anthropic/claude-sonnet-4-6',
+};
+
 function sanitizeOpts(opts: any) {
   const out: any = { ...opts };
-  if (out.model && !String(out.model).includes('/')) delete out.model;
+  if (out.model) {
+    const mapped = MODEL_MAP[String(out.model)] || (String(out.model).includes('/') ? out.model : null);
+    if (mapped) out.model = mapped;
+    else delete out.model;
+  }
   delete out.add_context_from_internet;
   return out;
 }
