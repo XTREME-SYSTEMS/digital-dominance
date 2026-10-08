@@ -250,6 +250,14 @@
     "preview_status": {
       "type": "string",
       "description": "Latest private preview status"
+    },
+    "release_review_id": {
+      "type": "string",
+      "description": "Latest DDV3 WebsiteReleaseReview record ID"
+    },
+    "release_review_status": {
+      "type": "string",
+      "description": "Latest DDV3 release-review status"
     }
   },
   "required": [
