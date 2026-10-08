@@ -185,8 +185,9 @@ export default async function(req: Request): Promise<Response> {
     }
 
     // ── generateVideo: Text-to-video generation (replaces Core.GenerateVideo) ──
-    // Routes through Vercel AI Gateway's video generation endpoint.
-    // Supports Veo 3.x models via the gateway, uploaded to Supabase Storage.
+    // Routes through Vercel AI Gateway's native /v4/ai/video-model endpoints.
+    // Uses async start + poll pattern (video gen takes 30-60+ seconds).
+    // Supports Veo 3.x and other gateway video models.
     if (action === 'generateVideo') {
       const { prompt, model, duration, aspect_ratio, generate_audio } = body;
       if (!prompt) return Response.json({ error: 'prompt required' }, { status: 400 });
@@ -196,55 +197,104 @@ export default async function(req: Request): Promise<Response> {
       const ratio = aspect_ratio || '16:9';
       const audio = generate_audio !== undefined ? generate_audio : true;
 
-      const payload: any = {
-        model: videoModel,
-        prompt,
-        duration: dur,
-        aspect_ratio: ratio,
-        generate_audio: audio,
+      const videoHeaders = {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'ai-video-model-specification-version': '4',
+        'ai-model-id': videoModel,
       };
 
-      const res = await fetch(`${GATEWAY_BASE}/videos/generations`, {
+      const requestBody = {
+        prompt,
+        n: 1,
+        aspectRatio: ratio,
+        duration: dur,
+        generateAudio: audio,
+      };
+
+      // Step 1: Start the async video generation job
+      const startRes = await fetch('https://ai-gateway.vercel.sh/v4/ai/video-model/start', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        headers: videoHeaders,
+        body: JSON.stringify(requestBody),
       });
 
-      if (!res.ok) {
-        const err = await res.text();
-        return Response.json({ error: `AI Gateway video error: ${err}`, status: res.status }, { status: 500 });
+      if (!startRes.ok) {
+        const err = await startRes.text();
+        return Response.json({ error: `AI Gateway video start error: ${err.slice(0, 500)}`, status: startRes.status }, { status: 500 });
       }
 
-      const data = await res.json();
+      const startData = await startRes.json();
+      const operation = startData.operation;
+      if (!operation) {
+        return Response.json({ error: 'No operation in gateway start response' }, { status: 500 });
+      }
 
-      // Extract video URL from response — gateway may return it directly or as base64
-      let videoUrl: string | null = null;
-      if (data.url) {
-        videoUrl = data.url;
-      } else if (data.video_url) {
-        videoUrl = data.video_url;
-      } else if (data.data?.[0]?.url) {
-        videoUrl = data.data[0].url;
-      } else if (data.data?.[0]?.b64_json) {
-        // Upload base64 video to Supabase
-        const b64 = data.data[0].b64_json;
-        const dataUrl = `data:video/mp4;base64,${b64}`;
-        const uploadRes = await base44.functions.invoke('supabaseUpload', {
-          file_data: dataUrl,
-          filename: `ai-video-${Date.now()}.mp4`,
-          content_type: 'video/mp4',
+      // Step 2: Poll status until completed or timeout (max ~110 seconds)
+      const maxAttempts = 22; // 22 × 5s = 110s
+      const pollIntervalMs = 5000;
+      let lastStatus = 'pending';
+
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await new Promise(r => setTimeout(r, pollIntervalMs));
+
+        const statusRes = await fetch('https://ai-gateway.vercel.sh/v4/ai/video-model/status', {
+          method: 'POST',
+          headers: videoHeaders,
+          body: JSON.stringify({ operation }),
         });
-        videoUrl = uploadRes.data?.file_url || null;
+
+        if (!statusRes.ok) {
+          const err = await statusRes.text();
+          return Response.json({ error: `AI Gateway video status error: ${err.slice(0, 500)}`, status: statusRes.status }, { status: 500 });
+        }
+
+        const statusData = await statusRes.json();
+        lastStatus = statusData.status;
+
+        if (statusData.status === 'completed') {
+          const videos = statusData.videos || [];
+          if (videos.length === 0) {
+            return Response.json({ error: 'Video generation completed but no video data returned' }, { status: 500 });
+          }
+
+          const video = videos[0];
+          let videoUrl: string | null = null;
+
+          if (video.type === 'url' && video.url) {
+            videoUrl = video.url;
+          } else if (video.type === 'base64' && video.data) {
+            // Upload base64 video to Supabase Storage
+            const mediaType = video.mediaType || 'video/mp4';
+            const ext = mediaType.includes('mp4') ? 'mp4' : 'webm';
+            const dataUrl = `data:${mediaType};base64,${video.data}`;
+            const uploadRes = await base44.functions.invoke('supabaseUpload', {
+              file_data: dataUrl,
+              filename: `ai-video-${Date.now()}.${ext}`,
+              content_type: mediaType,
+            });
+            videoUrl = uploadRes.data?.file_url || null;
+          }
+
+          if (!videoUrl) {
+            return Response.json({ error: 'Video completed but no URL or base64 data found' }, { status: 500 });
+          }
+
+          return Response.json({ ok: true, url: videoUrl, model: videoModel, duration: dur, aspect_ratio: ratio });
+        }
+
+        if (statusData.status === 'error') {
+          return Response.json({ error: `Video generation failed: ${statusData.error || 'unknown error'}` }, { status: 500 });
+        }
+
+        if (statusData.status === 'cancelled') {
+          return Response.json({ error: 'Video generation was cancelled' }, { status: 500 });
+        }
+
+        // status === 'pending' — continue polling
       }
 
-      if (!videoUrl) {
-        return Response.json({ error: 'No video URL in gateway response', raw: JSON.stringify(data).slice(0, 500) }, { status: 500 });
-      }
-
-      return Response.json({ ok: true, url: videoUrl, model: videoModel, duration: dur, aspect_ratio: ratio });
+      return Response.json({ error: `Video generation timed out after ${maxAttempts * pollIntervalMs / 1000}s (last status: ${lastStatus})` }, { status: 504 });
     }
 
     // ── editImage: Image editing with a reference image (floor visualizer) ──
