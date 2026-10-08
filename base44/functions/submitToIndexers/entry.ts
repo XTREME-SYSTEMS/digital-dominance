@@ -29,6 +29,12 @@ async function buildCanonicalUrls(svc: any, site: string): Promise<string[]> {
   try {
     const locations = await svc.entities.CanonicalLocationRegistry.list(500);
     for (const loc of locations || []) {
+      const eligible =
+        loc.content_status === "published" &&
+        loc.validation_status === "passed" &&
+        loc.serviceability_status === "serviceable" &&
+        Number(loc.local_value_score || 0) >= 70;
+      if (!eligible) continue;
       const path = String(loc.canonical_path || "").trim();
       const url = String(loc.canonical_url || "").trim();
       if (url.startsWith(site + "/")) urls.add(url.replace(/\/+$/, ""));
@@ -39,7 +45,12 @@ async function buildCanonicalUrls(svc: any, site: string): Promise<string[]> {
   try {
     const pages = await svc.entities.GeneratedPage.list("-updated_date", 500);
     for (const page of pages || []) {
-      if (page?.status === "draft" || !page?.slug) continue;
+      const eligible =
+        page?.status === "published" &&
+        page?.index_eligible !== false &&
+        page?.sitemap_eligible !== false &&
+        page?.release_authorized !== false;
+      if (!eligible || !page?.slug) continue;
       const slug = String(page.slug).replace(/^\/+/, "");
       urls.add(`${site}/${slug}`);
     }
