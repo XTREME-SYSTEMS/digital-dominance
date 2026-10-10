@@ -48,6 +48,7 @@ const navGroups = [
     label: "MARKET DOMINANCE — National Concrete Reach",
     items: [
       { to: "/admin/digital-dominance", icon: Crown, label: "Digital Dominance" },
+      { to: "/admin/dominance-pipeline", icon: Crown, label: "Dominance Pipeline (5-Step)" },
       { to: "/admin/autonomous-dominance", icon: Crown, label: "Autonomous Dominance" },
       { to: "/admin/autonomous-refactor", icon: Wrench, label: "Autonomous Refactor" },
       { to: "/admin/dominance-sandbox", icon: Rocket, label: "Dominance Sandbox" },

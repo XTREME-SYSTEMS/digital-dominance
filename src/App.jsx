@@ -136,6 +136,7 @@ import CodeStudio from '@/pages/admin/CodeStudio';
 import MetaArchitecture from '@/pages/admin/MetaArchitecture';
 import VisionCortexV2 from '@/pages/admin/VisionCortexV2';
 import DigitalDominance from '@/pages/admin/DigitalDominance';
+import DominancePipeline from '@/pages/admin/DominancePipeline';
 import UniversalDominance from '@/pages/admin/UniversalDominance';
 import AutonomousDominance from '@/pages/admin/AutonomousDominance';
 import AutonomousRefactor from '@/pages/admin/AutonomousRefactor';
@@ -285,6 +286,7 @@ const AuthenticatedApp = () => {
         <Route path="meta-architecture" element={<MetaArchitecture />} />
         <Route path="vision-cortex-v2" element={<VisionCortexV2 />} />
         <Route path="digital-dominance" element={<DigitalDominance />} />
+        <Route path="dominance-pipeline" element={<DominancePipeline />} />
         <Route path="universal-dominance" element={<UniversalDominance />} />
         <Route path="autonomous-dominance" element={<AutonomousDominance />} />
         <Route path="autonomous-refactor" element={<AutonomousRefactor />} />
