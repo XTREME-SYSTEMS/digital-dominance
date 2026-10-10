@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowRight, Phone, Loader2, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Phone, Loader2, CheckCircle2, UserCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { LOGO_URL } from "@/components/Logo";
@@ -49,13 +49,22 @@ export default function FunnelHero() {
             <div className="text-[10px] xps-gold-text font-bold uppercase tracking-widest">Floors For Life</div>
           </div>
         </Link>
-        <a
-          href="tel:+18779586408"
-          className="inline-flex items-center gap-2 xps-gold-bg text-black font-black text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/30 hover:scale-105 transition-all"
-        >
-          <Phone className="h-4 w-4" />
-          Call Now: (877) 958-6408
-        </a>
+        <div className="flex items-center gap-2.5">
+          <Link
+            to="/portal"
+            className="inline-flex items-center gap-2 border border-amber-500/50 text-amber-400 font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-amber-500/10 transition-all"
+          >
+            <UserCircle className="h-4 w-4" />
+            <span className="hidden sm:inline">Client Portal</span>
+          </Link>
+          <a
+            href="tel:+18779586408"
+            className="inline-flex items-center gap-2 xps-gold-bg text-black font-black text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/30 hover:scale-105 transition-all"
+          >
+            <Phone className="h-4 w-4" />
+            <span className="hidden sm:inline">Call Now: </span>(877) 958-6408
+          </a>
+        </div>
       </div>
 
       {/* Hero with darkened garage background */}
