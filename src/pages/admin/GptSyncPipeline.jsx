@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { Sparkles, MessageSquare, Layers, Globe, Rocket } from "lucide-react";
+import { Sparkles, MessageSquare, Layers, Globe, Rocket, Code2 } from "lucide-react";
 import PipelineChat from "@/components/gpt-pipeline/PipelineChat";
 import PipelineStages from "@/components/gpt-pipeline/PipelineStages";
 import IndustryTemplateGrid from "@/components/gpt-pipeline/IndustryTemplateGrid";
 import DominanceSelector from "@/components/gpt-pipeline/DominanceSelector";
 import ProvisioningDashboard from "@/components/gpt-pipeline/ProvisioningDashboard";
+import JsonConfigPanel from "@/components/gpt-pipeline/JsonConfigPanel";
 
 const TABS = [
+  { id: "json", label: "JSON Config", icon: Code2 },
   { id: "stages", label: "Pipeline Stages", icon: Sparkles },
   { id: "templates", label: "Industry Templates", icon: Layers },
   { id: "dominance", label: "Digital Dominance", icon: Globe },
@@ -14,7 +16,7 @@ const TABS = [
 ];
 
 export default function GptSyncPipeline() {
-  const [tab, setTab] = useState("stages");
+  const [tab, setTab] = useState("json");
   const [chatPrompt, setChatPrompt] = useState("");
 
   const handleQuickAction = (prompt) => {
@@ -75,6 +77,7 @@ export default function GptSyncPipeline() {
 
           {/* Tab content */}
           <div className="flex-1 overflow-y-auto">
+            {tab === "json" && <JsonConfigPanel />}
             {tab === "stages" && <PipelineStages onQuickAction={handleQuickAction} />}
             {tab === "templates" && <IndustryTemplateGrid onQuickAction={handleQuickAction} />}
             {tab === "dominance" && <DominanceSelector onQuickAction={handleQuickAction} />}
