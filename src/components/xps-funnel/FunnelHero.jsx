@@ -51,7 +51,7 @@ export default function FunnelHero() {
         </Link>
         <div className="flex items-center gap-2.5">
           <Link
-            to="/portal"
+            to="/login"
             className="inline-flex items-center gap-2 border border-amber-500/50 text-amber-400 font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-amber-500/10 transition-all"
           >
             <UserCircle className="h-4 w-4" />
