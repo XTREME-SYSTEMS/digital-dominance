@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
+import { patchCore } from '../../shared/aiGateway.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // socialStudio — Autonomous social media engine for Facebook.
@@ -188,7 +189,9 @@ async function publishPostInternal(svc: any, post: any): Promise<{ fb_post_id: s
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+    patchCore(base44);
     const svc = base44.asServiceRole;
+    patchCore(svc);
     const body = await req.json().catch(() => ({}));
     const action = body.action || 'list';
 
