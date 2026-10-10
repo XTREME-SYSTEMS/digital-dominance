@@ -147,6 +147,7 @@ import GapFiller from '@/pages/admin/GapFiller';
 import VisualEditor from '@/pages/admin/VisualEditor';
 import ConceptToCompletion from '@/pages/admin/ConceptToCompletion';
 import SystemAudit from '@/pages/admin/SystemAudit';
+import ImageIngestion from '@/pages/admin/ImageIngestion';
 import GoogleWorkspaceOS from '@/pages/admin/GoogleWorkspaceOS';
 import InternalArchitecture from '@/pages/admin/InternalArchitecture';
 import GoogleCommandCenter from '@/pages/admin/GoogleCommandCenter';
@@ -224,6 +225,7 @@ const AuthenticatedApp = () => {
         <Route path="gap-filler" element={<GapFiller />} />
         <Route path="concept-to-completion" element={<ConceptToCompletion />} />
         <Route path="system-audit" element={<SystemAudit />} />
+        <Route path="image-ingestion" element={<ImageIngestion />} />
         <Route path="opportunity-intelligence" element={<OpportunityIntelligence />} />
         <Route path="google-workspace-os" element={<GoogleWorkspaceOS />} />
         <Route path="internal-architecture" element={<InternalArchitecture />} />

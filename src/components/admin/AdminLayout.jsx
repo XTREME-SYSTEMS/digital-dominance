@@ -29,6 +29,7 @@ const navGroups = [
       { to: "/admin/google-command-center", icon: Globe, label: "Google Command Center" },
       { to: "/admin/command-center", icon: Crown, label: "Command Center" },
       { to: "/admin/vision-studio", icon: Wand2, label: "Vision Studio" },
+      { to: "/admin/image-ingestion", icon: Wand2, label: "Image → Code Ingestion" },
     ],
   },
   {
