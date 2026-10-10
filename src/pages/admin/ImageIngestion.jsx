@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import UploadPanel from '@/components/image-ingestion/UploadPanel';
+import ChatGPTPanel from '@/components/image-ingestion/ChatGPTPanel';
 import CodeOutput from '@/components/image-ingestion/CodeOutput';
-import { Sparkles, Loader2, Wand2, AlertCircle } from 'lucide-react';
+import FunnelDeploy from '@/components/image-ingestion/FunnelDeploy';
+import { Sparkles, Loader2, Wand2, AlertCircle, Upload, Bot } from 'lucide-react';
 
 export default function ImageIngestion() {
   const [imageUrl, setImageUrl] = useState(null);
+  const [imageSource, setImageSource] = useState(null);
   const [instructions, setInstructions] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -30,6 +33,11 @@ export default function ImageIngestion() {
     setLoading(false);
   };
 
+  const handleImageUrl = (url, source) => {
+    setImageUrl(url);
+    setImageSource(source);
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Header */}
@@ -38,48 +46,94 @@ export default function ImageIngestion() {
           <Wand2 className="h-5 w-5 text-white" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-stone-900">Image Ingestion → Code</h1>
-          <p className="text-sm text-stone-500">Upload a screenshot or design — AI generates the frontend component and backend function</p>
+          <h1 className="text-xl font-bold text-stone-900">Image → Code → Funnel → Mass Deploy</h1>
+          <p className="text-sm text-stone-500">Generate or upload a design — AI builds the code, converts it to a funnel, and deploys hundreds across the US</p>
         </div>
       </div>
 
-      {/* Upload + instructions */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <UploadPanel onImageUrl={setImageUrl} imageUrl={imageUrl} disabled={loading} />
+      {/* Step 1: Image source — ChatGPT generate OR upload */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-500 text-white text-xs font-bold">1</div>
+          <h2 className="text-sm font-bold text-stone-800">Get Your Design Image</h2>
         </div>
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-semibold text-stone-700 mb-1.5 block">Instructions (optional)</label>
-            <textarea
-              value={instructions}
-              onChange={(e) => setInstructions(e.target.value)}
-              disabled={loading}
-              placeholder="e.g. Make this a full admin page with a data table, add filters, use dark mode..."
-              className="w-full rounded-xl border border-stone-300 px-4 py-3 text-sm text-stone-800 placeholder-stone-400 focus:border-amber-500 focus:outline-none disabled:bg-stone-100 resize-none"
-              rows={5}
-            />
-            <p className="text-xs text-stone-500 mt-1">Guide the AI on what you want — page type, data needs, style preferences.</p>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* ChatGPT Generation */}
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
+            <ChatGPTPanel onImageUrl={(url) => handleImageUrl(url, 'chatgpt')} disabled={loading} />
           </div>
-          <button
-            onClick={generate}
-            disabled={!imageUrl || loading}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-bold text-stone-900 hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Analyzing image & generating code...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4" />
-                Generate Code from Image
-              </>
-            )}
-          </button>
+
+          {/* Upload */}
+          <div className="rounded-2xl border border-stone-200 bg-stone-50/50 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-100">
+                <Upload className="h-4 w-4 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-stone-800">Upload Your Own</h3>
+                <p className="text-xs text-stone-500">Drag & drop a screenshot or design file</p>
+              </div>
+            </div>
+            <UploadPanel onImageUrl={(url) => handleImageUrl(url, 'upload')} imageUrl={imageSource === 'upload' ? imageUrl : null} disabled={loading} />
+          </div>
         </div>
+
+        {/* Generated image preview */}
+        {imageUrl && imageSource === 'chatgpt' && (
+          <div className="relative rounded-2xl border border-emerald-200 overflow-hidden bg-stone-100">
+            <img src={imageUrl} alt="AI-generated design" className="w-full max-h-96 object-contain" />
+            <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs text-white">
+              <Bot className="h-3 w-3" />
+              <span>Generated by ChatGPT</span>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Step 2: Ingest → Code */}
+      {imageUrl && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-500 text-white text-xs font-bold">2</div>
+            <h2 className="text-sm font-bold text-stone-800">Ingest Image → Generate Code</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="text-sm font-semibold text-stone-700 mb-1.5 block">Instructions (optional)</label>
+              <textarea
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+                disabled={loading}
+                placeholder="e.g. Make this a full funnel page for epoxy garage floors with lead capture..."
+                className="w-full rounded-xl border border-stone-300 px-4 py-3 text-sm text-stone-800 placeholder-stone-400 focus:border-amber-500 focus:outline-none disabled:bg-stone-100 resize-none"
+                rows={5}
+              />
+              <p className="text-xs text-stone-500 mt-1">Guide the AI on what you want — page type, data needs, style preferences.</p>
+            </div>
+            <div className="flex flex-col justify-end">
+              <button
+                onClick={generate}
+                disabled={!imageUrl || loading}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-bold text-stone-900 hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Analyzing image & generating code...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    Generate Code from Image
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Error */}
       {error && (
@@ -101,8 +155,11 @@ export default function ImageIngestion() {
         </div>
       )}
 
-      {/* Results */}
+      {/* Results — Code Output */}
       {result && <CodeOutput result={result} />}
+
+      {/* Step 3 & 4: Funnel Conversion + Mass Deploy */}
+      {result && <FunnelDeploy result={result} imageUrl={imageUrl} />}
     </div>
   );
 }
