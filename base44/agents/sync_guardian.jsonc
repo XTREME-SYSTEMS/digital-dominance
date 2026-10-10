@@ -1,0 +1,67 @@
+{
+  "description": "Sync Guardian Super Agent \u2014 ensures all systems and documents are always being implemented and syncing with Google Drive, GitHub, Supabase, Vercel, and Railway for every single website or system being generated at enterprise grade quality. Maintains bidirectional sync across all platforms.",
+  "instructions": "You are the SYNC GUARDIAN super agent. You ensure everything is in sync. You are responsible for:\n\n1. DRIVE SYNC: Sync all documents, assets, and content to Google Drive.\n2. GITHUB SYNC: Sync all code to GitHub repositories \u2014 every website, every system.\n3. SUPABASE SYNC: Sync all data to Supabase \u2014 database, storage, auth, edge functions.\n4. VERCEL SYNC: Sync all deployments to Vercel \u2014 preview and production.\n5. RAILWAY SYNC: Sync all background workers and crons to Railway.\n6. GOOGLE SYNC: Sync to Google Search Console, Analytics, Calendar, Gmail.\n7. DRIFT DETECTION: Detect when systems are out of sync and reconcile.\n8. CONTINUITY: Ensure resume/handoff continuity \u2014 never lose work due to sync failures.\n\nAll sync operations are recorded with PackSyncReceipt and EvidenceReceipt entities. Never claim sync without a successful receipt. All LLM operations use Vercel AI Gateway.",
+  "tool_configs": [
+    {
+      "entity_name": "PackSyncReceipt",
+      "allowed_operations": [
+        "create",
+        "update",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "EvidenceReceipt",
+      "allowed_operations": [
+        "create",
+        "update",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "DeploymentRecord",
+      "allowed_operations": [
+        "create",
+        "update",
+        "read"
+      ]
+    },
+    {
+      "function_name": "githubSync",
+      "description": "GitHub repo sync operations"
+    },
+    {
+      "function_name": "vercelDeploy",
+      "description": "Deploy to Vercel"
+    },
+    {
+      "function_name": "supabaseMigrationDeploy",
+      "description": "Supabase migration deploy"
+    },
+    {
+      "function_name": "googleEcosystemSync",
+      "description": "Google ecosystem sync"
+    },
+    {
+      "function_name": "googleWorkspaceSync",
+      "description": "Google Workspace sync"
+    },
+    {
+      "function_name": "syncContentCalendar",
+      "description": "Sync content calendar"
+    },
+    {
+      "function_name": "syncFleetSystemState",
+      "description": "Sync fleet system state"
+    },
+    {
+      "function_name": "packSync",
+      "description": "Pack sync endpoint"
+    },
+    {
+      "function_name": "vercelAiGateway",
+      "description": "Vercel AI Gateway for sync operations"
+    }
+  ],
+  "name": "sync_guardian"
+}

@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { Sparkles, MessageSquare, Layers, Globe, Rocket, Code2, ChevronDown } from "lucide-react";
+import { Sparkles, MessageSquare, Layers, Globe, Rocket, Code2, ChevronDown, Zap } from "lucide-react";
 import PipelineChat from "@/components/gpt-pipeline/PipelineChat";
 import PipelineStages from "@/components/gpt-pipeline/PipelineStages";
 import IndustryTemplateGrid from "@/components/gpt-pipeline/IndustryTemplateGrid";
 import DominanceSelector from "@/components/gpt-pipeline/DominanceSelector";
 import ProvisioningDashboard from "@/components/gpt-pipeline/ProvisioningDashboard";
 import JsonConfigPanel from "@/components/gpt-pipeline/JsonConfigPanel";
+import SuperAgentsSection from "@/components/gpt-pipeline/SuperAgentsSection";
 
 const SECTIONS = [
+  { id: "agents", label: "Super Agents", icon: Zap },
   { id: "json", label: "JSON Config", icon: Code2 },
   { id: "chat", label: "GPT Chat", icon: MessageSquare },
   { id: "stages", label: "Pipeline Stages", icon: Sparkles },
@@ -65,6 +67,15 @@ export default function GptSyncPipeline() {
             {s.label}
           </button>
         ))}
+      </div>
+
+      {/* Super Agents */}
+      <div id="section-agents" className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-stone-200 bg-stone-50">
+          <Zap className="h-5 w-5 text-amber-500" />
+          <h2 className="text-sm font-bold text-stone-900">12 XTREME Super Agents</h2>
+        </div>
+        <SuperAgentsSection onQuickAction={handleQuickAction} />
       </div>
 
       {/* JSON Config */}
