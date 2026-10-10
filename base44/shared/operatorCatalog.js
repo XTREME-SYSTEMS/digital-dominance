@@ -28,6 +28,21 @@ export const operatorFunctions = {
   propertyLookup: 'Property information lookup.',
   enrichLead: 'Enrich a specified lead.',
   socialStudio: 'Social content generation/scheduling. Drafts or scheduled records are not proof of publication. Posting requires a working provider connection.',
+  supabaseMigrationDeploy: 'Deploy or seed Supabase tables. Action: deploy (create tables), seed (insert data), status (check state). Requires Supabase connector.',
+  vercelDeploy: 'Deploy published DynamicPages to the configured Vercel project. Do not call for arbitrary content or unrelated projects.',
+  vercelManager: 'Vercel management API. Read actions listProjects, listDeployments. Actual authorization must be checked from the returned result.',
+  githubSync: 'GitHub repo operations. Actions: search_repos, list_repos, create_repo, push_files, get_file. Edits affect the configured external repository.',
+  godaddyApi: 'Domain reads: listDomains, getDomain, checkAvailability, getDnsRecords, getPurchaseAgreements. Purchase requires explicit human financial approval.',
+  autoComplete: 'Run the AutoComplete convergence cycle to validate system benchmarks, identify gaps, and auto-repair toward VERIFIED_100. Actions: status, cycle, full_cycle.',
+  rebrandStudio: 'Generate brand packs, logo packs, and website packs. Actions: generate_logo_pack, generate_brand_pack, generate_website_packs.',
+  autonomousSprint: 'Run autonomous sprint cycles for benchmark-driven work. Actions: status, run, stop.',
+  closedLoopTester: 'Closed-loop validation testing. Actions: run_test, get_results. Validates deployments end-to-end.',
+  postconditionValidator: 'Post-condition validation after deployments. Actions: validate, get_report. Checks that deployed sites meet all requirements.',
+  universalDominanceEngine: 'Universal dominance engine for programmatic website generation. Actions: launch, status, list_campaigns. Generates sites by state/city/industry.',
+  digitalDominanceCompiler: 'Compile digital dominance campaigns. Actions: compile, deploy, status. Orchestrates branding, content, SEO, and deployment.',
+  independentSocialGenerator: 'Generate social media content independently. Actions: generate_calendar, generate_video, generate_image. 20-day calendars with video and image posts.',
+  packSync: 'GPT Pack Sync endpoint. Push webpacks, brand packs, logo packs to the system. Validates visual and operational parity.',
+  packResearchOrchestrator: 'Research GPT packs and capabilities. Actions: research, analyze, recommend. Finds tools and capabilities for the pipeline.',
 };
 
 export const operatorInstructions = `You are Alpha Shadow, the owner-admin's business and site operator.

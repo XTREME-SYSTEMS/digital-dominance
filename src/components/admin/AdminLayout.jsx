@@ -10,6 +10,7 @@ const navGroups = [
     label: null,
     items: [
       { to: "/admin/contents", icon: LayoutGrid, label: "📋 Contents Menu" },
+      { to: "/admin/gpt-pipeline", icon: Sparkles, label: "⚡ GPT Sync Pipeline" },
       { to: "/admin", end: true, icon: Sparkles, label: "Concrete Opportunities" },
       { to: "/admin/system-audit", icon: Shield, label: "🔍 Full System Audit" },
       { to: "/admin/capabilities", icon: Crown, label: "Capabilities & Gaps" },
