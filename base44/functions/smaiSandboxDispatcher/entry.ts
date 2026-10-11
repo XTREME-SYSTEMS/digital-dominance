@@ -145,17 +145,21 @@ Generate a complete implementation plan as JSON:
 
   // ─── STATUS: Get queue status ─────────────────────────────────────
   if (action === 'status') {
-    const queued = await base44.entities.SmaiSandboxJob.count({ status: 'queued' });
-    const compiling = await base44.entities.SmaiSandboxJob.count({ status: 'compiling' });
-    const validating = await base44.entities.SmaiSandboxJob.count({ status: 'validating' });
-    const ready = await base44.entities.SmaiSandboxJob.count({ status: 'ready' });
-    const approved = await base44.entities.SmaiSandboxJob.count({ status: 'approved' });
-    const failed = await base44.entities.SmaiSandboxJob.count({ status: 'failed' });
+    const statuses = ['queued', 'compiling', 'validating', 'ready', 'approved', 'failed'];
+    const counts = { queued: 0, compiling: 0, validating: 0, ready: 0, approved: 0, failed: 0 };
+    for (const s of statuses) {
+      try {
+        const page = await base44.entities.SmaiSandboxJob.filter(
+          { status: s },
+          { limit: 500, fields: ['id'] }
+        );
+        counts[s] = (page.items || []).length;
+      } catch (e) {
+        console.error(`[smaiSandboxDispatcher] count ${s}: ${e.message}`);
+      }
+    }
 
-    return Response.json({
-      ok: true,
-      queue: { queued, compiling, validating, ready, approved, failed }
-    });
+    return Response.json({ ok: true, queue: counts });
   }
 
   return Response.json({ error: 'Unknown action. Use: enqueue, process, status' }, { status: 400 });
