@@ -1,0 +1,141 @@
+{
+  "name": "ManusBenchmark",
+  "type": "object",
+  "properties": {
+    "pattern_id": {
+      "type": "string",
+      "description": "Stable slug ID (e.g. agent_loop, single_input, sandbox_preview)"
+    },
+    "pattern_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "architecture",
+        "ux",
+        "autonomy",
+        "tools",
+        "sandbox",
+        "memory",
+        "multi_platform",
+        "transparency",
+        "progressive_delegation",
+        "deployment"
+      ],
+      "default": "architecture"
+    },
+    "manus_description": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "What Manus does for this pattern"
+    },
+    "manus_implementation": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "How Manus implements it technically"
+    },
+    "our_current_state": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "What our system currently does for this pattern"
+    },
+    "our_implementation": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "How our system implements it (files, functions, components)"
+    },
+    "gap_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 50,
+      "description": "0 = no gap (full parity), 100 = complete gap (nothing exists)"
+    },
+    "parity_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 50,
+      "description": "100 = full parity with Manus, 0 = nothing exists"
+    },
+    "refactor_action": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "What to build or change to close the gap"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "effort_estimate": {
+      "type": "string",
+      "enum": [
+        "hours",
+        "days",
+        "weeks",
+        "sprint"
+      ],
+      "default": "days"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "identified",
+        "planned",
+        "in_progress",
+        "completed",
+        "deferred"
+      ],
+      "default": "identified"
+    },
+    "evidence": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Evidence supporting the score (file paths, function names)"
+    },
+    "refactor_job_id": {
+      "type": "string",
+      "description": "Associated RefactorJob ID when execution starts"
+    },
+    "benchmark_run_id": {
+      "type": "string",
+      "description": "ID of the benchmark run that produced this record"
+    }
+  },
+  "required": [
+    "pattern_id",
+    "pattern_name",
+    "category",
+    "gap_score",
+    "parity_score"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

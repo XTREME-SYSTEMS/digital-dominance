@@ -102,6 +102,7 @@ import SystemLibrary from '@/pages/admin/SystemLibrary';
 import PackSync from '@/pages/admin/PackSync';
 import PackResearch from '@/pages/admin/PackResearch';
 import GptSyncPipeline from '@/pages/admin/GptSyncPipeline';
+import ManusRecreation from '@/pages/admin/ManusRecreation';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
