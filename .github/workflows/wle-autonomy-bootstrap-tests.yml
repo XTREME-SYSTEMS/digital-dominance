@@ -25,6 +25,8 @@ jobs:
           node-version: '22'
       - name: Validate autonomy gates offline without secrets
         run: node --test independent-launch-engine/ops/autonomous-bootstrap/tests/mission-gate.test.mjs
+      - name: Validate SwarmNexus role routing against actual execution proof
+        run: node --test independent-launch-engine/ops/autonomous-bootstrap/tests/swarmnexus-compatibility.test.mjs
       - name: Assert no production mutation code in policy module
         run: |
           test -f independent-launch-engine/ops/autonomous-bootstrap/START_HERE.md
