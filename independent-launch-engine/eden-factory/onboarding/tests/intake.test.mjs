@@ -38,7 +38,7 @@ test("marketing consent separate and default false",()=>assert.equal(buildBrief(
 test("user can decline research entirely and still finish onboarding",()=>{const a=GOOD();a.permission.researchConsent=false;a.permission.researchScopes=[];a.permission.authorityConfirmed=false;assert.deepEqual(validateAll(a),[]);});
 test("research scope without consent is blocked",()=>{const a=GOOD();a.permission.researchConsent=false;assert.ok(validateStep(7,a).includes("RESEARCH_AUTHORITY_REQUIRED"));});
 test("research scope without domain authority is blocked",()=>{const a=GOOD();a.permission.authorityConfirmed=false;assert.ok(validateStep(7,a).includes("RESEARCH_AUTHORITY_REQUIRED"));});
-test("followup consent must be explicit",()=>{const a=GOOD();a.permission.contactConsent=false;assert.ok(validateStep(7,a).includes("REQUESTED_FOLLOWUP_CONTACT_CONSENT_REQUIRED"));});
+test("local brief remains available without consent to contact",()=>{const a=GOOD();a.permission.contactConsent=false;assert.deepEqual(validateStep(7,a),[]);assert.equal(buildBrief(a).customerContactAuthorized,false);});
 test("unknown research scope rejected",()=>{const a=GOOD();a.permission.researchScopes=["all_private_accounts"];assert.ok(validateStep(7,a).includes("RESEARCH_SCOPE_INVALID"));});
 test("no research without verified principal",()=>{const b=buildBrief(GOOD());assert.equal(compileBusinessResearchJobs(b,{...CONTEXT,principalVerified:false}).status,"BLOCKED");});
 test("no research without consent receipt",()=>{const b=buildBrief(GOOD());assert.equal(compileBusinessResearchJobs(b,{...CONTEXT,consentReceiptId:null}).status,"BLOCKED");});
