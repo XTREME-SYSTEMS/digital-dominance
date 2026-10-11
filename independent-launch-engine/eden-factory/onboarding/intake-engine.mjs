@@ -91,7 +91,7 @@ export function validateStep(index,answers){
    if(typeof obj.researchConsent!=="boolean"||typeof obj.contactConsent!=="boolean"||typeof obj.marketingConsent!=="boolean"||typeof obj.authorityConfirmed!=="boolean")errors.push("CONSENT_BOOLEAN_REQUIRED");
    if(!Array.isArray(obj.researchScopes)||obj.researchScopes.length>4||obj.researchScopes.some(x=>!RESEARCH_SCOPES.includes(x)))errors.push("RESEARCH_SCOPE_INVALID");
    if(obj.researchScopes.length>0 && (!obj.researchConsent||!obj.authorityConfirmed))errors.push("RESEARCH_AUTHORITY_REQUIRED");
-   if(!obj.contactConsent)errors.push("REQUESTED_FOLLOWUP_CONTACT_CONSENT_REQUIRED");
+   // A person may download a local brief without accepting follow-up contact.
    break;
   default: errors.push("STEP_INVALID");
  }
