@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0-draft",
+  "mission_id": "DD-WLE-BOOTSTRAP-20261010",
+  "state": "REGISTERED_AS_CODE_NOT_DEPLOYED",
+  "source_branch": "feature/website-launch-engine-debase-v1",
+  "projects": {
+    "x1_production": {
+      "project_ref": "vgsmyhqqtkkluhypxyua",
+      "name": "X1 AI Hub",
+      "role": "PRODUCTION_CONTROL_PLANE_CANDIDATE",
+      "server_env_prefix": "X1_PROD",
+      "allowed_operations": [
+        "health.metadata",
+        "queue.status.aggregate"
+      ],
+      "protection": "NO_PRODUCTION_MUTATION"
+    },
+    "x1_staging": {
+      "project_ref": "uvdkzsbjackpjvpoxtyk",
+      "name": "X1 AI Hub Staging",
+      "role": "STAGING_SANDBOX_AND_TESTING",
+      "server_env_prefix": "X1_STAGING",
+      "allowed_operations": [
+        "health.metadata",
+        "queue.status.aggregate",
+        "mission.draft.record"
+      ],
+      "protection": "STAGING_SCOPED_ONLY"
+    },
+    "strategic_intelligence": {
+      "project_ref": "jadlpbokfdkonvnfxjzs",
+      "name": "Strategic Intelligence",
+      "role": "RESEARCH_AND_BUSINESS_INTELLIGENCE",
+      "server_env_prefix": "STRATEGIC_INTEL",
+      "allowed_operations": [
+        "health.metadata"
+      ],
+      "protection": "DATA_ADAPTER_QUARANTINED_PENDING_RLS_REVIEW"
+    },
+    "property_intelligence": {
+      "project_ref": "fwtchbsebygwifmmqhur",
+      "name": "Universal Property Intelligence",
+      "role": "REAL_ESTATE_DATA_AND_OPPORTUNITIES",
+      "server_env_prefix": "PROPERTY_INTEL",
+      "allowed_operations": [
+        "health.metadata"
+      ],
+      "protection": "DATA_ADAPTER_QUARANTINED_PENDING_RLS_REVIEW"
+    }
+  },
+  "write_authorization": "NONE_FOR_PRODUCTION",
+  "runtime_connection_tested": false,
+  "cross_project_data_sync_active": false,
+  "public_launch_approved": false
+}
