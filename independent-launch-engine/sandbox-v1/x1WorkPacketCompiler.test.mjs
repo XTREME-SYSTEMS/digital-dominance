@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { compileX1StagingPackets } from './x1WorkPacketCompiler.mjs';
+const tenantUuid='34e5c248-cd91-4c04-9bd9-e17fa17b6b31';
+const source_sha='2ed7d072e03b955fc62bde4ecc6a84f7dbce402c';
+const plan_hash='a'.repeat(64);
+function mission(tasks){return {schema:'dd.mission.v1',mission_id:'smai-v2-sandbox-001',tenant_id:'customer-zero-tenant',state:'SCOPE_APPROVED',source_sha,plan_hash,approval_id:'scope-only-operator-001',max_repairs:2,budget_usd:0,spent_usd:0,plan:{tasks}};}
+const step=(id,depends_on=[],risk='NON_PRODUCTION_MUTATION',capabilities=['sandbox.test'])=>({id,depends_on,risk,capabilities,acceptance_test:'independent SHA-bound receipt'});
+const compile=(m=mission([step('research',[],'READ_ONLY',['source.research']),step('preview',['research'])]))=>compileX1StagingPackets(m,{tenantUuid});
+test('two tasks compile to existing X1 queue schema',()=>{const result=compile();assert.equal(result.length,2);for(const r of result){assert.equal(r.tenant_id,tenantUuid);assert.equal(r.status,'PENDING');assert.match(r.idempotency_key,/^[a-f0-9]{64}$/);assert.equal(r.max_attempts,3);assert.equal(r.payload.execution_enabled,false);assert.equal(r.payload.external_writes_enabled,false);assert.equal(r.payload.sandbox_mode,'ISOLATED_PREVIEW');}assert.equal(result[0].action_class,'READ_ONLY');});
+test('repeated compilation is idempotent',()=>{assert.deepEqual(compile(),compile());assert.notEqual(compile()[0].idempotency_key,compile()[1].idempotency_key);});
+test('ten independent preview jobs stay in one verified plan',()=>{const tasks=[step('research',[],'READ_ONLY',['source.research']),...Array.from({length:10},(_,i)=>step('preview_'+i,['research'],'NON_PRODUCTION_MUTATION',['website.preview']))];const r=compile(mission(tasks));assert.equal(r.length,11);assert.equal(new Set(r.map(x=>x.idempotency_key)).size,11);assert.equal(r[10].payload.depends_on[0],'research');});
+test('no safe approval no queue packet',()=>{const m=mission([step('research')]);m.state='PLANNED';assert.throws(()=>compile(m),/approved/);});
+test('scope missing receipt rejected',()=>{const m=mission([step('research')]);m.approval_id=null;assert.throws(()=>compile(m),/receipt/);});
+test('protected tasks cannot slip through even after safe approval',()=>{assert.throws(()=>compile(mission([step('dns_change',[],'PROTECTED_MUTATION')])),/protected/);});
+test('unknown capabilities blocked',()=>assert.throws(()=>compile(mission([step('secret_export',[],'READ_ONLY',['secrets.read'])])),/capability/));
+test('unknown/duplicate/cyclic dependencies rejected',()=>{assert.throws(()=>compile(mission([step('a1',['unknown'])])),/unknown dependency/);assert.throws(()=>compile(mission([step('a1',['a2']),step('a2',['a1'])])),/cyclic/);assert.throws(()=>compile(mission([step('a1'),step('a1')])),/duplicate/);});
+test('requires staging tenant identity',()=>assert.throws(()=>compileX1StagingPackets(mission([step('a1')]),{tenantUuid:'invalid'}),/UUID/));
+test('requires source SHA, plan hash and no spend',()=>{const m=mission([step('a1')]);m.source_sha='main';assert.throws(()=>compile(m),/SHA/);m.source_sha=source_sha;m.budget_usd=1;assert.throws(()=>compile(m),/spend/);m.budget_usd=0;m.plan_hash='bad';assert.throws(()=>compile(m),/hash/);});
+test('bounded plan, caps and attempts',()=>{const tasks=Array.from({length:41},(_,i)=>step('task_'+i));assert.throws(()=>compile(mission(tasks)),/bounded/);const m=mission([step('a1')]);m.max_repairs=7;assert.throws(()=>compile(m),/repair budget/);});
+test('never writes to provider, just prepares packets',()=>{const items=compile();assert.equal(items[0].payload.provider_token,undefined);assert.equal(items[0].payload.secrets,undefined);assert.ok(Object.values(items).every(x=>!Object.hasOwn(x,'service_role')));});
