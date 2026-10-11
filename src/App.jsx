@@ -221,7 +221,7 @@ const AuthenticatedApp = () => {
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/app-settings" element={<AppSettings />} />
       <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<OpportunityIntelligence />} />
+        <Route index element={<GptSyncPipeline />} />
         <Route path="contents" element={<Contents />} />
         <Route path="capabilities" element={<Capabilities />} />
         <Route path="gap-filler" element={<GapFiller />} />

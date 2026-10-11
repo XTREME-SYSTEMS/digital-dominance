@@ -31,7 +31,7 @@ export default function GptSyncPipeline() {
   };
 
   return (
-    <div className="flex flex-col gap-4 pb-12">
+    <div className="flex flex-col gap-4 pb-12 min-h-[calc(100vh-64px)]">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
         <div>
@@ -58,7 +58,7 @@ export default function GptSyncPipeline() {
 
       {/* Main input — Manus-like */}
       {!submitted && (
-        <div className="flex flex-col items-center gap-4 py-8">
+        <div className="flex flex-col items-center justify-center gap-4 py-8 flex-1">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: "linear-gradient(135deg, #FFF6D5, #D4AF37, #8B6914)" }}>
             <Wand2 className="h-8 w-8 text-stone-900" />
           </div>
@@ -110,7 +110,7 @@ export default function GptSyncPipeline() {
 
       {/* Pipeline Runner — appears after submission */}
       {submitted && (
-        <div className="h-[calc(100vh-200px)] min-h-[600px]">
+        <div className="flex-1 min-h-[600px] h-[calc(100vh-180px)]">
           <PipelineRunner initialMessage={submitted} onConsumed={() => setSubmitted(null)} />
         </div>
       )}
