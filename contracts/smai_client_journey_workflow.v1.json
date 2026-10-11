@@ -1,0 +1,228 @@
+{
+  "contract_id": "smai.client-journey.workflow.v1",
+  "version": "1.0.0",
+  "as_of": "2026-10-10",
+  "status": "PROPOSED_NOT_INSTALLED",
+  "repo": "XTREME-SYSTEMS/digital-dominance",
+  "host": "epoxyquotenearme.com",
+  "canonical_admin": "XTREME-SYSTEMS/digital-dominance",
+  "surfaces": {
+    "marketing": [
+      "/",
+      "/services",
+      "/pricing",
+      "/checkout",
+      "/redeem",
+      "/agreement"
+    ],
+    "client": [
+      "/login",
+      "/portal",
+      "/portal/onboarding",
+      "/portal/timeline",
+      "/portal/approvals",
+      "/portal/deliverables"
+    ],
+    "operator": [
+      "/admin",
+      "/admin/operator",
+      "/admin/agent-workspace"
+    ]
+  },
+  "states": [
+    {
+      "id": "LEAD",
+      "event": "service_selected",
+      "task": "capture scoped offer, no billing"
+    },
+    {
+      "id": "CHECKOUT_PENDING",
+      "event": "checkout_session_created",
+      "task": "server-owned Stripe product/price/deposit"
+    },
+    {
+      "id": "ENROLLED",
+      "event": "verified_payment_settled_or_sponsored_entitlement",
+      "task": "verify signature, paid status, event uniqueness, promotion entitlement"
+    },
+    {
+      "id": "WORKSPACE_PENDING",
+      "event": "client_workspace_enqueue",
+      "task": "create internal private Drive folder once by client/enrollment id"
+    },
+    {
+      "id": "WORKSPACE_READY",
+      "event": "drive_acl_and_folder_readback_passed",
+      "task": "record folder ID and Drive receipt, keep private"
+    },
+    {
+      "id": "CONTRACT_PENDING",
+      "event": "agreement_offered",
+      "task": "record agreement version, exact service scope, signer consent"
+    },
+    {
+      "id": "CONTRACT_SIGNED",
+      "event": "verified_e_signature_callback",
+      "task": "store signed PDF, document hash and signer audit"
+    },
+    {
+      "id": "PORTAL_INVITED",
+      "event": "contract_signed_and_enrolled",
+      "task": "issue short-lived one-time email invite; optional opted-in SMS"
+    },
+    {
+      "id": "PORTAL_ACTIVE",
+      "event": "verified_client_login",
+      "task": "tenant membership and role checks"
+    },
+    {
+      "id": "EDEN_ONBOARDING",
+      "event": "avatar_or_text_conversation_started",
+      "task": "adaptive six-topic intake with prior facts prefilled and scoped research permission"
+    },
+    {
+      "id": "FACTS_CONFIRMED",
+      "event": "client_confirmed_discovery",
+      "task": "versioned requirements and source-backed business dossier"
+    },
+    {
+      "id": "MISSION_QUEUED",
+      "event": "mission_spec_validated_and_enqueued",
+      "task": "existing X1 authoritative queue, one supervisor and idempotent job"
+    },
+    {
+      "id": "BUILDING",
+      "event": "sandbox_worker_claimed_lease",
+      "task": "separate mission runtime, pack and documentation versions pinned"
+    },
+    {
+      "id": "QA_3_PASS",
+      "event": "engineering_behavioral_independent_tests",
+      "task": "three evidence-backed passes on immutable revision"
+    },
+    {
+      "id": "PACK_REVIEW",
+      "event": "versioned_packs_presented",
+      "task": "Logo, Brand, Web/App, Social if in scope; request revision or approve exact asset hash"
+    },
+    {
+      "id": "RELEASE_READY",
+      "event": "all_required_packs_approved_and_qa_passed",
+      "task": "operator authorization for protected production actions"
+    },
+    {
+      "id": "PROVISIONING",
+      "event": "approved_release_manifest_executed",
+      "task": "provider write steps idempotent, individually verified"
+    },
+    {
+      "id": "LIVE_VERIFIED",
+      "event": "independent_live_route_and_provider_receipts",
+      "task": "portal timeline, operator chat status and immutable handoff"
+    }
+  ],
+  "branches": {
+    "promo_entitlement": {
+      "verified_sponsored_offer": true,
+      "signature_still_required": true,
+      "rate_limits": true,
+      "atomic_redemption": true
+    },
+    "delayed_payment": {
+      "until_settled": "CHECKOUT_PENDING",
+      "no_workspace_until_paid": true
+    },
+    "failed_signature": {
+      "state": "CONTRACT_PENDING",
+      "no_client_invite": true
+    },
+    "failed_drive": {
+      "state": "WORKSPACE_PENDING",
+      "retry_without_double_folder": true
+    },
+    "pack_rejection": {
+      "create_new_version": true,
+      "invalidate_old_approval": true,
+      "retest_changed_components": true
+    },
+    "fallback_avatar": {
+      "text_only": true,
+      "same_intake_state": true
+    },
+    "unknown_provider_permission": {
+      "state": "BLOCKED_AUTH",
+      "no_false_live_state": true
+    }
+  },
+  "eden_intents": [
+    "identity_and_site",
+    "project_and_goal",
+    "audience_and_locations",
+    "products_services_and_features",
+    "brand_assets_and_preferences",
+    "authorized_accounts_and_approver"
+  ],
+  "opt_in": [
+    "business_information_public_enrichment",
+    "google_profile_connection",
+    "social_oauth",
+    "email_transactional",
+    "sms_notifications",
+    "microphone",
+    "recording_if_enabled"
+  ],
+  "docs": [
+    "service_agreement",
+    "signed_pdf",
+    "business_profile",
+    "mission_spec",
+    "pack_versions",
+    "qa_receipts",
+    "provider_receipts",
+    "handoff"
+  ],
+  "pack_types": [
+    "logo_pack",
+    "brand_pack",
+    "web_app_pack",
+    "social_pack"
+  ],
+  "gate_policy": {
+    "client_portal_requires": [
+      "payment_or_approved_waiver",
+      "signed_agreement",
+      "verified_login"
+    ],
+    "workspace_trigger": "payment_settled_or_verified_sponsored_offer",
+    "production_release_requires": [
+      "independent_three_pass_qa",
+      "complete_required_pack_approvals",
+      "operator_scoped_release_approval"
+    ],
+    "direct_provider_confirmation": true,
+    "actual_customer_payment": false,
+    "external_sends_without_separate_approval": false,
+    "no_live_from_simulation": true
+  },
+  "verified_donors": [
+    "src/pages/CustomerPortal.jsx",
+    "src/pages/Portal.jsx",
+    "src/pages/admin/ClientPackages.jsx",
+    "base44/functions/create-checkout/entry.ts",
+    "base44/functions/payments-webhook/entry.ts",
+    "base44/entities/PromoCode.jsonc",
+    "base44/entities/ClientPortalConfig.jsonc",
+    "base44/entities/ClientProject.jsonc"
+  ],
+  "open_gaps": [
+    "Wix checkout exists, need isolated Stripe deposit/offer path",
+    "Legacy client portal uses email/phone lookup, needs tenant authenticated replacement",
+    "PromoCode unlock semantics must not mint financial entitlements",
+    "Eden LiveAvatar engine/consent/billing not bound",
+    "E-sign provider and signed audit record not verified",
+    "Drive folder creation tied to verified webhook not implemented",
+    "Client notifications unverified; consent required",
+    "X1 queue worker ownership and health need independent reconciliation"
+  ],
+  "release_status": "BLOCKED_DESIGN_ONLY"
+}
