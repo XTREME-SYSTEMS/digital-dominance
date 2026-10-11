@@ -59,12 +59,13 @@ export default async function(req: Request): Promise<Response> {
   // ── latest / recommend: return stored ideas ──
   if (action === 'latest' || action === 'recommend') {
     const filter = action === 'recommend' ? { status: 'new' } : {};
-    const records = await svc.entities.IdeaProvingRecord.filter(filter, {
+    const page = await svc.entities.IdeaProvingRecord.filter(filter, {
       sort: '-created_date',
       limit: 20,
     });
+    const records = Array.isArray(page) ? page : (page?.items || []);
     // Sort by priority for recommendations
-    if (action === 'recommend' && Array.isArray(records)) {
+    if (action === 'recommend') {
       records.sort((a, b) => {
         const pa = PRIORITY_ORDER[a.priority as string] ?? 3;
         const pb = PRIORITY_ORDER[b.priority as string] ?? 3;
