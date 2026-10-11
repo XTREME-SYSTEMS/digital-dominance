@@ -1,104 +1,108 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Phone, Cpu, Settings2, TrendingUp, Target, ArrowRight } from "lucide-react";
+import { ArrowRight, Phone, Loader2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 
-const SERVICES = [
-  { label: "AI STRATEGY", icon: Cpu },
-  { label: "CUSTOMIZATION", icon: Settings2 },
-  { label: "AUTOMATION", icon: TrendingUp },
-  { label: "GROWTH", icon: Target },
-];
+const FALLBACK_URL =
+  "https://media.base44.com/images/public/6ac7bc6cf0b681d8bc7f7aeb/cf93062aa_FACEBOOKIMAGE2.png";
+const CACHE_KEY = "dd_hero_image_v1";
 
 export default function HomeNew() {
+  const [heroUrl, setHeroUrl] = useState(() => {
+    try {
+      return localStorage.getItem(CACHE_KEY) || null;
+    } catch {
+      return null;
+    }
+  });
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    if (heroUrl) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await base44.functions.invoke("generateHeroImage", {});
+        const url = res?.data?.url;
+        if (url && !cancelled) {
+          setHeroUrl(url);
+          try {
+            localStorage.setItem(CACHE_KEY, url);
+          } catch {
+            /* quota — keep in memory only */
+          }
+        } else if (!cancelled) {
+          setFailed(true);
+        }
+      } catch {
+        if (!cancelled) setFailed(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [heroUrl]);
+
+  const loading = !heroUrl && !failed;
+
   return (
-    <div className="min-h-screen bg-[#050508] text-white overflow-x-hidden flex flex-col">
-      {/* Nebula background */}
-      <div className="fixed inset-0 pointer-events-none" style={{
-        background: `
-          radial-gradient(ellipse at 20% 30%, rgba(0, 80, 180, 0.15) 0%, transparent 50%),
-          radial-gradient(ellipse at 80% 70%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
-          radial-gradient(ellipse at 50% 50%, rgba(20, 20, 40, 0.3) 0%, transparent 70%),
-          #050508
-        `,
-      }} />
-      <div className="fixed inset-0 pointer-events-none opacity-20" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E")`,
-      }} />
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#00050A] text-white">
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(0,170,255,0.10),_transparent_60%)]" />
 
-      {/* Nav bar */}
-      <nav className="relative z-20 flex items-center justify-between px-6 py-5 md:px-12">
-        <Link to="/templates" className="flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 text-xs font-bold tracking-wider text-white/80 hover:border-[#00E5FF] hover:text-[#00E5FF] transition">
-          TEMPLATES
-        </Link>
-        <a href="tel:+15555550100" className="flex items-center gap-2 rounded-full border border-[#00E5FF]/50 px-5 py-2 text-xs font-bold tracking-wider text-[#00E5FF] hover:bg-[#00E5FF]/10 transition">
+      {/* Templates — top left */}
+      <Link
+        to="/templates"
+        className="absolute left-4 top-[calc(1rem+env(safe-area-inset-top))] z-30 inline-flex items-center gap-2 rounded-full border-2 border-[#00D4FF]/40 bg-[#00D4FF]/5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white/70 backdrop-blur-sm transition hover:border-[#00D4FF] hover:text-white sm:px-5 sm:py-2.5"
+      >
+        Templates
+      </Link>
+
+      {/* Call Now — top right */}
+      <a
+        href="tel:+15555550100"
+        className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] z-30 inline-flex items-center gap-2 rounded-full border-2 border-[#00D4FF] bg-[#00D4FF]/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(0,212,255,0.45)] transition hover:bg-[#00D4FF]/20 hover:shadow-[0_0_50px_rgba(0,212,255,0.7)] sm:px-5 sm:py-2.5 sm:text-sm"
+      >
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00D4FF] text-black">
           <Phone className="h-3.5 w-3.5" />
-          CALL NOW
-        </a>
-      </nav>
+        </span>
+        Call Now
+      </a>
 
-      {/* Hero — centered, fills viewport */}
-      <section className="relative z-10 flex flex-col items-center justify-center flex-1 px-6 text-center" style={{ minHeight: "calc(100vh - 80px)" }}>
-        {/* Logo with glow ring */}
-        <div className="relative mb-10">
-          <div className="absolute inset-0 rounded-full blur-3xl" style={{
-            background: "radial-gradient(circle, rgba(0,229,255,0.35) 0%, transparent 70%)",
-            width: "220px", height: "220px",
-            left: "50%", top: "50%", transform: "translate(-50%,-50%)",
-          }} />
-          <div className="relative flex h-32 w-32 items-center justify-center rounded-full border border-[#00E5FF]/30" style={{
-            background: "radial-gradient(circle at 30% 30%, rgba(0,229,255,0.12), transparent 70%)",
-            boxShadow: "0 0 60px rgba(0,229,255,0.15), inset 0 0 30px rgba(0,229,255,0.05)",
-          }}>
-            <span className="text-7xl font-black" style={{
-              background: "linear-gradient(135deg, #e8e8e8 0%, #a0a0a0 30%, #ffffff 50%, #a0a0a0 70%, #e8e8e8 100%)",
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              filter: "drop-shadow(0 0 20px rgba(0,229,255,0.4))",
-            }}>S</span>
+      {/* Hero image — generated via Vercel AI Gateway, cached locally */}
+      <img
+        src={heroUrl || FALLBACK_URL}
+        alt="Strategic Minds AI — Intelligence In Motion"
+        className="absolute left-0 right-0 top-6 -bottom-6 w-full object-cover dd-kenburns"
+      />
+
+      {/* Loading overlay while generating */}
+      {loading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3 text-white/60">
+            <Loader2 className="h-8 w-8 animate-spin text-[#00D4FF]" />
+            <span className="text-xs uppercase tracking-widest">
+              Generating hero…
+            </span>
           </div>
         </div>
+      )}
 
-        {/* Title */}
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-wider mb-4" style={{
-          background: "linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 30%, #ffffff 50%, #a0a0a0 70%, #c0c0c0 100%)",
-          WebkitBackgroundClip: "text",
-          backgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-        }}>STRATEGIC MINDS AI</h1>
+      {/* Bottom gradient for CTA legibility on any viewport */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-1/2 bg-gradient-to-t from-[#00050A] via-[#00050A]/60 to-transparent" />
 
-        {/* Subtitle with lines */}
-        <div className="flex items-center gap-4 mb-14">
-          <div className="h-px w-12 md:w-24 bg-gradient-to-r from-transparent to-white/30" />
-          <p className="text-xs md:text-sm font-medium tracking-[0.3em] text-white/60">INTELLIGENCE IN MOTION</p>
-          <div className="h-px w-12 md:w-24 bg-gradient-to-l from-transparent to-white/30" />
-        </div>
-
-        {/* Service icons row */}
-        <div className="flex items-center justify-center gap-4 md:gap-12 mb-14">
-          {SERVICES.map((svc, i) => (
-            <React.Fragment key={svc.label}>
-              <div className="flex flex-col items-center gap-3">
-                <div className="relative flex h-16 w-16 md:h-20 md:w-20 items-center justify-center rounded-full border border-[#00E5FF]/30 hover:border-[#00E5FF] transition" style={{
-                  background: "radial-gradient(circle at 30% 30%, rgba(0,229,255,0.1), transparent 70%)",
-                  boxShadow: "0 0 20px rgba(0,229,255,0.08)",
-                }}>
-                  <svc.icon className="h-6 w-6 md:h-8 md:w-8 text-[#00E5FF]" />
-                </div>
-                <span className="text-[10px] md:text-xs font-bold tracking-wider text-white/70">{svc.label}</span>
-              </div>
-              {i < SERVICES.length - 1 && <div className="h-16 w-px bg-white/10 hidden md:block" />}
-            </React.Fragment>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <Link to="/admin" className="group flex items-center gap-3 rounded-full border border-[#00E5FF]/50 px-8 py-4 text-sm font-bold tracking-wider text-white hover:bg-[#00E5FF]/10 transition" style={{ boxShadow: "0 0 30px rgba(0,229,255,0.12)" }}>
-          BUILD SMARTER. GROW FASTER.
-          <ArrowRight className="h-4 w-4 text-[#00E5FF] group-hover:translate-x-1 transition" />
+      {/* CTA — bottom center, responsive padding */}
+      <div className="absolute inset-x-0 bottom-0 z-20 flex justify-center px-4 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:pb-[calc(3rem+env(safe-area-inset-bottom))]">
+        <Link
+          to="/admin"
+          className="group inline-flex items-center gap-2.5 rounded-full border-2 border-[#00D4FF] bg-[#00D4FF]/10 px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] text-white backdrop-blur-sm shadow-[0_0_30px_rgba(0,212,255,0.45)] transition hover:bg-[#00D4FF]/20 hover:shadow-[0_0_55px_rgba(0,212,255,0.7)] sm:px-8 sm:py-3.5 sm:text-sm"
+        >
+          Build Smarter. <span className="text-[#00D4FF]">Grow Faster.</span>
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00D4FF] text-black transition group-hover:translate-x-1">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </span>
         </Link>
-      </section>
+      </div>
     </div>
   );
 }
