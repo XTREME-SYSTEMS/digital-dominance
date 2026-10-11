@@ -22,7 +22,7 @@
 | PR #14 Manus-style Agent Workspace | CONNECT AFTER REBASE | Existing responsive shell, not yet runtime E2E verified |
 | PR #15 factory client operating journey | REUSE AS SPEC | Stripe, Eden, Google Drive, e-sign, tenant portal are proposed, not activated |
 | PR #16 mission contract and repair proof | EXTEND | Immutable SHA, bounded repair, protected-action gate, negative tests |
-| Railway Strategic Sandbox System `worker-sandbox-code` | REUSE AFTER AUTH CANARY | `Strategic-Minds-AI/super-agents` `/local-worker`, one replica, latest visible SUCCESS 2026-10-01; no new heartbeat |
+| Railway Strategic Sandbox System `worker-sandbox-code` | PRESERVE / DO NOT USE AS CODE SANDBOX | Repo `Strategic-Minds-AI/super-agents/local-worker/worker.js` runs a general Base44 `runAgentLoop` via `APP_URL` and `WORKER_SECRET`, not isolated build execution. SUCCESS deployment 2026-10-01 does not prove safe V2 sandbox. |
 | X1 AI Hub Staging `uvdkzsbjackpjvpoxtyk` | CONNECT WHEN VERIFIED | 72 queue rows: 36 completed, 20 dead-letter, 16 blocked. Historical `CONTROL_PLANE_AUTHORIZATION_FAILED` |
 | Corporate Google/Supabase OAuth | CONNECT / VERIFY | OAuth discovery and preview consent proven; signed-in client canary, audience/tenant grants and apex-domain binding remain outstanding |
 | Existing `strategicmindsai.com` live website | REPLACE WITH GATED CUTOVER | User permits redesign/replacement, not DNS or production mutation without exact approval |
@@ -36,7 +36,7 @@
 
 ## Target flow (reuse existing controllers, no duplicate scheduler)
 
-`GPT/chat request -> authenticated, tenant-scoped MissionSpec -> one X1 canonical queue & lease -> existing Railway worker sandbox-code -> versioned source/artifact receipts -> independent three-pass QA -> preview/proof dashboard -> scoped operator approval -> Vercel/domain publication -> telemetry and rollback`
+`GPT/chat request -> authenticated, tenant-scoped MissionSpec -> one X1 canonical queue & lease -> **newly validated isolated sandbox executor** (reusing permitted Railway/control-plane infrastructure, not the legacy Base44 agent-loop worker) -> versioned source/artifact receipts -> independent three-pass QA -> preview/proof dashboard -> scoped operator approval -> Vercel/domain publication -> telemetry and rollback`
 
 - **Pass A**: source build, unit/contract tests, functional route and API assertions.
 - **Pass B**: independent headless desktop/mobile visual/interactions, authentication, accessibility, cross-tenant, content checks.
@@ -45,9 +45,9 @@
 
 ## The next runnable mission and why it is blocked
 
-`MISSION SMAI-V2-X1-CANARY-001`: take a synthetic internal V1 job, produce a typechecked manifest, perform *provider-native authorization read-back* in X1 staging, verify one worker can claim/lease/execute within its existing Railway code sandbox, and independently inspect receipts. Do not enqueue until the authorization failure is isolated and a scoped nonproduction safe-retry path is verified. Maintain original job IDs, one supervisor and a rollback pointer.
+`MISSION SMAI-V2-X1-CANARY-001`: take a synthetic internal V1 job, produce a typechecked manifest, perform provider-native authorization read-back in X1 staging, independently verify a genuinely isolated sandbox runner (network restrictions, resource limits, filesystem boundaries, no secrets inherited), then claim/lease/execute only through that verified runner and inspect receipts. Do not enqueue until the authorization failure is isolated and a scoped nonproduction safe-retry path is verified. Maintain original job IDs, one supervisor and a rollback pointer.
 
-**First required action:** investigate X1 staging's `CONTROL_PLANE_AUTHORIZATION_FAILED` from read-only queue/lease/worker evidence and prepare a minimal preview/staging-only fix. No new Supabase projects, cron activation, production DNS, secrets, customer messages or paid provisioning.
+**First required action:** build and validate an isolated sandbox-runner specification and fail-closed canary, then diagnose X1 staging's `CONTROL_PLANE_AUTHORIZATION_FAILED` using read-only queue/lease evidence. Existing Railway `worker-sandbox-code` is a generic Base44 agent loop and must NOT receive untrusted code mission work. No new Supabase projects, cron activation, production DNS, secrets, customer messages or paid provisioning.
 
 ## Release truth
 
