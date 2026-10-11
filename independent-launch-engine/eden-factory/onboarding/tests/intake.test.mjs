@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {QUESTIONS,EMPTY_ANSWERS,validateStep,validateAll,nextStep,stepFor,buildBrief,validateBusinessUrl} from "../intake-engine.mjs";
-import {compileBusinessResearchJobs,mergeProfileEvidence,RESEARCH_LIMITS,researchEligibility} from "../business-research-policy.mjs";
+import {compileBusinessResearchJobs,mergeProfileEvidence,RESEARCH_LIMITS,researchEligibility,compileEarlyBusinessResearchJobs} from "../business-research-policy.mjs";
 const GOOD=()=>{
  const a=EMPTY_ANSWERS();
  Object.assign(a.identity,{fullName:"Morgan Example",email:"morgan@example.com",phone:"+1 772 555 0185"});
@@ -53,3 +53,7 @@ test("reject inferred psychological tendencies",()=>{const b=buildBrief(GOOD());
 test("reject unauthorized website domain",()=>{const b=buildBrief(GOOD());assert.throws(()=>mergeProfileEvidence(b,[{sourceType:"business_website",url:"https://unrelated-company.com",observation:"Other firm"}],CONTEXT),/UNAUTHORIZED_SOURCE_DOMAIN/);});
 test("reject data from nonconsented source type",()=>{const b=buildBrief(GOOD());assert.throws(()=>mergeProfileEvidence(b,[{sourceType:"competitors",observation:"Other firms"}],CONTEXT),/SOURCE_NOT_IN_CONSENT/);});
 test("email not placed in browser research job payload",()=>{const plan=compileBusinessResearchJobs(buildBrief(GOOD()),CONTEXT);assert.ok(!JSON.stringify(plan).includes("morgan@example.com"));});
+
+test("early research planning requires server consent",()=>{const x=GOOD();assert.equal(compileEarlyBusinessResearchJobs(x,{...CONTEXT,consentReceiptId:null}).status,"BLOCKED");});
+test("early research planning can run from first two answered steps",()=>{const x=GOOD();x.vision.description="";x.audience.problemSolved="";const plan=compileEarlyBusinessResearchJobs(x,CONTEXT);assert.equal(plan.status,"PLANNED_NOT_EXECUTED");assert.equal(plan.jobs.find(x=>x.provider==="XTREME_CLOUD_BROWSER").execute,false);});
+test("early research planning never includes personal email or phone",()=>{const plan=compileEarlyBusinessResearchJobs(GOOD(),CONTEXT);assert.ok(!JSON.stringify(plan).includes("morgan@example.com"));assert.ok(!JSON.stringify(plan).includes("555"));});
