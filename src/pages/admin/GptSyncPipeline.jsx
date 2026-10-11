@@ -1,33 +1,32 @@
 import React, { useState } from "react";
-import { Sparkles, MessageSquare, Layers, Globe, Rocket, Code2, ChevronDown, Zap } from "lucide-react";
-import PipelineChat from "@/components/gpt-pipeline/PipelineChat";
-import PipelineStages from "@/components/gpt-pipeline/PipelineStages";
+import { Sparkles, ChevronDown, Code2, Zap, Layers, Globe, Rocket, Send, Wand2 } from "lucide-react";
+import PipelineRunner from "@/components/gpt-pipeline/PipelineRunner";
+import JsonConfigPanel from "@/components/gpt-pipeline/JsonConfigPanel";
+import SuperAgentsSection from "@/components/gpt-pipeline/SuperAgentsSection";
 import IndustryTemplateGrid from "@/components/gpt-pipeline/IndustryTemplateGrid";
 import DominanceSelector from "@/components/gpt-pipeline/DominanceSelector";
 import ProvisioningDashboard from "@/components/gpt-pipeline/ProvisioningDashboard";
-import JsonConfigPanel from "@/components/gpt-pipeline/JsonConfigPanel";
-import SuperAgentsSection from "@/components/gpt-pipeline/SuperAgentsSection";
 
-const SECTIONS = [
-  { id: "agents", label: "Super Agents", icon: Zap },
-  { id: "json", label: "JSON Config", icon: Code2 },
-  { id: "chat", label: "GPT Chat", icon: MessageSquare },
-  { id: "stages", label: "Pipeline Stages", icon: Sparkles },
-  { id: "templates", label: "Industry Templates", icon: Layers },
-  { id: "dominance", label: "Digital Dominance", icon: Globe },
-  { id: "provisioning", label: "Provisioning", icon: Rocket },
+const QUICK_IDEAS = [
+  "Build a website for a roofing company in Dallas, TX and deploy it to Vercel",
+  "Create a complete digital presence for a med spa in Miami — website, brand, 30-day social calendar, 30 videos, and deploy",
+  "Launch 50 programmatic websites for pest control across all major Florida cities with full SEO/AEO/GEO",
+  "Build an epoxy garage floor website for Pompano Beach, brand it, deploy it, sync to Google, validate 3x, and email me the result",
+  "Create a water damage restoration website with instant estimate funnel, deploy, and run digital dominance",
+  "Build a complete HVAC company website + PWA, 30-day social with 30 videos, deploy to Vercel, sync Google, validate and email me",
 ];
 
 export default function GptSyncPipeline() {
-  const [chatPrompt, setChatPrompt] = useState("");
+  const [input, setInput] = useState("");
+  const [submitted, setSubmitted] = useState(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [advancedTab, setAdvancedTab] = useState("agents");
 
-  const handleQuickAction = (prompt) => {
-    setChatPrompt(prompt);
-    document.getElementById("gpt-chat-section")?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const scrollTo = (id) => {
-    document.getElementById(`section-${id}`)?.scrollIntoView({ behavior: "smooth" });
+  const launch = (text) => {
+    const msg = (text || input).trim();
+    if (!msg) return;
+    setSubmitted(msg);
+    setInput("");
   };
 
   return (
@@ -40,7 +39,7 @@ export default function GptSyncPipeline() {
             GPT Sync Pipeline
           </h1>
           <p className="text-sm text-stone-500 mt-1">
-            Bi-directional ChatGPT sync · Full creation-to-provisioning pipeline · Zero-restriction operator access
+            Type what you want to build. GPT handles everything — research, branding, website, social, deployment, validation, and email.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -48,92 +47,131 @@ export default function GptSyncPipeline() {
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-bold text-emerald-700">Vercel AI Gateway</span>
           </span>
-          <span className="flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200 px-3 py-1.5">
-            <MessageSquare className="h-3 w-3 text-amber-600" />
-            <span className="text-xs font-bold text-amber-700">MCP Connected</span>
-          </span>
         </div>
       </div>
 
-      {/* Quick nav pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 px-1">
-        {SECTIONS.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => scrollTo(s.id)}
-            className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-bold text-stone-600 hover:border-amber-300 hover:text-amber-700 whitespace-nowrap transition"
-          >
-            <s.icon className="h-3.5 w-3.5" />
-            {s.label}
-          </button>
-        ))}
-      </div>
+      {/* Main input — Manus-like */}
+      {!submitted && (
+        <div className="flex flex-col items-center gap-4 py-8">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: "linear-gradient(135deg, #FFF6D5, #D4AF37, #8B6914)" }}>
+            <Wand2 className="h-8 w-8 text-stone-900" />
+          </div>
+          <div className="w-full max-w-2xl">
+            <div className="rounded-2xl border-2 border-stone-200 bg-white p-4 shadow-sm focus-within:border-amber-400 transition">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    launch();
+                  }
+                }}
+                placeholder="Describe what you want to build... e.g. 'Build a roofing website for Dallas, deploy it, sync Google, validate 3x, and email me the result'"
+                rows={3}
+                className="w-full resize-none border-0 bg-transparent text-base text-stone-900 placeholder-stone-400 outline-none"
+              />
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-[10px] text-stone-400">Press Enter to launch · Shift+Enter for new line</span>
+                <button
+                  onClick={() => launch()}
+                  disabled={!input.trim()}
+                  className="flex items-center gap-2 rounded-xl bg-amber-500 px-5 py-2 text-sm font-bold text-stone-900 disabled:opacity-50 hover:bg-amber-400 transition"
+                >
+                  <Send className="h-4 w-4" />
+                  Launch Pipeline
+                </button>
+              </div>
+            </div>
+          </div>
+          {/* Quick ideas */}
+          <div className="w-full max-w-2xl">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400 mb-2 text-center">Quick Start</p>
+            <div className="flex flex-col gap-1.5">
+              {QUICK_IDEAS.map((idea, i) => (
+                <button
+                  key={i}
+                  onClick={() => launch(idea)}
+                  className="text-left rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm text-stone-600 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 transition"
+                >
+                  {idea}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Super Agents */}
-      <div id="section-agents" className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-stone-200 bg-stone-50">
-          <Zap className="h-5 w-5 text-amber-500" />
-          <h2 className="text-sm font-bold text-stone-900">12 XTREME Super Agents</h2>
+      {/* Pipeline Runner — appears after submission */}
+      {submitted && (
+        <div className="h-[calc(100vh-200px)] min-h-[600px]">
+          <PipelineRunner initialMessage={submitted} onConsumed={() => setSubmitted(null)} />
         </div>
-        <SuperAgentsSection onQuickAction={handleQuickAction} />
-      </div>
+      )}
 
-      {/* JSON Config */}
-      <div id="section-json" className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-stone-200 bg-stone-50">
-          <Code2 className="h-5 w-5 text-amber-500" />
-          <h2 className="text-sm font-bold text-stone-900">JSON Config — Copy to give to GPT</h2>
-        </div>
-        <div className="h-[600px]">
-          <JsonConfigPanel />
-        </div>
-      </div>
+      {/* Advanced sections — collapsible */}
+      <div className="border-t border-stone-200 pt-4">
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="flex items-center gap-2 text-sm font-bold text-stone-500 hover:text-stone-900 transition"
+        >
+          <ChevronDown className={`h-4 w-4 transition ${showAdvanced ? "rotate-180" : ""}`} />
+          Advanced — Tools, Templates & Config
+        </button>
+        {showAdvanced && (
+          <div className="mt-4 flex flex-col gap-4">
+            {/* Advanced tabs */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+              {[
+                { id: "agents", label: "Super Agents", icon: Zap },
+                { id: "templates", label: "Industry Templates", icon: Layers },
+                { id: "dominance", label: "Digital Dominance", icon: Globe },
+                { id: "provisioning", label: "Provisioning", icon: Rocket },
+                { id: "json", label: "JSON Config", icon: Code2 },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setAdvancedTab(t.id)}
+                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold whitespace-nowrap transition ${
+                    advancedTab === t.id
+                      ? "bg-amber-500 text-stone-900 border-amber-500"
+                      : "bg-white border-stone-200 text-stone-600 hover:border-amber-300"
+                  }`}
+                >
+                  <t.icon className="h-3.5 w-3.5" />
+                  {t.label}
+                </button>
+              ))}
+            </div>
 
-      {/* GPT Chat */}
-      <div id="section-chat" className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-stone-200 bg-stone-50">
-          <MessageSquare className="h-5 w-5 text-amber-500" />
-          <h2 className="text-sm font-bold text-stone-900">GPT Bi-Directional Chat</h2>
-        </div>
-        <div id="gpt-chat-section" className="h-[600px]">
-          <PipelineChat externalPrompt={chatPrompt} onPromptConsumed={() => setChatPrompt("")} />
-        </div>
-      </div>
-
-      {/* Pipeline Stages */}
-      <div id="section-stages" className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-stone-200 bg-stone-50">
-          <Sparkles className="h-5 w-5 text-amber-500" />
-          <h2 className="text-sm font-bold text-stone-900">Pipeline Stages</h2>
-        </div>
-        <PipelineStages onQuickAction={handleQuickAction} />
-      </div>
-
-      {/* Industry Templates */}
-      <div id="section-templates" className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-stone-200 bg-stone-50">
-          <Layers className="h-5 w-5 text-amber-500" />
-          <h2 className="text-sm font-bold text-stone-900">20 Top Industry Templates</h2>
-        </div>
-        <IndustryTemplateGrid onQuickAction={handleQuickAction} />
-      </div>
-
-      {/* Digital Dominance */}
-      <div id="section-dominance" className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-stone-200 bg-stone-50">
-          <Globe className="h-5 w-5 text-amber-500" />
-          <h2 className="text-sm font-bold text-stone-900">Digital Dominance</h2>
-        </div>
-        <DominanceSelector onQuickAction={handleQuickAction} />
-      </div>
-
-      {/* Provisioning */}
-      <div id="section-provisioning" className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-stone-200 bg-stone-50">
-          <Rocket className="h-5 w-5 text-amber-500" />
-          <h2 className="text-sm font-bold text-stone-900">Provisioning Dashboard</h2>
-        </div>
-        <ProvisioningDashboard onQuickAction={handleQuickAction} />
+            {/* Advanced content */}
+            {advancedTab === "agents" && (
+              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+                <SuperAgentsSection onQuickAction={(p) => { setSubmitted(null); setTimeout(() => setSubmitted(p), 50); }} />
+              </div>
+            )}
+            {advancedTab === "templates" && (
+              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+                <IndustryTemplateGrid onQuickAction={(p) => { setSubmitted(null); setTimeout(() => setSubmitted(p), 50); }} />
+              </div>
+            )}
+            {advancedTab === "dominance" && (
+              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+                <DominanceSelector onQuickAction={(p) => { setSubmitted(null); setTimeout(() => setSubmitted(p), 50); }} />
+              </div>
+            )}
+            {advancedTab === "provisioning" && (
+              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+                <ProvisioningDashboard onQuickAction={(p) => { setSubmitted(null); setTimeout(() => setSubmitted(p), 50); }} />
+              </div>
+            )}
+            {advancedTab === "json" && (
+              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden h-[600px]">
+                <JsonConfigPanel />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
