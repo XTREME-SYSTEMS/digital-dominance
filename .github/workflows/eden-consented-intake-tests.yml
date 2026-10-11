@@ -27,6 +27,8 @@ jobs:
         run: node --test independent-launch-engine/eden-factory/tests/quote-engine.test.mjs
       - name: Run eight-step intake and authorized research tests
         run: node --test independent-launch-engine/eden-factory/onboarding/tests/intake.test.mjs
+      - name: Verify guarded Xtreme browser execution bridge
+        run: node --test independent-launch-engine/eden-factory/onboarding/tests/browser-bridge.test.mjs
       - name: Verify interactive portal assets and restricted dependencies
         shell: bash
         run: |
