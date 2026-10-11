@@ -168,6 +168,10 @@ import SmaiContact from '@/pages/smai/Contact';
 import SmaiIcons from '@/pages/smai/Icons';
 import SmaiClientPortal from '@/pages/smai/ClientPortal';
 import SmaiAdminPortal from '@/pages/smai/AdminPortal';
+import AiStrategy from '@/pages/smai/AiStrategy';
+import CustomSystems from '@/pages/smai/CustomSystems';
+import AiPoweredGrowth from '@/pages/smai/AiPoweredGrowth';
+import DigitalDominanceMarketing from '@/pages/smai/DigitalDominanceMarketing';
 import CodeInjector from '@/components/codestudio/CodeInjector';
 
 
@@ -355,6 +359,10 @@ const AuthenticatedApp = () => {
       <Route path="/smai/icons" element={<SmaiIcons />} />
       <Route path="/smai/portal" element={<SmaiClientPortal />} />
       <Route path="/smai/admin-portal" element={<SmaiAdminPortal />} />
+      <Route path="/ai-strategy" element={<AiStrategy />} />
+      <Route path="/custom-ai-systems" element={<CustomSystems />} />
+      <Route path="/ai-powered-growth" element={<AiPoweredGrowth />} />
+      <Route path="/digital-dominance-system" element={<DigitalDominanceMarketing />} />
       <Route path="/p/:slug" element={<DynamicPageView />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

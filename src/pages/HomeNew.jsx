@@ -1,104 +1,85 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Phone, Loader2 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { ArrowRight, Cpu, Settings, BarChart3, Target, Phone } from "lucide-react";
+import SmaiLogo from "@/components/smai/SmaiLogo";
 
-const FALLBACK_URL =
-  "https://media.base44.com/images/public/6ac7bc6cf0b681d8bc7f7aeb/cf93062aa_FACEBOOKIMAGE2.png";
-const CACHE_KEY = "dd_hero_image_v1";
+const SERVICES = [
+  { to: "/ai-strategy", icon: Cpu, label: "AI Strategy" },
+  { to: "/custom-ai-systems", icon: Settings, label: "Custom Systems" },
+  { to: "/ai-powered-growth", icon: BarChart3, label: "Automation" },
+  { to: "/digital-dominance-system", icon: Target, label: "Growth" },
+];
 
 export default function HomeNew() {
-  const [heroUrl, setHeroUrl] = useState(() => {
-    try {
-      return localStorage.getItem(CACHE_KEY) || null;
-    } catch {
-      return null;
-    }
-  });
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    if (heroUrl) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await base44.functions.invoke("generateHeroImage", {});
-        const url = res?.data?.url;
-        if (url && !cancelled) {
-          setHeroUrl(url);
-          try {
-            localStorage.setItem(CACHE_KEY, url);
-          } catch {
-            /* quota — keep in memory only */
-          }
-        } else if (!cancelled) {
-          setFailed(true);
-        }
-      } catch {
-        if (!cancelled) setFailed(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [heroUrl]);
-
-  const loading = !heroUrl && !failed;
-
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#00050A] text-white">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#00050A] text-white flex">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(0,170,255,0.10),_transparent_60%)]" />
-
-      {/* Templates — top left */}
-      <Link
-        to="/templates"
-        className="absolute left-4 top-[calc(1rem+env(safe-area-inset-top))] z-30 inline-flex items-center gap-2 rounded-full border-2 border-[#00D4FF]/40 bg-[#00D4FF]/5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white/70 backdrop-blur-sm transition hover:border-[#00D4FF] hover:text-white sm:px-5 sm:py-2.5"
-      >
-        Templates
-      </Link>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,_rgba(0,130,255,0.12),_transparent_70%)]" />
 
       {/* Call Now — top right */}
       <a
         href="tel:+15555550100"
-        className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] z-30 inline-flex items-center gap-2 rounded-full border-2 border-[#00D4FF] bg-[#00D4FF]/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(0,212,255,0.45)] transition hover:bg-[#00D4FF]/20 hover:shadow-[0_0_50px_rgba(0,212,255,0.7)] sm:px-5 sm:py-2.5 sm:text-sm"
+        className="absolute right-4 top-4 z-30 inline-flex items-center gap-2 rounded-full border-2 border-[#00D4FF]/40 bg-[#00D4FF]/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white/60 backdrop-blur-sm transition hover:border-[#00D4FF] hover:text-white sm:px-4 sm:py-2 sm:text-xs"
       >
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00D4FF] text-black">
-          <Phone className="h-3.5 w-3.5" />
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#00D4FF] text-black">
+          <Phone className="h-3 w-3" />
         </span>
         Call Now
       </a>
 
-      {/* Hero image — generated via Vercel AI Gateway, cached locally */}
-      <img
-        src={heroUrl || FALLBACK_URL}
-        alt="Strategic Minds AI — Intelligence In Motion"
-        className="absolute left-0 right-0 top-6 -bottom-6 w-full object-cover dd-kenburns"
-      />
-
-      {/* Loading overlay while generating */}
-      {loading && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3 text-white/60">
-            <Loader2 className="h-8 w-8 animate-spin text-[#00D4FF]" />
-            <span className="text-xs uppercase tracking-widest">
-              Generating hero…
+      {/* Left sidebar — vertical service buttons */}
+      <div className="relative z-20 flex flex-col gap-4 sm:gap-5 p-4 sm:p-6 w-[160px] sm:w-[200px] justify-center">
+        {SERVICES.map((s) => (
+          <Link
+            key={s.to}
+            to={s.to}
+            className="group flex items-center gap-3"
+          >
+            <div className="relative w-11 h-11 rounded-full border-2 border-[#00D4FF]/40 flex items-center justify-center shrink-0 transition group-hover:border-[#00D4FF] group-hover:shadow-[0_0_20px_rgba(0,212,255,0.3)]">
+              <s.icon className="w-5 h-5 text-[#00D4FF]" strokeWidth={1.5} />
+            </div>
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-white/50 group-hover:text-white transition">
+              {s.label}
             </span>
-          </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Center content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 text-center pb-16">
+        <SmaiLogo size={64} className="sm:!w-20 sm:!h-20" />
+        <h1 className="mt-4 text-lg sm:text-2xl font-black tracking-[0.15em] text-white">
+          STRATEGIC MINDS AI
+        </h1>
+        <div className="flex items-center gap-3 mt-2">
+          <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#00D4FF]/50" />
+          <span className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.3em] text-white/40">
+            Intelligence In Motion
+          </span>
+          <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#00D4FF]/50" />
         </div>
-      )}
 
-      {/* Bottom gradient for CTA legibility on any viewport */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-1/2 bg-gradient-to-t from-[#00050A] via-[#00050A]/60 to-transparent" />
+        <div className="mt-10 sm:mt-14">
+          <h2 className="text-2xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+            We Build Intelligent
+          </h2>
+          <h2
+            className="text-2xl sm:text-5xl font-black tracking-tight text-[#00D4FF] leading-tight"
+            style={{ textShadow: "0 0 40px rgba(0,212,255,0.5)" }}
+          >
+            Business Systems.
+          </h2>
+        </div>
 
-      {/* CTA — bottom center, responsive padding */}
-      <div className="absolute inset-x-0 bottom-0 z-20 flex justify-center px-4 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:pb-[calc(3rem+env(safe-area-inset-bottom))]">
         <Link
           to="/admin"
-          className="group inline-flex items-center gap-2.5 rounded-full border-2 border-[#00D4FF] bg-[#00D4FF]/10 px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] text-white backdrop-blur-sm shadow-[0_0_30px_rgba(0,212,255,0.45)] transition hover:bg-[#00D4FF]/20 hover:shadow-[0_0_55px_rgba(0,212,255,0.7)] sm:px-8 sm:py-3.5 sm:text-sm"
+          className="group mt-10 sm:mt-14 inline-flex items-center gap-3 rounded-full border-2 border-[#00D4FF] bg-[#00D4FF]/10 px-5 py-3 sm:px-7 sm:py-3.5 backdrop-blur-sm shadow-[0_0_30px_rgba(0,212,255,0.45)] transition hover:bg-[#00D4FF]/20 hover:shadow-[0_0_55px_rgba(0,212,255,0.7)]"
         >
-          Build Smarter. <span className="text-[#00D4FF]">Grow Faster.</span>
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00D4FF] text-black transition group-hover:translate-x-1">
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-white">
+            Build Smarter. <span className="text-[#00D4FF]">Grow Faster.</span>
+          </span>
+          <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-[#00D4FF] text-black transition group-hover:translate-x-1">
             <ArrowRight className="h-3.5 w-3.5" />
           </span>
         </Link>
