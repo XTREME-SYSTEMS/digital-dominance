@@ -36,6 +36,7 @@ function providerPolicy(provider,status,mode){
 }
 export function compileSwarmMission(mission,{
   providerStatus=DEFAULT_PROVIDER_STATUS,
+  roleExecutionProof={},
   requestedRoles=PHASES,
   mode='DRAFT',
   principalVerified=false,
@@ -52,14 +53,14 @@ export function compileSwarmMission(mission,{
   if(admissible.state!=='ELIGIBLE_NONPRODUCTION')return {status:'BLOCKED',reasons:admissible.reasons||['ACTION_SCOPE_DENIED'],jobRequests:[],autoDispatched:false};
   const tasks=requestedRoles.map((name,i)=>{
     const route=AGENT_ROUTES[name];const candidates=[route.provider,...route.fallback];
-    const viable=candidates.find(p=>providerPolicy(p,providerStatus[p]??'UNKNOWN',mode).state==='ELIGIBLE');
+    const viable=candidates.find(p=>providerPolicy(p,providerStatus[p]??'UNKNOWN',mode).state==='ELIGIBLE' && (mode==='READ'||roleExecutionProof[name+':'+p]===true));
     const stage=viable?'PLANNED_FOR_AUTHENTICATED_DISPATCH':'BLOCKED_PROVIDER';
     return {
       index:i+1,phase:name,assignedRole:route.role,provider:viable??null,
       state:stage,notExecuted:true,sourceSha:mission.sourceSha,tenantId:mission.tenantId,
       requiresExternalDispatch:true,requiresExistingX1Lease:true,
       allowProductionMutations:false,allowCostCents:0,
-      reason:viable?null:'NO_ELIGIBLE_VERIFIED_PROVIDER',
+      reason:viable?null:'NO_VERIFIED_PROVIDER_AND_ROLE_EXECUTION_PROOF',
       idempotencyScope:mission.missionId+'|'+name+'|'+mission.sourceSha
     };
   });
