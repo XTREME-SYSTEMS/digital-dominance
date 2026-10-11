@@ -175,6 +175,9 @@ import DigitalDominanceMarketing from '@/pages/smai/DigitalDominanceMarketing';
 import CodeInjector from '@/components/codestudio/CodeInjector';
 import ImageToPageStudio from '@/pages/admin/ImageToPageStudio';
 import ResponsiveImageOptimizer from '@/pages/admin/ResponsiveImageOptimizer';
+import SmaiOperatingSystem from '@/pages/smai-os/OperatingSystem';
+import SmaiCheckout from '@/pages/smai-os/Checkout';
+import SmaiOnboardingPortal from '@/pages/smai-os/OnboardingPortal';
 
 
 const AuthenticatedApp = () => {
@@ -363,6 +366,11 @@ const AuthenticatedApp = () => {
       <Route path="/smai/icons" element={<SmaiIcons />} />
       <Route path="/smai/portal" element={<SmaiClientPortal />} />
       <Route path="/smai/admin-portal" element={<SmaiAdminPortal />} />
+      <Route path="/smai/os" element={<SmaiOperatingSystem />} />
+      <Route path="/smai/checkout" element={<SmaiCheckout />} />
+      <Route path="/smai/onboarding" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route index element={<SmaiOnboardingPortal />} />
+      </Route>
       <Route path="/ai-strategy" element={<AiStrategy />} />
       <Route path="/custom-ai-systems" element={<CustomSystems />} />
       <Route path="/ai-powered-growth" element={<AiPoweredGrowth />} />

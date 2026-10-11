@@ -1,0 +1,136 @@
+{
+  "name": "SmaiSandboxJob",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Stable deterministic job ID"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "prompt": {
+      "type": "string",
+      "maxLength": 10000,
+      "description": "GPT prompt that triggered this sandbox job"
+    },
+    "gpt_sync_direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "bidirectional"
+      ],
+      "default": "bidirectional"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "compiling",
+        "validating",
+        "deploying",
+        "ready",
+        "failed",
+        "approved"
+      ],
+      "default": "queued"
+    },
+    "queue_position": {
+      "type": "number",
+      "default": 0
+    },
+    "sandbox_url": {
+      "type": "string",
+      "description": "Live sandbox preview URL"
+    },
+    "pack_status": {
+      "type": "object",
+      "properties": {
+        "web_pack_approved": {
+          "type": "boolean",
+          "default": false
+        },
+        "logo_pack_approved": {
+          "type": "boolean",
+          "default": false
+        },
+        "brand_pack_approved": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "validation_checklist_id": {
+      "type": "string"
+    },
+    "validation_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0
+    },
+    "validation_passed": {
+      "type": "boolean",
+      "default": false
+    },
+    "gpt_iterations": {
+      "type": "number",
+      "default": 0
+    },
+    "max_iterations": {
+      "type": "number",
+      "default": 5
+    },
+    "error": {
+      "type": "string"
+    },
+    "queued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "job_id",
+    "client_id",
+    "prompt",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.client_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

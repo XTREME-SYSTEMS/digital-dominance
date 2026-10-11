@@ -1,0 +1,206 @@
+{
+  "name": "SmaiOnboarding",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "current_step": {
+      "type": "number",
+      "default": 1
+    },
+    "total_steps": {
+      "type": "number",
+      "default": 8
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_number": {
+            "type": "number"
+          },
+          "step_key": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "password_change",
+              "eden_welcome",
+              "esign_privacy",
+              "esign_info",
+              "questionnaire",
+              "vision",
+              "skip_trace",
+              "logo_generation",
+              "strategy_generation"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "locked",
+              "active",
+              "completed",
+              "skipped"
+            ],
+            "default": "locked"
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "default": []
+    },
+    "questionnaire_answers": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "business_name": {
+          "type": "string"
+        },
+        "business_url": {
+          "type": "string"
+        }
+      }
+    },
+    "vision_answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "custom_fill": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "esign_privacy_signed": {
+      "type": "boolean",
+      "default": false
+    },
+    "esign_privacy_signature": {
+      "type": "string"
+    },
+    "esign_privacy_signed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "esign_info_signed": {
+      "type": "boolean",
+      "default": false
+    },
+    "esign_info_signature": {
+      "type": "string"
+    },
+    "esign_info_signed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "eden_session_completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "skip_trace_data": {
+      "type": "object"
+    },
+    "logo_concept_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "strategy_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "completed",
+        "abandoned"
+      ],
+      "default": "in_progress"
+    }
+  },
+  "required": [
+    "client_id",
+    "current_step",
+    "total_steps",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
