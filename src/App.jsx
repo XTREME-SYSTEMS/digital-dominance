@@ -174,6 +174,7 @@ import AiPoweredGrowth from '@/pages/smai/AiPoweredGrowth';
 import DigitalDominanceMarketing from '@/pages/smai/DigitalDominanceMarketing';
 import CodeInjector from '@/components/codestudio/CodeInjector';
 import ImageToPageStudio from '@/pages/admin/ImageToPageStudio';
+import ResponsiveImageOptimizer from '@/pages/admin/ResponsiveImageOptimizer';
 
 
 const AuthenticatedApp = () => {
@@ -335,6 +336,7 @@ const AuthenticatedApp = () => {
         <Route path="gpt-pipeline" element={<GptSyncPipeline />} />
         <Route path="manus-recreation" element={<ManusRecreation />} />
         <Route path="image-to-page" element={<ImageToPageStudio />} />
+        <Route path="responsive-optimizer" element={<ResponsiveImageOptimizer />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
