@@ -98,7 +98,11 @@ function renderFields(){
  case 1:return select('Where are you starting?','stage',stageChoices,a.business.stage)+
   '<div class="grid">'+field('Business name (optional for new ideas)','businessName',a.business.businessName,'Your company or idea')+field('Public business website','website',a.business.website,'https://yourbusiness.com','url')+'</div>'+
   field('Where do you serve people?','serviceArea',a.business.serviceArea,'Your city, region, or online worldwide')+
-  area('Official public business social profiles (one HTTPS URL per line)','socialLinks',(a.business.businessSocialUrls||[]).join('\n'),'https://www.instagram.com/yourbusiness');
+  area('Official public business social profiles (one HTTPS URL per line)','socialLinks',(a.business.businessSocialUrls||[]).join('\n'),'https://www.instagram.com/yourbusiness')+
+  '<label class="checkItem"><input id="earlyResearchConsent" type="checkbox" '+(p.researchConsent?'checked':'')+'><span><strong>Would you like us to learn from your public business presence?</strong><br>Optional. Business-only sources, never private profiles or personal background research.</span></label>'+
+  '<div id="earlyResearchScopes" class="'+(p.researchConsent?'':'hidden')+'">'+choice('Choose research sources', ['business_website','business_social','public_market','competitors'],p.researchScopes,true)+
+  '<label class="checkItem"><input id="earlyAuthority" type="checkbox" '+(p.authorityConfirmed?'checked':'')+'><span>I am authorized to request research of these business assets.</span></label>'+
+  '<p class="mini">This offline demo performs no research. In the connected version, research starts only after an authenticated, recorded consent event.</p></div>';
  case 2:return area('Tell me about your vision *','description',a.vision.description,'Describe what you want people to do, feel, or achieve.')+
    area('How would you know this was successful?','successMetric',a.vision.successMetric,'For example: 10 new bookings a month, faster service, less manual work.');
  case 3:return area('Who are we helping? *','customers',a.audience.customers,'Homeowners, entrepreneurs, patients, your team...')+
@@ -138,7 +142,11 @@ function collect(){
  const a=answers;
  switch(current){
  case 0:a.identity={fullName:value('fullName'),email:value('email'),phone:value('phone'),contactPreference:value('contactPreference')};break;
- case 1:a.business={stage:value('stage'),businessName:value('businessName'),website:value('website'),businessSocialUrls:splitUrls('socialLinks'),serviceArea:value('serviceArea')};break;
+ case 1:a.business={stage:value('stage'),businessName:value('businessName'),website:value('website'),businessSocialUrls:splitUrls('socialLinks'),serviceArea:value('serviceArea')};
+  a.permission.researchConsent=$('earlyResearchConsent').checked;
+  a.permission.researchScopes=a.permission.researchConsent?selected('multiChoice'):[];
+  a.permission.authorityConfirmed=a.permission.researchConsent&&$('earlyAuthority')?.checked===true;
+  break;
  case 2:a.vision={description:value('description'),successMetric:value('successMetric')};break;
  case 3:a.audience={customers:value('customers'),problemSolved:value('problemSolved'),services:value('services')};break;
  case 4:a.capabilities={intent:value('intent'),mustHaves:value('mustHaves'),existingTools:value('existingTools'),hasSensitiveData:value('hasSensitiveData')};break;
@@ -167,6 +175,9 @@ function render(){
  $('fields').innerHTML=renderFields();$('error').textContent='';
  $('back').disabled=current===0;$('next').textContent=current===7?'Create my project brief ↓':'Continue →';
  updateProfile();
+ if(current===1)$('earlyResearchConsent').addEventListener('change',()=>{
+   $('earlyResearchScopes').classList.toggle('hidden',!$('earlyResearchConsent').checked);
+ });
  if(current===7)$('researchConsent').addEventListener('change',()=>{
    $('researchScopes').classList.toggle('hidden',!$('researchConsent').checked);
  });
