@@ -1,0 +1,72 @@
+{
+  "version": "2026-10-11-v1",
+  "status": "HYPOTHETICAL_PLANNING_NO_VERIFIED_ACTUALS",
+  "currency": "USD",
+  "first_year_recognized_revenue_goal": 1000000,
+  "long_term_enterprise_value_ambition": 1000000000,
+  "optional_acquisition_valuation_ambition": 5000000000,
+  "revenue_recognition_assumption": "onboarded on first day of each month, full monthly recurring fee recognized in month; no churn/discount/failed payments; setup fee recognized at completion same month",
+  "scenario_formula": "12 * (new_clients_per_month * setup_fee_usd) + 78 * (new_clients_per_month * subscription_monthly_usd)",
+  "scenarios": [
+    {
+      "id": "cautious",
+      "new_clients_per_month": 3,
+      "setup_fee_usd": 6000,
+      "subscription_monthly_usd": 1500,
+      "year_one_setup_revenue_usd": 216000,
+      "year_one_recurring_revenue_usd": 351000,
+      "year_one_total_usd": 567000,
+      "year_one_new_clients": 36,
+      "end_month_mrr_usd": 54000,
+      "exit_arr_run_rate_usd": 648000
+    },
+    {
+      "id": "commercial_target",
+      "new_clients_per_month": 6,
+      "setup_fee_usd": 6000,
+      "subscription_monthly_usd": 1500,
+      "year_one_setup_revenue_usd": 432000,
+      "year_one_recurring_revenue_usd": 702000,
+      "year_one_total_usd": 1134000,
+      "year_one_new_clients": 72,
+      "end_month_mrr_usd": 108000,
+      "exit_arr_run_rate_usd": 1296000
+    },
+    {
+      "id": "stretch",
+      "new_clients_per_month": 10,
+      "setup_fee_usd": 7500,
+      "subscription_monthly_usd": 2000,
+      "year_one_setup_revenue_usd": 900000,
+      "year_one_recurring_revenue_usd": 1560000,
+      "year_one_total_usd": 2460000,
+      "year_one_new_clients": 120,
+      "end_month_mrr_usd": 240000,
+      "exit_arr_run_rate_usd": 2880000
+    }
+  ],
+  "commercial_targets_not_observed": {
+    "initial_gross_margin_target_fraction": 0.65,
+    "initial_customer_count_gate": 10,
+    "initial_preview_build_gates": [
+      1,
+      10,
+      100
+    ],
+    "churn_model": "TO_BE_CALIBRATED_FROM_PAID_CUSTOMER_COHORTS",
+    "client_funnel_targets": "UNVERIFIED_REQUIRES_SALES_PIPELINE_INSTRUMENTATION"
+  },
+  "sandbox_capacity_design": {
+    "baseline_max_concurrent_per_tenant": 3,
+    "baseline_max_global_concurrent": 20,
+    "scale_plan_targets": [
+      100,
+      500,
+      2000
+    ],
+    "units": "concurrent ephemeral jobs; scale only with provider quota tests, budget approval and independent validation",
+    "permanent_project_per_client": false
+  },
+  "approval_state": "NO_EXPENSE_APPROVAL_NO_PRODUCTION_CHANGE_NO_CUSTOMER_MESSAGES",
+  "source_caveat": "Every sales number is a scenario input. Actuals must be reconciled from paid invoices and provider receipts."
+}
