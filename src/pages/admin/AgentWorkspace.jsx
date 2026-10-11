@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowRight, Bot, BrainCircuit, CheckCircle2, CircleAlert, Clock3,
-  Code2, Compass, FileText, Globe2, Loader2, MessageCircle,
+  ArrowRight, Bot, BrainCircuit, CircleAlert, Clock3,
+  Code2, FileText, Globe2, Loader2, MessageCircle,
   Network, Plus, RefreshCw, Search, Send, ShieldCheck, Sparkles,
   Workflow, PanelLeftClose, PanelLeftOpen, Terminal, Layers3,
 } from "lucide-react";
