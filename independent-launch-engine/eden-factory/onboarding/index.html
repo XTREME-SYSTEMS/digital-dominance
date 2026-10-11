@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080d18">
+<title>Eden Skye | Your vision, eight thoughtful steps</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#080d18;color:#f3f8ff;font-size:18px;line-height:1.55}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 10% 10%,#19365c70,transparent 38%),radial-gradient(ellipse at 100% 80%,#103a2a38,transparent 35%),#080d18}
+a{color:#93d5ff}button,input,select,textarea{font:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid #9bdfd4;outline-offset:4px}
+.shell{max-width:1480px;padding:0 4.5%;margin:auto}
+.top{padding:25px 0;border-bottom:1px solid #33445e70;backdrop-filter:blur(12px);background:#070c16ad}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.03em;font-size:23px}.symbol{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#93daee,#55bda7);color:#04141c;box-shadow:0 10px 32px #40c5b128;font-size:22px}
+.flex{display:flex;align-items:center;justify-content:space-between;gap:15px}.kicker{font-size:14px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#9ee5d4}
+.stageBadge{border-radius:99px;border:1px solid #3a5872;padding:6px 14px;color:#bed8e4;font-size:14px}
+.hero{padding:64px 0 38px;max-width:1050px}h1{font-size:clamp(41px,5vw,76px);line-height:1.09;letter-spacing:-.055em;margin:18px 0}h1 span{color:#a4e4d6}.hero p{font-size:20px;color:#aec0d3;max-width:730px}
+.workspace{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.75fr);gap:28px;align-items:start;padding-bottom:90px}
+.panel{border:1px solid #31455f;background:#101a2c;box-shadow:0 32px 80px #0007;border-radius:24px;overflow:hidden}
+.panelTop{padding:28px 30px 20px;background:linear-gradient(115deg,#172840,#102032 65%,#112527)}
+.progressRow{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.progressText{font-weight:800;color:#c7e6e7;font-size:15px}
+.progress{height:8px;background:#213047;border-radius:99px;overflow:hidden;margin:20px 0 7px}.fill{height:100%;background:linear-gradient(90deg,#7eb9ef,#a4e7c7);width:12.5%;transition:width .25s ease}
+.stepHead{font-size:clamp(27px,3.2vw,42px);letter-spacing:-.035em;line-height:1.18;margin:24px 0 6px}
+.hint{color:#b8cadb;margin:0;font-size:17px}
+.stepBody{padding:30px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:19px}
+label{display:block;font-weight:750;font-size:15px;letter-spacing:.005em;margin-bottom:6px;color:#dce9f7}
+.field{margin:0 0 22px}
+input,select,textarea{display:block;width:100%;background:#0a1525;color:#f6fbff;border:1px solid #45556c;border-radius:12px;padding:14px 15px;min-height:53px;font-weight:500}
+textarea{min-height:120px;resize:vertical}input::placeholder,textarea::placeholder{color:#8294ac}
+fieldset{border:0;margin:0 0 22px;padding:0}legend{font-weight:750;font-size:15px;margin-bottom:11px}
+.choiceGrid{display:flex;gap:9px;flex-wrap:wrap}
+.choice{display:flex;gap:9px;align-items:center;margin:0;padding:11px 14px;border:1px solid #48596c;border-radius:11px;font-weight:650;font-size:16px;background:#142238;cursor:pointer}
+.choice:has(input:checked){background:#173a37;border-color:#6bdac0;color:#dffcf7}
+.choice input{width:18px;height:18px;min-height:18px;accent-color:#7fdabe;margin:0}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;border-top:1px solid #33435a;padding-top:22px}
+button{border:0;border-radius:12px;padding:14px 23px;font-weight:850;font-size:17px}
+.primary{background:#a0ebd6;color:#092224;box-shadow:0 12px 36px #50dec332}.primary:hover{background:#bbffe9}
+.secondary{background:#24364f;color:#deeffb}
+.secondary:disabled{opacity:.45;cursor:not-allowed}
+.mini{font-size:13px;color:#aec5d6}
+.error{color:#ffd2c9;font-weight:700;min-height:0}
+.sidebar{display:grid;gap:20px;position:sticky;top:16px}
+.card{border:1px solid #30435b;background:#101c2e;border-radius:22px;padding:24px}
+.card h3{margin:0 0 12px;font-size:22px;letter-spacing:-.035em}
+.card p{margin:0;color:#a9c0d2;font-size:15px}
+.profileList{margin:14px 0 0;padding:0;list-style:none}
+.profileList li{border-bottom:1px solid #2c3d54;padding:10px 0;font-size:15px;overflow-wrap:anywhere}
+.profileList strong{display:block;color:#a2e8d8;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.stepsMini{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:16px 0 0}
+.stepsMini div{border-radius:5px;background:#25394a;height:4px}.stepsMini div.done{background:#8edec7}
+.notice{padding:17px 20px;background:#0c2226;border:1px solid #315c56;border-radius:14px;color:#bee4dd;font-size:14px}
+.review{padding:20px;background:#0b1c2c;border:1px solid #315675;border-radius:15px;margin-bottom:20px}
+.review h3{margin:0 0 9px}.review p{font-size:15px;color:#bed3e1;margin:5px 0}
+.checkItem{display:flex;align-items:flex-start;gap:12px;border:1px solid #354e62;border-radius:12px;padding:12px;margin:10px 0;font-size:15px}
+.checkItem input{width:20px;height:20px;min-height:20px;margin-top:2px;flex-shrink:0;accent-color:#7ee6c8}
+.hidden{display:none!important}
+footer{padding:32px 0;border-top:1px solid #2c3c50;color:#9aafc4;font-size:14px}
+@media(max-width:1000px){.workspace{grid-template-columns:1fr}.sidebar{grid-template-columns:repeat(2,1fr);position:static}}
+@media(max-width:700px){.shell{padding:0 5%}.top .stageBadge{display:none}.hero{padding-top:35px}.workspace{gap:19px}.grid,.sidebar{grid-template-columns:1fr}.stepBody{padding:21px}.panelTop{padding:21px}.actions{flex-wrap:wrap}button{width:100%}.top .brand{font-size:20px}}
+@media(prefers-reduced-motion:reduce){.fill{transition:none}*{scroll-behavior:auto!important}}
+</style></head>
+<body>
+<header class="top"><div class="shell flex"><div class="brand"><span class="symbol" aria-hidden="true">E</span><span>STRATEGIC MINDS <span style="color:#9ae9d0">AI</span></span></div><span class="stageBadge">Eden Skye · Private concept preview</span></div></header>
+<main class="shell">
+<div class="hero"><span class="kicker">Your vision. Made possible.</span><h1>You dream it.<br><span>I'll help design the way there.</span></h1><p>Meet Eden. No technical knowledge needed. Just eight thoughtful steps to understand your idea, your business, and what matters most.</p></div>
+<div class="workspace">
+<section class="panel" aria-labelledby="qTitle">
+<div class="panelTop"><div class="progressRow"><span class="kicker" id="qLabel">GETTING TO KNOW YOU</span><span class="progressText" id="progressText">Step 1 of 8</span></div>
+<div class="progress"><div id="progressFill" class="fill"></div></div>
+<h2 id="qTitle" class="stepHead">Let's get acquainted</h2><p id="qHint" class="hint">Only the contact details you'd like to share.</p></div>
+<form id="wizard" novalidate><div class="stepBody"><div id="fields"></div><div class="error" id="error" role="alert" aria-live="assertive"></div><div class="actions"><button id="back" type="button" class="secondary" disabled>← Back</button><button id="next" type="submit" class="primary">Continue →</button></div><p class="mini" id="privacyFoot" style="margin-top:14px">Private demonstration: your answers stay in this browser tab. No scraping, contact or account creation occurs.</p></div></form>
+</section>
+<aside class="sidebar">
+<div class="card"><span class="kicker">Your emerging project brief</span><h3 style="margin-top:10px">Eden is listening.</h3><p>Every answer informs the build. No personality guesswork, only what you tell us and business information you authorize.</p><ul class="profileList" id="profileList"><li>Start with your name and the best way to reach you.</li></ul><div id="miniSteps" class="stepsMini"></div></div>
+<div class="card"><h3>Research on your terms</h3><p>With your permission, our team can investigate your public business website, business social pages and market landscape using the existing Xtreme Cloud Browser. No private accounts or personal background checks.</p></div>
+<div class="notice"><strong>Important:</strong> This is a local design prototype. A verified quote, live research, secure account, voice assistant and automatic build require separate backend integration.</div>
+</aside>
+</div></main>
+<footer><div class="shell flex"><span>A Strategic Minds AI System · Florida, USA</span><span>Questions? (772) 209-0266</span></div></footer>
+<script type="module">
+import {EMPTY_ANSWERS,QUESTIONS,stepFor,validateStep,buildBrief} from './intake-engine.mjs';
+import {compileBusinessResearchJobs} from './business-research-policy.mjs';
+const $=id=>document.getElementById(id);
+let answers=EMPTY_ANSWERS(),current=0,finalBrief=null;
+const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+const field=(label,key,value="",placeholder="",type="text",required=false)=>'<div class="field"><label for="'+key+'">'+label+(required?' *':'')+'</label><input id="'+key+'" type="'+type+'" value="'+esc(value)+'" placeholder="'+esc(placeholder)+'" '+(required?'required':'')+'></div>';
+const area=(label,key,value="",hint="")=>'<div class="field"><label for="'+key+'">'+label+'</label><textarea id="'+key+'" placeholder="'+esc(hint)+'">'+esc(value)+'</textarea></div>';
+const select=(label,key,options,value)=>'<div class="field"><label for="'+key+'">'+label+'</label><select id="'+key+'">'+options.map(x=>'<option value="'+x[0]+'" '+(x[0]===value?'selected':'')+'>'+esc(x[1])+'</option>').join('')+'</select></div>';
+const choice=(name,options,currentValue,multi=false)=>'<fieldset><legend>'+name+'</legend><div class="choiceGrid">'+options.map(x=>'<label class="choice"><input type="'+(multi?'checkbox':'radio')+'" name="'+(multi?'multiChoice':'oneChoice')+'" value="'+esc(x)+'" '+(multi?(currentValue.includes(x)?'checked':''):(currentValue===x?'checked':''))+'>'+esc(x)+'</label>').join('')+'</div></fieldset>';
+const stageChoices=[['new_idea','Just an idea'],['starting_business','Starting a business'],['established','Existing business'],['improving_existing','Upgrading something']];
+const budgetChoices=[['unsure','Help me understand'],['under_1000','Under $1,000'],['1000_5000','$1,000–$5,000'],['5000_15000','$5,000–$15,000'],['15000_50000','$15,000–$50,000'],['over_50000','$50,000+']];
+const intentChoices=[['app','App or software'],['website','Website or funnel'],['automation','Automation'],['agent','AI assistant'],['data','Data intelligence'],['consulting','Consulting'],['other','Something new']];
+function renderFields(){
+ const a=answers,p=a.permission;
+ switch(current){
+ case 0:return '<div class="grid">'+field('Your name','fullName',a.identity.fullName,'What should I call you?','text',true)+field('Email for your requested follow-up','email',a.identity.email,'you@company.com','email',true)+field('Phone (optional)','phone',a.identity.phone,'(772) 555-0100','tel')+select('Preferred way to reach you','contactPreference',[['email','Email'],['phone','Phone']],a.identity.contactPreference)+'</div>';
+ case 1:return select('Where are you starting?','stage',stageChoices,a.business.stage)+
+  '<div class="grid">'+field('Business name (optional for new ideas)','businessName',a.business.businessName,'Your company or idea')+field('Public business website','website',a.business.website,'https://yourbusiness.com','url')+'</div>'+
+  field('Where do you serve people?','serviceArea',a.business.serviceArea,'Your city, region, or online worldwide')+
+  area('Official public business social profiles (one HTTPS URL per line)','socialLinks',(a.business.businessSocialUrls||[]).join('\n'),'https://www.instagram.com/yourbusiness');
+ case 2:return area('Tell me about your vision *','description',a.vision.description,'Describe what you want people to do, feel, or achieve.')+
+   area('How would you know this was successful?','successMetric',a.vision.successMetric,'For example: 10 new bookings a month, faster service, less manual work.');
+ case 3:return area('Who are we helping? *','customers',a.audience.customers,'Homeowners, entrepreneurs, patients, your team...')+
+  area('What problem should we solve for them? *','problemSolved',a.audience.problemSolved,'Where are people getting stuck now?')+
+  area('What products or services do you provide?','services',a.audience.services,'Helpful for messaging and research.');
+ case 4:return select('What should we build?','intent',intentChoices,a.capabilities.intent)+
+  area('The must-have features *','mustHaves',a.capabilities.mustHaves,'Booking, a dashboard, proposals, inventory, client logins...')+
+  field('Existing tools to connect','existingTools',a.capabilities.existingTools,'Google, Shopify, QuickBooks, existing app...')+
+  select('Will it use sensitive customer information?','hasSensitiveData',[['unsure','Not sure'],['no','No'],['yes','Yes, potentially']],a.capabilities.hasSensitiveData);
+ case 5:return choice('How should your brand sound? Pick up to five.', ['Warm','Friendly','Professional','Premium','Bold','Playful','Calm','Technical'],a.identity_style.tone,true)+
+  '<div class="grid">'+field('Colors you love','preferredColors',a.identity_style.preferredColors,'Your preferred palette')+
+  field('Colors or styles to avoid','avoidColors',a.identity_style.avoidColors,'Anything that is not you')+'</div>'+
+  area('Design inspiration (HTTPS URLs, one per line)','referenceUrls',(a.identity_style.referenceUrls||[]).join('\n'),'Links you actually like')+
+  field('Existing logo, photos, or brand materials','brandAssets',a.identity_style.brandAssets,'What can we reuse?');
+ case 6:return select('Your comfort zone','budget',budgetChoices,a.delivery.budget)+
+  '<div class="grid">'+select('When would you like the first usable version?','timeline',[['flexible','Flexible'],['asap','As soon as practical'],['month','Within a month'],['quarter','Within three months']],a.delivery.timeline)+
+  select('Would you like ongoing help?','ongoingSupport',[['unsure','Let me see options'],['yes','Yes'],['no','No thanks']],a.delivery.ongoingSupport)+'</div>'+
+  area('Anything we must protect or avoid?','launchConstraints',a.delivery.launchConstraints,'Existing site, workflows, brand, legal obligations, hard deadlines...');
+ case 7:return '<div class="review"><h3>Here is what I understand</h3><p><strong>Vision:</strong> '+esc(a.vision.description.slice(0,240))+'</p>'+
+  '<p><strong>Business:</strong> '+esc(a.business.businessName||'Starting fresh')+'</p>'+
+  '<p><strong>Audience:</strong> '+esc(a.audience.customers.slice(0,180))+'</p>'+
+  '<p><strong>Build:</strong> '+esc(a.capabilities.intent)+' · '+esc(a.capabilities.mustHaves.slice(0,170))+'</p>'+
+  '<p><strong>Style:</strong> '+esc(a.identity_style.tone.join(', ')||'To be explored')+'</p></div>'+
+  '<label class="checkItem"><input type="checkbox" id="researchConsent" '+(p.researchConsent?'checked':'')+'><span><strong>Optional business research</strong><br>Permit research of only the business sources I select below, to prepare a better proposal.</span></label>'+
+  '<div id="researchScopes" class="'+(p.researchConsent?'':'hidden')+'">'+choice('Which research may we perform?', ['business_website','business_social','public_market','competitors'],p.researchScopes,true)+
+  '<label class="checkItem"><input type="checkbox" id="authorityConfirmed" '+(p.authorityConfirmed?'checked':'')+'><span>I am authorized to request research of the provided business website/social accounts.</span></label></div>'+
+  '<label class="checkItem"><input type="checkbox" id="contactConsent" '+(p.contactConsent?'checked':'')+'><span><strong>Requested project follow-up</strong><br>I agree to be contacted about this project using the method I selected. This is separate from marketing consent.</span></label>'+
+  '<label class="checkItem"><input type="checkbox" id="marketingConsent" '+(p.marketingConsent?'checked':'')+'><span>Optional: send me future product updates and offers.</span></label>'+
+  '<p class="mini">You can finish without authorizing business research. No live lookups or submissions happen in this prototype.</p>';
+ }
+ return '';
+}
+function value(id){return $(id)?.value?.trim()??''}
+function selected(name){return [...document.querySelectorAll('input[name="'+name+'"]:checked')].map(x=>x.value)}
+function splitUrls(id){return value(id).split(/\r?\n/).map(x=>x.trim()).filter(Boolean)}
+function collect(){
+ const a=answers;
+ switch(current){
+ case 0:a.identity={fullName:value('fullName'),email:value('email'),phone:value('phone'),contactPreference:value('contactPreference')};break;
+ case 1:a.business={stage:value('stage'),businessName:value('businessName'),website:value('website'),businessSocialUrls:splitUrls('socialLinks'),serviceArea:value('serviceArea')};break;
+ case 2:a.vision={description:value('description'),successMetric:value('successMetric')};break;
+ case 3:a.audience={customers:value('customers'),problemSolved:value('problemSolved'),services:value('services')};break;
+ case 4:a.capabilities={intent:value('intent'),mustHaves:value('mustHaves'),existingTools:value('existingTools'),hasSensitiveData:value('hasSensitiveData')};break;
+ case 5:a.identity_style={tone:selected('multiChoice'),preferredColors:value('preferredColors'),avoidColors:value('avoidColors'),referenceUrls:splitUrls('referenceUrls'),brandAssets:value('brandAssets')};break;
+ case 6:a.delivery={budget:value('budget'),timeline:value('timeline'),ongoingSupport:value('ongoingSupport'),launchConstraints:value('launchConstraints')};break;
+ case 7:a.permission={researchConsent:$('researchConsent').checked,researchScopes:$('researchConsent').checked?selected('multiChoice'):[],contactConsent:$('contactConsent').checked,marketingConsent:$('marketingConsent').checked,authorityConfirmed:$('researchConsent').checked&&$('authorityConfirmed')?.checked===true};break;
+ }
+}
+function updateProfile(){
+ const a=answers,items=[];
+ if(a.identity.fullName)items.push(['Hello',a.identity.fullName]);
+ if(a.business.businessName)items.push(['Business',a.business.businessName]);
+ if(a.vision.description)items.push(['The vision',a.vision.description.slice(0,100)]);
+ if(a.audience.customers)items.push(['Who you serve',a.audience.customers.slice(0,100)]);
+ if(a.capabilities.mustHaves)items.push(['Core functionality',a.capabilities.mustHaves.slice(0,100)]);
+ if(a.identity_style.tone.length)items.push(['Your voice',a.identity_style.tone.join(', ')]);
+ if(a.delivery.budget!=='unsure')items.push(['Budget boundary',a.delivery.budget.replaceAll('_','–')]);
+ $('profileList').innerHTML=items.length?items.map(x=>'<li><strong>'+esc(x[0])+'</strong>'+esc(x[1])+'</li>').join(''):'<li>Your business profile grows as you answer.</li>';
+ $('miniSteps').innerHTML=QUESTIONS.map((_,i)=>'<div class="'+(i<=current?'done':'')+'"></div>').join('');
+}
+function render(){
+ const q=stepFor(current,answers);$('qTitle').textContent=q.title;$('qHint').textContent=q.hint;
+ $('progressText').textContent='Step '+(current+1)+' of '+QUESTIONS.length;
+ $('progressFill').style.width=((current+1)/QUESTIONS.length*100)+'%';
+ $('qLabel').textContent=current===7?'REVIEW & CONSENT':'GUIDED PROJECT DISCOVERY';
+ $('fields').innerHTML=renderFields();$('error').textContent='';
+ $('back').disabled=current===0;$('next').textContent=current===7?'Create my project brief ↓':'Continue →';
+ updateProfile();
+ if(current===7)$('researchConsent').addEventListener('change',()=>{
+   $('researchScopes').classList.toggle('hidden',!$('researchConsent').checked);
+ });
+}
+$('back').addEventListener('click',()=>{collect();if(current>0)current--;render();});
+$('wizard').addEventListener('submit',(e)=>{
+ e.preventDefault();collect();const errors=validateStep(current,answers);
+ if(errors.length){$('error').textContent='Eden needs one small detail: '+errors.map(x=>x.replaceAll('_',' ').toLowerCase()).join('; ');return;}
+ if(current<7){current++;render();document.getElementById('qTitle').scrollIntoView({block:'nearest',behavior:'smooth'});return;}
+ try{
+  finalBrief=buildBrief(answers);
+  // Zero-privilege preview context deliberately returns BLOCKED, never starts Xtreme Cloud Browser.
+  const plan=compileBusinessResearchJobs(finalBrief,{principalVerified:false});
+  const exportData={...finalBrief,researchPlan:plan,origin:'EDEN_OFFLINE_PREVIEW_DO_NOT_SEND_AUTOMATICALLY'};
+  const link=document.createElement('a');const url=URL.createObjectURL(new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'}));
+  link.href=url;link.download='eden-project-brief-local.json';link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  $('error').style.color='#a8f2d8';$('error').textContent='Your concept brief is downloaded locally. Nothing was sent, researched, billed or deployed.';
+  updateProfile();
+ }catch(e){$('error').textContent='Unable to complete the brief: '+(e.code||e.message);}
+});
+render();
+</script>
+</body></html>
