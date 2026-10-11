@@ -1,0 +1,34 @@
+name: Autonomous Sandbox Admission Policy CI
+on:
+  push:
+    branches:
+      - feature/wle-autonomous-bootstrap-sandbox-20261011
+    paths:
+      - 'independent-launch-engine/ops/autonomous-bootstrap/**'
+      - '.github/workflows/wle-autonomy-bootstrap-tests.yml'
+  pull_request:
+    paths:
+      - 'independent-launch-engine/ops/autonomous-bootstrap/**'
+      - '.github/workflows/wle-autonomy-bootstrap-tests.yml'
+permissions:
+  contents: read
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Validate autonomy gates offline without secrets
+        run: node --test independent-launch-engine/ops/autonomous-bootstrap/tests/mission-gate.test.mjs
+      - name: Validate SwarmNexus role routing against actual execution proof
+        run: node --test independent-launch-engine/ops/autonomous-bootstrap/tests/swarmnexus-compatibility.test.mjs
+      - name: Assert no production mutation code in policy module
+        run: |
+          test -f independent-launch-engine/ops/autonomous-bootstrap/START_HERE.md
+          test -f independent-launch-engine/ops/autonomous-bootstrap/SANDBOX_AND_RELEASE.md
+          test -f independent-launch-engine/ops/autonomous-bootstrap/SPECIALIST_HANDOFF.md
