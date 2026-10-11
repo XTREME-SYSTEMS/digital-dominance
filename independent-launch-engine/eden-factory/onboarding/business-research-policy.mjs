@@ -1,4 +1,4 @@
-import {validateBusinessUrl, buildBrief} from './intake-engine.mjs';
+import {validateBusinessUrl, buildBrief, validateStep} from './intake-engine.mjs';
 // Server adapter planning contract. NO networking, scraping, personal skip tracing or private profiling.
 export const RESEARCH_POLICY_VERSION="eden-consented-business-research-v1";
 export const RESEARCH_LIMITS=Object.freeze({maxRoots:8,maxPagesPerRoot:8,maxPagesTotal:28,maxRequestsPerMinute:20,retentionDays:30,timeoutMs:15000,maxDepth:1});
@@ -82,4 +82,17 @@ export function mergeProfileEvidence(brief,evidence,context={}){
 export function synthesizeBriefFromAnswers(answers,context={}){
  const brief=buildBrief(answers);
  return {brief,researchPlan:compileBusinessResearchJobs(brief,context)};
+}
+
+// Pre-intake business research can be queued ONLY after a separate server-recorded consent receipt.
+export function compileEarlyBusinessResearchJobs(answers,context={}){
+ const errors=[...validateStep(0,answers),...validateStep(1,answers)];
+ if(errors.length)return {status:"BLOCKED",errors,jobs:[],policyVersion:RESEARCH_POLICY_VERSION};
+ const b={
+  business:{website:answers.business.website,socialLinks:[...(answers.business.businessSocialUrls||[])],serviceArea:answers.business.serviceArea},
+  build:{intent:answers.capabilities?.intent||"other"},
+  objective:{services:answers.audience?.services||""},
+  consent:{research:answers.permission?.researchConsent===true,authorityConfirmed:answers.permission?.authorityConfirmed===true,researchScopes:answers.permission?.researchScopes||[]}
+ };
+ return compileBusinessResearchJobs(b,context);
 }
