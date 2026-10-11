@@ -10,6 +10,11 @@ import RouteSeo from '@/components/Seo';
 import { LOGO_URL } from '@/components/Logo';
 // Add page imports here
 import Home from '@/pages/Home';
+import HomeNew from '@/pages/HomeNew';
+import TemplatesGallery from '@/pages/TemplatesGallery';
+import Pricing from '@/pages/Pricing';
+import Tech from '@/pages/Tech';
+import Portal from '@/pages/Portal';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -196,7 +201,10 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/oauth/consent" element={<OAuthConsent />} />
-      <Route path="/" element={<XpsFunnel />} />
+      <Route path="/" element={<HomeNew />} />
+      <Route path="/templates" element={<TemplatesGallery />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/tech" element={<Tech />} />
       <Route path="/estimate" element={<Estimator />} />
       <Route path="/funnel" element={<Funnel />} />
       <Route path="/results/:id" element={<Results />} />
@@ -330,7 +338,8 @@ const AuthenticatedApp = () => {
       <Route path="/epoxy-systems" element={<EpoxyFlooringSystems />} />
       <Route path="/xps-funnel" element={<XpsFunnel />} />
       <Route path="/tool-hub" element={<ToolHub />} />
-      <Route path="/portal" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+      <Route path="/portal" element={<Portal />} />
+      <Route path="/portal/dashboard" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route index element={<CustomerPortal />} />
       </Route>
       <Route path="/conversations" element={<Conversations />} />
