@@ -49,6 +49,10 @@
 
 **First required action:** build and validate an isolated sandbox-runner specification and fail-closed canary, then diagnose X1 staging's `CONTROL_PLANE_AUTHORIZATION_FAILED` using read-only queue/lease evidence. Existing Railway `worker-sandbox-code` is a generic Base44 agent loop and must NOT receive untrusted code mission work. No new Supabase projects, cron activation, production DNS, secrets, customer messages or paid provisioning.
 
+## First-party sandbox alternative identified (2026-10-11)
+
+The connected Vercel account exposes named sandbox/session APIs with network policies and snapshots. A read-only inventory of corporate project `prj_eo48eFcDSIcAX71xbHWXNp8f49Ao` returned **0 named sandboxes and 0 sandbox sessions**. This is a real provider-managed isolation candidate but NOT yet provisioned, tested, or authorized for provider spend. Prefer one short-lived Vercel sandbox canary with deny-all outbound network, no inherited credentials, fixed limits and nonproduction artifacts over pretending the generic Railway Base44 loop is a code executor. Do not activate the Vercel sandbox or incur spend without separately scoped approval.
+
 ## Release truth
 
 GitHub drafts, green Vercel build checks and a simulated mission are **not** proof of 24/7 autonomous completion. Only a real leased worker trace, inspected artifacts, independently passing validation receipts, preview URLs and rollback prove the V2 sandbox pipeline.
