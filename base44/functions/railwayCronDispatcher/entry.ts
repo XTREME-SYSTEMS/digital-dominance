@@ -38,6 +38,7 @@ const TASK_REGISTRY: Record<string, { function: string; description: string }> =
   skip_trace: { function: 'skipTrace', description: 'Autonomous skip trace' },
   autocomplete: { function: 'autoComplete', description: 'Autonomous autocomplete' },
   coding_pipeline: { function: 'autonomousCodingEngine', description: 'Autonomous coding pipeline' },
+  idea_proving_machine: { function: 'ideaProvingMachine', description: 'Autonomous idea-proving machine — scans Google/GitHub trends and generates actionable opportunities' },
 };
 
 export default async function(req: Request): Promise<Response> {

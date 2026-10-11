@@ -1,0 +1,133 @@
+{
+  "name": "IdeaProvingRecord",
+  "type": "object",
+  "properties": {
+    "idea_id": {
+      "type": "string",
+      "description": "Stable deterministic idea ID"
+    },
+    "title": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "google_trend",
+        "github_trend",
+        "market_gap",
+        "service_opportunity",
+        "product_opportunity",
+        "emerging_tech"
+      ],
+      "default": "market_gap"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "evidence": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Data and observations supporting this opportunity"
+    },
+    "recommended_action": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "What the user should do to capitalize on this opportunity"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "potential_revenue": {
+      "type": "string",
+      "description": "Estimated monthly revenue potential"
+    },
+    "competition_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "extreme"
+      ],
+      "default": "medium"
+    },
+    "target_audience": {
+      "type": "string"
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "niche": {
+      "type": "string",
+      "description": "Industry or niche"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "google",
+        "github",
+        "ai_analysis",
+        "combined"
+      ],
+      "default": "ai_analysis"
+    },
+    "search_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "reviewed",
+        "acted_on",
+        "archived"
+      ],
+      "default": "new"
+    },
+    "pipeline_launched": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "idea_id",
+    "title",
+    "category",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

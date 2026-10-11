@@ -6,6 +6,7 @@ import SuperAgentsSection from "@/components/gpt-pipeline/SuperAgentsSection";
 import IndustryTemplateGrid from "@/components/gpt-pipeline/IndustryTemplateGrid";
 import DominanceSelector from "@/components/gpt-pipeline/DominanceSelector";
 import ProvisioningDashboard from "@/components/gpt-pipeline/ProvisioningDashboard";
+import IdeaFeed from "@/components/gpt-pipeline/IdeaFeed";
 
 const QUICK_IDEAS = [
   "Build a website for a roofing company in Dallas, TX and deploy it to Vercel",
@@ -49,6 +50,11 @@ export default function GptSyncPipeline() {
           </span>
         </div>
       </div>
+
+      {/* Idea Proving Machine — tells you what to build */}
+      {!submitted && (
+        <IdeaFeed onBuildIdea={(prompt) => setSubmitted(prompt)} />
+      )}
 
       {/* Main input — Manus-like */}
       {!submitted && (
