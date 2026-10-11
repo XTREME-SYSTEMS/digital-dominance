@@ -78,3 +78,9 @@ WLE-SB-006 PROTECTED: Production activation only after signed operator approval 
 
 ## Evidence and limitations
 This packet documents observed endpoints and a proposed integration contract. It is NOT proof that integration has been built or a mission dispatched. No production changes were made by this packet.
+
+## 07 Fresh Railway runtime validation (2026-10-11)
+Railway environment_status checks in Strategic Sandbox System project 15f90272-e2f6-4739-8286-91447f545d71 returned:
+- sandbox-orchestrator environment 7f527cdf-76c2-4385-a6e6-619b4e4181c4: worker-sandbox-orchestrator ONLINE, deployment ac4cc0d4-3504-4b12-9ab4-c4dc0a30ab8b SUCCESS, no pending work.
+- sandbox-code environment 30d1f937-6b6a-4b64-af93-c5f20ebad857: worker-sandbox-code ONLINE, deployment 4bc6d191-9067-4dae-9aeb-d932dee7e24f SUCCESS, no pending work.
+These are live service-state observations; worker execution of this specific WLE mission, queue bindings, tenant isolation, auth/RLS and agent end-to-end performance remain UNKNOWN. Do not conflate ONLINE with validated workload delivery.
