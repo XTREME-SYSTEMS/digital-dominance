@@ -333,7 +333,7 @@ const SYSTEM_CONTENTS = {
   ],
 };
 
-export async function main(req: Request) {
+export default async function(req: Request) {
   const base44 = createClientFromRequest(req);
   const svc = base44.asServiceRole;
 

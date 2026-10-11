@@ -320,6 +320,7 @@ const AuthenticatedApp = () => {
         <Route path="pack-sync" element={<PackSync />} />
         <Route path="pack-research" element={<PackResearch />} />
         <Route path="gpt-pipeline" element={<GptSyncPipeline />} />
+        <Route path="manus-recreation" element={<ManusRecreation />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
