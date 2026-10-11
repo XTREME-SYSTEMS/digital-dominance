@@ -86,6 +86,7 @@ import SwarmCommand from '@/pages/admin/SwarmCommand';
 import SystemBlueprint from '@/pages/admin/SystemBlueprint';
 import DeepArchitecture from '@/pages/admin/DeepArchitecture';
 import SystemOperator from '@/pages/admin/SystemOperator';
+import AgentWorkspace from '@/pages/admin/AgentWorkspace';
 import UniversalSiteBuilder from '@/pages/admin/UniversalSiteBuilder';
 import DominanceSandbox from '@/pages/admin/DominanceSandbox';
 import BuilderLibrary from '@/pages/admin/BuilderLibrary';
@@ -283,6 +284,7 @@ const AuthenticatedApp = () => {
         <Route path="blueprint" element={<SystemBlueprint />} />
         <Route path="architecture" element={<DeepArchitecture />} />
         <Route path="operator" element={<SystemOperator />} />
+        <Route path="agent-workspace" element={<AgentWorkspace />} />
         <Route path="code-studio" element={<CodeStudio />} />
         <Route path="meta-architecture" element={<MetaArchitecture />} />
         <Route path="vision-cortex-v2" element={<VisionCortexV2 />} />
