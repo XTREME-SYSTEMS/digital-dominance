@@ -196,6 +196,13 @@ export default function AgentWorkspace() {
           </aside>
         )}
         <main className="flex-1 min-w-0 flex flex-col">
+          <div className="md:hidden border-b border-white/10 px-4 py-2">
+            <label className="text-[10px] text-zinc-500" htmlFor="agent-workspace-session">Session</label>
+            <select id="agent-workspace-session" aria-label="Choose recent session" value={active?.id || ""} onChange={(e) => setActive(conversations.find((c) => c.id === e.target.value) || null)} className="mt-1 w-full rounded-lg bg-[#252730] border border-white/10 text-white text-xs p-2">
+              {!active && <option value="">New task</option>}
+              {conversations.map((conv) => <option key={conv.id} value={conv.id}>{conv.metadata?.name || "Agent session"}</option>)}
+            </select>
+          </div>
           <div className="h-12 px-4 border-b border-white/10 flex items-center gap-2 justify-between shrink-0">
             <div className="flex items-center gap-1">
               <button type="button" aria-label="Toggle sessions" onClick={() => setSidebar((s) => !s)} className="hidden md:flex p-2 rounded-lg hover:bg-white/10 text-zinc-400">{sidebar ? <PanelLeftClose className="h-4 w-4"/> : <PanelLeftOpen className="h-4 w-4"/>}</button>
