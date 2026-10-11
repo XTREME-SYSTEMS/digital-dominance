@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Sparkles, ChevronDown, Code2, Zap, Layers, Globe, Rocket, Send, Wand2 } from "lucide-react";
 import PipelineRunner from "@/components/gpt-pipeline/PipelineRunner";
+import SelfBuilderRunner from "@/components/gpt-pipeline/SelfBuilderRunner";
 import JsonConfigPanel from "@/components/gpt-pipeline/JsonConfigPanel";
 import SuperAgentsSection from "@/components/gpt-pipeline/SuperAgentsSection";
 import IndustryTemplateGrid from "@/components/gpt-pipeline/IndustryTemplateGrid";
@@ -22,6 +23,7 @@ export default function GptSyncPipeline() {
   const [submitted, setSubmitted] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [advancedTab, setAdvancedTab] = useState("agents");
+  const [mode, setMode] = useState("selfbuilder"); // "pipeline" | "selfbuilder"
 
   const launch = (text) => {
     const msg = (text || input).trim();
@@ -44,10 +46,25 @@ export default function GptSyncPipeline() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold text-emerald-700">Vercel AI Gateway</span>
-          </span>
+        {/* Mode toggle */}
+        <div className="flex items-center rounded-lg border border-stone-200 bg-white p-0.5">
+          <button
+            onClick={() => setMode("selfbuilder")}
+            className={`rounded-md px-3 py-1 text-xs font-bold transition ${mode === "selfbuilder" ? "bg-amber-500 text-stone-900" : "text-stone-500 hover:text-stone-900"}`}
+          >
+            Self-Builder
+          </button>
+          <button
+            onClick={() => setMode("pipeline")}
+            className={`rounded-md px-3 py-1 text-xs font-bold transition ${mode === "pipeline" ? "bg-amber-500 text-stone-900" : "text-stone-500 hover:text-stone-900"}`}
+          >
+            Pipeline Chat
+          </button>
+        </div>
+        <span className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5">
+          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-xs font-bold text-emerald-700">Vercel AI Gateway</span>
+        </span>
         </div>
       </div>
 
@@ -108,8 +125,13 @@ export default function GptSyncPipeline() {
         </div>
       )}
 
-      {/* Pipeline Runner — appears after submission */}
-      {submitted && (
+      {/* Runner — appears after submission (mode-dependent) */}
+      {submitted && mode === "selfbuilder" && (
+        <div className="flex-1 min-h-[600px] h-[calc(100vh-180px)]">
+          <SelfBuilderRunner initialPrompt={submitted} onConsumed={() => setSubmitted(null)} />
+        </div>
+      )}
+      {submitted && mode === "pipeline" && (
         <div className="flex-1 min-h-[600px] h-[calc(100vh-180px)]">
           <PipelineRunner initialMessage={submitted} onConsumed={() => setSubmitted(null)} />
         </div>
