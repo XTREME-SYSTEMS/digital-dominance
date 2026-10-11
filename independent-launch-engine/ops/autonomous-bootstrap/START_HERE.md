@@ -2,6 +2,14 @@
 **Status: developer sandbox bootstrap. NOT production-ready, not 24/7 fully proven.**
 **Source baseline:** `feature/website-launch-engine-debase-v1 @ 9918cbfe3a1037b3d8bf0158b1d78ae957ad63f2`. Preserve public visual lock https://website-launch-engine-xps.vercel.app/; desktop 1440x900, mobile 390x844. This branch is isolated from concurrently active Eden and frontend builds.
 
+## NEW SOURCE DONOR: SwarmNexus V3 MAX (2026-10-11)
+- Local original: `C:\\_Strategic_Minds_AI_OS\\34_SWARM_SYSTEM\\98_IMPORTED_DOWNLOADS\\2026-10-10` (9 files; SHA-256 fingerprinted; READ-ONLY).
+- Donor/Manus/OpenClaw review: `SWARMNEXUS_MANUS_OPENCLAW_ADAPTER.md`.
+- Pure role planner: `runtime/swarmnexus-compatibility.mjs`, tested at `tests/swarmnexus-compatibility.test.mjs`.
+- SwarmNexus explicitly SIMULATES parallel agents in one LLM; its OpenAPI has placeholder `https://your-api-endpoint.com`. Do not claim 50 real workers or install a second orchestrator.
+- Cloud Browser engine 3.1.0 health returned 200; public Manus website navigation/observation worked. Fault Line and Vision Cortex agent-message routes returned 402 integration-limit errors. Treat them as blocked and never bypass provider limits.
+- Only source-locked verified tenant identity, capability-specific receipts and real existing X1 leases authorize execution. The planner does not auto-dispatch.
+
 ## All GPTs: First move
 1. Resolve tenant, project and fresh repository SHA; reread current JARVIS source evidence at `C:\_Strategic_Minds_AI_OS\03_Bridge_Receipts\STRATEGIC_MINDS_ESTATED_AUDIT_REUSE_DECISIONS_20261011.md`.
 2. Use **existing** `16_UNIVERSAL SYSTEMS\05_REGISTRIES\MASTER_SYSTEM_INDEX.json`, `16_UNIVERSAL SYSTEMS\14_AGENT_FACTORY_RUNTIME` and source donorship. Do not create a second registry, queue, heartbeat, X1 worker or agent platform.
