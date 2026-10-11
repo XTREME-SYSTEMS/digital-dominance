@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
-import { patchCore } from '../../shared/aiGateway.ts';
+import { generateText } from '../../shared/aiGateway.ts';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ideaProvingMachine — Autonomous idea generation and validation engine.
@@ -43,13 +43,13 @@ For each opportunity, provide:
 - keywords: 5-10 SEO keywords for this opportunity
 - niche: The specific industry/niche
 
-Focus on opportunities that a website factory could exploit immediately. Prioritize low-competition, high-demand opportunities.`;
+Focus on opportunities that a website factory could exploit immediately. Prioritize low-competition, high-demand opportunities.
+
+Return your response as JSON with the structure: { "ideas": [{ "title": "", "category": "", "description": "", "evidence": "", "recommended_action": "", "priority": "", "potential_revenue": "", "competition_level": "", "target_audience": "", "keywords": [], "niche": "" }] }`;
 
 export default async function(req: Request): Promise<Response> {
   const base44 = createClientFromRequest(req);
-  patchCore(base44);
   const svc = base44.asServiceRole;
-  patchCore(svc);
 
   let body: any = {};
   try { body = await req.json(); } catch {}
@@ -96,35 +96,12 @@ export default async function(req: Request): Promise<Response> {
   }
 
   try {
-    const ideasResult = await svc.integrations.Core.InvokeLLM({
+    const { parsed } = await generateText({
       prompt: SCAN_PROMPT,
-      response_json_schema: {
-        type: 'object',
-        properties: {
-          ideas: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                title: { type: 'string' },
-                category: { type: 'string' },
-                description: { type: 'string' },
-                evidence: { type: 'string' },
-                recommended_action: { type: 'string' },
-                priority: { type: 'string' },
-                potential_revenue: { type: 'string' },
-                competition_level: { type: 'string' },
-                target_audience: { type: 'string' },
-                keywords: { type: 'array', items: { type: 'string' } },
-                niche: { type: 'string' },
-              },
-            },
-          },
-        },
-      },
+      response_json_schema: { type: 'object' },
     });
 
-    const ideas = (ideasResult as any)?.ideas || [];
+    const ideas = parsed?.ideas || [];
     if (!ideas.length) {
       return Response.json({ ok: false, error: 'AI returned no ideas' }, { status: 500 });
     }
