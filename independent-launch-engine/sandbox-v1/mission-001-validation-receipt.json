@@ -1,0 +1,68 @@
+{
+  "mission_id": "DD-SANDBOX-001",
+  "created_for": "Strategic Minds AI V2 corporate website",
+  "execution_location": "isolated ChatGPT sandbox; not Railway or production",
+  "source_parent_branch": "feature/website-launch-engine-debase-v1",
+  "source_parent_sha": "d304c4842b18c9660d284e42c5bb459411bdd360",
+  "pack": {
+    "name": "SMAI_Cinematic_Left_Rail_Marketing_Preview_V2.zip",
+    "sha256": "ad72ed0c0e761075e7811163ca41f23724176f411c260ca33c2ebf2bc986b626",
+    "source_images": 6,
+    "original_images_preserved": true
+  },
+  "test_result": {
+    "stage_1": {
+      "state": "FAIL",
+      "fingerprint": "mobile_navigation_action_is_wired",
+      "reason": "Synthetic disabled mobile toggle"
+    },
+    "repair": {
+      "action": "Remove one injected false && guard in site.js",
+      "bounded_attempts": 1
+    },
+    "stage_2": {
+      "state": "PASS",
+      "independent_deterministic_checks": 13
+    },
+    "additional_contract_tests": {
+      "state": "PASS",
+      "node_tests": 5
+    },
+    "local_http": 200
+  },
+  "limitations": {
+    "playwright": "BLOCKED_BY_ADMINISTRATOR in container for file:// and localhost navigation",
+    "visual_comparison": "NOT_MEASURED",
+    "remote_railway_execution": "NOT_EXECUTED",
+    "x1_queue": "READ_ONLY_AUDITED; not enqueued because 20 dead letters and 16 blocked records",
+    "deployment": "NOT_DEPLOYED",
+    "crm": "NOT_CONNECTED"
+  },
+  "runtime": {
+    "railway_project": "Strategic Sandbox System",
+    "code_environment": "sandbox-code",
+    "existing_worker": "worker-sandbox-code",
+    "worker_deployment": "4bc6d191-9067-4dae-9aeb-d932dee7e24f",
+    "worker_health": "SUCCESS deployment, no mission evidence",
+    "staging_supabase_project": "uvdkzsbjackpjvpoxtyk",
+    "queue_records": 72,
+    "queue_completed": 36,
+    "dead_letters": 20,
+    "blocked": 16,
+    "top_dead_letter_code": "CONTROL_PLANE_AUTHORIZATION_FAILED"
+  },
+  "release": {
+    "eligibility": "BLOCKED",
+    "production_approval": false,
+    "site_indexing": "NOINDEX",
+    "approval_required": [
+      "independent browser QA in supported browser runtime",
+      "connect actual build worker with source SHA idempotency and scoped auth",
+      "X1 dead-letter authorization repair",
+      "git commit of image assets if released to preview",
+      "synthetic lead to CRM trace",
+      "protected production release"
+    ]
+  },
+  "next": "Bind the existing sandbox-code worker to the validated mission contract and execute a leased X1 staging mission only after resolving control-plane authorization; do not create a duplicate scheduler."
+}
