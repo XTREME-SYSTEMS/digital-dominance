@@ -77,6 +77,28 @@ export default function SelfBuilderRunner({ initialPrompt, onConsumed }) {
     setExecuting(false);
   };
 
+  const autonomousBuild = async () => {
+    const text = prompt.trim();
+    if (!text) return;
+    setExecuting(true);
+    setPlanning(true);
+    setError(null);
+    setPlan(null);
+    setEvents([]);
+    setSummary(null);
+    try {
+      const res = await base44.functions.invoke("smaiSelfBuilder", { action: "autonomous", prompt: text });
+      if (!res.data?.ok) throw new Error(res.data?.error || "Autonomous build failed");
+      setPlan(res.data.plan || null);
+      setEvents(res.data.events || []);
+      setSummary(res.data.summary);
+    } catch (e) {
+      setError(e.message);
+    }
+    setPlanning(false);
+    setExecuting(false);
+  };
+
   // Group events by step
   const stepEvents = events.filter((e) => e.type?.startsWith("step_"));
   const stepMap = {};
@@ -114,7 +136,7 @@ export default function SelfBuilderRunner({ initialPrompt, onConsumed }) {
           <div className="flex gap-2">
             <button
               onClick={() => generatePlanFn()}
-              disabled={planning || !prompt.trim()}
+              disabled={planning || executing || !prompt.trim()}
               className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-xs font-bold text-stone-700 disabled:opacity-50 hover:border-amber-400 transition"
             >
               {planning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5" />}
@@ -130,6 +152,14 @@ export default function SelfBuilderRunner({ initialPrompt, onConsumed }) {
                 Execute & Self-Build
               </button>
             )}
+            <button
+              onClick={autonomousBuild}
+              disabled={executing || !prompt.trim()}
+              className="flex items-center gap-1.5 rounded-lg bg-stone-900 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-50 hover:bg-stone-800 transition"
+            >
+              {executing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+              Autonomous Build
+            </button>
           </div>
         </div>
       </div>
@@ -215,6 +245,14 @@ export default function SelfBuilderRunner({ initialPrompt, onConsumed }) {
                         {ev.type === "step_start" && (
                           <span className="text-stone-600">
                             <b>Attempt {ev.attempt}:</b> {ev.task?.slice(0, 120)}{ev.task?.length > 120 ? "..." : ""}
+                          </span>
+                        )}
+                        {ev.type === "tool_call" && (
+                          <span className={`flex items-center gap-1 ${ev.receipt?.status === "completed" ? "text-emerald-600" : "text-red-500"}`}>
+                            {ev.receipt?.status === "completed" ? "✓" : "✗"}
+                            <b>{ev.receipt?.tool}</b>
+                            {ev.receipt?.target && <span className="text-stone-500">→ {ev.receipt.target}</span>}
+                            <span className="text-stone-400 truncate">{ev.receipt?.detail?.slice(0, 80)}</span>
                           </span>
                         )}
                         {ev.type === "step_executed" && (

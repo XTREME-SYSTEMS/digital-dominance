@@ -109,66 +109,86 @@ Return JSON only.`;
   return parsed;
 }
 
-// ─── PHASE 2: EXECUTE (single step) ───────────────────────────────────────
-// Dispatch one step to the operator. The operator uses its tools to call
-// the right backend function. Returns the raw result + receipts.
+// ─── PHASE 2: EXECUTE (autonomous multi-turn agent loop) ──────────────────
+// Manus/OpenHands-style: the agent loops — call tool → see result → decide
+// next tool → call again — until it decides the step is done or hits the
+// call limit. This is the "Open Claw" that gives the system true autonomy.
 
-export async function executeStep(step: any, base44: any): Promise<{ result: any; receipts: any[] }> {
-  // Build the operator message from the step
-  const operatorMessage = `Execute step ${step.step_number}: ${step.title}
+const MAX_TOOL_CALLS_PER_STEP = 5;
 
-Agent: ${step.agent}
-Task: ${step.task}
-Expected output: ${step.expected_output}
-Suggested function: ${step.function_hint}
+async function runToolCall(call: any, base44: any): Promise<any> {
+  const args = JSON.parse(call.function?.arguments || '{}');
+  const name = call.function?.name;
+  let result: any;
 
-Use the invoke_function tool to call the suggested function (or a better one if you judge it fits). Read the function's action/payload from the task description. Return the result.`;
+  if (name === 'invoke_function') {
+    result = await base44.functions.invoke(args.function_name, args.payload);
+    result = result?.data || result;
+  } else if (name === 'read_entities') {
+    const page = await base44.entities[args.entity]?.filter(args.query || {}, { limit: 10 });
+    result = page?.items || page || [];
+  } else if (name === 'write_entity') {
+    if (args.operation === 'create') result = await base44.entities[args.entity]?.create(args.data);
+    else if (args.operation === 'update') result = await base44.entities[args.entity]?.update(args.id, args.data);
+    else if (args.operation === 'delete') result = await base44.entities[args.entity]?.delete(args.id);
+  }
+  return result;
+}
 
-  // Use the operator loop (simplified — single tool call expected)
-  const response = await completeGateway({
-    model: OPERATOR_MODEL,
-    messages: [
-      { role: 'system', content: `${operatorInstructions}\n\nYou are executing a single step of a larger plan. Use the tools available. Be concise. Call the function and report the result.` },
-      { role: 'user', content: operatorMessage },
-    ],
-    tools: operatorTools,
-    tool_choice: 'auto',
-    max_tokens: 5000,
-  });
+export async function executeStep(step: any, base44: any, onToolCall?: (r: any) => void): Promise<{ result: any; receipts: any[] }> {
+  const messages: any[] = [
+    { role: 'system', content: `${operatorInstructions}\n\nYou are executing a single step of a larger autonomous plan. Use the tools available. You may call multiple tools in sequence — after each tool result, decide if you need another tool call or if the step is complete. When done, write a summary of what you accomplished.` },
+    { role: 'user', content: `Execute step ${step.step_number}: ${step.title}\n\nAgent: ${step.agent}\nTask: ${step.task}\nExpected output: ${step.expected_output}\nSuggested function: ${step.function_hint}\n\nUse invoke_function to call the suggested function (or a better one). Read the function's action/payload from the task description. Call tools until the step is complete, then summarize.` },
+  ];
 
-  const assistant = response.choices?.[0]?.message;
   const receipts: any[] = [];
+  let lastText = '';
 
-  if (assistant?.tool_calls?.length) {
-    for (const call of assistant.tool_calls) {
-      const receipt: any = { tool: call.function?.name, status: 'failed', step: step.step_number };
-      try {
-        const args = JSON.parse(call.function.arguments || '{}');
-        let result;
-        if (call.function.name === 'invoke_function') {
-          result = await base44.functions.invoke(args.function_name, args.payload);
-          result = result?.data || result;
-        } else if (call.function.name === 'read_entities') {
-          const page = await base44.entities[args.entity]?.filter(args.query || {}, { limit: 10 });
-          result = page?.items || page || [];
-        } else if (call.function.name === 'write_entity') {
-          if (args.operation === 'create') result = await base44.entities[args.entity]?.create(args.data);
-          else if (args.operation === 'update') result = await base44.entities[args.entity]?.update(args.id, args.data);
-          else if (args.operation === 'delete') result = await base44.entities[args.entity]?.delete(args.id);
+  for (let turn = 0; turn < MAX_TOOL_CALLS_PER_STEP; turn++) {
+    const response = await completeGateway({
+      model: OPERATOR_MODEL,
+      messages,
+      tools: operatorTools,
+      tool_choice: turn === MAX_TOOL_CALLS_PER_STEP - 1 ? 'none' : 'auto',
+      max_tokens: 5000,
+    });
+
+    const assistant = response.choices?.[0]?.message;
+
+    // If the agent made tool calls, execute them and feed results back
+    if (assistant?.tool_calls?.length) {
+      messages.push(assistant);
+      for (const call of assistant.tool_calls) {
+        const receipt: any = { tool: call.function?.name, status: 'failed', step: step.step_number, turn };
+        try {
+          const result = await runToolCall(call, base44);
+          receipt.status = 'completed';
+          receipt.target = JSON.parse(call.function.arguments || '{}').function_name || JSON.parse(call.function.arguments || '{}').entity || '';
+          receipt.detail = typeof result === 'string' ? result.slice(0, 500) : JSON.stringify(result).slice(0, 500);
+          receipt.result = result;
+          // Feed the tool result back to the agent for the next turn
+          messages.push({
+            role: 'tool',
+            tool_call_id: call.id,
+            content: receipt.detail,
+          });
+        } catch (error: any) {
+          receipt.detail = error.message;
+          messages.push({ role: 'tool', tool_call_id: call.id, content: `Error: ${error.message}` });
         }
-        receipt.status = 'completed';
-        receipt.target = args.function_name || args.entity;
-        receipt.detail = typeof result === 'string' ? result.slice(0, 500) : JSON.stringify(result).slice(0, 500);
-        receipt.result = result;
-      } catch (error: any) {
-        receipt.detail = error.message;
+        receipts.push(receipt);
+        onToolCall?.(receipt);
       }
-      receipts.push(receipt);
+    } else {
+      // No tool calls — agent is done, capture the summary text
+      lastText = assistant?.content || '';
+      break;
     }
+
+    lastText = assistant?.content || '';
   }
 
-  const text = assistant?.content || '';
-  return { result: { text, receipts }, receipts };
+  return { result: { text: lastText, receipts }, receipts };
 }
 
 // ─── PHASE 3: VERIFY ──────────────────────────────────────────────────────
@@ -265,8 +285,10 @@ export async function runSelfBuilder({
         task: currentTask,
       });
 
-      // EXECUTE
-      const execResult = await executeStep({ ...step, task: currentTask }, base44);
+      // EXECUTE (autonomous multi-turn agent loop)
+      const execResult = await executeStep({ ...step, task: currentTask }, base44, (receipt) => {
+        emit({ type: 'tool_call', step: step.step_number, attempt: attempt + 1, receipt });
+      });
       emit({
         type: 'step_executed',
         step: step.step_number,

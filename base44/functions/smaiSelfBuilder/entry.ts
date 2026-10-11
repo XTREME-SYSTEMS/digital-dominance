@@ -51,7 +51,24 @@ export default async function (req: Request): Promise<Response> {
       return Response.json({ ok: true, summary, events });
     }
 
-    return Response.json({ error: 'Unknown action. Use: plan, execute' }, { status: 400 });
+    // ── AUTONOMOUS: Plan + Execute in one call (fire-and-forget) ──
+    if (action === 'autonomous') {
+      const { prompt } = body;
+      if (!prompt || typeof prompt !== 'string') {
+        return Response.json({ error: 'prompt required' }, { status: 400 });
+      }
+
+      const events: any[] = [];
+      const summary = await runSelfBuilder({
+        prompt,
+        base44,
+        onProgress: (event) => events.push(event),
+      });
+
+      return Response.json({ ok: true, summary, events, plan: events.find((e) => e.type === 'plan_ready')?.plan || null });
+    }
+
+    return Response.json({ error: 'Unknown action. Use: plan, execute, autonomous' }, { status: 400 });
   } catch (error: any) {
     console.error('[smaiSelfBuilder] Error:', error);
     return Response.json({ error: error.message || 'Internal error' }, { status: 500 });
