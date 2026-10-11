@@ -27,7 +27,8 @@ export default function IdeaFeed({ onBuildIdea }) {
     setLoading(true);
     try {
       const res = await base44.functions.invoke("ideaProvingMachine", { action: "recommend" });
-      setIdeas(res.data?.ideas || []);
+      const data = res.data?.ideas;
+      setIdeas(Array.isArray(data) ? data : (data?.items || []));
     } catch (e) {
       console.error("Failed to load ideas:", e);
     }
