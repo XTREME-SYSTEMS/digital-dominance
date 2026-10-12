@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { LayoutDashboard, Users, KanbanSquare, Settings, ExternalLink, Mail, Radar, Globe, ScrollText, Star, Wrench, Factory, Smartphone, Rocket, Layers, Layout, UserCircle, TrendingUp, MessageSquare, Brain, Target, BarChart3, Package, Bot, KeyRound, Share2, Wand2, MapPin, Network, Crown, Building2, Code2, Heart, PhoneCall, Activity, ListOrdered, Database, Workflow, Gauge, Cpu, Sparkles, Boxes, BookOpen, Eye, EyeOff, Zap, Shield, Compass, Menu, X, ChevronDown, ChevronRight, LayoutGrid, Search } from "lucide-react";
+import { LayoutDashboard, Users, KanbanSquare, Settings, ExternalLink, Mail, Radar, Globe, ScrollText, Star, Wrench, Factory, Smartphone, Rocket, Layers, Layout, UserCircle, TrendingUp, MessageSquare, Brain, Target, BarChart3, Package, Bot, KeyRound, Share2, Wand2, MapPin, Network, Crown, Building2, Code2, Heart, PhoneCall, Activity, ListOrdered, Database, Workflow, Gauge, Cpu, Sparkles, Boxes, BookOpen, Eye, EyeOff, Zap, Shield, Compass, Menu, X, ChevronDown, ChevronRight, LayoutGrid, Search, Phone } from "lucide-react";
 import BackButton from "@/components/BackButton";
-import { XTREME_AI_ICON_URL } from "@/components/Logo";
 import AIAssistBubble from "@/components/ai-assist/AIAssistBubble";
 
 const navGroups = [
@@ -137,19 +136,21 @@ export default function AdminLayout() {
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-stone-100 flex">
+    <div className="dark min-h-screen bg-[#0a1220] flex">
       {/* === LEFT SIDEBAR === */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-72 shrink-0 bg-stone-950 flex flex-col transition-transform duration-200 ${
+        className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-72 shrink-0 bg-[#070d18] flex flex-col transition-transform duration-200 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         {/* Brand header */}
-        <div className="flex items-center gap-3 px-5 h-16 border-b border-stone-800 shrink-0">
-          <img src={XTREME_AI_ICON_URL} alt="Xtreme Polishing Systems" className="h-9 w-9 object-contain shrink-0" />
+        <div className="flex items-center gap-3 px-5 h-16 border-b border-white/10 shrink-0">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#00a2ff] to-[#0066cc] shrink-0">
+            <Rocket className="h-5 w-5 text-white" />
+          </div>
           <div className="flex flex-col leading-none">
-            <span className="text-[9px] font-bold tracking-[0.18em] text-amber-500 uppercase">Xtreme Polishing</span>
-            <span className="text-sm font-bold text-white tracking-tight">Concrete Command</span>
+            <span className="text-[9px] font-bold tracking-[0.15em] text-[#00a2ff] uppercase">Florida Based · Nationwide</span>
+            <span className="text-sm font-bold text-white tracking-tight">Website Launch Engine</span>
           </div>
           <button
             onClick={() => setMobileOpen(false)}
@@ -167,7 +168,7 @@ export default function AdminLayout() {
                 <div key={gi} className="space-y-1">
                   <button
                     onClick={() => setAdvancedOpen(!advancedOpen)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-[10px] font-bold tracking-[0.14em] uppercase text-stone-500 hover:text-stone-300 transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[10px] font-bold tracking-[0.14em] uppercase text-white/40 hover:text-white/70 transition-colors"
                   >
                     {group.label}
                     {advancedOpen ? <ChevronDown className="h-3 w-3 ml-auto" /> : <ChevronRight className="h-3 w-3 ml-auto" />}
@@ -183,8 +184,8 @@ export default function AdminLayout() {
                           className={({ isActive }) =>
                             `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all ${
                               isActive
-                                ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                                : "text-stone-400 hover:text-white hover:bg-white/5 border border-transparent"
+                                ? "bg-[#00a2ff]/20 text-[#00a2ff] border border-[#00a2ff]/40"
+                                : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
                             }`
                           }
                         >
@@ -200,7 +201,7 @@ export default function AdminLayout() {
             return (
               <div key={gi} className="space-y-1">
                 {group.label && (
-                  <div className="px-3 pt-1 pb-2 text-[10px] font-bold tracking-[0.14em] uppercase text-stone-600">
+                  <div className="px-3 pt-1 pb-2 text-[10px] font-bold tracking-[0.14em] uppercase text-white/30">
                     {group.label}
                   </div>
                 )}
@@ -213,8 +214,8 @@ export default function AdminLayout() {
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
                         isActive
-                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-                          : "text-stone-400 hover:text-white hover:bg-white/5 border border-transparent"
+                          ? "bg-[#00a2ff]/20 text-[#00a2ff] border border-[#00a2ff]/40"
+                          : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
                       }`
                     }
                   >
@@ -228,15 +229,15 @@ export default function AdminLayout() {
         </nav>
 
         {/* Footer actions */}
-        <div className="px-4 py-4 border-t border-stone-800 shrink-0 space-y-1">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-2">
-            <Zap className="h-3 w-3 text-emerald-400" />
-            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wide">Vercel AI Gateway</span>
-          </div>
-          <BackButton className="text-stone-400 hover:text-white w-full" showLabel={true} />
+        <div className="px-4 py-4 border-t border-white/10 shrink-0 space-y-1">
+          <a href="tel:+17722090266" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#00a2ff]/10 border border-[#00a2ff]/30 mb-2 transition hover:bg-[#00a2ff]/20">
+            <Phone className="h-4 w-4 text-[#00a2ff]" />
+            <span className="text-sm font-bold text-[#00a2ff]">(772) 209-0266</span>
+          </a>
+          <BackButton className="text-white/60 hover:text-white w-full" showLabel={true} />
           <Link
             to="/"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-stone-400 hover:text-amber-400 hover:bg-white/5 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/60 hover:text-[#00a2ff] hover:bg-white/5 transition-colors"
           >
             <ExternalLink className="h-3.5 w-3.5" />
             View Site
@@ -255,17 +256,19 @@ export default function AdminLayout() {
       {/* === RIGHT CONTENT — more spread out === */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Mobile top bar */}
-        <div className="lg:hidden flex items-center gap-3 px-4 h-14 bg-stone-950 text-white shrink-0 sticky top-0 z-20">
-          <button onClick={() => setMobileOpen(true)} className="text-stone-400 hover:text-white">
+        <div className="lg:hidden flex items-center gap-3 px-4 h-14 bg-[#070d18] text-white shrink-0 sticky top-0 z-20">
+          <button onClick={() => setMobileOpen(true)} className="text-white/60 hover:text-white">
             <Menu className="h-6 w-6" />
           </button>
-          <BackButton className="text-stone-400 hover:text-white px-2" showLabel={false} />
-          <img src={XTREME_AI_ICON_URL} alt="Xtreme Polishing" className="h-7 w-7 object-contain" />
-          <span className="text-sm font-bold text-white">Concrete Command</span>
+          <BackButton className="text-white/60 hover:text-white px-2" showLabel={false} />
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#00a2ff] to-[#0066cc]">
+            <Rocket className="h-4 w-4 text-white" />
+          </div>
+          <span className="text-sm font-bold text-white">Launch Engine</span>
         </div>
 
         {/* Page content — spread out with more padding */}
-        <div className="flex-1 max-w-7xl w-full mx-auto px-8 py-10">
+        <div className="flex-1 max-w-7xl w-full mx-auto px-8 py-10 bg-[#0a1220]">
           <Outlet />
         </div>
       </div>

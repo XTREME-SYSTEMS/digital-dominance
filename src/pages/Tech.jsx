@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Cpu, Zap, Shield, Globe, Bot, Code2, Cloud, Database, ArrowRight } from "lucide-react";
+import { Cpu, Zap, Shield, Globe, Bot, Code2, Cloud, Database, ArrowRight, Rocket, Phone } from "lucide-react";
 
 const AGENTS = [
   { name: "APEX Orchestrator", role: "Master brain — routes all work" },
@@ -30,33 +30,39 @@ const CAPABILITIES = [
 
 export default function Tech() {
   return (
-    <div className="min-h-screen bg-[#050508] text-white">
+    <div className="min-h-screen bg-[#0a1220] text-white">
       <nav className="flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-2xl font-black" style={{
-            background: "linear-gradient(135deg, #e8e8e8, #ffffff, #a0a0a0)",
-            WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent",
-          }}>S</span>
-          <span className="text-sm font-bold tracking-wider text-white/80">STRATEGIC MINDS AI</span>
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#00a2ff] to-[#0066cc]">
+            <Rocket className="h-5 w-5 text-white" />
+          </div>
+          <div className="leading-none">
+            <span className="block text-sm font-extrabold tracking-tight text-white">Website Launch Engine</span>
+            <span className="block text-[9px] font-bold uppercase tracking-[0.15em] text-[#00a2ff]">Florida Based · Nationwide</span>
+          </div>
         </Link>
         <div className="flex items-center gap-4">
-          <Link to="/templates" className="text-xs font-bold tracking-wider text-white/60 hover:text-[#00E5FF]">TEMPLATES</Link>
-          <Link to="/pricing" className="text-xs font-bold tracking-wider text-white/60 hover:text-[#00E5FF]">PRICING</Link>
-          <Link to="/portal" className="flex items-center gap-2 rounded-lg border border-[#00E5FF]/50 px-4 py-2 text-xs font-bold tracking-wider text-[#00E5FF] hover:bg-[#00E5FF]/10">PORTAL</Link>
+          <Link to="/templates" className="text-xs font-bold tracking-wider text-white/60 hover:text-[#00a2ff]">TEMPLATES</Link>
+          <Link to="/pricing" className="text-xs font-bold tracking-wider text-white/60 hover:text-[#00a2ff]">PRICING</Link>
+          <a href="tel:+17722090266" className="flex items-center gap-2 rounded-full bg-[#00a2ff] px-4 py-2 text-xs font-bold text-white shadow-[0_0_20px_rgba(0,162,255,0.4)] transition hover:bg-[#0090e0]">
+            <Phone className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">(772) 209-0266</span>
+          </a>
+          <Link to="/portal" className="flex items-center gap-2 rounded-lg border border-[#00a2ff]/50 px-4 py-2 text-xs font-bold tracking-wider text-[#00a2ff] hover:bg-[#00a2ff]/10">PORTAL</Link>
         </div>
       </nav>
 
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-black tracking-wide mb-4">THE <span className="text-[#00E5FF]">TECHNOLOGY</span></h1>
+          <h1 className="text-4xl md:text-5xl font-black tracking-wide mb-4">THE <span className="text-[#00a2ff]">TECHNOLOGY</span></h1>
           <p className="text-white/50 max-w-2xl mx-auto text-lg">A full autonomous digital dominance engine — 12 AI agents, 100+ backend functions, 120+ data entities, and complete infrastructure provisioning.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-20">
           {CAPABILITIES.map((cap) => (
-            <div key={cap.title} className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-[#00E5FF]/50 transition">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#00E5FF]/30 mb-4" style={{ background: "radial-gradient(circle, rgba(0,229,255,0.1), transparent)" }}>
-                <cap.icon className="h-6 w-6 text-[#00E5FF]" />
+            <div key={cap.title} className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-[#00a2ff]/50 transition">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#00a2ff]/30 mb-4" style={{ background: "radial-gradient(circle, rgba(0,229,255,0.1), transparent)" }}>
+                <cap.icon className="h-6 w-6 text-[#00a2ff]" />
               </div>
               <h3 className="text-sm font-bold mb-2">{cap.title}</h3>
               <p className="text-xs text-white/50 leading-relaxed">{cap.desc}</p>
@@ -65,11 +71,11 @@ export default function Tech() {
         </div>
 
         <div className="mb-20">
-          <h2 className="text-2xl font-black tracking-wide mb-8 text-center">THE <span className="text-[#00E5FF]">12 SUPER AGENTS</span></h2>
+          <h2 className="text-2xl font-black tracking-wide mb-8 text-center">THE <span className="text-[#00a2ff]">12 SUPER AGENTS</span></h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {AGENTS.map((agent, i) => (
-              <div key={agent.name} className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-4 hover:border-[#00E5FF]/30 transition">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#00E5FF]/30 text-xs font-black text-[#00E5FF]">
+              <div key={agent.name} className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-4 hover:border-[#00a2ff]/30 transition">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#00a2ff]/30 text-xs font-black text-[#00a2ff]">
                   {String(i + 1).padStart(2, "0")}
                 </div>
                 <div>
@@ -81,10 +87,10 @@ export default function Tech() {
           </div>
         </div>
 
-        <div className="text-center rounded-2xl border border-[#00E5FF]/30 bg-[#00E5FF]/5 p-12">
+        <div className="text-center rounded-2xl border border-[#00a2ff]/30 bg-[#00a2ff]/5 p-12">
           <h2 className="text-2xl font-black mb-4">SEE IT IN ACTION</h2>
           <p className="text-white/50 mb-6">Enter the portal and type what you want to build. The AI handles the rest.</p>
-          <Link to="/portal" className="inline-flex items-center gap-2 rounded-full bg-[#00E5FF] px-8 py-4 text-sm font-bold tracking-wider text-black hover:bg-[#00E5FF]/80 transition">
+          <Link to="/portal" className="inline-flex items-center gap-2 rounded-full bg-[#00a2ff] px-8 py-4 text-sm font-bold tracking-wider text-black hover:bg-[#00a2ff]/80 transition">
             ENTER PORTAL <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

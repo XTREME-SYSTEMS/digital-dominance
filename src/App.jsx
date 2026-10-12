@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Rocket } from 'lucide-react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -180,9 +181,12 @@ const AuthenticatedApp = () => {
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center gap-5 bg-stone-50">
-        <img src={LOGO_URL} alt="Xtreme Polishing Systems" className="h-72 w-72 object-contain" />
-        <div className="w-8 h-8 border-4 border-stone-200 border-t-amber-500 rounded-full animate-spin"></div>
+      <div className="fixed inset-0 flex flex-col items-center justify-center gap-5 bg-[#0a1220]">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00a2ff] to-[#0066cc]">
+          <Rocket className="h-9 w-9 text-white" />
+        </div>
+        <span className="text-sm font-extrabold tracking-tight text-white">Website Launch Engine</span>
+        <div className="w-8 h-8 border-4 border-white/10 border-t-[#00a2ff] rounded-full animate-spin"></div>
       </div>
     );
   }
