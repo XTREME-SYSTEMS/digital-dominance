@@ -11,6 +11,7 @@ import { LOGO_URL } from '@/components/Logo';
 // Add page imports here
 import Home from '@/pages/Home';
 import HomeNew from '@/pages/HomeNew';
+import LaunchEngine from '@/pages/LaunchEngine';
 import TemplatesGallery from '@/pages/TemplatesGallery';
 import Pricing from '@/pages/Pricing';
 import Tech from '@/pages/Tech';
@@ -203,6 +204,7 @@ const AuthenticatedApp = () => {
       <Route path="/oauth/consent" element={<OAuthConsent />} />
       <Route path="/" element={<HomeNew />} />
       <Route path="/templates" element={<TemplatesGallery />} />
+      <Route path="/launch-engine" element={<LaunchEngine />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/tech" element={<Tech />} />
       <Route path="/estimate" element={<Estimator />} />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Code2, Check, Globe, Zap, Smartphone, FileCode, Search } from 'lucide-react';
+import { Code2, Check, Globe, Zap, Smartphone, FileCode, Search, Rocket } from 'lucide-react';
 
 const GOOGLE_STANDARDS = [
   { id: 'cwv', label: 'Core Web Vitals (LCP < 2.5s, CLS < 0.1, INP < 200ms)', icon: Zap },
@@ -11,8 +11,8 @@ const GOOGLE_STANDARDS = [
 ];
 
 export default function BuildStage({ data, onUpdate, onAdvance, allData }) {
-  const [templateName, setTemplateName] = useState(data?.templateName || '');
-  const [domainPattern, setDomainPattern] = useState(data?.domainPattern || '');
+  const [templateName, setTemplateName] = useState(data?.templateName || data?.template || '');
+  const [domainPattern, setDomainPattern] = useState(data?.domainPattern || data?.markets || '');
   const [sections, setSections] = useState(data?.sections || ['hero', 'services', 'gallery', 'testimonials', 'faq', 'cta', 'contact']);
   const [standards, setStandards] = useState(data?.standards || GOOGLE_STANDARDS.reduce((a, s) => ({ ...a, [s.id]: true }), {}));
   const [built, setBuilt] = useState(data?.built || false);
@@ -34,6 +34,18 @@ export default function BuildStage({ data, onUpdate, onAdvance, allData }) {
         <Code2 className="h-5 w-5 text-amber-500" />
         <h2 className="text-lg font-bold text-stone-800">Programmatic Website Template</h2>
       </div>
+
+      {data?.source === 'launch-engine' && (
+        <div className="rounded-xl border border-[#00a2ff]/30 bg-[#00a2ff]/5 p-3 flex items-center gap-3">
+          <Rocket className="h-5 w-5 text-[#00a2ff] shrink-0" />
+          <div className="text-sm">
+            <p className="font-bold text-stone-800">Launch Engine Selection</p>
+            <p className="text-stone-500 text-xs">
+              Industry: <span className="font-semibold">{data?.industry}</span> · Template: <span className="font-semibold">{data?.template}</span> · Target: <span className="font-semibold">{data?.locationCount} sites</span> in <span className="font-semibold">{data?.markets}</span>
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-4">
         <div>

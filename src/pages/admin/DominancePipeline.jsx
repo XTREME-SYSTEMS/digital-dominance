@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Crown, Eye, Brain, Code2, Globe, Rocket, Check, ChevronRight } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { Crown, Eye, Brain, Code2, Globe, Rocket, Check, ChevronRight, Rocket as RocketIcon } from 'lucide-react';
 import VisionStage from '@/components/dominance-pipeline/VisionStage';
 import StrategyStage from '@/components/dominance-pipeline/StrategyStage';
 import BuildStage from '@/components/dominance-pipeline/BuildStage';
@@ -15,11 +16,19 @@ const STAGES = [
 ];
 
 export default function DominancePipeline() {
-  const [stage, setStage] = useState(0);
+  const location = useLocation();
+  const launchSelection = location.state?.fromLaunchEngine ? location.state : null;
+  const [stage, setStage] = useState(launchSelection ? 2 : 0);
   const [data, setData] = useState({
     vision: null,
     strategy: null,
-    build: null,
+    build: launchSelection ? {
+      industry: launchSelection.industry,
+      template: launchSelection.template,
+      locationCount: launchSelection.locationCount,
+      markets: launchSelection.locations || "Nationwide",
+      source: "launch-engine",
+    } : null,
     provision: null,
     launch: null,
   });
@@ -44,10 +53,19 @@ export default function DominancePipeline() {
           <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 grid place-items-center">
             <Crown className="h-7 w-7 text-white" />
           </div>
-          <div>
+          <div className="flex-1">
             <h1 className="text-xl font-extrabold tracking-tight">Digital Domination Pipeline</h1>
             <p className="text-stone-400 text-sm">Vision → Strategy → Programmatic Build → Google Provisioning → 350+ Site Launch</p>
           </div>
+          {launchSelection && (
+            <div className="flex items-center gap-2 rounded-xl bg-[#00a2ff]/15 border border-[#00a2ff]/30 px-3 py-2">
+              <RocketIcon className="h-4 w-4 text-[#00a2ff]" />
+              <div className="text-xs">
+                <p className="font-bold text-[#00a2ff]">From Launch Engine</p>
+                <p className="text-white/70">{launchSelection.industry} · {launchSelection.template} · {launchSelection.locationCount} sites</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

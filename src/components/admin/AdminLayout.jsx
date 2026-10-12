@@ -50,6 +50,7 @@ const navGroups = [
     items: [
       { to: "/admin/digital-dominance", icon: Crown, label: "Digital Dominance" },
       { to: "/admin/dominance-pipeline", icon: Crown, label: "Dominance Pipeline (5-Step)" },
+      { to: "/launch-engine", icon: Rocket, label: "Website Launch Engine" },
       { to: "/admin/autonomous-dominance", icon: Crown, label: "Autonomous Dominance" },
       { to: "/admin/autonomous-refactor", icon: Wrench, label: "Autonomous Refactor" },
       { to: "/admin/dominance-sandbox", icon: Rocket, label: "Dominance Sandbox" },
