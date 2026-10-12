@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Rocket, MapPin, Check, ChevronRight } from "lucide-react";
+import { X, Rocket, MapPin, Check, ChevronRight, Eye } from "lucide-react";
+import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 
 const INDUSTRIES = [
   "Legal", "Real Estate", "Epoxy Flooring", "Roofing", "HVAC", "Plumbing",
@@ -27,11 +28,12 @@ export default function LaunchWizard({ initial, onClose }) {
   const STEPS = [
     { label: "Industry", desc: "Choose a business category" },
     { label: "Template", desc: "Pick a conversion-focused design" },
+    { label: "Preview", desc: "Your finished website preview" },
     { label: "Locations", desc: "How many sites to launch" },
     { label: "Launch", desc: "Send to Dominance Pipeline" },
   ];
 
-  const canAdvance = step === 0 ? !!selection.industry : step === 1 ? !!selection.template : step === 2 ? selection.count > 0 : true;
+  const canAdvance = step === 0 ? !!selection.industry : step === 1 ? !!selection.template : step === 3 ? selection.count > 0 : true;
 
   const launch = () => {
     // Pass selection to the Dominance Pipeline via navigation state
@@ -112,6 +114,19 @@ export default function LaunchWizard({ initial, onClose }) {
           )}
 
           {step === 2 && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Eye className="h-4 w-4 text-[#00a2ff]" />
+                <p className="text-xs font-bold text-gray-700">This is your finished website — fully designed and ready to launch.</p>
+              </div>
+              <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "380px" }}>
+                <WebsitePreview industry={selection.industry} template={selection.template} />
+              </div>
+              <p className="text-[10px] text-gray-400 text-center">Scroll inside the preview to explore the full site. Every section is built and polished.</p>
+            </div>
+          )}
+
+          {step === 3 && (
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">Number of Location Sites</label>
@@ -141,7 +156,7 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div className="space-y-3">
               <div className="rounded-xl bg-gray-50 p-4 space-y-2">
                 <Row label="Industry" value={selection.industry} />
