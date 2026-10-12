@@ -27,6 +27,7 @@ export default async function(req) {
       googleSyncEnabled = true,
       autoHealEnabled = true,
       continueBatchId,          // if provided, continue an existing batch
+      targetId,                // ProgrammaticTarget ID to link batch to
     } = body;
 
     const svc = base44.asServiceRole;
@@ -92,6 +93,20 @@ export default async function(req) {
         current_step: 'queued_sites',
         created_at: now,
       });
+
+      // Link batch to the ProgrammaticTarget config if provided
+      if (targetId) {
+        try {
+          const target = await svc.entities.ProgrammaticTarget.get(targetId);
+          if (target) {
+            await svc.entities.ProgrammaticTarget.update(targetId, {
+              batch_ids: [...(target.batch_ids || []), batchId],
+              status: 'active',
+              last_launched_at: now,
+            });
+          }
+        } catch {}
+      }
     }
 
     // ── Process pending sites in batches of 6 ──────────────────────────────

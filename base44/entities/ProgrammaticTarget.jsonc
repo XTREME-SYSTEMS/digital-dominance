@@ -1,0 +1,147 @@
+{
+  "name": "ProgrammaticTarget",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Targeting config name (e.g. 'Florida Epoxy Domination')"
+    },
+    "template_key": {
+      "type": "string",
+      "description": "Industry template key"
+    },
+    "template_name": {
+      "type": "string"
+    },
+    "selected_states": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "US state codes selected for targeting"
+    },
+    "selected_counties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "County strings in 'County, ST' format"
+    },
+    "selected_cities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "county": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "City/state/county objects to launch sites in"
+    },
+    "domain_strategy": {
+      "type": "string",
+      "enum": [
+        "nearme_subdomain",
+        "nearme_domain",
+        "subfolder",
+        "custom"
+      ],
+      "default": "nearme_subdomain"
+    },
+    "domain_base": {
+      "type": "string",
+      "description": "Base domain for generated sites"
+    },
+    "provision_target": {
+      "type": "string",
+      "enum": [
+        "vercel",
+        "godaddy",
+        "both"
+      ],
+      "default": "vercel"
+    },
+    "content_optimization": {
+      "type": "string",
+      "enum": [
+        "seo",
+        "seo_aeo",
+        "seo_aeo_geo",
+        "maximum"
+      ],
+      "default": "maximum"
+    },
+    "google_sync_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "auto_heal_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "total_sites": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "ready",
+        "launching",
+        "active",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "batch_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "MassLaunchBatch IDs produced by this target"
+    },
+    "last_launched_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "name",
+    "template_key",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
