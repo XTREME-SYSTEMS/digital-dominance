@@ -139,31 +139,10 @@ function SpacerSection({ height }) {
   return <div style={{ height: height || 40 }} />;
 }
 
-function ImagePageSection({ image_url, hotspots }) {
-  return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-black">
-      {image_url && <img src={image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />}
-      {(hotspots || []).map((h, i) => (
-        <a
-          key={i}
-          href={h.link || "#"}
-          target={h.link?.startsWith("http") ? "_blank" : undefined}
-          rel={h.link?.startsWith("http") ? "noopener noreferrer" : undefined}
-          className="absolute border-2 border-[#00D4FF]/40 bg-[#00D4FF]/5 hover:bg-[#00D4FF]/15 hover:border-[#00D4FF] transition backdrop-blur-sm rounded-lg flex items-center justify-center"
-          style={{ left: `${h.x}%`, top: `${h.y}%`, width: `${h.width}%`, height: `${h.height}%` }}
-          title={h.label || ""}
-        >
-          {h.label && <span className="text-[10px] font-bold uppercase tracking-widest text-white/80 px-2 text-center">{h.label}</span>}
-        </a>
-      ))}
-    </section>
-  );
-}
-
 export const RENDERERS = {
   hero: HeroSection, text: TextSection, gallery: GallerySection, cta: CtaSection,
   faq: FaqSection, testimonials: TestimonialsSection, html: HtmlSection,
-  form: FormSection, spacer: SpacerSection, image_page: ImagePageSection,
+  form: FormSection, spacer: SpacerSection,
 };
 
 export default function DynamicPageRenderer({ page }) {

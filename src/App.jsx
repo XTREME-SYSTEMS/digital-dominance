@@ -168,16 +168,7 @@ import SmaiContact from '@/pages/smai/Contact';
 import SmaiIcons from '@/pages/smai/Icons';
 import SmaiClientPortal from '@/pages/smai/ClientPortal';
 import SmaiAdminPortal from '@/pages/smai/AdminPortal';
-import AiStrategy from '@/pages/smai/AiStrategy';
-import CustomSystems from '@/pages/smai/CustomSystems';
-import AiPoweredGrowth from '@/pages/smai/AiPoweredGrowth';
-import DigitalDominanceMarketing from '@/pages/smai/DigitalDominanceMarketing';
 import CodeInjector from '@/components/codestudio/CodeInjector';
-import ImageToPageStudio from '@/pages/admin/ImageToPageStudio';
-import ResponsiveImageOptimizer from '@/pages/admin/ResponsiveImageOptimizer';
-import SmaiOperatingSystem from '@/pages/smai-os/OperatingSystem';
-import SmaiCheckout from '@/pages/smai-os/Checkout';
-import SmaiOnboardingPortal from '@/pages/smai-os/OnboardingPortal';
 
 
 const AuthenticatedApp = () => {
@@ -338,8 +329,6 @@ const AuthenticatedApp = () => {
         <Route path="pack-research" element={<PackResearch />} />
         <Route path="gpt-pipeline" element={<GptSyncPipeline />} />
         <Route path="manus-recreation" element={<ManusRecreation />} />
-        <Route path="image-to-page" element={<ImageToPageStudio />} />
-        <Route path="responsive-optimizer" element={<ResponsiveImageOptimizer />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
@@ -366,15 +355,6 @@ const AuthenticatedApp = () => {
       <Route path="/smai/icons" element={<SmaiIcons />} />
       <Route path="/smai/portal" element={<SmaiClientPortal />} />
       <Route path="/smai/admin-portal" element={<SmaiAdminPortal />} />
-      <Route path="/smai/os" element={<SmaiOperatingSystem />} />
-      <Route path="/smai/checkout" element={<SmaiCheckout />} />
-      <Route path="/smai/onboarding" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-        <Route index element={<SmaiOnboardingPortal />} />
-      </Route>
-      <Route path="/ai-strategy" element={<AiStrategy />} />
-      <Route path="/custom-ai-systems" element={<CustomSystems />} />
-      <Route path="/ai-powered-growth" element={<AiPoweredGrowth />} />
-      <Route path="/digital-dominance-system" element={<DigitalDominanceMarketing />} />
       <Route path="/p/:slug" element={<DynamicPageView />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
