@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { MapPin, Building2, Search, X, Plus, Check } from "lucide-react";
 import { US_STATES, US_COUNTIES, slugify } from "@/lib/usCounties";
+import { US_CITIES } from "@/lib/usCities";
 
 /**
  * Reusable programmatic targeting system — state → county → city selection.
@@ -75,6 +76,24 @@ export default function LocationTargetingSystem({ value, onChange }) {
     onChange({ selectedStates: [], selectedCounties: [], selectedCities: [] });
   };
 
+  const selectAllStates = () => {
+    onChange({ ...value, selectedStates: US_STATES.map((s) => s.code) });
+  };
+
+  const selectAllCounties = () => {
+    const allCountyKeys = availableCounties.map((c) => `${c.county}, ${c.state}`);
+    onChange({ ...value, selectedCounties: allCountyKeys });
+  };
+
+  const selectAllCities = () => {
+    const citiesForStates = US_CITIES.filter((c) => selectedStates.includes(c.state)).map((c) => ({
+      city: c.city, state: c.state, county: "",
+    }));
+    const existing = new Set(selectedCities.map((c) => `${c.city},${c.state}`));
+    const newCities = citiesForStates.filter((c) => !existing.has(`${c.city},${c.state}`));
+    onChange({ ...value, selectedCities: [...selectedCities, ...newCities] });
+  };
+
   return (
     <div className="space-y-4">
       {/* Summary bar */}
@@ -94,9 +113,14 @@ export default function LocationTargetingSystem({ value, onChange }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* States */}
         <div className="rounded-xl border border-stone-200 bg-white p-3">
-          <div className="flex items-center gap-2 mb-2">
-            <MapPin className="h-4 w-4 text-amber-500" />
-            <h3 className="text-sm font-bold text-stone-800">States</h3>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-amber-500" />
+              <h3 className="text-sm font-bold text-stone-800">States</h3>
+            </div>
+            <button onClick={selectAllStates} className="text-[10px] font-bold text-amber-600 hover:text-amber-700">
+              Select All
+            </button>
           </div>
           <input
             value={stateFilter}
@@ -128,11 +152,18 @@ export default function LocationTargetingSystem({ value, onChange }) {
               <Building2 className="h-4 w-4 text-amber-500" />
               <h3 className="text-sm font-bold text-stone-800">Counties</h3>
             </div>
-            {selectedCounties.length > 0 && (
-              <button onClick={addAllCountiesAsCities} className="text-[10px] font-bold text-amber-600 hover:text-amber-700">
-                Add all as cities →
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {selectedStates.length > 0 && (
+                <button onClick={selectAllCounties} className="text-[10px] font-bold text-amber-600 hover:text-amber-700">
+                  Select All
+                </button>
+              )}
+              {selectedCounties.length > 0 && (
+                <button onClick={addAllCountiesAsCities} className="text-[10px] font-bold text-amber-600 hover:text-amber-700">
+                  Add as cities →
+                </button>
+              )}
+            </div>
           </div>
           {selectedStates.length === 0 ? (
             <p className="text-xs text-stone-400 py-8 text-center">Select states first</p>
@@ -160,9 +191,16 @@ export default function LocationTargetingSystem({ value, onChange }) {
 
         {/* Cities */}
         <div className="rounded-xl border border-stone-200 bg-white p-3">
-          <div className="flex items-center gap-2 mb-2">
-            <Search className="h-4 w-4 text-amber-500" />
-            <h3 className="text-sm font-bold text-stone-800">Cities / Targets</h3>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Search className="h-4 w-4 text-amber-500" />
+              <h3 className="text-sm font-bold text-stone-800">Cities / Targets</h3>
+            </div>
+            {selectedStates.length > 0 && (
+              <button onClick={selectAllCities} className="text-[10px] font-bold text-amber-600 hover:text-amber-700">
+                Select All Cities
+              </button>
+            )}
           </div>
           <div className="flex gap-1.5 mb-2">
             <input

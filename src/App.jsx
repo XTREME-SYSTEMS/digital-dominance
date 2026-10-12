@@ -114,6 +114,7 @@ import ManusRecreation from '@/pages/admin/ManusRecreation';
 import MassLaunchConsole from '@/pages/admin/MassLaunchConsole';
 import SiteCommandCenter from '@/pages/admin/SiteCommandCenter';
 import ProgrammaticTargeting from '@/pages/admin/ProgrammaticTargeting';
+import BulkLaunchBuilder from '@/pages/admin/BulkLaunchBuilder';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -345,6 +346,7 @@ const AuthenticatedApp = () => {
         <Route path="mass-launch" element={<MassLaunchConsole />} />
         <Route path="site-command" element={<SiteCommandCenter />} />
         <Route path="targeting" element={<ProgrammaticTargeting />} />
+        <Route path="bulk-launch" element={<BulkLaunchBuilder />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>
