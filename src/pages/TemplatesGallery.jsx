@@ -56,8 +56,10 @@ export default function TemplatesGallery() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((tpl) => (
             <div key={tpl.id} className="group rounded-2xl border border-gray-200 bg-white overflow-hidden hover:border-[#00a2ff]/50 hover:shadow-xl transition">
-              <div className="h-48 relative flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${tpl.accentColor || "#00a2ff"}30, ${tpl.accentColor || "#00a2ff"}05)` }}>
-                <span className="text-5xl font-black opacity-30" style={{ color: tpl.accentColor || "#00a2ff" }}>{tpl.label.slice(0, 2).toUpperCase()}</span>
+              <div className="h-48 relative overflow-hidden">
+                <img src={tpl.previewImage} alt={tpl.label} className="absolute inset-0 h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <span className="absolute top-3 left-3 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white" style={{ backgroundColor: tpl.accentColor || "#00a2ff" }}>{tpl.accentName || "Template"}</span>
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-bold mb-1 text-[#0a1220]">{tpl.label}</h3>

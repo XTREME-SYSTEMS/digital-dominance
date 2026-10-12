@@ -21,6 +21,7 @@ export const ACCENT_PRESETS = [
 export const TOP_20_INDUSTRIES = [
   {
     id: "water_damage", label: "Water Damage Restoration", keyword: "water damage restoration",
+    previewImage: "https://images.unsplash.com/photo-1486406146926-c690a1a3a3a3?w=600&q=80&fit=crop",
     emergency: "CRITICAL", psychology: "PANIC_URGENCY", accentColor: "#2563EB", accentName: "Emergency Blue",
     avgOrder: 4500, searchVolume: "high", margin: 0.55,
     heroHeadline: "24/7 Emergency Water Damage Restoration",
@@ -31,6 +32,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "mold_remediation", label: "Mold Remediation", keyword: "mold remediation",
+    previewImage: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&q=80&fit=crop",
     emergency: "CRITICAL", psychology: "HEALTH_SAFETY", accentColor: "#16A34A", accentName: "Safety Green",
     avgOrder: 3200, searchVolume: "high", margin: 0.60,
     heroHeadline: "Professional Mold Remediation & Removal",
@@ -41,6 +43,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "emergency_plumbing", label: "Emergency Plumbing", keyword: "emergency plumber",
+    previewImage: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&q=80&fit=crop",
     emergency: "CRITICAL", psychology: "PANIC_URGENCY", accentColor: "#2563EB", accentName: "Emergency Blue",
     avgOrder: 850, searchVolume: "high", margin: 0.50,
     heroHeadline: "24/7 Emergency Plumber — Fast Response",
@@ -51,6 +54,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "roof_repair", label: "Roof Repair", keyword: "roof repair",
+    previewImage: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=600&q=80&fit=crop",
     emergency: "HIGH", psychology: "PROBLEM_AVOIDANCE", accentColor: "#EA580C", accentName: "Sunset Orange",
     avgOrder: 1200, searchVolume: "high", margin: 0.45,
     heroHeadline: "Expert Roof Repair & Leak Detection",
@@ -61,6 +65,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "ac_repair", label: "AC Repair", keyword: "ac repair",
+    previewImage: "https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=600&q=80&fit=crop",
     emergency: "HIGH", psychology: "PANIC_URGENCY", accentColor: "#0D9488", accentName: "Ocean Teal",
     avgOrder: 650, searchVolume: "high", margin: 0.50,
     heroHeadline: "Fast AC Repair — Same-Day Service",
@@ -71,6 +76,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "electrician", label: "Electrician", keyword: "electrician",
+    previewImage: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&q=80&fit=crop",
     emergency: "HIGH", psychology: "PANIC_URGENCY", accentColor: "#EA580C", accentName: "Sunset Orange",
     avgOrder: 450, searchVolume: "high", margin: 0.52,
     heroHeadline: "Licensed Electrician — Residential & Commercial",
@@ -81,6 +87,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "epoxy_garage", label: "Epoxy Garage Floors", keyword: "epoxy garage floor",
+    previewImage: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "ASPIRATION", accentColor: "#D4AF37", accentName: "Amber Gold",
     avgOrder: 2800, searchVolume: "high", margin: 0.55,
     heroHeadline: "Premium Epoxy Garage Floor Coating",
@@ -91,6 +98,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "pest_control", label: "Pest Control", keyword: "pest control",
+    previewImage: "https://images.unsplash.com/photo-1615529182904-14819c35db37?w=600&q=80&fit=crop",
     emergency: "HIGH", psychology: "PANIC_URGENCY", accentColor: "#16A34A", accentName: "Safety Green",
     avgOrder: 350, searchVolume: "high", margin: 0.65,
     heroHeadline: "Pest Control — Same-Day Extermination",
@@ -101,6 +109,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "tree_service", label: "Tree Service", keyword: "tree service",
+    previewImage: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "PROBLEM_AVOIDANCE", accentColor: "#16A34A", accentName: "Safety Green",
     avgOrder: 1200, searchVolume: "high", margin: 0.50,
     heroHeadline: "Professional Tree Service & Removal",
@@ -111,6 +120,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "landscaping", label: "Landscaping", keyword: "landscaping",
+    previewImage: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "ASPIRATION", accentColor: "#16A34A", accentName: "Safety Green",
     avgOrder: 4500, searchVolume: "high", margin: 0.45,
     heroHeadline: "Professional Landscaping & Design",
@@ -121,6 +131,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "pressure_washing", label: "Pressure Washing", keyword: "pressure washing",
+    previewImage: "https://images.unsplash.com/photo-1605152276897-4296181db00d?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "ASPIRATION", accentColor: "#0D9488", accentName: "Ocean Teal",
     avgOrder: 450, searchVolume: "high", margin: 0.65,
     heroHeadline: "Professional Pressure Washing Service",
@@ -131,6 +142,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "fence_install", label: "Fence Installation", keyword: "fence installation",
+    previewImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "ASPIRATION", accentColor: "#475569", accentName: "Slate Pro",
     avgOrder: 3500, searchVolume: "high", margin: 0.40,
     heroHeadline: "Custom Fence Installation & Repair",
@@ -141,6 +153,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "solar_install", label: "Solar Panel Installation", keyword: "solar panel installation",
+    previewImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "ASPIRATION", accentColor: "#4F46E5", accentName: "Indigo Tech",
     avgOrder: 25000, searchVolume: "high", margin: 0.25,
     heroHeadline: "Go Solar — Save Up To 90% On Energy",
@@ -151,6 +164,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "garage_door_repair", label: "Garage Door Repair", keyword: "garage door repair",
+    previewImage: "https://images.unsplash.com/photo-1606761568499-4636cad0e8a7?w=600&q=80&fit=crop",
     emergency: "HIGH", psychology: "PANIC_URGENCY", accentColor: "#475569", accentName: "Slate Pro",
     avgOrder: 350, searchVolume: "high", margin: 0.55,
     heroHeadline: "Garage Door Repair — Same Day Service",
@@ -161,6 +175,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "appliance_repair", label: "Appliance Repair", keyword: "appliance repair",
+    previewImage: "https://images.unsplash.com/photo-1622895175520-59d2f3c4e642?w=600&q=80&fit=crop",
     emergency: "HIGH", psychology: "PANIC_URGENCY", accentColor: "#0D9488", accentName: "Ocean Teal",
     avgOrder: 250, searchVolume: "high", margin: 0.60,
     heroHeadline: "Appliance Repair — Same Day Service",
@@ -171,6 +186,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "towing", label: "Towing Service", keyword: "towing service",
+    previewImage: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&q=80&fit=crop",
     emergency: "CRITICAL", psychology: "PANIC_URGENCY", accentColor: "#DC2626", accentName: "Alert Red",
     avgOrder: 150, searchVolume: "high", margin: 0.70,
     heroHeadline: "24/7 Towing Service — Fast Dispatch",
@@ -181,6 +197,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "emergency_dentist", label: "Emergency Dentist", keyword: "emergency dentist",
+    previewImage: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&q=80&fit=crop",
     emergency: "CRITICAL", psychology: "PANIC_URGENCY", accentColor: "#0D9488", accentName: "Ocean Teal",
     avgOrder: 450, searchVolume: "high", margin: 0.60,
     heroHeadline: "Emergency Dentist — Same Day Appointment",
@@ -191,6 +208,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "personal_injury", label: "Personal Injury Lawyer", keyword: "personal injury lawyer",
+    previewImage: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80&fit=crop",
     emergency: "HIGH", psychology: "PANIC_URGENCY", accentColor: "#475569", accentName: "Slate Pro",
     avgOrder: 8500, searchVolume: "high", margin: 0.33,
     heroHeadline: "Personal Injury Lawyer — Get The Compensation You Deserve",
@@ -201,6 +219,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "carpet_cleaning", label: "Carpet Cleaning", keyword: "carpet cleaning",
+    previewImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "HEALTH_SAFETY", accentColor: "#0D9488", accentName: "Ocean Teal",
     avgOrder: 250, searchVolume: "high", margin: 0.65,
     heroHeadline: "Professional Carpet Cleaning — Deep Clean",
@@ -211,6 +230,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "deck_building", label: "Deck Building", keyword: "deck builder",
+    previewImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "ASPIRATION", accentColor: "#475569", accentName: "Slate Pro",
     avgOrder: 8500, searchVolume: "medium", margin: 0.35,
     heroHeadline: "Custom Deck Building & Design",
