@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Sparkles, ChevronDown, Code2, Zap, Layers, Globe, Rocket, Send, Wand2 } from "lucide-react";
+import { Sparkles, ChevronDown, Code2, Zap, Layers, Globe, Rocket, Send, Wand2, Phone } from "lucide-react";
 import PipelineRunner from "@/components/gpt-pipeline/PipelineRunner";
 import JsonConfigPanel from "@/components/gpt-pipeline/JsonConfigPanel";
 import SuperAgentsSection from "@/components/gpt-pipeline/SuperAgentsSection";
@@ -31,22 +31,24 @@ export default function GptSyncPipeline() {
   };
 
   return (
-    <div className="flex flex-col gap-4 pb-12 min-h-[calc(100vh-64px)]">
+    <div className="flex flex-col gap-4 pb-12 min-h-[calc(100vh-64px)] text-white">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900 flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-amber-500" />
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#00a2ff] to-[#0066cc]">
+              <Sparkles className="h-4 w-4 text-white" />
+            </div>
             GPT Sync Pipeline
           </h1>
-          <p className="text-sm text-stone-500 mt-1">
+          <p className="text-sm text-white/50 mt-1">
             Type what you want to build. GPT handles everything — research, branding, website, social, deployment, validation, and email.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold text-emerald-700">Vercel AI Gateway</span>
+          <span className="flex items-center gap-1.5 rounded-lg bg-[#00a2ff]/10 border border-[#00a2ff]/30 px-3 py-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#00a2ff] animate-pulse" />
+            <span className="text-xs font-bold text-[#00a2ff]">Vercel AI Gateway</span>
           </span>
         </div>
       </div>
@@ -59,11 +61,11 @@ export default function GptSyncPipeline() {
       {/* Main input — Manus-like */}
       {!submitted && (
         <div className="flex flex-col items-center justify-center gap-4 py-8 flex-1">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: "linear-gradient(135deg, #FFF6D5, #D4AF37, #8B6914)" }}>
-            <Wand2 className="h-8 w-8 text-stone-900" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00a2ff] to-[#0066cc] shadow-[0_0_30px_rgba(0,162,255,0.4)]">
+            <Wand2 className="h-8 w-8 text-white" />
           </div>
           <div className="w-full max-w-2xl">
-            <div className="rounded-2xl border-2 border-stone-200 bg-white p-4 shadow-sm focus-within:border-amber-400 transition">
+            <div className="rounded-2xl border-2 border-white/10 bg-[#0d1525] p-4 shadow-lg focus-within:border-[#00a2ff]/50 transition">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -75,14 +77,14 @@ export default function GptSyncPipeline() {
                 }}
                 placeholder="Describe what you want to build... e.g. 'Build a roofing website for Dallas, deploy it, sync Google, validate 3x, and email me the result'"
                 rows={3}
-                className="w-full resize-none border-0 bg-transparent text-base text-stone-900 placeholder-stone-400 outline-none"
+                className="w-full resize-none border-0 bg-transparent text-base text-white placeholder-white/30 outline-none"
               />
               <div className="flex items-center justify-between mt-2">
-                <span className="text-[10px] text-stone-400">Press Enter to launch · Shift+Enter for new line</span>
+                <span className="text-[10px] text-white/30">Press Enter to launch · Shift+Enter for new line</span>
                 <button
                   onClick={() => launch()}
                   disabled={!input.trim()}
-                  className="flex items-center gap-2 rounded-xl bg-amber-500 px-5 py-2 text-sm font-bold text-stone-900 disabled:opacity-50 hover:bg-amber-400 transition"
+                  className="flex items-center gap-2 rounded-xl bg-[#00a2ff] px-5 py-2 text-sm font-bold text-white disabled:opacity-50 hover:bg-[#0090e0] transition shadow-[0_0_20px_rgba(0,162,255,0.3)]"
                 >
                   <Send className="h-4 w-4" />
                   Launch Pipeline
@@ -92,13 +94,13 @@ export default function GptSyncPipeline() {
           </div>
           {/* Quick ideas */}
           <div className="w-full max-w-2xl">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400 mb-2 text-center">Quick Start</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-white/30 mb-2 text-center">Quick Start</p>
             <div className="flex flex-col gap-1.5">
               {QUICK_IDEAS.map((idea, i) => (
                 <button
                   key={i}
                   onClick={() => launch(idea)}
-                  className="text-left rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm text-stone-600 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 transition"
+                  className="text-left rounded-xl border border-white/10 bg-[#0d1525] px-4 py-2.5 text-sm text-white/60 hover:border-[#00a2ff]/50 hover:bg-[#00a2ff]/5 hover:text-white transition"
                 >
                   {idea}
                 </button>
@@ -116,10 +118,10 @@ export default function GptSyncPipeline() {
       )}
 
       {/* Advanced sections — collapsible */}
-      <div className="border-t border-stone-200 pt-4">
+      <div className="border-t border-white/10 pt-4">
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center gap-2 text-sm font-bold text-stone-500 hover:text-stone-900 transition"
+          className="flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white transition"
         >
           <ChevronDown className={`h-4 w-4 transition ${showAdvanced ? "rotate-180" : ""}`} />
           Advanced — Tools, Templates & Config
@@ -140,8 +142,8 @@ export default function GptSyncPipeline() {
                   onClick={() => setAdvancedTab(t.id)}
                   className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold whitespace-nowrap transition ${
                     advancedTab === t.id
-                      ? "bg-amber-500 text-stone-900 border-amber-500"
-                      : "bg-white border-stone-200 text-stone-600 hover:border-amber-300"
+                      ? "bg-[#00a2ff] text-white border-[#00a2ff]"
+                      : "bg-[#0d1525] border-white/10 text-white/60 hover:border-[#00a2ff]/50"
                   }`}
                 >
                   <t.icon className="h-3.5 w-3.5" />
@@ -152,27 +154,27 @@ export default function GptSyncPipeline() {
 
             {/* Advanced content */}
             {advancedTab === "agents" && (
-              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+              <div className="rounded-2xl border border-white/10 bg-[#0d1525] overflow-hidden">
                 <SuperAgentsSection onQuickAction={(p) => { setSubmitted(null); setTimeout(() => setSubmitted(p), 50); }} />
               </div>
             )}
             {advancedTab === "templates" && (
-              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+              <div className="rounded-2xl border border-white/10 bg-[#0d1525] overflow-hidden">
                 <IndustryTemplateGrid onQuickAction={(p) => { setSubmitted(null); setTimeout(() => setSubmitted(p), 50); }} />
               </div>
             )}
             {advancedTab === "dominance" && (
-              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+              <div className="rounded-2xl border border-white/10 bg-[#0d1525] overflow-hidden">
                 <DominanceSelector onQuickAction={(p) => { setSubmitted(null); setTimeout(() => setSubmitted(p), 50); }} />
               </div>
             )}
             {advancedTab === "provisioning" && (
-              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+              <div className="rounded-2xl border border-white/10 bg-[#0d1525] overflow-hidden">
                 <ProvisioningDashboard onQuickAction={(p) => { setSubmitted(null); setTimeout(() => setSubmitted(p), 50); }} />
               </div>
             )}
             {advancedTab === "json" && (
-              <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden h-[600px]">
+              <div className="rounded-2xl border border-white/10 bg-[#0d1525] overflow-hidden h-[600px]">
                 <JsonConfigPanel />
               </div>
             )}
