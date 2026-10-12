@@ -109,6 +109,8 @@ import PackSync from '@/pages/admin/PackSync';
 import PackResearch from '@/pages/admin/PackResearch';
 import GptSyncPipeline from '@/pages/admin/GptSyncPipeline';
 import ManusRecreation from '@/pages/admin/ManusRecreation';
+import MassLaunchConsole from '@/pages/admin/MassLaunchConsole';
+import SiteCommandCenter from '@/pages/admin/SiteCommandCenter';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -331,6 +333,8 @@ const AuthenticatedApp = () => {
         <Route path="pack-research" element={<PackResearch />} />
         <Route path="gpt-pipeline" element={<GptSyncPipeline />} />
         <Route path="manus-recreation" element={<ManusRecreation />} />
+        <Route path="mass-launch" element={<MassLaunchConsole />} />
+        <Route path="site-command" element={<SiteCommandCenter />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />

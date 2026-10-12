@@ -1,0 +1,193 @@
+{
+  "name": "MassLaunchBatch",
+  "type": "object",
+  "properties": {
+    "batch_id": {
+      "type": "string",
+      "description": "Deterministic batch ID"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "template_key": {
+      "type": "string",
+      "description": "Template/industry key used for all sites in this batch"
+    },
+    "template_name": {
+      "type": "string"
+    },
+    "domain_strategy": {
+      "type": "string",
+      "enum": [
+        "nearme_subdomain",
+        "nearme_domain",
+        "subfolder",
+        "custom"
+      ],
+      "default": "nearme_subdomain"
+    },
+    "domain_base": {
+      "type": "string",
+      "description": "Base domain (e.g. epoxyquotenearme.com or nearme.com)"
+    },
+    "provision_target": {
+      "type": "string",
+      "enum": [
+        "vercel",
+        "godaddy",
+        "both"
+      ],
+      "default": "vercel"
+    },
+    "selected_states": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "selected_counties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "selected_cities": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Array of { city, state, county } objects"
+    },
+    "total_sites": {
+      "type": "number",
+      "default": 0
+    },
+    "sites_queued": {
+      "type": "number",
+      "default": 0
+    },
+    "sites_built": {
+      "type": "number",
+      "default": 0
+    },
+    "sites_deployed": {
+      "type": "number",
+      "default": 0
+    },
+    "sites_validated": {
+      "type": "number",
+      "default": 0
+    },
+    "sites_scored": {
+      "type": "number",
+      "default": 0
+    },
+    "sites_failed": {
+      "type": "number",
+      "default": 0
+    },
+    "average_google_score": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "orchestrating",
+        "deploying",
+        "validating",
+        "scoring",
+        "complete",
+        "failed"
+      ],
+      "default": "queued"
+    },
+    "current_step": {
+      "type": "string",
+      "description": "Current orchestration step"
+    },
+    "queue_item_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "validation_receipt_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "agent_assignment_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "google_sync_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "auto_heal_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "content_optimization": {
+      "type": "string",
+      "enum": [
+        "seo",
+        "seo_aeo",
+        "seo_aeo_geo",
+        "maximum"
+      ],
+      "default": "maximum"
+    },
+    "error_log": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "batch_id",
+    "template_key",
+    "total_sites",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
