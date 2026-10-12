@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, Check } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const TEMPLATES = [
   {
@@ -58,22 +59,22 @@ const TEMPLATES = [
   },
 ];
 
-export default function TemplatesShowcase({ onChoose }) {
+export default function TemplatesShowcase({ onChoose, workspace = false }) {
   const [preview, setPreview] = useState(null);
 
   return (
-    <section id="templates" className="bg-gray-50 py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="text-center mb-12">
+    <section id="templates" className={workspace ? "rounded-2xl border border-border bg-card p-5 sm:p-6" : "bg-gray-50 py-16 md:py-24"}>
+      <div className={workspace ? "w-full" : "max-w-7xl mx-auto px-4 md:px-8"}>
+        <div className={workspace ? "mb-6" : "text-center mb-12"}>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#00a2ff] mb-2">WEBSITE TEMPLATES</p>
-          <h2 className="text-3xl md:text-4xl font-black text-[#0a1220] mb-3">Explore Templates</h2>
-          <p className="text-[#6b7280] max-w-xl mx-auto">Choose a template and scroll through the full website prototype.</p>
-          <button className="mt-3 text-sm font-bold text-[#00a2ff] hover:underline">View All Templates →</button>
+          <h2 className={workspace ? "mb-3 font-heading text-2xl font-extrabold text-foreground" : "text-3xl md:text-4xl font-black text-[#0a1220] mb-3"}>Explore Templates</h2>
+          <p className={workspace ? "max-w-xl text-sm text-muted-foreground" : "text-[#6b7280] max-w-xl mx-auto"}>Choose a template and scroll through the full website prototype.</p>
+          <Link to={workspace ? "/admin/templates" : "/templates"} className="inline-block mt-3 text-sm font-bold text-[#00a2ff] hover:underline">View All Templates →</Link>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {TEMPLATES.map((t) => (
-            <div key={t.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-xl">
+            <div key={t.id} className={workspace ? "overflow-hidden rounded-2xl border border-border bg-background" : "overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-xl"}>
               <div className="relative h-48 overflow-hidden cursor-pointer" onClick={() => setPreview(t)}>
                 <img src={t.img} alt={t.badge} className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a1220]/70 to-transparent" />
@@ -81,10 +82,10 @@ export default function TemplatesShowcase({ onChoose }) {
               </div>
               <div className="p-5">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[#00a2ff] mb-1">{t.industry} · Contact</p>
-                <h3 className="text-lg font-black text-[#0a1220] mb-1">{t.title}</h3>
-                <p className="text-sm text-[#6b7280] mb-3">{t.subtitle}</p>
+                <h3 className={workspace ? "mb-1 font-heading text-lg font-extrabold text-foreground" : "text-lg font-black text-[#0a1220] mb-1"}>{t.title}</h3>
+                <p className={workspace ? "mb-3 text-sm text-muted-foreground" : "text-sm text-[#6b7280] mb-3"}>{t.subtitle}</p>
                 <div className="flex items-center justify-between">
-                  <span className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700">{t.badge}</span>
+                  <span className={workspace ? "rounded-lg bg-secondary px-3 py-1.5 text-xs font-bold text-secondary-foreground" : "rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700"}>{t.badge}</span>
                   <button onClick={() => onChoose?.(t)} className="text-sm font-bold text-[#00a2ff] hover:underline">Preview →</button>
                 </div>
               </div>

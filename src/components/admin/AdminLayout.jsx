@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { NavLink, Outlet, Link } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { LayoutDashboard, Users, KanbanSquare, Settings, ExternalLink, Mail, Radar, Globe, ScrollText, Star, Wrench, Factory, Smartphone, Rocket, Layers, Layout, UserCircle, TrendingUp, MessageSquare, Brain, Target, BarChart3, Package, Bot, KeyRound, Share2, Wand2, MapPin, Network, Crown, Building2, Code2, Heart, PhoneCall, Activity, ListOrdered, Database, Workflow, Gauge, Cpu, Sparkles, Boxes, BookOpen, Eye, EyeOff, Zap, Shield, Compass, Menu, X, ChevronDown, ChevronRight, LayoutGrid, Search, Phone } from "lucide-react";
-import BackButton from "@/components/BackButton";
+import { useAuth } from "@/lib/AuthContext";
+import WorkspaceSidebar from "@/components/launch-engine-admin/WorkspaceSidebar";
+import LaunchBrand from "@/components/launch-engine/LaunchBrand";
 import AIAssistBubble from "@/components/ai-assist/AIAssistBubble";
 
 const navGroups = [
@@ -131,148 +133,45 @@ const navGroups = [
   },
 ];
 
+const workspaceLinks = [
+  { to: "/admin", end: true, icon: Rocket, label: "Launch Engine" },
+  { to: "/admin/templates", icon: Layers, label: "Website Catalog" },
+  { to: "/admin/dominance-pipeline", icon: Workflow, label: "Build Pipeline" },
+  { to: "/admin/targeting", icon: Target, label: "Location Targeting" },
+  { to: "/admin/mass-launch", icon: ListOrdered, label: "Launch Queue" },
+  { to: "/admin/site-command", icon: Shield, label: "Quality Checks" },
+  { to: "/admin/assistant", icon: Bot, label: "GPT Workspace" },
+  { to: "/admin/leads", icon: Users, label: "Lead Inbox" },
+  { to: "/admin/settings", icon: Settings, label: "Settings" },
+];
+const workspacePaths = new Set([...workspaceLinks.map(item => item.to), "/admin/gpt-pipeline", "/launch-engine", "/portal"]);
+const seenPaths = new Set();
+const directoryItems = navGroups.flatMap(group => group.items).filter(item => {
+  if (workspacePaths.has(item.to) || seenPaths.has(item.to)) return false;
+  seenPaths.add(item.to);
+  return true;
+}).map(item => ({ ...item, label: item.label.replace(/^[^\p{L}\p{N}]+/u, "") }));
+const workspaceNavigation = [
+  { label: "Workspace", items: workspaceLinks },
+  { label: "All Tools", collapsible: true, items: directoryItems },
+];
+
 export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const { user } = useAuth();
+  if (user && user.role !== "admin") return <Navigate to="/portal/dashboard" replace />;
 
   return (
-    <div className="dark min-h-screen bg-[#0a1220] flex">
-      {/* === LEFT SIDEBAR === */}
-      <aside
-        className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-72 shrink-0 bg-[#070d18] flex flex-col transition-transform duration-200 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
-      >
-        {/* Brand header */}
-        <div className="flex items-center gap-3 px-5 h-16 border-b border-white/10 shrink-0">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#00a2ff] to-[#0066cc] shrink-0">
-            <Rocket className="h-5 w-5 text-white" />
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="text-[9px] font-bold tracking-[0.15em] text-[#00a2ff] uppercase">Florida Based · Nationwide</span>
-            <span className="text-sm font-bold text-white tracking-tight">Website Launch Engine</span>
-          </div>
-          <button
-            onClick={() => setMobileOpen(false)}
-            className="ml-auto lg:hidden text-stone-400 hover:text-white"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Navigation — scrollable, spread out */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
-          {navGroups.map((group, gi) => {
-            if (group.collapsible) {
-              return (
-                <div key={gi} className="space-y-1">
-                  <button
-                    onClick={() => setAdvancedOpen(!advancedOpen)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-[10px] font-bold tracking-[0.14em] uppercase text-white/40 hover:text-white/70 transition-colors"
-                  >
-                    {group.label}
-                    {advancedOpen ? <ChevronDown className="h-3 w-3 ml-auto" /> : <ChevronRight className="h-3 w-3 ml-auto" />}
-                  </button>
-                  {advancedOpen && (
-                    <div className="space-y-0.5 pt-1">
-                      {group.items.map((l) => (
-                        <NavLink
-                          key={l.to}
-                          to={l.to}
-                          end={l.end}
-                          onClick={() => setMobileOpen(false)}
-                          className={({ isActive }) =>
-                            `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all ${
-                              isActive
-                                ? "bg-[#00a2ff]/20 text-[#00a2ff] border border-[#00a2ff]/40"
-                                : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
-                            }`
-                          }
-                        >
-                          <l.icon className="h-4 w-4 shrink-0" />
-                          <span className="truncate">{l.label}</span>
-                        </NavLink>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            }
-            return (
-              <div key={gi} className="space-y-1">
-                {group.label && (
-                  <div className="px-3 pt-1 pb-2 text-[10px] font-bold tracking-[0.14em] uppercase text-white/30">
-                    {group.label}
-                  </div>
-                )}
-                {group.items.map((l) => (
-                  <NavLink
-                    key={l.to}
-                    to={l.to}
-                    end={l.end}
-                    onClick={() => setMobileOpen(false)}
-                    className={({ isActive }) =>
-                      `flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-                        isActive
-                          ? "bg-[#00a2ff]/20 text-[#00a2ff] border border-[#00a2ff]/40"
-                          : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
-                      }`
-                    }
-                  >
-                    <l.icon className="h-4 w-4 shrink-0" />
-                    <span className="truncate">{l.label}</span>
-                  </NavLink>
-                ))}
-              </div>
-            );
-          })}
-        </nav>
-
-        {/* Footer actions */}
-        <div className="px-4 py-4 border-t border-white/10 shrink-0 space-y-1">
-          <a href="tel:+17722090266" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#00a2ff]/10 border border-[#00a2ff]/30 mb-2 transition hover:bg-[#00a2ff]/20">
-            <Phone className="h-4 w-4 text-[#00a2ff]" />
-            <span className="text-sm font-bold text-[#00a2ff]">(772) 209-0266</span>
-          </a>
-          <BackButton className="text-white/60 hover:text-white w-full" showLabel={true} />
-          <Link
-            to="/"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/60 hover:text-[#00a2ff] hover:bg-white/5 transition-colors"
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-            View Site
-          </Link>
-        </div>
-      </aside>
-
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      {/* === RIGHT CONTENT — more spread out === */}
-      <div className="flex-1 min-w-0 flex flex-col">
-        {/* Mobile top bar */}
-        <div className="lg:hidden flex items-center gap-3 px-4 h-14 bg-[#070d18] text-white shrink-0 sticky top-0 z-20">
-          <button onClick={() => setMobileOpen(true)} className="text-white/60 hover:text-white">
-            <Menu className="h-6 w-6" />
-          </button>
-          <BackButton className="text-white/60 hover:text-white px-2" showLabel={false} />
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#00a2ff] to-[#0066cc]">
-            <Rocket className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-sm font-bold text-white">Launch Engine</span>
-        </div>
-
-        {/* Page content — spread out with more padding */}
-        <div className="flex-1 max-w-7xl w-full mx-auto px-8 py-10 bg-[#0a1220]">
-          <Outlet />
-        </div>
+    <div className="dark flex min-h-screen bg-background font-body text-foreground">
+      <WorkspaceSidebar groups={workspaceNavigation} mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-20 flex min-h-20 items-center gap-3 border-b border-border bg-background px-4 sm:px-6 lg:px-8">
+          <button type="button" aria-label="Open admin navigation" aria-controls="launch-admin-navigation" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"><Menu className="h-5 w-5" /></button>
+          <div className="min-w-0 lg:hidden"><LaunchBrand /></div>
+          <p className="hidden text-sm text-muted-foreground lg:block">Website Launch Engine <span className="mx-2" aria-hidden="true">/</span><span className="font-semibold text-foreground">Admin Workspace</span></p>
+        </header>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8"><Outlet /></main>
       </div>
-
       <AIAssistBubble />
     </div>
   );

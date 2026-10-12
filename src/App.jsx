@@ -109,6 +109,7 @@ import SystemLibrary from '@/pages/admin/SystemLibrary';
 import PackSync from '@/pages/admin/PackSync';
 import PackResearch from '@/pages/admin/PackResearch';
 import GptSyncPipeline from '@/pages/admin/GptSyncPipeline';
+import LaunchEngineAdmin from '@/pages/admin/LaunchEngineAdmin';
 import ManusRecreation from '@/pages/admin/ManusRecreation';
 import MassLaunchConsole from '@/pages/admin/MassLaunchConsole';
 import SiteCommandCenter from '@/pages/admin/SiteCommandCenter';
@@ -238,8 +239,9 @@ const AuthenticatedApp = () => {
       <Route path="/ThankYou" element={<ThankYou />} />
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/app-settings" element={<AppSettings />} />
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login?returnTo=%2Fadmin" replace />} />}>
       <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<GptSyncPipeline />} />
+        <Route index element={<LaunchEngineAdmin />} />
         <Route path="contents" element={<Contents />} />
         <Route path="capabilities" element={<Capabilities />} />
         <Route path="gap-filler" element={<GapFiller />} />
@@ -336,12 +338,14 @@ const AuthenticatedApp = () => {
         <Route path="system-library" element={<SystemLibrary />} />
         <Route path="pack-sync" element={<PackSync />} />
         <Route path="pack-research" element={<PackResearch />} />
-        <Route path="gpt-pipeline" element={<GptSyncPipeline />} />
+        <Route path="gpt-pipeline" element={<Navigate to="/admin" replace />} />
+        <Route path="assistant" element={<GptSyncPipeline />} />
         <Route path="manus-recreation" element={<ManusRecreation />} />
         <Route path="mass-launch" element={<MassLaunchConsole />} />
         <Route path="site-command" element={<SiteCommandCenter />} />
         <Route path="targeting" element={<ProgrammaticTargeting />} />
         <Route path="settings" element={<SettingsPage />} />
+      </Route>
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
       <Route path="/:slug" element={<GeneratedPageView />} />

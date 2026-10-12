@@ -23,14 +23,14 @@ const INDUSTRIES = [
   { name: "Cleaning Services", img: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=350&q=80&fit=crop" },
 ];
 
-export default function IndustriesGrid({ onSelect }) {
+export default function IndustriesGrid({ onSelect, workspace = false }) {
   return (
-    <section id="industries" className="bg-white py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="text-center mb-12">
+    <section id="industries" className={workspace ? "rounded-2xl border border-border bg-card p-5 sm:p-6" : "bg-white py-16 md:py-24"}>
+      <div className={workspace ? "w-full" : "max-w-7xl mx-auto px-4 md:px-8"}>
+        <div className={workspace ? "mb-6" : "text-center mb-12"}>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#00a2ff] mb-2">OUR SOLUTIONS</p>
-          <h2 className="text-3xl md:text-4xl font-black text-[#0a1220] mb-3">Top 20 Industries</h2>
-          <p className="text-[#6b7280] max-w-xl mx-auto">Explore designs for high-value industries. Choose an industry to view available templates.</p>
+          <h2 className={workspace ? "mb-3 font-heading text-2xl font-extrabold text-foreground" : "text-3xl md:text-4xl font-black text-[#0a1220] mb-3"}>Top 20 Industries</h2>
+          <p className={workspace ? "max-w-xl text-sm text-muted-foreground" : "text-[#6b7280] max-w-xl mx-auto"}>Explore designs for high-value industries. Choose an industry to view available templates.</p>
           <a href="#templates" className="inline-block mt-3 text-sm font-bold text-[#00a2ff] hover:underline">Explore Templates →</a>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -38,7 +38,7 @@ export default function IndustriesGrid({ onSelect }) {
             <button
               key={ind.name}
               onClick={() => onSelect?.(ind.name)}
-              className="group relative overflow-hidden rounded-2xl border border-gray-200 aspect-[4/3] transition hover:border-[#00a2ff] hover:shadow-lg"
+              className={workspace ? "group relative aspect-[4/3] overflow-hidden rounded-2xl border border-border transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" : "group relative overflow-hidden rounded-2xl border border-gray-200 aspect-[4/3] transition hover:border-[#00a2ff] hover:shadow-lg"}
             >
               <img src={ind.img} alt={ind.name} className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a1220]/80 via-transparent to-transparent" />
