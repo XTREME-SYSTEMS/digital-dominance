@@ -205,7 +205,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/oauth/consent" element={<OAuthConsent />} />
-      <Route path="/" element={<HomeNew />} />
+      <Route path="/" element={<LaunchEngine />} />
       <Route path="/templates" element={<TemplatesGallery />} />
       <Route path="/launch-engine" element={<LaunchEngine />} />
       <Route path="/pricing" element={<Pricing />} />
