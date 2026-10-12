@@ -524,3 +524,53 @@
     .xa-screen { position: relative; grid-template-rows: 52px minmax(0, 1fr) 60px; min-height: 100vh; }
   }
 }
+
+/* The imported admin reference keeps its light workspace in either app theme. */
+:root, .dark {
+  --launch-admin-font: 'Inter', ui-sans-serif, system-ui, Arial, sans-serif;
+  --launch-admin-canvas: #f4f8fd;
+  --launch-admin-text: #112940;
+  --launch-admin-surface: #ffffff;
+  --launch-admin-rail: #031327;
+  --launch-admin-rail-text: #e9f4ff;
+  --launch-admin-rail-border: #275074;
+  --launch-admin-rail-muted: #89a6c2;
+  --launch-admin-rail-link: #bad3e9;
+  --launch-admin-primary: #126fc8;
+  --launch-admin-primary-border: #309afb;
+  --launch-admin-sky: #6cc6ff;
+  --launch-admin-rail-line: #26435f;
+  --launch-admin-rail-footer: #8faec9;
+  --launch-admin-link-light: #99d7ff;
+  --launch-admin-heading: #06213b;
+  --launch-admin-border: #dce6f1;
+  --launch-admin-help: #116ed0;
+  --launch-admin-focus: #41bdff;
+  --launch-admin-pill: #fff2d8;
+  --launch-admin-pill-text: #8d5b09;
+  --launch-admin-eyebrow: #7dd5ff;
+  --launch-admin-hero-start: #031b34f7;
+  --launch-admin-hero-end: #0b3e70ed;
+  --launch-admin-hero-text: #c6dff4;
+  --launch-admin-hero-border: #73b3e6;
+  --launch-admin-hero-badge: #0b325a;
+  --launch-admin-hero-shadow: #092c4f28;
+  --launch-admin-stat-border: #dbe7f3;
+  --launch-admin-stat-shadow: #143f6710;
+  --launch-admin-stat-text: #06355f;
+  --launch-admin-muted: #5b7288;
+  --launch-admin-panel-border: #d9e5ef;
+  --launch-admin-panel-text: #50657d;
+  --launch-admin-task-border: #e4edf5;
+  --launch-admin-task-muted: #607790;
+  --launch-admin-status: #ebf2f8;
+  --launch-admin-status-text: #3c5974;
+  --launch-admin-action: #0976e9;
+  --launch-admin-action-secondary: #e8f2fd;
+  --launch-admin-action-secondary-text: #1463a4;
+  --launch-admin-notice: #fff4df;
+  --launch-admin-notice-border: #e2ab3e;
+  --launch-admin-notice-text: #725119;
+  --launch-admin-footer: #64809b;
+  --launch-admin-footer-link: #1674c5;
+}

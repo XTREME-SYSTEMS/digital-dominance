@@ -345,6 +345,9 @@ const AuthenticatedApp = () => {
         <Route path="targeting" element={<ProgrammaticTargeting />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
+      <Route path="/admin.html" element={<AdminLayout />}>
+        <Route index element={<LaunchEngineAdmin />} />
+      </Route>
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
       <Route path="/:slug" element={<GeneratedPageView />} />

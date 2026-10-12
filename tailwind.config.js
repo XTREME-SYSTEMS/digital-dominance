@@ -22,6 +22,16 @@ module.exports = {
   				800: '#614704',
   				900: '#443003'
   			},
+  			'launch-admin': {
+  				canvas: 'var(--launch-admin-canvas)',
+  				text: 'var(--launch-admin-text)',
+  				surface: 'var(--launch-admin-surface)',
+  				rail: 'var(--launch-admin-rail)',
+  				primary: 'var(--launch-admin-primary)',
+  				border: 'var(--launch-admin-border)',
+  				muted: 'var(--launch-admin-muted)',
+  				heading: 'var(--launch-admin-heading)'
+  			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
