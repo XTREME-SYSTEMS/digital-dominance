@@ -75,11 +75,11 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {TEMPLATES.map((t) => (
             <div key={t.id} className={workspace ? "overflow-hidden rounded-2xl border border-border bg-background" : "overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-xl"}>
-              <div className="relative h-48 overflow-hidden cursor-pointer" onClick={() => setPreview(t)}>
+              <button type="button" aria-label={`Preview ${t.badge}`} className="relative block h-48 w-full overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset" onClick={() => setPreview(t)}>
                 <img src={t.img} alt={t.badge} className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a1220]/70 to-transparent" />
                 <span className="absolute top-3 left-3 rounded-full bg-[#00a2ff] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Design Preview</span>
-              </div>
+              </button>
               <div className="p-5">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[#00a2ff] mb-1">{t.industry} · Contact</p>
                 <h3 className={workspace ? "mb-1 font-heading text-lg font-extrabold text-foreground" : "text-lg font-black text-[#0a1220] mb-1"}>{t.title}</h3>

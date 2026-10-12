@@ -28,7 +28,6 @@ import Results from '@/pages/Results';
 import Book from '@/pages/Book';
 import Booked from '@/pages/Booked';
 import AdminLayout from '@/components/admin/AdminLayout';
-import Dashboard from '@/pages/admin/Dashboard';
 import Leads from '@/pages/admin/Leads';
 import LeadDetail from '@/pages/admin/LeadDetail';
 import Pipeline from '@/pages/admin/Pipeline';
@@ -252,7 +251,7 @@ const AuthenticatedApp = () => {
         <Route path="google-workspace-os" element={<GoogleWorkspaceOS />} />
         <Route path="internal-architecture" element={<InternalArchitecture />} />
         <Route path="google-command-center" element={<GoogleCommandCenter />} />
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="dashboard" element={<Navigate to="/admin" replace />} />
         <Route path="alpha-prime" element={<AlphaPrime />} />
         <Route path="fleet" element={<FleetDashboard />} />
         <Route path="vision-cortex" element={<ShadowVisionCortex />} />
