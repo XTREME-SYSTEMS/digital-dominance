@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Crown, Trash2, CheckCircle2, Circle, Loader, ExternalLink } from "lucide-react";
+import { Send, Loader2, Rocket, Trash2, CheckCircle2, Circle, Loader, ExternalLink } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import SandboxPreview from "./SandboxPreview";
@@ -91,7 +91,6 @@ export default function PipelineRunner({ initialMessage, onConsumed }) {
         done: c.done || c.functions.some((fn) => completedFns.has(fn)),
       }))
     );
-    // Detect preview URL
     receipts.forEach((r) => {
       const detail = r.detail || "";
       const urlMatch = detail.match(/https?:\/\/[^\s"'<>]+vercel\.app[^\s"'<>]*/i);
@@ -178,31 +177,31 @@ export default function PipelineRunner({ initialMessage, onConsumed }) {
   const checklistDone = checklist.filter((c) => c.done).length;
 
   return (
-    <div className="flex flex-col h-full gap-3">
+    <div className="flex flex-col h-full gap-3 text-white">
       {/* Top bar: progress + clear */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: "linear-gradient(135deg, #FFF6D5, #D4AF37, #8B6914)" }}>
-              <Crown className="h-3.5 w-3.5 text-stone-900" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#00a2ff] to-[#0066cc]">
+              <Rocket className="h-3.5 w-3.5 text-white" />
             </div>
-            <span className="text-xs font-bold text-stone-900">Pipeline Execution</span>
+            <span className="text-xs font-bold text-white">Pipeline Execution</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="h-1.5 w-24 rounded-full bg-stone-200 overflow-hidden">
-              <div className="h-full rounded-full bg-amber-500 transition-all" style={{ width: `${(doneCount / 12) * 100}%` }} />
+            <div className="h-1.5 w-24 rounded-full bg-white/10 overflow-hidden">
+              <div className="h-full rounded-full bg-[#00a2ff] transition-all" style={{ width: `${(doneCount / 12) * 100}%` }} />
             </div>
-            <span className="text-[10px] font-bold text-stone-500">{doneCount}/12 stages</span>
+            <span className="text-[10px] font-bold text-white/50">{doneCount}/12 stages</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="h-1.5 w-20 rounded-full bg-stone-200 overflow-hidden">
+            <div className="h-1.5 w-20 rounded-full bg-white/10 overflow-hidden">
               <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${(checklistDone / checklist.length) * 100}%` }} />
             </div>
-            <span className="text-[10px] font-bold text-stone-500">{checklistDone}/{checklist.length} checklist</span>
+            <span className="text-[10px] font-bold text-white/50">{checklistDone}/{checklist.length} checklist</span>
           </div>
         </div>
         {messages.length > 0 && (
-          <button onClick={clearMemory} className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-red-500">
+          <button onClick={clearMemory} className="rounded-lg p-1.5 text-white/40 hover:bg-white/5 hover:text-red-400">
             <Trash2 className="h-4 w-4" />
           </button>
         )}
@@ -211,26 +210,26 @@ export default function PipelineRunner({ initialMessage, onConsumed }) {
       {/* Main grid: stages | chat | preview+checklist */}
       <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr_280px] gap-3 flex-1 min-h-0">
         {/* Stage tracker */}
-        <div className="rounded-xl border border-stone-200 bg-white p-2.5 overflow-y-auto">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400 mb-2 px-1">Pipeline Stages</p>
+        <div className="rounded-xl border border-white/10 bg-[#0d1525] p-2.5 overflow-y-auto">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-white/30 mb-2 px-1">Pipeline Stages</p>
           <div className="flex flex-col gap-1">
             {stages.map((s) => (
               <div
                 key={s.id}
                 className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition ${
                   s.status === "done"
-                    ? "bg-emerald-50 text-emerald-700"
+                    ? "bg-emerald-500/10 text-emerald-400"
                     : s.status === "active"
-                    ? "bg-amber-50 text-amber-700"
-                    : "text-stone-400"
+                    ? "bg-[#00a2ff]/10 text-[#00a2ff]"
+                    : "text-white/40"
                 }`}
               >
                 {s.status === "done" ? (
                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                 ) : s.status === "active" ? (
-                  <Loader className="h-3.5 w-3.5 shrink-0 animate-spin text-amber-500" />
+                  <Loader className="h-3.5 w-3.5 shrink-0 animate-spin text-[#00a2ff]" />
                 ) : (
-                  <Circle className="h-3.5 w-3.5 shrink-0 text-stone-300" />
+                  <Circle className="h-3.5 w-3.5 shrink-0 text-white/20" />
                 )}
                 <span className="font-medium truncate">{STAGE_ICONS[s.id]} {s.name}</span>
               </div>
@@ -239,31 +238,31 @@ export default function PipelineRunner({ initialMessage, onConsumed }) {
         </div>
 
         {/* Chat */}
-        <div className="rounded-xl border border-stone-200 bg-white overflow-hidden flex flex-col">
+        <div className="rounded-xl border border-white/10 bg-[#0d1525] overflow-hidden flex flex-col">
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-2.5">
             {messages.length === 0 && !loading && (
               <div className="flex flex-col items-center justify-center h-full text-center gap-2">
-                <Crown className="h-8 w-8 text-amber-500" />
-                <p className="text-sm font-semibold text-stone-700">Tell GPT what to build.</p>
-                <p className="text-xs text-stone-500 max-w-[280px]">
+                <Rocket className="h-8 w-8 text-[#00a2ff]" />
+                <p className="text-sm font-semibold text-white">Tell GPT what to build.</p>
+                <p className="text-xs text-white/40 max-w-[280px]">
                   GPT has full operator access — research, strategy, branding, website generation, provisioning, Google sync, dominance, and validation. All through this chat.
                 </p>
               </div>
             )}
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm ${msg.role === "user" ? "bg-amber-500 text-stone-900 font-medium" : "bg-stone-100 text-stone-800"}`}>
+                <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm ${msg.role === "user" ? "bg-[#00a2ff] text-white font-medium" : "bg-white/5 text-white/80"}`}>
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                   {msg.actions?.length > 0 && (
-                    <div className="mt-2 space-y-1 border-t border-stone-300/50 pt-2">
-                      <p className="text-[9px] font-bold uppercase tracking-wide text-stone-500">Execution Receipts</p>
+                    <div className="mt-2 space-y-1 border-t border-white/10 pt-2">
+                      <p className="text-[9px] font-bold uppercase tracking-wide text-white/40">Execution Receipts</p>
                       {msg.actions.map((a, j) => (
                         <div key={j} className="text-xs flex items-start gap-1.5">
-                          <span className={`font-bold ${a.status === "completed" ? "text-emerald-600" : "text-red-500"}`}>
+                          <span className={`font-bold ${a.status === "completed" ? "text-emerald-400" : "text-red-400"}`}>
                             {a.status === "completed" ? "✓" : "✗"}
                           </span>
-                          <span className="text-stone-700">
-                            <b>{a.tool || a.system}</b>: {a.detail || a.target || ""}
+                          <span className="text-white/60">
+                            <b className="text-white/80">{a.tool || a.system}</b>: {a.detail || a.target || ""}
                           </span>
                         </div>
                       ))}
@@ -274,15 +273,15 @@ export default function PipelineRunner({ initialMessage, onConsumed }) {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="flex items-center gap-2 rounded-2xl bg-stone-100 px-3.5 py-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
-                  <span className="text-sm text-stone-500">GPT is working...</span>
+                <div className="flex items-center gap-2 rounded-2xl bg-white/5 px-3.5 py-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-[#00a2ff]" />
+                  <span className="text-sm text-white/50">GPT is working...</span>
                 </div>
               </div>
             )}
           </div>
           {/* Input */}
-          <div className="border-t border-stone-200 bg-white p-2.5">
+          <div className="border-t border-white/10 bg-[#0d1525] p-2.5">
             <div className="flex items-end gap-2">
               <textarea
                 value={input}
@@ -295,12 +294,12 @@ export default function PipelineRunner({ initialMessage, onConsumed }) {
                 }}
                 placeholder="Follow up or guide GPT..."
                 rows={1}
-                className="flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 placeholder-stone-400 focus:border-amber-500 focus:bg-white outline-none resize-none max-h-24"
+                className="flex-1 rounded-xl border border-white/10 bg-[#0a1220] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-[#00a2ff]/50 outline-none resize-none max-h-24"
               />
               <button
                 onClick={() => send()}
                 disabled={loading || !input.trim()}
-                className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-stone-900 disabled:opacity-50 hover:bg-amber-400 transition"
+                className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00a2ff] text-white disabled:opacity-50 hover:bg-[#0090e0] transition"
               >
                 <Send className="h-4 w-4" />
               </button>
@@ -313,17 +312,17 @@ export default function PipelineRunner({ initialMessage, onConsumed }) {
           <div className="flex-1 min-h-[200px]">
             <SandboxPreview url={previewUrl} />
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-2.5">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400 mb-2">Package Checklist</p>
+          <div className="rounded-xl border border-white/10 bg-[#0d1525] p-2.5">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-white/30 mb-2">Package Checklist</p>
             <div className="flex flex-col gap-1.5">
               {checklist.map((c) => (
                 <div key={c.id} className="flex items-center gap-2 text-xs">
                   {c.done ? (
                     <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                   ) : (
-                    <Circle className="h-3.5 w-3.5 shrink-0 text-stone-300" />
+                    <Circle className="h-3.5 w-3.5 shrink-0 text-white/20" />
                   )}
-                  <span className={c.done ? "text-emerald-700 font-medium" : "text-stone-400"}>{c.label}</span>
+                  <span className={c.done ? "text-emerald-400 font-medium" : "text-white/40"}>{c.label}</span>
                 </div>
               ))}
             </div>

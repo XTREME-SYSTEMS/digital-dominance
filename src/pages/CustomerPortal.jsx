@@ -5,9 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight, Loader2, LayoutDashboard, Calendar, Wrench, MessageSquare,
-  Sparkles, Palette, Gift, Phone, ChevronRight, Tag
+  Sparkles, Palette, Gift, Phone, ChevronRight, Tag, Rocket, Lock
 } from "lucide-react";
-import Logo, { XTREME_AI_ICON_URL } from "@/components/Logo";
 import BackButton from "@/components/BackButton";
 import PortalDashboard from "@/components/portal/PortalDashboard";
 import PortalTimeline from "@/components/portal/PortalTimeline";
@@ -33,10 +32,9 @@ export default function CustomerPortal() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [view, setView] = useState("lookup"); // lookup | project | guest
+  const [view, setView] = useState("lookup");
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  // Load app settings for salesperson info
   useEffect(() => {
     (async () => {
       try {
@@ -72,75 +70,86 @@ export default function CustomerPortal() {
     } catch {}
   };
 
+  const BrandMark = () => (
+    <div className="flex items-center gap-2.5">
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#00a2ff] to-[#0066cc]">
+        <Rocket className="h-5 w-5 text-white" />
+      </div>
+      <div className="leading-none">
+        <span className="block text-sm font-extrabold tracking-tight text-white">Website Launch Engine</span>
+        <span className="block text-[9px] font-bold uppercase tracking-[0.15em] text-[#00a2ff]">Client Portal</span>
+      </div>
+    </div>
+  );
+
   // ── Lookup view ──
   if (view === "lookup") {
     return (
-      <div className="min-h-screen bg-stone-50 flex flex-col">
-        <header className="bg-stone-950 text-white">
-          <div className="max-w-2xl mx-auto px-6 py-5 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <BackButton className="text-stone-300 hover:text-white" showLabel={false} />
-              <Logo />
-            </div>
-          </div>
-        </header>
+      <div className="min-h-screen bg-[#0a1220] text-white flex flex-col">
+        <nav className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+          <BrandMark />
+          <BackButton className="text-white/60 hover:text-white" showLabel={false} />
+        </nav>
 
         <div className="flex-1 flex items-center justify-center px-6 py-10">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center mb-6" style={{ width: 96, height: 96 }}>
-                <img src={XTREME_AI_ICON_URL} alt="Xtreme AI" className="w-full h-full object-contain" />
+              <div className="relative mb-6 mx-auto w-fit">
+                <div className="absolute inset-0 rounded-full blur-3xl bg-[#00a2ff]/20" />
+                <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[#00a2ff]/30">
+                  <Lock className="h-8 w-8 text-[#00a2ff]" />
+                </div>
               </div>
-              <h1 className="text-3xl font-semibold tracking-tight text-stone-900">Client Portal</h1>
-              <p className="mt-3 text-stone-600">
-                Track your garage floor project — timeline, photos, warranty, maintenance, and direct chat with your team.
+              <h1 className="text-3xl font-black tracking-wide mb-3">CLIENT <span className="text-[#00a2ff]">PORTAL</span></h1>
+              <p className="text-white/50">
+                Track your project — timeline, photos, warranty, maintenance, and direct chat with your team.
               </p>
             </div>
 
-            <div className="rounded-2xl bg-white border border-stone-200 p-6 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-[#0d1525] p-6 space-y-4">
               <div>
-                <label className="text-sm font-medium text-stone-700 mb-1.5 block">Email address</label>
+                <label className="text-sm font-medium text-white/70 mb-1.5 block">Email address</label>
                 <Input
                   type="email"
                   placeholder="you@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-12"
+                  className="h-12 bg-[#0a1220] border-white/10 text-white placeholder-white/30"
                 />
               </div>
-              <div className="flex items-center gap-3 text-xs text-stone-400">
-                <div className="flex-1 h-px bg-stone-200" /> OR <div className="flex-1 h-px bg-stone-200" />
+              <div className="flex items-center gap-3 text-xs text-white/30">
+                <div className="flex-1 h-px bg-white/10" /> OR <div className="flex-1 h-px bg-white/10" />
               </div>
               <div>
-                <label className="text-sm font-medium text-stone-700 mb-1.5 block">Phone number</label>
+                <label className="text-sm font-medium text-white/70 mb-1.5 block">Phone number</label>
                 <Input
                   type="tel"
                   placeholder="(555) 123-4567"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="h-12"
+                  className="h-12 bg-[#0a1220] border-white/10 text-white placeholder-white/30"
                 />
               </div>
-              {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3">{error}</p>}
+              {error && <p className="text-sm text-red-400 bg-red-500/10 rounded-lg p-3">{error}</p>}
               <Button
                 onClick={findProject}
                 disabled={(!email && !phone) || loading}
-                className="h-14 w-full text-base font-bold bg-amber-500 hover:bg-amber-400 text-stone-950"
+                className="h-14 w-full text-base font-bold bg-[#00a2ff] hover:bg-[#0090e0] text-white shadow-[0_0_20px_rgba(0,162,255,0.3)]"
               >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>FIND MY PROJECT <ArrowRight className="h-5 w-5" /></>}
               </Button>
             </div>
 
             <div className="mt-6 text-center space-y-3">
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-white/40">
                 Don't have a project yet?{" "}
-                <button onClick={() => navigate("/funnel")} className="font-semibold text-amber-600 hover:text-amber-700">
+                <button onClick={() => navigate("/funnel")} className="font-semibold text-[#00a2ff] hover:text-[#0090e0]">
                   Get your estimate →
                 </button>
               </p>
               <button
                 onClick={() => setView("guest")}
-                className="text-sm text-stone-400 hover:text-amber-600 font-semibold"
+                className="text-sm text-white/30 hover:text-[#00a2ff] font-semibold"
               >
                 Browse as guest — see colors, promos & company info
               </button>
@@ -151,105 +160,95 @@ export default function CustomerPortal() {
     );
   }
 
-  // ── Guest view (no project found) ──
+  // ── Guest view ──
   if (view === "guest") {
     return (
-      <div className="min-h-screen bg-stone-50">
-        <header className="bg-stone-950 text-white sticky top-0 z-30">
+      <div className="min-h-screen bg-[#0a1220] text-white">
+        <header className="border-b border-white/10 sticky top-0 z-30 bg-[#0a1220]/80 backdrop-blur-md">
           <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Logo />
-            <button onClick={() => setView("lookup")} className="text-sm text-stone-400 hover:text-white">
+            <BrandMark />
+            <button onClick={() => setView("lookup")} className="text-sm text-white/50 hover:text-white">
               Sign in
             </button>
           </div>
         </header>
         <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
           {/* Welcome */}
-          <div className="rounded-2xl bg-stone-950 p-6 text-white text-center">
-            <h1 className="text-2xl font-semibold">Welcome to Xtreme Polishing Systems</h1>
-            <p className="mt-2 text-stone-400">Explore our color charts, special offers, and company highlights.</p>
+          <div className="rounded-2xl border border-[#00a2ff]/20 bg-gradient-to-br from-[#00a2ff]/10 to-[#0d1525] p-6 text-center">
+            <h1 className="text-2xl font-bold">Welcome to Website Launch Engine</h1>
+            <p className="mt-2 text-white/50">Explore our color charts, special offers, and company highlights.</p>
             <button
               onClick={() => navigate("/funnel")}
-              className="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-amber-500 text-stone-950 font-bold hover:bg-amber-400"
+              className="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#00a2ff] text-white font-bold hover:bg-[#0090e0] shadow-[0_0_20px_rgba(0,162,255,0.3)]"
             >
               Get Your Free Estimate <ArrowRight className="h-4 w-4" />
             </button>
           </div>
 
           {/* Color charts */}
-          <div className="rounded-2xl border border-stone-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
-              <Palette className="h-5 w-5 text-amber-500" /> Floor Color Charts
+          <div className="rounded-2xl border border-white/10 bg-[#0d1525] p-6">
+            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <Palette className="h-5 w-5 text-[#00a2ff]" /> Floor Color Charts
             </h2>
-            <p className="text-sm text-stone-500 mb-4">Browse our full selection of epoxy flake colors, metallic finishes, and polished concrete options.</p>
+            <p className="text-sm text-white/50 mb-4">Browse our full selection of epoxy flake colors, metallic finishes, and polished concrete options.</p>
             <button
               onClick={() => navigate("/color-charts")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-stone-900 text-white text-sm font-bold hover:bg-stone-800"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white/10 text-white text-sm font-bold hover:bg-[#00a2ff] transition"
             >
               View Color Charts <ChevronRight className="h-4 w-4" />
             </button>
           </div>
 
           {/* Promo codes */}
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
-            <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
-              <Gift className="h-5 w-5 text-amber-500" /> Special Offers
+          <div className="rounded-2xl border border-[#00a2ff]/20 bg-[#00a2ff]/5 p-6">
+            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <Gift className="h-5 w-5 text-[#00a2ff]" /> Special Offers
             </h2>
             <div className="space-y-3">
-              <div className="rounded-xl bg-white border border-amber-200 p-4 flex items-center gap-3">
-                <Tag className="h-5 w-5 text-amber-500 shrink-0" />
-                <div className="flex-1">
-                  <div className="font-bold text-stone-900">SPRING25 — 10% Off Installation</div>
-                  <div className="text-sm text-stone-500">Mention this code when booking your estimate</div>
+              {[
+                { code: "SPRING25", desc: "10% Off Installation", sub: "Mention this code when booking your estimate" },
+                { code: "MILITARY", desc: "15% Off for Veterans", sub: "Thank you for your service" },
+                { code: "REFER50", desc: "$50 Gift Card for Referrals", sub: "Refer a friend who books and you both get $50" },
+              ].map((p) => (
+                <div key={p.code} className="rounded-xl bg-[#0d1525] border border-white/10 p-4 flex items-center gap-3">
+                  <Tag className="h-5 w-5 text-[#00a2ff] shrink-0" />
+                  <div className="flex-1">
+                    <div className="font-bold text-white">{p.code} — {p.desc}</div>
+                    <div className="text-sm text-white/40">{p.sub}</div>
+                  </div>
                 </div>
-              </div>
-              <div className="rounded-xl bg-white border border-amber-200 p-4 flex items-center gap-3">
-                <Tag className="h-5 w-5 text-amber-500 shrink-0" />
-                <div className="flex-1">
-                  <div className="font-bold text-stone-900">MILITARY — 15% Off for Veterans</div>
-                  <div className="text-sm text-stone-500">Thank you for your service</div>
-                </div>
-              </div>
-              <div className="rounded-xl bg-white border border-amber-200 p-4 flex items-center gap-3">
-                <Tag className="h-5 w-5 text-amber-500 shrink-0" />
-                <div className="flex-1">
-                  <div className="font-bold text-stone-900">REFER50 — $50 Gift Card for Referrals</div>
-                  <div className="text-sm text-stone-500">Refer a friend who books and you both get $50</div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
           {/* Company highlights */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-stone-200 bg-white p-5 text-center">
-              <div className="text-3xl font-bold text-amber-500">25+</div>
-              <div className="text-sm text-stone-500 mt-1">Years in Business</div>
-            </div>
-            <div className="rounded-2xl border border-stone-200 bg-white p-5 text-center">
-              <div className="text-3xl font-bold text-amber-500">10K+</div>
-              <div className="text-sm text-stone-500 mt-1">Floors Coated</div>
-            </div>
-            <div className="rounded-2xl border border-stone-200 bg-white p-5 text-center">
-              <div className="text-3xl font-bold text-amber-500">4.9★</div>
-              <div className="text-sm text-stone-500 mt-1">Google Rating</div>
-            </div>
+            {[
+              { val: "25+", label: "Years in Business" },
+              { val: "10K+", label: "Floors Coated" },
+              { val: "4.9★", label: "Google Rating" },
+            ].map((s) => (
+              <div key={s.label} className="rounded-2xl border border-white/10 bg-[#0d1525] p-5 text-center">
+                <div className="text-3xl font-bold text-[#00a2ff]">{s.val}</div>
+                <div className="text-sm text-white/40 mt-1">{s.label}</div>
+              </div>
+            ))}
           </div>
 
           {/* CTA */}
-          <div className="rounded-2xl border border-stone-200 bg-white p-6 text-center">
-            <h3 className="font-semibold text-stone-900 mb-2">Ready to Transform Your Garage?</h3>
-            <p className="text-sm text-stone-500 mb-4">Get a free AI-powered estimate with before/after visualization in minutes.</p>
+          <div className="rounded-2xl border border-white/10 bg-[#0d1525] p-6 text-center">
+            <h3 className="font-bold text-white mb-2">Ready to Transform Your Garage?</h3>
+            <p className="text-sm text-white/50 mb-4">Get a free AI-powered estimate with before/after visualization in minutes.</p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => navigate("/funnel")}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-amber-500 text-stone-950 font-bold hover:bg-amber-400"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#00a2ff] text-white font-bold hover:bg-[#0090e0] shadow-[0_0_20px_rgba(0,162,255,0.3)]"
               >
                 Start Estimate <ArrowRight className="h-4 w-4" />
               </button>
               <a
-                href="tel:18334843799"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-stone-200 text-stone-700 font-bold hover:bg-stone-50"
+                href="tel:+17722090266"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/20 text-white font-bold hover:bg-white/5"
               >
                 <Phone className="h-4 w-4" /> Call Us
               </a>
@@ -263,14 +262,14 @@ export default function CustomerPortal() {
 
   // ── Project view ──
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[#0a1220] text-white">
       {/* Header */}
-      <header className="bg-stone-950 text-white sticky top-0 z-30">
+      <header className="border-b border-white/10 sticky top-0 z-30 bg-[#0a1220]/80 backdrop-blur-md">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Logo />
+          <BrandMark />
           <button
             onClick={() => { setView("lookup"); setProject(null); setEmail(""); setPhone(""); }}
-            className="text-sm text-stone-400 hover:text-white"
+            className="text-sm text-white/50 hover:text-white"
           >
             Sign out
           </button>
@@ -279,7 +278,7 @@ export default function CustomerPortal() {
 
       {/* Tab navigation */}
       <div className="max-w-3xl mx-auto px-6 pt-6">
-        <div className="flex gap-1 overflow-x-auto rounded-xl bg-white border border-stone-200 p-1">
+        <div className="flex gap-1 overflow-x-auto rounded-xl bg-[#0d1525] border border-white/10 p-1">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.key;
@@ -289,8 +288,8 @@ export default function CustomerPortal() {
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex-1 min-w-[80px] flex flex-col items-center gap-1 py-2.5 px-2 rounded-lg text-xs font-bold transition-all ${
                   isActive
-                    ? "bg-amber-500 text-stone-950"
-                    : "text-stone-500 hover:bg-stone-50"
+                    ? "bg-[#00a2ff] text-white"
+                    : "text-white/50 hover:bg-white/5"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -308,7 +307,7 @@ export default function CustomerPortal() {
         )}
         {activeTab === "timeline" && (
           <div>
-            <h2 className="text-lg font-semibold text-stone-900 mb-4">Project Timeline</h2>
+            <h2 className="text-lg font-bold text-white mb-4">Project Timeline</h2>
             <PortalTimeline project={project} updates={updates} />
           </div>
         )}
