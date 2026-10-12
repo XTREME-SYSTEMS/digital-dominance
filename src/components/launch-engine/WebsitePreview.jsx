@@ -1,5 +1,7 @@
 import React from "react";
-import { Phone, MapPin, Star, Check, ChevronRight, Mail, Clock, Shield, Award, ThumbsUp, Zap } from "lucide-react";
+import { Phone, MapPin, Star, Check, ChevronRight, Mail, Clock, Shield, Award, ThumbsUp, Zap, Leaf, Flame, Gem, Anchor, Building, Sun, Heart, Sparkles, Rocket } from "lucide-react";
+
+const LOGO_ICONS = { shield: Shield, star: Star, leaf: Leaf, flame: Flame, gem: Gem, anchor: Anchor, building: Building, sun: Sun, heart: Heart, zap: Zap, award: Award, sparkles: Sparkles, rocket: Rocket };
 
 // Industry-specific content for a realistic finished website
 const INDUSTRY_CONTENT = {
@@ -490,8 +492,11 @@ const GENERIC = {
   ],
 };
 
-export default function WebsitePreview({ industry, template }) {
-  const c = INDUSTRY_CONTENT[industry] || { ...GENERIC, heroHeadline: `${industry || "Professional"} Services You Can Trust` };
+export default function WebsitePreview({ industry, template, brand }) {
+  const base = INDUSTRY_CONTENT[industry] || { ...GENERIC, heroHeadline: `${industry || "Professional"} Services You Can Trust` };
+  const c = brand ? { ...base, accent: brand.accent, accentLight: brand.accentLight } : base;
+  const LogoIcon = brand ? (LOGO_ICONS[brand.logo] || Shield) : null;
+  const heroLayout = brand?.layout || "left";
 
   return (
     <div className="flex flex-col h-full">
@@ -525,7 +530,7 @@ export default function WebsitePreview({ industry, template }) {
         <nav className="flex items-center justify-between px-4 py-3 border-b border-gray-100 sticky top-0 bg-white/95 backdrop-blur z-10">
           <div className="flex items-center gap-1.5">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: c.accent }}>
-              <span className="text-white font-black text-xs">{industry?.[0] || "P"}</span>
+              {LogoIcon ? <LogoIcon className="w-3.5 h-3.5 text-white" /> : <span className="text-white font-black text-xs">{industry?.[0] || "P"}</span>}
             </div>
             <span className="font-black text-sm text-gray-900">{industry || "Pro"}</span>
           </div>
@@ -546,31 +551,46 @@ export default function WebsitePreview({ industry, template }) {
 
         {/* Hero */}
         <section className="relative h-48 overflow-hidden">
-          <img src={c.heroImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
-          <div className="relative h-full flex flex-col justify-center px-5 max-w-md">
-            <div className="inline-flex items-center gap-1 mb-2">
-              <div className="flex items-center gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                ))}
+          {heroLayout === "split" ? (
+            <div className="flex h-full">
+              <div className="w-1/2 flex flex-col justify-center px-4" style={{ background: `linear-gradient(135deg, ${c.accent}, ${c.accentLight})` }}>
+                <div className="flex items-center gap-0.5 mb-1.5">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
+                </div>
+                <h1 className="text-lg font-black text-white leading-tight mb-1">{c.heroHeadline}</h1>
+                <p className="text-[10px] text-white/80 leading-relaxed mb-2">{c.heroSubhead}</p>
+                <button className="text-[11px] font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 bg-white" style={{ color: c.accent }}>
+                  <Phone className="w-3 h-3" /> Call Now
+                </button>
               </div>
-              <span className="text-[9px] text-white/80 font-bold">{c.rating} · {c.reviews} reviews</span>
+              <div className="w-1/2 relative overflow-hidden">
+                <img src={c.heroImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              </div>
             </div>
-            <h1 className="text-xl font-black text-white leading-tight mb-1.5">{c.heroHeadline}</h1>
-            <p className="text-[11px] text-white/80 leading-relaxed mb-3">{c.heroSubhead}</p>
-            <div className="flex items-center gap-2">
-              <button
-                className="text-[11px] font-bold text-white px-4 py-2 rounded-lg flex items-center gap-1.5"
-                style={{ background: c.accent }}
-              >
-                <Phone className="w-3 h-3" /> Call Now
-              </button>
-              <button className="text-[11px] font-bold text-white border border-white/40 px-4 py-2 rounded-lg">
-                Free Estimate
-              </button>
-            </div>
-          </div>
+          ) : (
+            <>
+              <img src={c.heroImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              <div className={`absolute inset-0 ${heroLayout === "center" ? "bg-black/60" : "bg-gradient-to-r from-black/80 via-black/50 to-transparent"}`} />
+              <div className={`relative h-full flex flex-col justify-center px-5 ${heroLayout === "center" ? "items-center text-center" : "max-w-md"}`}>
+                <div className="inline-flex items-center gap-1 mb-2">
+                  <div className="flex items-center gap-0.5">
+                    {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
+                  </div>
+                  <span className="text-[9px] text-white/80 font-bold">{c.rating} · {c.reviews} reviews</span>
+                </div>
+                <h1 className="text-xl font-black text-white leading-tight mb-1.5">{c.heroHeadline}</h1>
+                <p className="text-[11px] text-white/80 leading-relaxed mb-3">{c.heroSubhead}</p>
+                <div className="flex items-center gap-2">
+                  <button className="text-[11px] font-bold text-white px-4 py-2 rounded-lg flex items-center gap-1.5" style={{ background: c.accent }}>
+                    <Phone className="w-3 h-3" /> Call Now
+                  </button>
+                  <button className="text-[11px] font-bold text-white border border-white/40 px-4 py-2 rounded-lg">
+                    Free Estimate
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </section>
 
         {/* Trust badges */}
@@ -679,7 +699,7 @@ export default function WebsitePreview({ industry, template }) {
         <footer className="bg-[#0a0a0a] text-white/60 px-4 py-4 text-center">
           <div className="flex items-center justify-center gap-1.5 mb-1.5">
             <div className="w-5 h-5 rounded flex items-center justify-center" style={{ background: c.accent }}>
-              <span className="text-white font-black text-[8px]">{industry?.[0] || "P"}</span>
+              {LogoIcon ? <LogoIcon className="w-2.5 h-2.5 text-white" /> : <span className="text-white font-black text-[8px]">{industry?.[0] || "P"}</span>}
             </div>
             <span className="text-[10px] font-bold text-white">{industry || "Pro"}</span>
           </div>

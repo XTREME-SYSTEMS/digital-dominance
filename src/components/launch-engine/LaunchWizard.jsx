@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Rocket, MapPin, Check, ChevronRight, Eye } from "lucide-react";
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
+import BrandGenerator from "@/components/launch-engine/BrandGenerator";
 
 const INDUSTRIES = [
   "Legal", "Real Estate", "Epoxy Flooring", "Roofing", "HVAC", "Plumbing",
@@ -18,6 +19,7 @@ const TEMPLATES = [
 export default function LaunchWizard({ initial, onClose }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+  const [brand, setBrand] = useState(null);
   const [selection, setSelection] = useState({
     industry: initial?.industry || "",
     template: initial?.template?.badge || "",
@@ -119,8 +121,9 @@ export default function LaunchWizard({ initial, onClose }) {
                 <Eye className="h-4 w-4 text-[#00a2ff]" />
                 <p className="text-xs font-bold text-gray-700">This is your finished website — fully designed and ready to launch.</p>
               </div>
+              <BrandGenerator selected={brand} onSelect={setBrand} />
               <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "380px" }}>
-                <WebsitePreview industry={selection.industry} template={selection.template} />
+                <WebsitePreview industry={selection.industry} template={selection.template} brand={brand} />
               </div>
               <p className="text-[10px] text-gray-400 text-center">Scroll inside the preview to explore the full site. Every section is built and polished.</p>
             </div>
