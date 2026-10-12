@@ -107,7 +107,7 @@
     "is_active": {
       "type": "boolean",
       "default": true,
-      "description": "If true, template is available for deployment"
+      "description": "If true, template is available for deployment and visible on the home page"
     },
     "version": {
       "type": "string",
@@ -166,11 +166,7 @@
     "category"
   ],
   "rls": {
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
+    "read": {},
     "create": {
       "user_condition": {
         "role": "admin"
