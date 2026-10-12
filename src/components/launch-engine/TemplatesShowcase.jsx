@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { X, Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
 
-const TEMPLATES = [
+// Fallback templates — used only if the TemplateLibrary entity has no active records.
+const FALLBACK_TEMPLATES = [
   {
     id: "legal-funnel",
     badge: "High-Call Legal Funnel",
@@ -59,8 +61,38 @@ const TEMPLATES = [
   },
 ];
 
+// Map a TemplateLibrary record to the card shape this component renders.
+const mapRecord = (r) => ({
+  id: r.id,
+  badge: r.niche ? `${r.niche} Template` : "Website Template",
+  title: r.name,
+  subtitle: r.description || "Professionally structured website concept",
+  cta: "Preview →",
+  img: r.preview_image_url || "https://images.unsplash.com/photo-1460925895917-afdab827c853?w=600&q=80&fit=crop",
+  industry: r.category || "Website",
+  tags: r.tags || [],
+});
+
 export default function TemplatesShowcase({ onChoose, workspace = false }) {
   const [preview, setPreview] = useState(null);
+  const [templates, setTemplates] = useState(null); // null = loading, [] = loaded empty
+
+  useEffect(() => {
+    let alive = true;
+    base44.entities.TemplateLibrary.filter(
+      { is_active: true, status: "active" },
+      { sort: "sort_order", limit: 12, fields: ["name", "slug", "category", "niche", "description", "preview_image_url", "tags", "sort_order"] }
+    )
+      .then((page) => {
+        if (!alive) return;
+        const items = (page && page.items) || [];
+        setTemplates(items.length > 0 ? items.map(mapRecord) : FALLBACK_TEMPLATES);
+      })
+      .catch(() => { if (alive) setTemplates(FALLBACK_TEMPLATES); });
+    return () => { alive = false; };
+  }, []);
+
+  const list = templates || FALLBACK_TEMPLATES;
 
   return (
     <section id="templates" className={workspace ? "rounded-2xl border border-border bg-card p-5 sm:p-6" : "bg-gray-50 py-16 md:py-24"}>
@@ -72,26 +104,30 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
           <Link to={workspace ? "/admin/templates" : "/templates"} className="inline-block mt-3 text-sm font-bold text-[#00a2ff] hover:underline">View All Templates →</Link>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TEMPLATES.map((t) => (
-            <div key={t.id} className={workspace ? "overflow-hidden rounded-2xl border border-border bg-background" : "overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-xl"}>
-              <button type="button" aria-label={`Preview ${t.badge}`} className="relative block h-48 w-full overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset" onClick={() => setPreview(t)}>
-                <img src={t.img} alt={t.badge} className="absolute inset-0 h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a1220]/70 to-transparent" />
-                <span className="absolute top-3 left-3 rounded-full bg-[#00a2ff] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Design Preview</span>
-              </button>
-              <div className="p-5">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#00a2ff] mb-1">{t.industry} · Contact</p>
-                <h3 className={workspace ? "mb-1 font-heading text-lg font-extrabold text-foreground" : "text-lg font-black text-[#0a1220] mb-1"}>{t.title}</h3>
-                <p className={workspace ? "mb-3 text-sm text-muted-foreground" : "text-sm text-[#6b7280] mb-3"}>{t.subtitle}</p>
-                <div className="flex items-center justify-between">
-                  <span className={workspace ? "rounded-lg bg-secondary px-3 py-1.5 text-xs font-bold text-secondary-foreground" : "rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700"}>{t.badge}</span>
-                  <button onClick={() => onChoose?.(t)} className="text-sm font-bold text-[#00a2ff] hover:underline">Preview →</button>
+        {templates === null ? (
+          <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-[#00a2ff]" /></div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {list.map((t) => (
+              <div key={t.id} className={workspace ? "overflow-hidden rounded-2xl border border-border bg-background" : "overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-xl"}>
+                <button type="button" aria-label={`Preview ${t.badge}`} className="relative block h-48 w-full overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset" onClick={() => setPreview(t)}>
+                  <img src={t.img} alt={t.badge} className="absolute inset-0 h-full w-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a1220]/70 to-transparent" />
+                  <span className="absolute top-3 left-3 rounded-full bg-[#00a2ff] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Design Preview</span>
+                </button>
+                <div className="p-5">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#00a2ff] mb-1">{t.industry} · Contact</p>
+                  <h3 className={workspace ? "mb-1 font-heading text-lg font-extrabold text-foreground" : "text-lg font-black text-[#0a1220] mb-1"}>{t.title}</h3>
+                  <p className={workspace ? "mb-3 text-sm text-muted-foreground" : "text-sm text-[#6b7280] mb-3"}>{t.subtitle}</p>
+                  <div className="flex items-center justify-between">
+                    <span className={workspace ? "rounded-lg bg-secondary px-3 py-1.5 text-xs font-bold text-secondary-foreground" : "rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700"}>{t.badge}</span>
+                    <button onClick={() => onChoose?.(t) || setPreview(t)} className="text-sm font-bold text-[#00a2ff] hover:underline">Preview →</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {preview && <PreviewModal template={preview} onClose={() => setPreview(null)} onChoose={onChoose} />}
