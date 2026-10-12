@@ -28,6 +28,7 @@ export default function ReferenceAdminSidebar() {
             </Link>
           );
         })}
+        <Link to="/admin/template-studio" className="wle-side-nav">Template Studio</Link>
         <Link to="/admin/contents" className="wle-side-nav wle-tools-mobile">All Tools</Link>
       </nav>
       <div className="wle-aside-bottom">

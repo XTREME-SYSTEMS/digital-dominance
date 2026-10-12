@@ -336,7 +336,7 @@ const AuthenticatedApp = () => {
         <Route path="master-pipeline" element={<MasterPipeline />} />
         <Route path="ab-testing" element={<ABTesting />} />
         <Route path="independence" element={<SystemIndependence />} />
-        <Route path="template-studio" element={<UniversalTemplateStudio />} />
+        <Route path="universal-template-studio" element={<UniversalTemplateStudio />} />
         <Route path="system-library" element={<SystemLibrary />} />
         <Route path="pack-sync" element={<PackSync />} />
         <Route path="pack-research" element={<PackResearch />} />

@@ -3,55 +3,39 @@ import { useNavigate } from "react-router-dom";
 import { X, Rocket, MapPin, Check, ChevronRight, Eye } from "lucide-react";
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import BrandGenerator from "@/components/launch-engine/BrandGenerator";
-
-const INDUSTRIES = [
-  "Legal", "Real Estate", "Epoxy Flooring", "Roofing", "HVAC", "Plumbing",
-  "Electrical", "Med Spa", "Dental", "Chiropractic", "Remodeling", "Landscaping",
-  "Solar", "Pest Control", "Moving", "Auto Detailing", "Restaurants",
-  "Insurance", "Mortgage", "Cleaning Services",
-];
-
-const TEMPLATES = [
-  "High-Call Legal Funnel", "Luxury Real Estate", "Contractor Lead Machine",
-  "HVAC Service Pro", "Med Spa Bookings", "Dental Growth",
-];
+import useStockTemplates from '@/components/template-studio/useStockTemplates';
 
 export default function LaunchWizard({ initial, onClose }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [brand, setBrand] = useState(null);
   const [selection, setSelection] = useState({
-    industry: initial?.industry || "",
-    template: initial?.template?.badge || "",
-    locations: initial?.template?.industry || "",
+    industry: initial?.industry || initial?.template?.niche || "",
+    template: initial?.template || null,
+    locations: "",
     count: 10,
   });
+
+  const industries = useStockTemplates({is_default:true},20);
+  const designs = useStockTemplates({niche:selection.industry || '__unselected__'},10);
 
   const STEPS = [
     { label: "Industry", desc: "Choose a business category" },
     { label: "Template", desc: "Pick a conversion-focused design" },
     { label: "Preview", desc: "Your finished website preview" },
     { label: "Locations", desc: "How many sites to launch" },
-    { label: "Launch", desc: "Send to Dominance Pipeline" },
+    { label: "Review", desc: "Review your template and open the studio" },
   ];
 
   const canAdvance = step === 0 ? !!selection.industry : step === 1 ? !!selection.template : step === 3 ? selection.count > 0 : true;
 
   const launch = () => {
-    // Pass selection to the Dominance Pipeline via navigation state
-    navigate("/admin/dominance-pipeline", {
-      state: {
-        fromLaunchEngine: true,
-        industry: selection.industry,
-        template: selection.template,
-        locationCount: selection.count,
-      },
-    });
+    navigate('/admin/template-studio', { state: { selectedStockTemplateId:selection.template.id } });
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+      <div className="relative max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between bg-[#0a1220] px-5 py-4">
           <div className="flex items-center gap-2.5">
@@ -89,27 +73,31 @@ export default function LaunchWizard({ initial, onClose }) {
 
           {step === 0 && (
             <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-              {INDUSTRIES.map((ind) => (
+              {industries.isLoading && <p role="status">Loading industries…</p>}
+              {industries.error && <p role="alert">{industries.error.message}</p>}
+              {industries.items.map((record) => { const ind=record.niche; return (
                 <button
                   key={ind}
-                  onClick={() => setSelection({ ...selection, industry: ind })}
+                  onClick={() => setSelection({ ...selection, industry: ind, template:null })}
                   className={`rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition ${selection.industry === ind ? "border-[#00a2ff] bg-[#00a2ff]/5 text-[#00a2ff]" : "border-gray-200 text-gray-700 hover:border-gray-300"}`}
                 >
                   {ind}
                 </button>
-              ))}
+              ); })}
             </div>
           )}
 
           {step === 1 && (
             <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
-              {TEMPLATES.map((t) => (
+              {designs.isLoading && <p role="status">Loading stock designs…</p>}
+              {designs.error && <p role="alert">{designs.error.message}</p>}
+              {designs.items.map((t) => (
                 <button
-                  key={t}
+                  key={t.id}
                   onClick={() => setSelection({ ...selection, template: t })}
-                  className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${selection.template === t ? "border-[#00a2ff] bg-[#00a2ff]/5 text-[#00a2ff]" : "border-gray-200 text-gray-700 hover:border-gray-300"}`}
+                  className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${selection.template?.id === t.id ? "border-[#00a2ff] bg-[#00a2ff]/5 text-[#00a2ff]" : "border-gray-200 text-gray-700 hover:border-gray-300"}`}
                 >
-                  {t}
+                  {t.name.split(' / ')[1]}
                 </button>
               ))}
             </div>
@@ -119,7 +107,7 @@ export default function LaunchWizard({ initial, onClose }) {
             <div className="space-y-3">
               <div className="flex items-center gap-2 mb-1">
                 <Eye className="h-4 w-4 text-[#00a2ff]" />
-                <p className="text-xs font-bold text-gray-700">This is your finished website — fully designed and ready to launch.</p>
+                <p className="text-xs font-bold text-gray-700">This is the exact stock design. Business details require launch review.</p>
               </div>
               <BrandGenerator selected={brand} onSelect={setBrand} />
               <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "380px" }}>
@@ -163,11 +151,11 @@ export default function LaunchWizard({ initial, onClose }) {
             <div className="space-y-3">
               <div className="rounded-xl bg-gray-50 p-4 space-y-2">
                 <Row label="Industry" value={selection.industry} />
-                <Row label="Template" value={selection.template} />
+                <Row label="Template" value={selection.template?.name} />
                 <Row label="Location Sites" value={`${selection.count} sites`} />
                 <Row label="Markets" value={selection.locations || "Nationwide"} />
               </div>
-              <p className="text-xs text-gray-400 text-center">This will send the selection to your Digital Dominance Pipeline for automated provisioning and programmatic launch.</p>
+              <p className="text-xs text-gray-400 text-center">Open this exact template in the studio for brand assets and a publication-readiness review.</p>
             </div>
           )}
         </div>
@@ -194,7 +182,7 @@ export default function LaunchWizard({ initial, onClose }) {
               onClick={launch}
               className="flex items-center gap-2 rounded-lg bg-[#00a2ff] px-5 py-2 text-sm font-bold text-white hover:bg-[#0090e0]"
             >
-              <Rocket className="h-4 w-4" /> Launch to Pipeline
+              <Rocket className="h-4 w-4" /> Open in Studio
             </button>
           )}
         </div>

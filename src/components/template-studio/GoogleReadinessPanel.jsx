@@ -1,0 +1,8 @@
+import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+export default function GoogleReadinessPanel({ template }) {
+ const [result,setResult]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
+ const run=async()=>{setBusy(true);setError('');try{const res=await base44.functions.invoke('stockTemplateFactory',{action:'readiness',templateId:template.id});setResult(res.data);}catch(err){setError(err.message);}finally{setBusy(false);}};
+ return <section className="space-y-4 rounded-xl border border-border bg-card p-5"><h2 className="font-heading text-lg font-bold">Google Search Readiness</h2><p className="text-sm text-muted-foreground">Checks generated output against published Google guidance. Unknowns and human-review requirements cannot be auto-passed; Google offers no 100% ranking guarantee.</p><Button disabled={busy} onClick={run}>{busy?'Checking…':'Check this template'}</Button>{error&&<p role="alert" className="text-sm text-destructive">{error}</p>}{result&&<div className="space-y-3"><p className="font-bold">{result.passed}/{result.total} checks evidenced · {result.releaseApproved?'Ready for review':'Publication not approved'}</p>{result.checks.map(c=><details key={c.id} className="border-b border-border pb-3"><summary className="cursor-pointer text-sm font-semibold">{c.name} · {c.status}</summary><p className="my-2 text-sm text-muted-foreground">{c.detail}</p><a href={c.source} target="_blank" rel="noreferrer" className="text-sm underline">Official guidance</a></details>)}<p className="text-xs text-muted-foreground">{result.disclaimer}</p></div>}</section>;
+}

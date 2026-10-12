@@ -1,0 +1,139 @@
+{
+  "name": "IndustryBenchmark",
+  "type": "object",
+  "properties": {
+    "reference_key": {
+      "type": "string"
+    },
+    "industry_key": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "selection_basis": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "evidence_status": {
+      "type": "string",
+      "enum": [
+        "reference",
+        "captured",
+        "blocked",
+        "failed"
+      ],
+      "default": "reference"
+    },
+    "screenshot_uri": {
+      "type": "string"
+    },
+    "mobile_screenshot_uri": {
+      "type": "string"
+    },
+    "normalized_uri": {
+      "type": "string"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "capture_hash": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "benefit": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "verification": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "category",
+          "description",
+          "benefit",
+          "evidence",
+          "verification"
+        ]
+      }
+    },
+    "visual_tokens": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "rebrand_review": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "required": [
+    "reference_key",
+    "industry_key",
+    "industry",
+    "name",
+    "url",
+    "source_url",
+    "evidence_status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
