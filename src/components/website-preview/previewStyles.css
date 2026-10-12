@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* === Website Preview Premium Animations === */
+@keyframes wp-float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-12px) translateX(4px); }
+}
+@keyframes wp-float-slow {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.05); }
+}
+@keyframes wp-gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes wp-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes wp-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes wp-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes wp-pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+}
+@keyframes wp-pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes wp-counter {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes wp-accordion-down {
+  from { max-height: 0; opacity: 0; }
+  to { max-height: 200px; opacity: 1; }
+}
+@keyframes wp-slide-in {
+  from { transform: translateX(-12px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.wp-float { animation: wp-float 5s ease-in-out infinite; }
+.wp-float-slow { animation: wp-float-slow 7s ease-in-out infinite; }
+.wp-fade-up { animation: wp-fade-up 0.6s ease-out forwards; }
+.wp-fade-in { animation: wp-fade-in 0.8s ease-out forwards; }
+.wp-gradient-animate { background-size: 200% 200%; animation: wp-gradient-shift 5s ease infinite; }
+.wp-pulse-ring { animation: wp-pulse-ring 2s ease-out infinite; }
+.wp-pulse-dot { animation: wp-pulse-dot 1.5s ease-in-out infinite; }
+.wp-counter { animation: wp-counter 0.5s ease-out forwards; }
+.wp-accordion { animation: wp-accordion-down 0.35s ease-out forwards; overflow: hidden; }
+.wp-slide-in { animation: wp-slide-in 0.4s ease-out forwards; }
+
+.wp-glass {
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.4);
+}
+.wp-glass-dark {
+  background: rgba(10,10,10,0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.wp-shimmer-text {
+  background-size: 200% 100%;
+  animation: wp-shimmer 4s linear infinite;
+}
+.wp-font-heading { font-family: 'Playfair Display', Georgia, serif; }
+.wp-font-body { font-family: 'Poppins', system-ui, sans-serif; }
+.wp-card-hover {
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.wp-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -8px rgba(0,0,0,0.18);
+}
+.wp-stagger > * { opacity: 0; animation: wp-fade-up 0.5s ease-out forwards; }
+.wp-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.wp-stagger > *:nth-child(2) { animation-delay: 0.12s; }
+.wp-stagger > *:nth-child(3) { animation-delay: 0.19s; }
+.wp-stagger > *:nth-child(4) { animation-delay: 0.26s; }
+.wp-stagger > *:nth-child(5) { animation-delay: 0.33s; }
+.wp-stagger > *:nth-child(6) { animation-delay: 0.40s; }

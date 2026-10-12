@@ -1,5 +1,15 @@
 import React from "react";
-import { Phone, MapPin, Star, Check, ChevronRight, Mail, Clock, Shield, Award, ThumbsUp, Zap, Leaf, Flame, Gem, Anchor, Building, Sun, Heart, Sparkles, Rocket } from "lucide-react";
+import { Shield, Star, Leaf, Flame, Gem, Anchor, Building, Sun, Heart, Zap, Award, Sparkles, Rocket } from "lucide-react";
+import "@/components/website-preview/previewStyles.css";
+import PreviewHero from "@/components/website-preview/PreviewHero";
+import PreviewServices from "@/components/website-preview/PreviewServices";
+import PreviewStats from "@/components/website-preview/PreviewStats";
+import PreviewAbout from "@/components/website-preview/PreviewAbout";
+import PreviewTestimonials from "@/components/website-preview/PreviewTestimonials";
+import PreviewFaq from "@/components/website-preview/PreviewFaq";
+import PreviewServiceAreas from "@/components/website-preview/PreviewServiceAreas";
+import PreviewCta from "@/components/website-preview/PreviewCta";
+import PreviewFooter from "@/components/website-preview/PreviewFooter";
 
 const LOGO_ICONS = { shield: Shield, star: Star, leaf: Leaf, flame: Flame, gem: Gem, anchor: Anchor, building: Building, sun: Sun, heart: Heart, zap: Zap, award: Award, sparkles: Sparkles, rocket: Rocket };
 
@@ -499,8 +509,7 @@ export default function WebsitePreview({ industry, template, brand }) {
   const heroLayout = brand?.layout || "left";
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Browser frame */}
+    <div className="flex flex-col h-full wp-font-body">
       <div className="flex items-center gap-1.5 bg-[#1a1a1a] px-3 py-2 rounded-t-xl">
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
@@ -513,202 +522,16 @@ export default function WebsitePreview({ industry, template, brand }) {
         <span className="text-[9px] text-white/30 font-bold px-1">LIVE</span>
       </div>
 
-      {/* Scrollable website */}
       <div className="flex-1 overflow-y-auto bg-white rounded-b-xl">
-        {/* Top bar */}
-        <div className="bg-[#0a0a0a] text-white text-[10px] flex items-center justify-between px-4 py-1.5">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> Open Now</span>
-            <span className="flex items-center gap-1"><MapPin className="w-2.5 h-2.5" /> Serving Your Area</span>
-          </div>
-          <a className="flex items-center gap-1 font-bold hover:opacity-80" style={{ color: c.accentLight }}>
-            <Phone className="w-2.5 h-2.5" /> {c.phone}
-          </a>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex items-center justify-between px-4 py-3 border-b border-gray-100 sticky top-0 bg-white/95 backdrop-blur z-10">
-          <div className="flex items-center gap-1.5">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: c.accent }}>
-              {LogoIcon ? <LogoIcon className="w-3.5 h-3.5 text-white" /> : <span className="text-white font-black text-xs">{industry?.[0] || "P"}</span>}
-            </div>
-            <span className="font-black text-sm text-gray-900">{industry || "Pro"}</span>
-          </div>
-          <div className="hidden md:flex items-center gap-4 text-[10px] font-semibold text-gray-600">
-            <span>Home</span>
-            <span>Services</span>
-            <span>About</span>
-            <span>Reviews</span>
-            <span>Contact</span>
-          </div>
-          <button
-            className="text-[10px] font-bold text-white px-3 py-1.5 rounded-lg"
-            style={{ background: c.accent }}
-          >
-            Free Quote
-          </button>
-        </nav>
-
-        {/* Hero */}
-        <section className="relative h-48 overflow-hidden">
-          {heroLayout === "split" ? (
-            <div className="flex h-full">
-              <div className="w-1/2 flex flex-col justify-center px-4" style={{ background: `linear-gradient(135deg, ${c.accent}, ${c.accentLight})` }}>
-                <div className="flex items-center gap-0.5 mb-1.5">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
-                </div>
-                <h1 className="text-lg font-black text-white leading-tight mb-1">{c.heroHeadline}</h1>
-                <p className="text-[10px] text-white/80 leading-relaxed mb-2">{c.heroSubhead}</p>
-                <button className="text-[11px] font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 bg-white" style={{ color: c.accent }}>
-                  <Phone className="w-3 h-3" /> Call Now
-                </button>
-              </div>
-              <div className="w-1/2 relative overflow-hidden">
-                <img src={c.heroImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              </div>
-            </div>
-          ) : (
-            <>
-              <img src={c.heroImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              <div className={`absolute inset-0 ${heroLayout === "center" ? "bg-black/60" : "bg-gradient-to-r from-black/80 via-black/50 to-transparent"}`} />
-              <div className={`relative h-full flex flex-col justify-center px-5 ${heroLayout === "center" ? "items-center text-center" : "max-w-md"}`}>
-                <div className="inline-flex items-center gap-1 mb-2">
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
-                  </div>
-                  <span className="text-[9px] text-white/80 font-bold">{c.rating} · {c.reviews} reviews</span>
-                </div>
-                <h1 className="text-xl font-black text-white leading-tight mb-1.5">{c.heroHeadline}</h1>
-                <p className="text-[11px] text-white/80 leading-relaxed mb-3">{c.heroSubhead}</p>
-                <div className="flex items-center gap-2">
-                  <button className="text-[11px] font-bold text-white px-4 py-2 rounded-lg flex items-center gap-1.5" style={{ background: c.accent }}>
-                    <Phone className="w-3 h-3" /> Call Now
-                  </button>
-                  <button className="text-[11px] font-bold text-white border border-white/40 px-4 py-2 rounded-lg">
-                    Free Estimate
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-        </section>
-
-        {/* Trust badges */}
-        <section className="flex items-center justify-around px-4 py-3 border-b border-gray-100 bg-gray-50">
-          <div className="text-center">
-            <Shield className="w-4 h-4 mx-auto mb-0.5" style={{ color: c.accent }} />
-            <div className="text-[9px] font-black text-gray-900">{c.trustBadge}</div>
-            <div className="text-[8px] text-gray-400">{c.trustLabel}</div>
-          </div>
-          <div className="w-px h-8 bg-gray-200" />
-          <div className="text-center">
-            <Award className="w-4 h-4 mx-auto mb-0.5" style={{ color: c.accent }} />
-            <div className="text-[9px] font-black text-gray-900">Licensed</div>
-            <div className="text-[8px] text-gray-400">& Insured</div>
-          </div>
-          <div className="w-px h-8 bg-gray-200" />
-          <div className="text-center">
-            <ThumbsUp className="w-4 h-4 mx-auto mb-0.5" style={{ color: c.accent }} />
-            <div className="text-[9px] font-black text-gray-900">{c.rating}★ Rating</div>
-            <div className="text-[8px] text-gray-400">{c.reviews}+ Reviews</div>
-          </div>
-        </section>
-
-        {/* Services */}
-        <section className="px-4 py-5">
-          <div className="text-center mb-4">
-            <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: c.accent }}>What We Do</span>
-            <h2 className="text-base font-black text-gray-900 mt-0.5">Our Services</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-2.5">
-            {c.services.map((s, i) => (
-              <div key={i} className="rounded-xl border border-gray-100 p-3 hover:shadow-md transition" style={{ borderTop: `2px solid ${c.accent}` }}>
-                <div className="w-6 h-6 rounded-lg flex items-center justify-center mb-1.5" style={{ background: `${c.accent}15` }}>
-                  <Check className="w-3 h-3" style={{ color: c.accent }} />
-                </div>
-                <h3 className="text-[11px] font-bold text-gray-900 mb-0.5">{s.title}</h3>
-                <p className="text-[9px] text-gray-500 leading-tight">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* About */}
-        <section className="px-4 py-5 bg-gray-50">
-          <div className="text-center mb-3">
-            <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: c.accent }}>About Us</span>
-            <h2 className="text-base font-black text-gray-900 mt-0.5">Why Choose Us</h2>
-          </div>
-          <p className="text-[10px] text-gray-600 leading-relaxed text-center mb-4 max-w-sm mx-auto">{c.about}</p>
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { icon: Zap, title: "Fast Response", desc: "Same-day service" },
-              { icon: Shield, title: "Fully Insured", desc: "Your protection" },
-              { icon: Award, title: "Experienced", desc: "Years of expertise" },
-            ].map((f, i) => (
-              <div key={i} className="text-center">
-                <div className="w-8 h-8 rounded-full mx-auto mb-1 flex items-center justify-center" style={{ background: `${c.accent}15` }}>
-                  <f.icon className="w-4 h-4" style={{ color: c.accent }} />
-                </div>
-                <div className="text-[9px] font-bold text-gray-900">{f.title}</div>
-                <div className="text-[8px] text-gray-400">{f.desc}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Testimonials */}
-        <section className="px-4 py-5">
-          <div className="text-center mb-3">
-            <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: c.accent }}>Testimonials</span>
-            <h2 className="text-base font-black text-gray-900 mt-0.5">What Clients Say</h2>
-          </div>
-          <div className="space-y-2">
-            {c.testimonials.map((t, i) => (
-              <div key={i} className="rounded-xl border border-gray-100 p-3">
-                <div className="flex items-center gap-0.5 mb-1">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-[10px] text-gray-700 italic mb-1.5">"{t.text}"</p>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white" style={{ background: c.accent }}>
-                    {t.name[0]}
-                  </div>
-                  <div>
-                    <div className="text-[9px] font-bold text-gray-900">{t.name}</div>
-                    <div className="text-[8px] text-gray-400">{t.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="px-4 py-6 text-center" style={{ background: `linear-gradient(135deg, ${c.accent}, ${c.accentLight})` }}>
-          <h2 className="text-lg font-black text-white mb-1">Ready to Get Started?</h2>
-          <p className="text-[10px] text-white/80 mb-3">Call now for a free consultation. Same-day appointments available.</p>
-          <button className="inline-flex items-center gap-1.5 bg-white text-[12px] font-bold px-5 py-2.5 rounded-xl" style={{ color: c.accent }}>
-            <Phone className="w-3.5 h-3.5" /> {c.phone}
-          </button>
-        </section>
-
-        {/* Footer */}
-        <footer className="bg-[#0a0a0a] text-white/60 px-4 py-4 text-center">
-          <div className="flex items-center justify-center gap-1.5 mb-1.5">
-            <div className="w-5 h-5 rounded flex items-center justify-center" style={{ background: c.accent }}>
-              {LogoIcon ? <LogoIcon className="w-2.5 h-2.5 text-white" /> : <span className="text-white font-black text-[8px]">{industry?.[0] || "P"}</span>}
-            </div>
-            <span className="text-[10px] font-bold text-white">{industry || "Pro"}</span>
-          </div>
-          <div className="flex items-center justify-center gap-3 text-[8px] mb-1.5">
-            <span className="flex items-center gap-0.5"><Phone className="w-2 h-2" /> {c.phone}</span>
-            <span className="flex items-center gap-0.5"><Mail className="w-2 h-2" /> info@{c.domain}</span>
-          </div>
-          <div className="text-[8px] text-white/30">© 2026 {industry || "Pro"}. All rights reserved. | Privacy Policy | Terms</div>
-        </footer>
+        <PreviewHero c={c} LogoIcon={LogoIcon} industry={industry} heroLayout={heroLayout} />
+        <PreviewServices c={c} />
+        <PreviewStats c={c} />
+        <PreviewAbout c={c} />
+        <PreviewTestimonials c={c} />
+        <PreviewFaq c={c} industry={industry} />
+        <PreviewServiceAreas c={c} />
+        <PreviewCta c={c} />
+        <PreviewFooter c={c} LogoIcon={LogoIcon} industry={industry} />
       </div>
     </div>
   );
