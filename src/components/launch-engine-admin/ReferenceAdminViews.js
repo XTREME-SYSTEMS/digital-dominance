@@ -25,6 +25,11 @@ const ReferenceAdminViews = [
     stats: [["Gateway status", "Unverified"], ["Agent orchestration", "Not connected"], ["Five-minute reconcile", "Not verified"], ["Autonomous launches", "Disabled"]],
   },
   {
+    name: "GPT Sync", title: "Bi-directional sync", toolPath: "/admin/sync",
+    description: "Admin state syncs to GPT for live context. GPT commands sync back to the admin. Full takeover mode.",
+    stats: [["Pending events", "Awaiting sync"], ["Synced events", "Ready"], ["Takeover mode", "Available"], ["Operator loop", "Connected"]],
+  },
+  {
     name: "Analytics", title: "Measure outcomes", toolPath: "/admin/analytics",
     description: "Connect GA4, Search Console and attributed lead events before showing commercial metrics.",
     stats: [["Website visits", "Not connected"], ["Qualified leads", "Not connected"], ["Conversion rate", "Not connected"], ["Revenue attribution", "Not connected"]],

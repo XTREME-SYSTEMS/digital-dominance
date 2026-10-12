@@ -1,0 +1,116 @@
+{
+  "name": "SyncEvent",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "entity_create",
+        "entity_update",
+        "entity_delete",
+        "function_invoke",
+        "workflow_run",
+        "state_snapshot",
+        "gpt_command",
+        "gpt_response",
+        "sync_cycle"
+      ],
+      "description": "What kind of admin state change this event represents"
+    },
+    "entity_name": {
+      "type": "string",
+      "description": "Entity involved (if entity_create/update/delete)"
+    },
+    "record_id": {
+      "type": "string",
+      "description": "Record ID involved"
+    },
+    "action": {
+      "type": "string",
+      "description": "Action or function name"
+    },
+    "data_summary": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Summary of the change data (not full payload)"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "admin_ui",
+        "gpt",
+        "workflow",
+        "system",
+        "sync_engine"
+      ],
+      "default": "admin_ui",
+      "description": "Who triggered the event"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "to_gpt",
+        "from_gpt",
+        "internal"
+      ],
+      "default": "to_gpt",
+      "description": "Sync direction: to_gpt = admin\u2192GPT, from_gpt = GPT\u2192admin, internal = system log"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "synced",
+        "processed",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "gpt_context": {
+      "type": "string",
+      "maxLength": 5000,
+      "description": "Context GPT needs to process this event"
+    },
+    "gpt_response": {
+      "type": "string",
+      "maxLength": 5000,
+      "description": "GPT's response to this event"
+    },
+    "synced_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "processed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "event_type",
+    "source",
+    "direction",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,9 +1,9 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings } from "lucide-react";
+import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio } from "lucide-react";
 import ReferenceAdminViews, { getReferenceAdminView } from "@/components/launch-engine-admin/ReferenceAdminViews";
 
-const ICONS = [Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings];
+const ICONS = [Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Radio, Activity, Settings];
 
 export default function ReferenceAdminSidebar() {
   const { pathname, hash } = useLocation();

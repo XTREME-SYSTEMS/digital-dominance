@@ -108,6 +108,7 @@ import SystemLibrary from '@/pages/admin/SystemLibrary';
 import PackSync from '@/pages/admin/PackSync';
 import PackResearch from '@/pages/admin/PackResearch';
 import GptSyncPipeline from '@/pages/admin/GptSyncPipeline';
+import GptSyncConsole from '@/pages/admin/GptSyncConsole';
 import LaunchEngineAdmin from '@/pages/admin/LaunchEngineAdmin';
 import ManusRecreation from '@/pages/admin/ManusRecreation';
 import MassLaunchConsole from '@/pages/admin/MassLaunchConsole';
@@ -339,6 +340,7 @@ const AuthenticatedApp = () => {
         <Route path="pack-research" element={<PackResearch />} />
         <Route path="gpt-pipeline" element={<Navigate to="/admin" replace />} />
         <Route path="assistant" element={<GptSyncPipeline />} />
+        <Route path="sync" element={<GptSyncConsole />} />
         <Route path="manus-recreation" element={<ManusRecreation />} />
         <Route path="mass-launch" element={<MassLaunchConsole />} />
         <Route path="site-command" element={<SiteCommandCenter />} />
