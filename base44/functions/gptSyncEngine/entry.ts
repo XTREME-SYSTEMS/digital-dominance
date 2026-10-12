@@ -10,7 +10,7 @@ import {
 } from '../../shared/gptSyncCore.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// gptSyncEngine — Bi-directional sync between the admin and GPT.
+// gptSyncEngine — Bi-directional sync between the admin and GPT. v2
 //
 // Actions:
 //   logEvent     — Log an admin state change (Admin → GPT direction)
@@ -93,13 +93,11 @@ export default async function(req: Request): Promise<Response> {
 
     // ── stats: Sync statistics ──
     if (action === 'stats') {
-      const [pending, synced, total] = await Promise.all([
-        svc.entities.SyncEvent.count({ status: 'pending' }),
-        svc.entities.SyncEvent.count({ status: 'synced' }),
-        svc.entities.SyncEvent.count({}),
-      ]);
-      const recent = await svc.entities.SyncEvent.filter({}, '-created_date', 10);
-      const lastSynced = recent.find(e => e.status === 'synced');
+      const allEvents = await svc.entities.SyncEvent.filter({}, '-created_date', 100);
+      const pending = allEvents.filter(e => e.status === 'pending').length;
+      const synced = allEvents.filter(e => e.status === 'synced').length;
+      const total = allEvents.length;
+      const lastSynced = allEvents.find(e => e.status === 'synced');
       return Response.json({
         ok: true,
         stats: {
@@ -108,7 +106,7 @@ export default async function(req: Request): Promise<Response> {
           total,
           last_sync: lastSynced?.synced_at || null,
         },
-        recent,
+        recent: allEvents.slice(0, 10),
       });
     }
 

@@ -20,14 +20,21 @@ const SNAPSHOT_ENTITIES = [
   'DominanceCampaign', 'WebsiteQueue', 'ClientProject', 'AgentPersona',
 ];
 
+async function safeCount(svc, entity) {
+  try {
+    const records = await svc.entities[entity].filter({}, '-created_date', 1);
+    if (records && typeof records.length === 'number') return records.length;
+    if (records && records.items) return records.items.length;
+    return 0;
+  } catch {
+    return 'unavailable';
+  }
+}
+
 export async function captureSnapshot(svc) {
   const counts = {};
   for (const entity of SNAPSHOT_ENTITIES) {
-    try {
-      counts[entity] = await svc.entities[entity].count({});
-    } catch {
-      counts[entity] = 'unavailable';
-    }
+    counts[entity] = await safeCount(svc, entity);
   }
   return counts;
 }
@@ -50,9 +57,8 @@ export async function logSyncEvent(svc, event) {
 }
 
 export async function getPendingEvents(svc, sinceId) {
-  const query = { status: 'pending', direction: 'to_gpt' };
-  const records = await svc.entities.SyncEvent.filter(query, '-created_date', 50);
-  return records;
+  const records = await svc.entities.SyncEvent.filter({ status: 'pending', direction: 'to_gpt' }, '-created_date', 50);
+  return records || [];
 }
 
 export async function markSynced(svc, eventIds, gptResponse) {
