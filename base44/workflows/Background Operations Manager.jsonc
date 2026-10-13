@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 */6 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Background Operations Manager",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "background_operations_manager",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_ops_manager": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "backgroundOperationsManager",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run Background Operations",
+            "description": "Template routing, pipeline progression, stale cleanup"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Autonomous background agent that keeps all operational systems functioning, organized, and updated \u2014 template routing, pipeline progression, stale record cleanup, and workflow health checks. Runs every 6 hours."
+}

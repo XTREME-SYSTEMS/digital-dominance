@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Sparkles, Image as ImageIcon, Loader2, CheckCircle2, XCircle, Star,
   Search, Filter, Eye, ThumbsUp, ThumbsDown, RefreshCw, Plus, AlertCircle,
+  Bot, Clock, Zap,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
@@ -17,6 +18,8 @@ export default function PromptTestingLab() {
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [testing, setTesting] = useState(null);
   const [error, setError] = useState(null);
+  const [autoTesting, setAutoTesting] = useState(false);
+  const [autoTestResult, setAutoTestResult] = useState(null);
 
   const { data: prompts = [], isLoading } = useQuery({
     queryKey: ["prompt-library-all"],
@@ -115,6 +118,21 @@ export default function PromptTestingLab() {
     queryClient.invalidateQueries({ queryKey: ["prompt-library-all"] });
   };
 
+  const handleAutoTest = async () => {
+    setAutoTesting(true);
+    setError(null);
+    setAutoTestResult(null);
+    try {
+      const res = await base44.functions.invoke("automatedPromptTester", { maxPrompts: 5 });
+      setAutoTestResult(res?.data?.summary || null);
+      queryClient.invalidateQueries({ queryKey: ["prompt-library-all"] });
+    } catch (e) {
+      setError(e.message || "Auto-test failed");
+    } finally {
+      setAutoTesting(false);
+    }
+  };
+
   const selectedPromptData = prompts.find((p) => p.id === selectedPrompt);
 
   return (
@@ -130,6 +148,45 @@ export default function PromptTestingLab() {
         ["Avg score", stats.avgScore + "/100"],
       ]}
     >
+      {/* Autonomous tester banner */}
+      <div className="rounded-lg border border-[#dce6f1] bg-gradient-to-r from-[#f8fbfe] to-[#f0f7ff] p-4 mb-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg grid place-items-center bg-[#126fc8]/10 text-[#126fc8]">
+              <Bot className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#112940] flex items-center gap-2">
+                Autonomous Prompt Tester
+                <span className="flex items-center gap-1 text-[10px] font-bold text-[#16a34a] bg-green-50 px-2 py-0.5 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a] animate-pulse" /> ACTIVE
+                </span>
+              </p>
+              <p className="text-xs text-[#607790] flex items-center gap-1.5 mt-0.5">
+                <Clock className="w-3 h-3" /> Runs automatically every 12 hours · Tests 5 prompts per cycle · Auto-features 85+ scores
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleAutoTest}
+            disabled={autoTesting}
+            className="flex items-center gap-2 px-4 h-9 rounded-lg bg-[#126fc8] text-white text-xs font-bold hover:bg-[#0d58a8] disabled:opacity-50 transition"
+          >
+            {autoTesting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+            {autoTesting ? "Testing..." : "Run Auto-Test Now"}
+          </button>
+        </div>
+        {autoTestResult && (
+          <div className="mt-3 pt-3 border-t border-[#dce6f1] flex items-center gap-4 text-xs">
+            <span className="text-[#16a34a] font-bold flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Tested: {autoTestResult.tested}</span>
+            <span className="text-[#d97706] font-bold flex items-center gap-1"><Star className="w-3.5 h-3.5" /> Featured: {autoTestResult.featured}</span>
+            {autoTestResult.deactivated > 0 && (
+              <span className="text-red-500 font-bold flex items-center gap-1"><XCircle className="w-3.5 h-3.5" /> Deactivated: {autoTestResult.deactivated}</span>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">

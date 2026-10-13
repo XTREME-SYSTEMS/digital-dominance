@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 */12 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Automated Prompt Tester",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "automated_prompt_tester",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_prompt_tester": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "automatedPromptTester",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Test Prompts Automatically",
+            "description": "Generate, evaluate, score, and curate prompt library"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Autonomous agent that automatically tests image generation prompts from the PromptLibrary \u2014 generates test images, evaluates quality with an AI art director, updates quality scores, auto-features top performers, and deactivates consistently poor prompts. Runs every 12 hours."
+}
