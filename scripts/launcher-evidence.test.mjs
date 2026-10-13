@@ -79,3 +79,26 @@ test('URL injection and custom-domain fallback fail provider URL gate', () => {
     assert.throws(() => f.requireDeploymentProof({ success: true, ready_state: 'READY', deployment_id: 'dpl_test', site_id: 'site-1', url }, 'site-1'));
   }
 });
+
+test('Code Studio export uses static build outputs and reports only acceptance', async () => {
+  let request;
+  const f = load('base44/functions/vercelDeploy/entry.ts', {
+    createClientFromRequest: () => ({
+      auth: { me: async () => ({ role: 'admin' }) },
+      asServiceRole: { entities: {
+        DynamicPage: { filter: async () => [{ slug: 'example', title: 'Sample', sections: [] }] },
+        CodeBlock: { filter: async () => [] },
+      } },
+    }),
+    secrets: { get: () => 'test-provider-reference' },
+    fetch: async (_url, options) => {
+      request = JSON.parse(options.body);
+      return Response.json({ id: 'dpl_test', url: 'sample.vercel.app', readyState: 'QUEUED' });
+    },
+  });
+  const result = await (await f.handler(new Request('https://local.invalid', { method: 'POST', body: '{}' }))).json();
+  const config = JSON.parse(request.files.find(file => file.file === 'vercel.json').data);
+  assert.deepEqual(config.builds, [{ src: '**/*.html', use: '@vercel/static' }]);
+  assert.equal(result.success, false); assert.equal(result.accepted, true);
+  assert.equal(result.ready_state, 'QUEUED'); assert.equal(result.validation_status, 'UNKNOWN');
+});
