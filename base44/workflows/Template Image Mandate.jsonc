@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 */6 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Template Image Mandate",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "template_image_mandate",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_mandate": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "templateImageMandate",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Enforce Real Image Mandate",
+            "description": "Scan all templates, assign real industry images to any missing/broken previews"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Autonomous mandate system that runs every 6 hours via cron. Scans every active template in the TemplateLibrary for missing or broken preview images and assigns a real, industry-appropriate Unsplash photo from the industryImageRegistry. Guarantees no template ever ships with a blank or broken image on the home page or studio."
+}
