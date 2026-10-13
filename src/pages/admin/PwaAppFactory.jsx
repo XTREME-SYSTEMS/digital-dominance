@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Smartphone, Save, Loader2, CheckCircle2, AlertCircle, Rocket, Copy, ExternalLink } from "lucide-react";
+import { Smartphone, Save, Loader2, CheckCircle2, AlertCircle, Rocket, Copy, ExternalLink, Globe } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
 import CategoryGrid from "@/components/pwa-factory/CategoryGrid";
 import ConfigPanel from "@/components/pwa-factory/ConfigPanel";
 import PreviewCanvas from "@/components/pwa-factory/PreviewCanvas";
-import { DEFAULT_CONFIG, darken } from "@/lib/pwa-factory/studioConfig.js";
+import { DEFAULT_CONFIG, darken, themeToCssVars } from "@/lib/pwa-factory/studioConfig.js";
+import { renderPreview, GALLERY_FAMILIES } from "@/lib/pwa-factory/previewRenderer.js";
+import { PREVIEW_STYLES } from "@/lib/pwa-factory/previewStyles.js";
 
 export default function PwaAppFactory() {
   const queryClient = useQueryClient();
@@ -18,6 +20,8 @@ export default function PwaAppFactory() {
   const [saving, setSaving] = useState(false);
   const [savedBuild, setSavedBuild] = useState(null);
   const [error, setError] = useState(null);
+  const [publishing, setPublishing] = useState(false);
+  const [publishedUrl, setPublishedUrl] = useState(null);
 
   const { data: builds = [], isLoading: buildsLoading } = useQuery({
     queryKey: ["pwa-app-builds"],
@@ -99,6 +103,73 @@ export default function PwaAppFactory() {
     navigator.clipboard.writeText(JSON.stringify(manifest, null, 2));
   };
 
+  const buildStandaloneHtml = () => {
+    const platform = viewport === "desktop" ? "desktop" : "mobile";
+    const pool = platform === "mobile" ? GALLERY_FAMILIES[1].items : GALLERY_FAMILIES[0].items;
+    const template = pattern ? (pool.find((p) => p.id === pattern) || pool[0]) : pool[0];
+    const rendered = renderPreview(template, platform, config);
+    const cssVars = themeToCssVars(config);
+    const varsCss = Object.entries(cssVars).map(([k, v]) => `${k}:${v}`).join(";");
+    const fontHref = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(config.fontFamily || "Roboto").replace(/%20/g, "+")}:wght@400;500;700;900&display=swap`;
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${form.app_name || "PWA App"}</title>
+<meta name="description" content="${config.subtitle || form.app_name || ""}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="${fontHref}" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'${config.fontFamily || "Roboto"}',sans-serif}
+${PREVIEW_STYLES}
+</style>
+</head>
+<body style="${varsCss}">
+<div style="display:flex;flex-direction:column;height:100vh;height:100dvh">
+${rendered.html}
+</div>
+</body>
+</html>`;
+  };
+
+  const handlePublishLive = async () => {
+    if (!savedBuild) {
+      setError("Save the build first before publishing live.");
+      return;
+    }
+    setPublishing(true);
+    setError(null);
+    setPublishedUrl(null);
+    try {
+      const html = buildStandaloneHtml();
+      const manifest = {
+        name: form.app_name,
+        short_name: form.app_name?.slice(0, 12),
+        theme_color: config.primaryColor,
+        background_color: config.themeMode === "dark" ? "#0a0a0a" : "#ffffff",
+        display: "standalone",
+        orientation: "portrait",
+      };
+      const res = await base44.functions.invoke("pwaPublishLive", {
+        buildId: savedBuild.id,
+        appName: form.app_name,
+        appSlug: form.app_slug,
+        html,
+        manifest,
+        navConfig: form.nav_config,
+      });
+      setPublishedUrl(res.data?.url || null);
+      queryClient.invalidateQueries({ queryKey: ["pwa-app-builds"] });
+    } catch (e) {
+      setError(e.message || "Failed to publish live");
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   return (
     <AdminSystemPage
       eyebrow="PWA FACTORY · V1"
@@ -134,14 +205,31 @@ export default function PwaAppFactory() {
               <Copy className="w-4 h-4" /> Manifest
             </button>
           </div>
+          <button
+            onClick={handlePublishLive}
+            disabled={publishing || !savedBuild}
+            className="wle-action w-full"
+            style={{ background: "linear-gradient(135deg, #126fc8, #0d9488)" }}
+          >
+            {publishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
+            {publishing ? "Publishing live..." : "Publish Live to Web"}
+          </button>
           {error && (
             <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3">
               <AlertCircle className="w-4 h-4" /> {error}
             </div>
           )}
-          {savedBuild && (
+          {savedBuild && !publishedUrl && (
             <div className="flex items-center gap-2 text-[#16a34a] text-sm bg-green-50 border border-green-200 rounded-lg p-3">
               <CheckCircle2 className="w-4 h-4" /> Saved: {savedBuild.app_name}
+            </div>
+          )}
+          {publishedUrl && (
+            <div className="flex items-center gap-2 text-[#16a34a] text-sm bg-green-50 border border-green-200 rounded-lg p-3">
+              <CheckCircle2 className="w-4 h-4" /> Published live!
+              <a href={publishedUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 font-bold text-[#126fc8] hover:underline ml-1">
+                <ExternalLink className="w-3.5 h-3.5" /> {publishedUrl.replace("https://", "")}
+              </a>
             </div>
           )}
         </div>

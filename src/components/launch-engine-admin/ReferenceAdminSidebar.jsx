@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone } from "lucide-react";
+import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket } from "lucide-react";
 import ReferenceAdminViews from "@/components/launch-engine-admin/ReferenceAdminViews";
 
 const ICONS = [Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Radio, Activity, Settings];
@@ -34,6 +34,7 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/god-mode-lab" className="wle-side-nav"><Cpu aria-hidden="true" />God Mode Lab</Link>
         <Link to="/admin/predictive-scoring" className="wle-side-nav"><Brain aria-hidden="true" />Predictive Scoring</Link>
         <Link to="/admin/pwa-factory" className="wle-side-nav"><Smartphone aria-hidden="true" />PWA App Factory</Link>
+        <Link to="/admin/launch-status" className="wle-side-nav"><Rocket aria-hidden="true" />Launch Status</Link>
         <Link to="/admin/contents" className="wle-side-nav wle-tools-mobile">All Tools</Link>
       </nav>
       <div className="wle-aside-bottom">
