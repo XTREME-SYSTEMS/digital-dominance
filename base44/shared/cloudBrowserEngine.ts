@@ -29,9 +29,41 @@ export async function engineHealth() {
   return res.ok;
 }
 
-// Create a browser session
+// List all existing sessions (for cleanup)
+export async function listSessions(): Promise<string[]> {
+  const { url, key } = getConfig();
+  try {
+    const res = await fetch(`${url}/sessions`, { headers: { "x-api-key": key }, signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const sessions = Array.isArray(data) ? data : (data.sessions || data.items || data.data || []);
+    return sessions.map((s: any) => s.sessionId || s.session_id || s.id).filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+// Clean up all stale sessions (prevents EAGAIN resource exhaustion)
+export async function cleanStaleSessions(): Promise<number> {
+  const ids = await listSessions();
+  let cleaned = 0;
+  for (const id of ids) {
+    try {
+      await closeSession(id);
+      cleaned++;
+    } catch { /* best effort */ }
+  }
+  return cleaned;
+}
+
+// Create a browser session (auto-cleans stale sessions first to prevent EAGAIN)
 export async function createSession(opts: any = {}) {
   const { url, key } = getConfig();
+  // Clean up any stale sessions that could cause Chromium EAGAIN
+  await cleanStaleSessions();
+  // Brief pause to let Chromium processes fully exit
+  await new Promise((r) => setTimeout(r, 1500));
+
   const res = await fetch(`${url}/sessions`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-api-key": key },
@@ -39,11 +71,11 @@ export async function createSession(opts: any = {}) {
       viewport: opts.viewport || { width: 1280, height: 800 },
       timeout_ms: opts.timeout_ms || 60000,
     }),
-    signal: AbortSignal.timeout(15000),
+    signal: AbortSignal.timeout(20000),
   });
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Engine session creation failed (${res.status}): ${text}`);
+    throw new Error(`Engine session creation failed (${res.status}): ${text.slice(0, 200)}`);
   }
   const data = await res.json();
   return data.sessionId || data.session_id || data.id;
@@ -65,9 +97,24 @@ export async function executeAction(sessionId: string, actionType: string, paylo
   return res.json();
 }
 
-// Navigate to a URL
+// Navigate to a URL using JS (the engine's navigate action type isn't supported,
+// but evaluate works — so we set window.location.href and wait for the page to load)
 export async function navigate(sessionId: string, targetUrl: string) {
-  return executeAction(sessionId, "navigate", { url: targetUrl, options: { waitUntil: "networkidle", timeout: 30000 } });
+  // Trigger navigation via JS
+  await executeAction(sessionId, "evaluate", { value: `window.location.href = ${JSON.stringify(targetUrl)}` });
+  // Wait for the page to load (poll for document.readyState)
+  const maxWait = 20000;
+  const start = Date.now();
+  while (Date.now() - start < maxWait) {
+    await new Promise((r) => setTimeout(r, 1000));
+    try {
+      const check = await executeAction(sessionId, "evaluate", { value: `document.readyState` });
+      const ready = check.data || check.result || check;
+      if (ready === "complete") break;
+    } catch {
+      // Page might still be loading (navigation in progress) — retry
+    }
+  }
 }
 
 // Take a screenshot (returns base64)
@@ -108,105 +155,72 @@ export async function runFullSiteTest(targetUrl: string) {
     // 2. Navigate to the URL
     await navigate(sessionId, targetUrl);
 
-    // 3. Run comprehensive page evaluation via JS
-    const evalScript = `
-      (async () => {
-        const results = {
-          buttons: { total: 0, clickable: 0, broken: 0, details: [] },
-          links: { total: 0, valid: 0, broken: 0, details: [] },
-          images: { total: 0, loaded: 0, broken: 0, details: [] },
-          forms: { total: 0, broken: 0, details: [] },
-          console_errors: { errors: 0, details: [] },
-          performance: { load_time_ms: 0, lcp_ms: 0, cls: 0, dom_size: 0 },
-          responsive: { mobile: false, tablet: false, desktop: false },
-          seo: { title: '', meta_description: '', h1_count: 0, schema_found: false },
-        };
-
-        // --- Console errors ---
-        const origError = console.error;
-        const errors = [];
-        window.__testErrors = errors;
-        const origConsoleError = window.console.error;
-        window.console.error = function(...args) { errors.push(args.join(' ')); origConsoleError.apply(console, args); };
-
-        // --- Buttons ---
-        const buttons = document.querySelectorAll('button, [role="button"], input[type="submit"], input[type="button"], a.btn, a.button');
-        results.buttons.total = buttons.length;
-        buttons.forEach((btn, i) => {
-          if (i > 50) return; // limit
-          const rect = btn.getBoundingClientRect();
-          const visible = rect.width > 0 && rect.height > 0;
-          const hasHandler = btn.onclick || btn.getAttribute('onclick') || btn.type === 'submit' || btn.tagName === 'A';
-          if (visible && hasHandler) results.buttons.clickable++;
-          if (!visible) { results.buttons.broken++; results.buttons.details.push('Invisible: ' + btn.textContent?.trim()?.slice(0, 40)); }
-        });
-
-        // --- Links ---
-        const links = document.querySelectorAll('a[href]');
-        results.links.total = links.length;
-        const linkPromises = [];
-        links.forEach((link, i) => {
-          if (i > 30) return;
-          const href = link.getAttribute('href');
-          if (!href || href === '#' || href.startsWith('javascript:')) { results.links.broken++; results.links.details.push('Bad href: ' + href); return; }
-          results.links.valid++;
-        });
-
-        // --- Images ---
-        const imgs = document.querySelectorAll('img');
-        results.images.total = imgs.length;
-        imgs.forEach((img, i) => {
-          if (i > 50) return;
-          if (img.complete && img.naturalWidth > 0) results.images.loaded++;
-          else if (img.complete && img.naturalWidth === 0) { results.images.broken++; results.images.details.push('Broken: ' + (img.src || '').slice(0, 80)); }
-        });
-
-        // --- Forms ---
-        const forms = document.querySelectorAll('form');
-        results.forms.total = forms.length;
-        forms.forEach((form, i) => {
-          if (i > 20) return;
-          const hasAction = form.action || form.getAttribute('action');
-          const hasSubmit = form.querySelector('button[type="submit"], input[type="submit"]');
-          if (!hasAction && !hasSubmit) { results.forms.broken++; results.forms.details.push('Form missing action/submit'); }
-        });
-
-        // --- Performance ---
-        const nav = performance.getEntriesByType('navigation')[0];
-        if (nav) results.performance.load_time_ms = Math.round(nav.loadEventEnd - nav.startTime);
-        results.performance.dom_size = document.querySelectorAll('*').length;
-
-        // LCP
-        const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
-        if (lcpEntries.length) results.performance.lcp_ms = Math.round(lcpEntries[lcpEntries.length - 1].startTime);
-
-        // CLS
-        const clsEntries = performance.getEntriesByType('layout-shift');
-        if (clsEntries.length) results.performance.cls = clsEntries.reduce((sum, e) => sum + e.value, 0);
-
-        // --- Responsive ---
-        results.responsive.desktop = window.innerWidth >= 1024;
-        results.responsive.tablet = window.innerWidth >= 768 && window.innerWidth < 1024;
-        results.responsive.mobile = window.innerWidth < 768;
-
-        // --- SEO ---
-        results.seo.title = document.title || '';
-        results.seo.meta_description = document.querySelector('meta[name="description"]')?.getAttribute('content') || '';
-        results.seo.h1_count = document.querySelectorAll('h1').length;
-        results.seo.schema_found = !!document.querySelector('script[type="application/ld+json"]');
-
-        // Wait for console errors to collect
-        await new Promise(r => setTimeout(r, 2000));
-        results.console_errors.errors = window.__testErrors.length;
-        results.console_errors.details = window.__testErrors.slice(0, 10);
-        window.console.error = origConsoleError;
-
-        return results;
-      })()
-    `;
+    // 3. Run comprehensive page evaluation via JS (synchronous — engine doesn't support async IIFEs)
+    const evalScript = `JSON.stringify({
+      buttons: (function() {
+        var btns = document.querySelectorAll('button, [role="button"], input[type="submit"], input[type="button"], a.btn, a.button');
+        var total = btns.length, clickable = 0, broken = 0, details = [];
+        for (var i = 0; i < Math.min(btns.length, 50); i++) {
+          var b = btns[i], r = b.getBoundingClientRect();
+          var vis = r.width > 0 && r.height > 0;
+          var has = b.onclick || b.getAttribute('onclick') || b.type === 'submit' || b.tagName === 'A';
+          if (vis && has) clickable++;
+          if (!vis) { broken++; if (details.length < 5) details.push('Invisible: ' + (b.textContent || '').trim().slice(0, 40)); }
+        }
+        return { total: total, clickable: clickable, broken: broken, details: details };
+      })(),
+      links: (function() {
+        var links = document.querySelectorAll('a[href]');
+        var total = links.length, valid = 0, broken = 0, details = [];
+        for (var i = 0; i < Math.min(links.length, 30); i++) {
+          var href = links[i].getAttribute('href');
+          if (!href || href === '#' || href.indexOf('javascript:') === 0) { broken++; if (details.length < 5) details.push('Bad: ' + href); }
+          else valid++;
+        }
+        return { total: total, valid: valid, broken: broken, details: details };
+      })(),
+      images: (function() {
+        var imgs = document.querySelectorAll('img');
+        var total = imgs.length, loaded = 0, broken = 0, details = [];
+        for (var i = 0; i < Math.min(imgs.length, 50); i++) {
+          var img = imgs[i];
+          if (img.complete && img.naturalWidth > 0) loaded++;
+          else if (img.complete && img.naturalWidth === 0) { broken++; if (details.length < 5) details.push('Broken: ' + (img.src || '').slice(0, 80)); }
+        }
+        return { total: total, loaded: loaded, broken: broken, details: details };
+      })(),
+      forms: (function() {
+        var forms = document.querySelectorAll('form');
+        var total = forms.length, broken = 0, details = [];
+        for (var i = 0; i < Math.min(forms.length, 20); i++) {
+          var f = forms[i];
+          var hasAction = f.action || f.getAttribute('action');
+          var hasSubmit = f.querySelector('button[type="submit"], input[type="submit"]');
+          if (!hasAction && !hasSubmit) { broken++; if (details.length < 5) details.push('Missing action/submit'); }
+        }
+        return { total: total, broken: broken, details: details };
+      })(),
+      performance: (function() {
+        var nav = performance.getEntriesByType('navigation')[0];
+        var loadTime = nav ? Math.round(nav.loadEventEnd - nav.startTime) : 0;
+        var lcpEntries = performance.getEntriesByType('largest-contentful-paint');
+        var lcp = lcpEntries.length ? Math.round(lcpEntries[lcpEntries.length - 1].startTime) : 0;
+        var clsEntries = performance.getEntriesByType('layout-shift');
+        var cls = clsEntries.length ? clsEntries.reduce(function(s, e) { return s + e.value; }, 0) : 0;
+        return { load_time_ms: loadTime, lcp_ms: lcp, cls: cls, dom_size: document.querySelectorAll('*').length };
+      })(),
+      responsive: { mobile: window.innerWidth < 768, tablet: window.innerWidth >= 768 && window.innerWidth < 1024, desktop: window.innerWidth >= 1024 },
+      seo: {
+        title: document.title || '',
+        meta_description: (document.querySelector('meta[name="description"]') || {}).getAttribute ? (document.querySelector('meta[name="description"]') || {}).getAttribute('content') || '' : '',
+        h1_count: document.querySelectorAll('h1').length,
+        schema_found: !!document.querySelector('script[type="application/ld+json"]')
+      }
+    })`;
 
     const evalRes = await evaluate(sessionId, evalScript);
-    const pageData = evalRes.data || evalRes.result || evalRes;
+    const rawStr = evalRes.data || evalRes.result || "";
+    const pageData = typeof rawStr === "string" ? JSON.parse(rawStr) : rawStr;
 
     // 4. Take a screenshot for visual proof
     let screenshotUri = null;
