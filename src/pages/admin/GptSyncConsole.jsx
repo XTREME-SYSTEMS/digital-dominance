@@ -204,6 +204,28 @@ export default function GptSyncConsole() {
         </div>
       </div>
 
+      {/* External GPT Connection Card */}
+      <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <CheckCircle2 className="h-4 w-4 text-green-400" />
+          <h3 className="text-sm font-bold text-white">External GPT Connection</h3>
+          <span className="text-[10px] text-green-400 font-bold bg-green-500/10 px-2 py-0.5 rounded">API KEY AUTH READY</span>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3 text-xs">
+          <div className="rounded-lg bg-[#0a0f1a] border border-white/10 p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-white/40 mb-1">Endpoint URL</p>
+            <code className="text-green-400 font-mono break-all">https://unlimitedwebsites.base44.app/functions/gptSyncEngine</code>
+          </div>
+          <div className="rounded-lg bg-[#0a0f1a] border border-white/10 p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-white/40 mb-1">Auth Header</p>
+            <code className="text-green-400 font-mono break-all">Authorization: Bearer &lt;GPT_SYNC_API_KEY&gt;</code>
+          </div>
+        </div>
+        <p className="text-[11px] text-white/40 mt-3">
+          The external GPT passes the API key (set in Secrets as <span className="font-mono text-green-400">GPT_SYNC_API_KEY</span>) in the Authorization header. No admin session needed — service-role access to all entities and functions.
+        </p>
+      </div>
+
       {/* GPT Sync Config JSON — for external GPT integration */}
       <div className="rounded-2xl border border-[#00a2ff]/20 bg-[#0d1525] overflow-hidden">
         <button
