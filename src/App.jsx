@@ -117,6 +117,7 @@ import ProgrammaticTargeting from '@/pages/admin/ProgrammaticTargeting';
 import BulkLaunchBuilder from '@/pages/admin/BulkLaunchBuilder';
 import TemplateStudio from '@/pages/admin/TemplateStudio';
 import AutonomousCompany from '@/pages/admin/AutonomousCompany';
+import HeroEnhancer from '@/pages/admin/HeroEnhancer';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -351,6 +352,7 @@ const AuthenticatedApp = () => {
         <Route path="bulk-launch" element={<BulkLaunchBuilder />} />
         <Route path="template-studio" element={<TemplateStudio />} />
         <Route path="autonomous-company" element={<AutonomousCompany />} />
+        <Route path="hero-enhancer" element={<HeroEnhancer />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ActiveHero from "@/components/hero-enhancer/ActiveHero";
 import LaunchHero from "@/components/launch-engine/LaunchHero";
 import IndustriesGrid from "@/components/launch-engine/IndustriesGrid";
 import TemplatesShowcase from "@/components/launch-engine/TemplatesShowcase";
@@ -20,7 +21,10 @@ export default function LaunchEngine() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0a1220] via-[#1a1530] to-[#3f2b4e]" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0a1220] to-transparent" />
         <div className="relative">
-          <LaunchHero onBrowse={() => openWizard({})} />
+          <ActiveHero
+            fallback={<LaunchHero onBrowse={() => openWizard({})} />}
+            onBrowse={() => openWizard({})}
+          />
         </div>
       </div>
 

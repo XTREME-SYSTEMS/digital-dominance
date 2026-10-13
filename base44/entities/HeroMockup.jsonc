@@ -1,0 +1,123 @@
+{
+  "name": "HeroMockup",
+  "type": "object",
+  "properties": {
+    "owner_id": {
+      "type": "string",
+      "description": "User who created this mockup"
+    },
+    "title": {
+      "type": "string",
+      "description": "Label for this mockup (e.g. 'GPT Hero v1 \u2014 Blue Glow')"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "gpt",
+        "manual",
+        "imported",
+        "enhanced"
+      ],
+      "default": "gpt",
+      "description": "Where the mockup came from"
+    },
+    "raw_mockup": {
+      "type": "string",
+      "maxLength": 50000,
+      "description": "The original mockup as provided (HTML, JSX, or design description)"
+    },
+    "raw_format": {
+      "type": "string",
+      "enum": [
+        "html",
+        "jsx",
+        "markdown",
+        "description"
+      ],
+      "default": "html",
+      "description": "What format the raw mockup is in"
+    },
+    "enhanced_html": {
+      "type": "string",
+      "maxLength": 50000,
+      "description": "The AI-enhanced hero HTML ready for rendering"
+    },
+    "enhancement_notes": {
+      "type": "string",
+      "maxLength": 5000,
+      "description": "What the AI changed and why"
+    },
+    "enhancement_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0,
+      "description": "Quality score of the enhanced hero (0-100)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ingested",
+        "enhancing",
+        "enhanced",
+        "applied",
+        "failed"
+      ],
+      "default": "ingested"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, this is the currently active hero on the home page"
+    },
+    "applied_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "title",
+    "raw_mockup",
+    "raw_format",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": null,
+    "update": {
+      "$or": [
+        {
+          "data.owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
