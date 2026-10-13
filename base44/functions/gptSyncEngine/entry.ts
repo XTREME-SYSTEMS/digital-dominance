@@ -28,12 +28,26 @@ export default async function(req: Request): Promise<Response> {
   try {
     const { secrets } = await import('base44:runtime');
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    if (user.role !== 'admin') return Response.json({ error: 'Admin access required' }, { status: 403 });
-    const svc = base44.asServiceRole;
 
+    // ── Auth: API key (external GPT) OR admin session (dashboard) ──
+    const authHeader = req.headers.get('authorization') || '';
+    const bearerKey = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
     const body = await req.json().catch(() => ({}));
+    const apiKey = bearerKey || body.api_key || '';
+    const syncKey = secrets.get('GPT_SYNC_API_KEY') || '';
+    const isApiKeyAuth = syncKey && apiKey && apiKey === syncKey;
+
+    let svc;
+    if (isApiKeyAuth) {
+      // External GPT authenticated via API key — use service role directly
+      svc = base44.asServiceRole;
+    } else {
+      // Dashboard path — require admin session
+      const user = await base44.auth.me();
+      if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      if (user.role !== 'admin') return Response.json({ error: 'Admin access required' }, { status: 403 });
+      svc = base44.asServiceRole;
+    }
     const action = body.action || 'stats';
 
     // ── getConfig: Return full sync config JSON for external GPT ──
@@ -44,8 +58,15 @@ export default async function(req: Request): Promise<Response> {
         version: '3.0',
         github_repo: `https://github.com/${githubRepo}.git`,
         sync_endpoint: 'gptSyncEngine',
-        execution_model: 'Base44 SDK (server-side, authenticated as admin)',
-        sdk_instructions: 'The Base44 SDK is initialized server-side inside the gptSyncEngine function. The external GPT does NOT install the SDK directly. Instead, it calls the execute action below, which authenticates via the SDK and runs typed entity operations and backend function invocations on the GPT\'s behalf.',
+        endpoint_url: 'https://unlimitedwebsites.base44.app/functions/gptSyncEngine',
+        execution_model: 'Base44 SDK (server-side, authenticated as admin or API key)',
+        authentication: {
+          method: 'Bearer token (API key)',
+          header: 'Authorization: Bearer <GPT_SYNC_API_KEY>',
+          alternative: 'Pass api_key in the JSON body. The key is the b44u_... value set in the Secrets dashboard as GPT_SYNC_API_KEY.',
+          note: 'With the API key, no admin session is required — the external GPT authenticates directly and gets service-role access to all entities and functions.',
+        },
+        sdk_instructions: 'The Base44 SDK is initialized server-side inside the gptSyncEngine function. The external GPT does NOT install the SDK directly. Instead, it calls the execute action below with the API key in the Authorization header. The function authenticates via the SDK and runs typed entity operations and backend function invocations on the GPT\'s behalf.',
         sync_actions: {
           execute: 'POST { action: "execute", tool: "<tool_name>", args: { entity, operation, data, function_name, payload, query, id, count_only, cursor } } — Execute a hosted tool via the Base44 SDK. This is the primary execution path. Available tools: get_capabilities, read_entities, write_entity, invoke_function.',
           takeOver: 'POST { action: "takeOver", command: "<your command>" } — GPT executes with full admin context via the internal operator loop',
