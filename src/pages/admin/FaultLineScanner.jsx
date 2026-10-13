@@ -41,7 +41,10 @@ export default function FaultLineScanner() {
 
   const { data: findings = [], isLoading: findingsLoading } = useQuery({
     queryKey: ["faultline-findings"],
-    queryFn: () => base44.entities.FaultLineFinding.filter({}, { sort: "-found_at", limit: 100 }),
+    queryFn: async () => {
+      const page = await base44.entities.FaultLineFinding.filter({}, { sort: "-found_at", limit: 100 });
+      return page.items || [];
+    },
   });
 
   const runScan = useCallback(async (mode) => {
