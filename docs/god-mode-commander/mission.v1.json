@@ -1,0 +1,214 @@
+{
+  "schema_version": "strategic-minds.god-mode-commander.mission/1.0.0",
+  "identity": {
+    "mission_key": "GOD_MODE_INTELLIGENCE_V1",
+    "display_name": "GOD MODE COMMANDER",
+    "tenant": "Strategic Minds AI",
+    "project": "Digital Dominance",
+    "purpose": "Continuously gather verified buyer-first intelligence and prepare safe, independently reviewed opportunities",
+    "deployment_state": "NOT_DEPLOYED",
+    "activation_state": "DISABLED"
+  },
+  "authority": {
+    "operator_selected_primary_repo": "XTREME-SYSTEMS/digital-dominance",
+    "repo_baseline_sha": "1c73f5bc3ba3522865fbc5971a7d6130215a8659",
+    "base44_superagent_bridge_app_id": "6a4ae522852a5e08bfa42450",
+    "base44_bridge_identity": "VERIFIED_BY_ENTITY_SCHEMA_READ",
+    "base44_bidirectional_workflow_slug": "gpt_base44_bidirectional_sync",
+    "base44_bidirectional_last_run": "UNKNOWN_NULL",
+    "x1_staging_project_id": "uvdkzsbjackpjvpoxtyk",
+    "x1_queue_binding": "PENDING_VERIFIED_CONTRACT_MAPPING",
+    "existing_authoritative_scheduler": "MUST_DISCOVER_AND_REUSE",
+    "durable_worker_identity": "UNVERIFIED",
+    "independent_validator_identity": "UNVERIFIED"
+  },
+  "governance": {
+    "default_action_class": "READ",
+    "unattended_allowed": [
+      "READ",
+      "ANALYZE",
+      "DRAFT"
+    ],
+    "conditionally_allowed": [
+      "BRANCH_WRITE",
+      "PREVIEW_WRITE"
+    ],
+    "explicit_approval_required": [
+      "PROTECTED_BRANCH_MERGE",
+      "PRODUCTION_DEPLOY",
+      "PRODUCTION_ROLLBACK",
+      "DATABASE_SCHEMA_OR_RLS",
+      "SECRETS",
+      "DNS",
+      "SPEND",
+      "LIVE_PUBLISH",
+      "CUSTOMER_OUTBOUND",
+      "PERMISSIONS",
+      "DESTRUCTIVE_CHANGE"
+    ],
+    "new_scheduler_provisioning": false,
+    "new_queue_provisioning": false,
+    "new_supervisor_provisioning": false,
+    "automatic_activation": false,
+    "max_unapproved_external_spend_usd": 0
+  },
+  "workflow": {
+    "execution_pattern": [
+      "EXISTING_HEARTBEAT",
+      "ELIGIBILITY_CHECK",
+      "IDEMPOTENT_X1_LEASE",
+      "READ_ONLY_SOURCE_REFRESH",
+      "SPECIALIST_REGISTRY_RESOLUTION",
+      "RESEARCH",
+      "TEN_STRATEGY_COMPARISON",
+      "DETERMINISTIC_SIMULATION",
+      "INDEPENDENT_QA",
+      "DRAFT_RECEIPT_AND_SYNC",
+      "RECONCILE_AND_REPORT"
+    ],
+    "dispatch_strategy": "EXISTING_QUEUE_ONLY_AFTER_ADAPTER_VALIDATION",
+    "retry_policy": {
+      "max_attempts": 2,
+      "exponential_backoff": true,
+      "no_retry_authorization_failure": true
+    },
+    "max_parallel_writers_per_resource": 1,
+    "receipts_required": true,
+    "source_provenance_required": true
+  },
+  "candidate_acquisition_models": [
+    "organic_local_seo",
+    "google_business_profile_optimization",
+    "paid_search",
+    "referral_partnerships",
+    "directory_lead_generation",
+    "content_inbound",
+    "social_draft_campaigns",
+    "email_opt_in_nurture_drafts",
+    "comparison_or_estimate_tools",
+    "industry_vertical_microsites"
+  ],
+  "simulation_contract": {
+    "execution_state": "NOT_EXECUTED_BY_WORKER",
+    "minimum_actual_evaluations": 1000,
+    "scenario_axes": [
+      {
+        "name": "acquisition_models",
+        "count": 10
+      },
+      {
+        "name": "demand_cases",
+        "count": 10
+      },
+      {
+        "name": "cost_and_margin_cases",
+        "count": 10
+      }
+    ],
+    "minimum_grid_product": 1000,
+    "determinism": "fixed_input_grid_no_sampling",
+    "must_record": [
+      "source_versions",
+      "scenario_input_matrix",
+      "unit_economics",
+      "conversion_assumptions",
+      "cost_and_revenue_bands",
+      "downside_cases",
+      "code_version",
+      "runtime_receipt"
+    ],
+    "source_labels": [
+      "VERIFIED",
+      "INFERRED",
+      "SIMULATED",
+      "UNKNOWN"
+    ]
+  },
+  "bidirectional_sync_contract": {
+    "mode": "METADATA_AND_EVIDENCE_FANOUT_NOT_UNCONTROLLED_SOURCE_COPY",
+    "event_identity_fields": [
+      "event_id",
+      "producer",
+      "tenant_id",
+      "project_id",
+      "source_id",
+      "source_version",
+      "sha256",
+      "action_class",
+      "idempotency_key"
+    ],
+    "event_idempotency": "hash(tenant_id+project_id+source_id+source_version+operation)",
+    "source_authority": {
+      "code": "GitHub approved branch+immutable SHA",
+      "operational_state": "authoritative existing X1 queue/lease/ledger",
+      "operator_mirror": "Base44 AUTO BUILDER ORCHESTRATOR registry",
+      "uploaded_workbooks": "candidate specifications until individually approved"
+    },
+    "conflict_behavior": "QUARANTINE_AND_REQUEST_REVIEW",
+    "readback_required": true,
+    "receipts_required": true,
+    "main_branch_direct_push": false
+  },
+  "input_packages": [
+    {
+      "name": "00_MASTER_INTELLIGENCE_WORKBOOK_CATALOG.xlsx",
+      "sha256": "599e810cf4a0f5b92c968c899115a41ad3c3f87245658f6436ec21f7de3c58e3"
+    },
+    {
+      "name": "02_UNIVERSAL_BACKEND_FACTORY.xlsx",
+      "sha256": "e9ad6997bbeec62c21a73f86fd931fc0abd160d7f91c88585c16564c29398e97"
+    },
+    {
+      "name": "03_BASE44_PROMPT_OS_LIBRARY.xlsx",
+      "sha256": "d4b40d3f3a683d02fbf9392a4e0817bd0518bef2db44aa3b19af432ca4d49c66"
+    },
+    {
+      "name": "DIGITAL_DOMINANCE_31_WORKBOOK_INTELLIGENCE_SUITE_20261012.zip",
+      "sha256": "e115f761541f141915eef8519f4eaa7a2cabc503d7f26af6d664578f4500a9f5"
+    }
+  ],
+  "acceptance_gates": [
+    {
+      "id": "A1",
+      "description": "Prove exact current repo SHA and branch-only readback",
+      "status": "PENDING"
+    },
+    {
+      "id": "A2",
+      "description": "Map real Digital Dominance Base44 app, bridge registry and GitHub bidirectional revision path",
+      "status": "PENDING"
+    },
+    {
+      "id": "A3",
+      "description": "Map X1 worker, supervisor, lease, queue, and sole cron to verified live deployment receipts",
+      "status": "PENDING"
+    },
+    {
+      "id": "A4",
+      "description": "Repair or quarantine dead letters; demonstrate authorization failure stops",
+      "status": "PENDING"
+    },
+    {
+      "id": "A5",
+      "description": "Demonstrate 1,000 deterministic executed cases with independent input validation",
+      "status": "PENDING"
+    },
+    {
+      "id": "A6",
+      "description": "Prove bidirectional event dedupe, replay, conflict quarantine, and receipt roundtrip",
+      "status": "PENDING"
+    },
+    {
+      "id": "A7",
+      "description": "Independent Fault Line/Guardian negative-path review",
+      "status": "PENDING"
+    },
+    {
+      "id": "A8",
+      "description": "Operator approves specific activation and later production scope",
+      "status": "PENDING"
+    }
+  ],
+  "verified_as_of": "2026-10-13",
+  "disclaimer": "Draft staging contract only. No worker, scheduler, automatic research, memory ingestion, deployment, or website publishing is activated by this file."
+}
