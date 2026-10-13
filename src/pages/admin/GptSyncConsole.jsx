@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { RefreshCw, Send, Zap, Activity, ArrowRight, ArrowLeft, Radio, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { RefreshCw, Send, Zap, Activity, ArrowRight, ArrowLeft, Radio, Loader2, CheckCircle2, AlertCircle, Code2, Copy, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function GptSyncConsole() {
   const queryClient = useQueryClient();
@@ -11,6 +11,10 @@ export default function GptSyncConsole() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [autoSync, setAutoSync] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
+  const [configJson, setConfigJson] = useState(null);
+  const [configLoading, setConfigLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const { data: statsData } = useQuery({
     queryKey: ["sync-stats"],
@@ -71,6 +75,30 @@ export default function GptSyncConsole() {
   const stats = statsData?.stats || {};
   const events = eventsData?.events || [];
   const pending = pendingData?.events || [];
+
+  const loadConfig = async () => {
+    setConfigLoading(true);
+    try {
+      const res = await base44.functions.invoke("gptSyncEngine", { action: "getConfig" });
+      setConfigJson(res.data?.config || null);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setConfigLoading(false);
+    }
+  };
+
+  const toggleConfig = async () => {
+    if (!configJson && !configLoading) await loadConfig();
+    setShowConfig(!showConfig);
+  };
+
+  const copyConfig = async () => {
+    if (!configJson) return;
+    await navigator.clipboard.writeText(JSON.stringify(configJson, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="flex flex-col gap-4 pb-12 min-h-[calc(100vh-82px)] text-white">
@@ -174,6 +202,51 @@ export default function GptSyncConsole() {
             Take Over
           </button>
         </div>
+      </div>
+
+      {/* GPT Sync Config JSON — for external GPT integration */}
+      <div className="rounded-2xl border border-[#00a2ff]/20 bg-[#0d1525] overflow-hidden">
+        <button
+          onClick={toggleConfig}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/[0.02] transition"
+        >
+          <div className="flex items-center gap-2">
+            <Code2 className="h-4 w-4 text-[#00a2ff]" />
+            <h3 className="text-sm font-bold text-white">GPT Sync Config JSON</h3>
+            <span className="text-[10px] text-white/40 font-mono bg-white/5 px-2 py-0.5 rounded">for external GPT</span>
+          </div>
+          {showConfig ? <ChevronUp className="h-4 w-4 text-white/40" /> : <ChevronDown className="h-4 w-4 text-white/40" />}
+        </button>
+        {showConfig && (
+          <div className="border-t border-white/10">
+            <div className="px-4 py-2.5 flex items-center justify-between bg-[#0a0f1a] border-b border-white/5">
+              <p className="text-xs text-white/50">
+                Paste this JSON into your external GPT's system prompt or custom GPT config. It contains the full operator instructions, entity catalog, function catalog, and tool schemas.
+              </p>
+              <button
+                onClick={copyConfig}
+                disabled={!configJson || configLoading}
+                className="flex items-center gap-1.5 rounded-lg bg-[#00a2ff] px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50 hover:bg-[#0090e0] transition shrink-0 ml-3"
+              >
+                {copied ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? "Copied!" : "Copy JSON"}
+              </button>
+            </div>
+            <div className="max-h-[500px] overflow-auto p-4">
+              {configLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-5 w-5 animate-spin text-[#00a2ff]" />
+                </div>
+              ) : configJson ? (
+                <pre className="text-[11px] font-mono text-green-400/90 whitespace-pre-wrap break-words leading-relaxed">
+                  {JSON.stringify(configJson, null, 2)}
+                </pre>
+              ) : (
+                <p className="text-sm text-white/30 text-center py-8">Failed to load config.</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Error */}

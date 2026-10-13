@@ -8,6 +8,8 @@ import {
   runSyncCycle,
   runTakeover,
 } from '../../shared/gptSyncCore.ts';
+import { operatorEntities, operatorFunctions, operatorInstructions } from '../../shared/operatorCatalog.js';
+import { operatorTools } from '../../shared/operatorLoop.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // gptSyncEngine — Bi-directional sync between the admin and GPT. v2
@@ -24,6 +26,7 @@ import {
 
 export default async function(req: Request): Promise<Response> {
   try {
+    const { secrets } = await import('base44:runtime');
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
@@ -32,6 +35,31 @@ export default async function(req: Request): Promise<Response> {
 
     const body = await req.json().catch(() => ({}));
     const action = body.action || 'stats';
+
+    // ── getConfig: Return full sync config JSON for external GPT ──
+    if (action === 'getConfig') {
+      const githubRepo = secrets.get('GITHUB_REPO') || 'XTREME-SYSTEMS/digital-dominance';
+      const config = {
+        system_name: 'Digital Dominance GPT Sync Pipeline',
+        version: '2.0',
+        github_repo: `https://github.com/${githubRepo}.git`,
+        sync_endpoint: 'gptSyncEngine',
+        sync_actions: {
+          takeOver: 'POST { action: "takeOver", command: "<your command>" } — GPT executes with full admin context',
+          sync: 'POST { action: "sync", command: "<optional>" } — Bi-directional sync cycle',
+          getPending: 'POST { action: "getPending" } — Get pending admin events for GPT context',
+          snapshot: 'POST { action: "snapshot" } — Capture current admin state',
+          logEvent: 'POST { action: "logEvent", event_type, entity_name, data_summary, direction } — Log a state change',
+        },
+        operator_instructions: operatorInstructions,
+        operator_entities: operatorEntities,
+        operator_functions: operatorFunctions,
+        operator_tools: operatorTools,
+        runtime: 'base44-hosted',
+        llm_gateway: 'groq (llama-3.1-8b-instant) with openrouter fallback',
+      };
+      return Response.json({ ok: true, config });
+    }
 
     // ── logEvent: Log an admin state change ──
     if (action === 'logEvent') {
