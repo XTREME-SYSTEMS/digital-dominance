@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Rocket, Globe, CheckCircle2, AlertCircle, Loader2, Search,
   TrendingUp, Zap, ExternalLink, ChevronDown, ChevronRight,
-  Activity, Target, Award, RefreshCw, MapPin, Clock,
+  Activity, Target, Award, RefreshCw, MapPin, Clock, BarChart3,
+  Search as SearchIcon, Eye, MousePointerClick,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
@@ -80,6 +81,12 @@ export default function LaunchStatusDashboard() {
     : 0;
   const activeBatches = batches.filter((b) => ["orchestrating", "deploying", "validating", "scoring", "queued"].includes(b.status)).length;
 
+  // GSC fleet stats — pulled by the autonomous agent
+  const gscIndexed = allSites.filter((s) => s.indexing_status === "INDEXING_STATE_INDEXED" || s.indexing_status === "INDEXED").length;
+  const gscPending = allSites.filter((s) => s.indexing_status && s.indexing_status !== "INDEXING_STATE_INDEXED" && s.indexing_status !== "INDEXED" && s.indexing_status !== "UNKNOWN").length;
+  const totalImpressions = allSites.reduce((s, site) => s + (site.search_impressions || 0), 0);
+  const totalClicks = allSites.reduce((s, site) => s + (site.search_clicks || 0), 0);
+
   const sitesForBatch = (batch) => {
     const ids = batch.queue_item_ids || [];
     if (ids.length === 0) return [];
@@ -109,10 +116,27 @@ export default function LaunchStatusDashboard() {
         <SummaryCard icon={Rocket} label="Total Batches" value={batches.length} color="#126fc8" />
         <SummaryCard icon={Globe} label="Total Sites" value={totalSites} color="#7c3aed" />
         <SummaryCard icon={CheckCircle2} label="Deployed" value={totalDeployed} color="#16a34a" />
-        <SummaryCard icon={Target} label="Validated" value={totalValidated} color="#d97706" />
         <SummaryCard icon={Activity} label="Live Now" value={liveSites} color="#0d9488" />
-        <SummaryCard icon={AlertCircle} label="Failed" value={totalFailed} color="#dc2626" />
+        <SummaryCard icon={SearchIcon} label="GSC Indexed" value={gscIndexed} color="#16a34a" />
+        <SummaryCard icon={BarChart3} label="Search Impressions" value={totalImpressions.toLocaleString()} color="#d97706" />
       </div>
+
+      {/* GSC performance strip */}
+      {(totalImpressions > 0 || totalClicks > 0 || gscIndexed > 0) && (
+        <div className="rounded-lg border border-[#dce6f1] bg-gradient-to-r from-[#f8fbfe] to-[#f0f7ff] p-4 mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <SearchIcon className="w-4 h-4 text-[#126fc8]" />
+            <h3 className="text-sm font-bold text-[#112940]">Google Search Console — Fleet Performance</h3>
+            <span className="text-[10px] text-[#8faec9] ml-auto">Auto-pulled by autonomous agent</span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <GscMetric icon={CheckCircle2} label="Indexed Sites" value={gscIndexed} color="#16a34a" />
+            <GscMetric icon={Clock} label="Pending Index" value={gscPending} color="#d97706" />
+            <GscMetric icon={Eye} label="Impressions (28d)" value={totalImpressions.toLocaleString()} color="#126fc8" />
+            <GscMetric icon={MousePointerClick} label="Clicks (28d)" value={totalClicks.toLocaleString()} color="#7c3aed" />
+          </div>
+        </div>
+      )}
 
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -255,6 +279,23 @@ export default function LaunchStatusDashboard() {
                               </p>
                               <p className="text-[10px] text-[#8faec9] font-mono truncate">{s.domain}</p>
                             </div>
+                            {/* GSC indexing badge */}
+                            {s.indexing_status && (
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                                s.indexing_status === "INDEXING_STATE_INDEXED" || s.indexing_status === "INDEXED"
+                                  ? "bg-green-50 text-[#16a34a]"
+                                  : "bg-amber-50 text-[#d97706]"
+                              }`} title={s.indexing_status}>
+                                {s.indexing_status === "INDEXING_STATE_INDEXED" || s.indexing_status === "INDEXED" ? "Indexed" : "Pending"}
+                              </span>
+                            )}
+                            {/* GSC search performance */}
+                            {(s.search_impressions > 0 || s.search_clicks > 0) && (
+                              <span className="text-[9px] text-[#607790] shrink-0 flex items-center gap-1.5">
+                                <span className="flex items-center gap-0.5" title="Impressions"><Eye className="w-2.5 h-2.5" />{s.search_impressions || 0}</span>
+                                <span className="flex items-center gap-0.5" title="Clicks"><MousePointerClick className="w-2.5 h-2.5" />{s.search_clicks || 0}</span>
+                              </span>
+                            )}
                             {s.traffic_score > 0 && (
                               <span className="text-[10px] font-bold text-[#d97706] shrink-0">{s.traffic_score}/100</span>
                             )}
@@ -302,6 +343,20 @@ function MiniStat({ label, value, color }) {
     <div className="rounded-lg bg-gray-50 border border-[#e4edf5] px-2.5 py-1.5 text-center">
       <p className="text-sm font-extrabold" style={{ color }}>{value}</p>
       <p className="text-[9px] text-[#607790] uppercase tracking-wider">{label}</p>
+    </div>
+  );
+}
+
+function GscMetric({ icon: Icon, label, value, color }) {
+  return (
+    <div className="flex items-center gap-2.5 rounded-lg bg-white border border-[#e4edf5] px-3 py-2">
+      <div className="w-7 h-7 rounded-lg grid place-items-center shrink-0" style={{ background: color + "15", color }}>
+        <Icon className="w-3.5 h-3.5" />
+      </div>
+      <div>
+        <p className="text-base font-extrabold text-[#112940] leading-none">{value}</p>
+        <p className="text-[9px] text-[#607790] mt-0.5">{label}</p>
+      </div>
     </div>
   );
 }

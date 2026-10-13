@@ -1,0 +1,45 @@
+{
+  "name": "Autonomous Visual Orchestrator",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 */6 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "description": "Background agent that runs vision intelligence scanning, prompt library curation, and Google Search Console monitoring every 6 hours \u2014 fully autonomous, no manual operation needed.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "autonomous_visual_orchestrator",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_orchestrator": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autonomousVisualOrchestrator",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run autonomous visual orchestrator",
+            "description": "Scans top 5 sites, curates prompts, pulls GSC indexing status"
+          }
+        }
+      }
+    ]
+  }
+}

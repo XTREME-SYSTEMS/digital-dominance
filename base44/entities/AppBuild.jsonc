@@ -92,6 +92,29 @@
     },
     "published_url": {
       "type": "string"
+    },
+    "gsc_indexing_status": {
+      "type": "string",
+      "description": "Google Search Console indexing state"
+    },
+    "gsc_impressions": {
+      "type": "number",
+      "default": 0,
+      "description": "Search impressions (last 28 days, from GSC)"
+    },
+    "gsc_clicks": {
+      "type": "number",
+      "default": 0,
+      "description": "Search clicks (last 28 days, from GSC)"
+    },
+    "gsc_avg_position": {
+      "type": "number",
+      "default": 0,
+      "description": "Average search position (from GSC)"
+    },
+    "gsc_last_checked": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [

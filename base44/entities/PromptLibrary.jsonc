@@ -1,0 +1,110 @@
+{
+  "name": "PromptLibrary",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Short name for this prompt"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "hero_image",
+        "industry_photo",
+        "product_shot",
+        "background",
+        "logo",
+        "avatar",
+        "social_card",
+        "before_after",
+        "gallery",
+        "custom"
+      ],
+      "default": "industry_photo"
+    },
+    "prompt_text": {
+      "type": "string",
+      "maxLength": 5000,
+      "description": "The full image generation prompt"
+    },
+    "negative_prompt": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "What to avoid in the generated image"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Which industry this prompt is optimized for (epoxy_flooring, roofing, etc.) \u2014 empty = universal"
+    },
+    "quality_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0,
+      "description": "AI-evaluated quality score from test generation"
+    },
+    "test_image_url": {
+      "type": "string",
+      "description": "URL of the last test-generated image"
+    },
+    "test_notes": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "AI evaluation notes on the test image"
+    },
+    "tested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "test_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "How many times this prompt has been tested"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Searchable tags (ultra-lifelike, 8k, pro-camera, etc.)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "If true, this prompt is available for use in generation pipelines"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Top-performing prompts curated by the autonomous agent"
+    },
+    "sort_order": {
+      "type": "integer",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "prompt_text",
+    "category"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

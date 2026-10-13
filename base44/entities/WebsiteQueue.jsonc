@@ -4,7 +4,7 @@
   "properties": {
     "keyword": {
       "type": "string",
-      "description": "Target search keyword (e.g. 'epoxy garage floors near me')"
+      "description": "Target search keyword"
     },
     "niche": {
       "type": "string",
@@ -69,7 +69,7 @@
     },
     "search_volume": {
       "type": "number",
-      "description": "Estimated monthly search volume for this keyword"
+      "description": "Estimated monthly search volume"
     },
     "competition_level": {
       "type": "string",
@@ -141,6 +141,20 @@
     "last_audit_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "indexing_status": {
+      "type": "string",
+      "description": "Google Search Console indexing state"
+    },
+    "search_impressions": {
+      "type": "number",
+      "default": 0,
+      "description": "Search impressions (last 28 days, from GSC)"
+    },
+    "search_clicks": {
+      "type": "number",
+      "default": 0,
+      "description": "Search clicks (last 28 days, from GSC)"
     },
     "notes": {
       "type": "string",
