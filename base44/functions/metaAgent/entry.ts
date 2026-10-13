@@ -342,9 +342,11 @@ async function loadApprovedPromptCatalog(svc: any, ownerId: string) {
   let external: any[] = [];
   try {
     const records = await svc.entities.AgentIntelligence.filter(
-      { active: true, category: 'prompt_registry' }, '-created_date', 200,
+      { active: true, category: 'custom' }, '-created_date', 200,
     );
-    external = (records || []).filter((r: any) => r.owner_id === ownerId);
+    external = (records || []).filter((r: any) =>
+      r.owner_id === ownerId && Array.isArray(r.tags) && r.tags.includes('prompt_registry')
+    );
   } catch (err) {
     console.warn('Prompt registry read unavailable; using approved built-in prompts only');
   }
