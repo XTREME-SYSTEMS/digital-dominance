@@ -37,6 +37,7 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/pwa-launches" className="wle-side-nav"><Activity aria-hidden="true" />PWA Launches</Link>
         <Link to="/admin/launch-status" className="wle-side-nav"><Rocket aria-hidden="true" />Launch Status</Link>
         <Link to="/admin/site-inventory" className="wle-side-nav"><Globe aria-hidden="true" />Site Inventory</Link>
+        <Link to="/admin/prompt-testing" className="wle-side-nav"><Sparkles aria-hidden="true" />Prompt Testing Lab</Link>
         <Link to="/admin/benchmark-reverse" className="wle-side-nav"><Diamond aria-hidden="true" />Benchmark Reverse-Engineer</Link>
         <Link to="/admin/contents" className="wle-side-nav wle-tools-mobile">All Tools</Link>
       </nav>

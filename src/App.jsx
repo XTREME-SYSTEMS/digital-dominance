@@ -130,6 +130,7 @@ import SiteProject from '@/pages/admin/SiteProject';
 import BrandGuidelines from '@/pages/admin/BrandGuidelines';
 import SystemInventory from '@/pages/admin/SystemInventory';
 import SiteInventory from '@/pages/admin/SiteInventory';
+import PromptTestingLab from '@/pages/admin/PromptTestingLab';
 import GoogleHappiness from '@/pages/admin/GoogleHappiness';
 import GoogleBatchSubmission from '@/pages/admin/GoogleBatchSubmission';
 import GodModeSimulationLab from '@/pages/admin/GodModeSimulationLab';
@@ -383,6 +384,7 @@ const AuthenticatedApp = () => {
         <Route path="brand-guidelines" element={<BrandGuidelines />} />
         <Route path="system-inventory" element={<SystemInventory />} />
         <Route path="site-inventory" element={<SiteInventory />} />
+        <Route path="prompt-testing" element={<PromptTestingLab />} />
         <Route path="google-happiness" element={<GoogleHappiness />} />
         <Route path="google-batch" element={<GoogleBatchSubmission />} />
         <Route path="god-mode-lab" element={<GodModeSimulationLab />} />

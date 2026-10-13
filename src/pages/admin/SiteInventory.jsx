@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Globe, Smartphone, LayoutGrid, Server, Activity, CheckCircle2,
   AlertCircle, Loader2, Clock, XCircle, Search, RefreshCw,
-  ExternalLink, Zap, TrendingUp, Shield, MapPin,
+  ExternalLink, Zap, TrendingUp, Shield, MapPin, Eye,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
@@ -60,14 +60,35 @@ function HealthBadge({ status, score }) {
   );
 }
 
-function IndexBadge({ submitted }) {
-  return submitted ? (
-    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#16a34a]">
-      <CheckCircle2 className="w-3 h-3" /> Submitted
-    </span>
-  ) : (
+function IndexBadge({ submitted, indexingStatus, impressions, clicks }) {
+  const isIndexed = indexingStatus === "INDEXED" || indexingStatus === "INDEXING_STATE_INDEXED" || (submitted && !indexingStatus);
+  const hasGscData = impressions > 0 || clicks > 0;
+
+  if (isIndexed) {
+    return (
+      <div className="flex flex-col gap-0.5">
+        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#16a34a]">
+          <CheckCircle2 className="w-3 h-3" /> Indexed
+        </span>
+        {hasGscData && (
+          <span className="text-[9px] text-[#607790] flex items-center gap-2">
+            <span title="Impressions">{impressions.toLocaleString()} imp</span>
+            <span title="Clicks">{clicks} clicks</span>
+          </span>
+        )}
+      </div>
+    );
+  }
+  if (indexingStatus && indexingStatus !== "UNKNOWN") {
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#d97706]">
+        <Clock className="w-3 h-3" /> Pending
+      </span>
+    );
+  }
+  return (
     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#8faec9]">
-      <Clock className="w-3 h-3" /> Pending
+      <Clock className="w-3 h-3" /> Not submitted
     </span>
   );
 }
@@ -111,7 +132,10 @@ export default function SiteInventory() {
         url: b.published_url,
         healthStatus: b.status === "published" ? "healthy" : "unknown",
         healthScore: b.status === "published" ? 100 : 0,
-        indexingSubmitted: b.status === "published",
+        indexingStatus: b.gsc_indexing_status || "",
+        indexingSubmitted: b.gsc_indexing_status === "INDEXED" || b.gsc_indexing_status === "INDEXING_STATE_INDEXED",
+        searchImpressions: b.gsc_impressions || 0,
+        searchClicks: b.gsc_clicks || 0,
         createdAt: b.created_date,
         meta: `${b.manifest?.display || "standalone"} · ${b.nav_config?.length || 0} nav`,
       }));
@@ -160,7 +184,10 @@ export default function SiteInventory() {
         url: s.generated_url,
         healthStatus: s.status === "live" ? "healthy" : s.status === "monitoring" ? "healthy" : "unknown",
         healthScore: s.traffic_score || 0,
-        indexingSubmitted: s.status === "live" || s.status === "monitoring",
+        indexingStatus: s.indexing_status || "",
+        indexingSubmitted: s.indexing_status === "INDEXED" || s.indexing_status === "INDEXING_STATE_INDEXED" || s.status === "live" || s.status === "monitoring",
+        searchImpressions: s.search_impressions || 0,
+        searchClicks: s.search_clicks || 0,
         createdAt: s.deployed_at,
         meta: `${s.niche} · SEO ${s.seo_score || 0}/100`,
       }));
@@ -266,6 +293,42 @@ export default function SiteInventory() {
         })}
       </div>
 
+      {/* GSC fleet summary */}
+      {(() => {
+        const indexed = allSites.filter((s) => s.indexingStatus === "INDEXED" || s.indexingStatus === "INDEXING_STATE_INDEXED").length;
+        const pending = allSites.filter((s) => s.indexingStatus && s.indexingStatus !== "INDEXED" && s.indexingStatus !== "INDEXING_STATE_INDEXED" && s.indexingStatus !== "UNKNOWN").length;
+        const totalImp = allSites.reduce((sum, s) => sum + (s.searchImpressions || 0), 0);
+        const totalClk = allSites.reduce((sum, s) => sum + (s.searchClicks || 0), 0);
+        if (indexed === 0 && pending === 0 && totalImp === 0) return null;
+        return (
+          <div className="rounded-lg border border-[#dce6f1] bg-gradient-to-r from-[#f8fbfe] to-[#f0f7ff] p-4 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Search className="w-4 h-4 text-[#126fc8]" />
+              <h3 className="text-sm font-bold text-[#112940]">Google Search Console — Fleet Indexing</h3>
+              <span className="text-[10px] text-[#8faec9] ml-auto">Auto-synced by autonomous agent</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="flex items-center gap-2.5 rounded-lg bg-white border border-[#e4edf5] px-3 py-2">
+                <div className="w-7 h-7 rounded-lg grid place-items-center bg-green-50 text-[#16a34a]"><CheckCircle2 className="w-3.5 h-3.5" /></div>
+                <div><p className="text-base font-extrabold text-[#112940] leading-none">{indexed}</p><p className="text-[9px] text-[#607790] mt-0.5">Indexed</p></div>
+              </div>
+              <div className="flex items-center gap-2.5 rounded-lg bg-white border border-[#e4edf5] px-3 py-2">
+                <div className="w-7 h-7 rounded-lg grid place-items-center bg-amber-50 text-[#d97706]"><Clock className="w-3.5 h-3.5" /></div>
+                <div><p className="text-base font-extrabold text-[#112940] leading-none">{pending}</p><p className="text-[9px] text-[#607790] mt-0.5">Pending</p></div>
+              </div>
+              <div className="flex items-center gap-2.5 rounded-lg bg-white border border-[#e4edf5] px-3 py-2">
+                <div className="w-7 h-7 rounded-lg grid place-items-center bg-blue-50 text-[#126fc8]"><Eye className="w-3.5 h-3.5" /></div>
+                <div><p className="text-base font-extrabold text-[#112940] leading-none">{totalImp.toLocaleString()}</p><p className="text-[9px] text-[#607790] mt-0.5">Impressions (28d)</p></div>
+              </div>
+              <div className="flex items-center gap-2.5 rounded-lg bg-white border border-[#e4edf5] px-3 py-2">
+                <div className="w-7 h-7 rounded-lg grid place-items-center bg-purple-50 text-[#7c3aed]"><TrendingUp className="w-3.5 h-3.5" /></div>
+                <div><p className="text-base font-extrabold text-[#112940] leading-none">{totalClk.toLocaleString()}</p><p className="text-[9px] text-[#607790] mt-0.5">Clicks (28d)</p></div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
@@ -353,7 +416,12 @@ export default function SiteInventory() {
                     </td>
                     {/* Indexing */}
                     <td className="px-4 py-3">
-                      <IndexBadge submitted={s.indexingSubmitted} />
+                      <IndexBadge
+                        submitted={s.indexingSubmitted}
+                        indexingStatus={s.indexingStatus}
+                        impressions={s.searchImpressions}
+                        clicks={s.searchClicks}
+                      />
                     </td>
                     {/* Health */}
                     <td className="px-4 py-3">
