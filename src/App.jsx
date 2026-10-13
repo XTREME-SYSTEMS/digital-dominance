@@ -119,6 +119,9 @@ import TemplateStudio from '@/pages/admin/TemplateStudio';
 import AutonomousCompany from '@/pages/admin/AutonomousCompany';
 import HeroEnhancer from '@/pages/admin/HeroEnhancer';
 import EdenSkye from '@/pages/admin/EdenSkye';
+import SuperAgents from '@/pages/admin/SuperAgents';
+import SystemHeal from '@/pages/admin/SystemHeal';
+import GapAnalysis from '@/pages/admin/GapAnalysis';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -355,6 +358,9 @@ const AuthenticatedApp = () => {
         <Route path="autonomous-company" element={<AutonomousCompany />} />
         <Route path="hero-enhancer" element={<HeroEnhancer />} />
         <Route path="eden-skye" element={<EdenSkye />} />
+        <Route path="super-agents" element={<SuperAgents />} />
+        <Route path="system-heal" element={<SystemHeal />} />
+        <Route path="gap-analysis" element={<GapAnalysis />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>
