@@ -1,0 +1,105 @@
+{
+  "name": "CRM Follow-Up Sequence",
+  "description": "Sends branded follow-up emails every 3 days to new contact leads with enticing hooks and offers",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "Lead",
+      "events": [
+        "create"
+      ]
+    },
+    "condition": "${ .trigger.data.form_type == \"contact\" and .trigger.data.email != null }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "crm_follow_up_sequence",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "wait_day_3": {
+          "wait": "P3D",
+          "then": "send_follow_up_1",
+          "x-base44": {
+            "title": "Wait 3 days",
+            "description": "First follow-up after initial inquiry"
+          }
+        }
+      },
+      {
+        "send_follow_up_1": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "crmFollowUpSender",
+            "args": {
+              "lead_id": "${ .trigger.entity_id }",
+              "sequence_day": 3
+            }
+          },
+          "then": "wait_day_6",
+          "x-base44": {
+            "title": "Send Day 3 Email",
+            "description": "Your website launch is waiting"
+          }
+        }
+      },
+      {
+        "wait_day_6": {
+          "wait": "P3D",
+          "then": "send_follow_up_2",
+          "x-base44": {
+            "title": "Wait 3 more days",
+            "description": "Second follow-up"
+          }
+        }
+      },
+      {
+        "send_follow_up_2": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "crmFollowUpSender",
+            "args": {
+              "lead_id": "${ .trigger.entity_id }",
+              "sequence_day": 6
+            }
+          },
+          "then": "wait_day_9",
+          "x-base44": {
+            "title": "Send Day 6 Email",
+            "description": "Your competitors are already moving"
+          }
+        }
+      },
+      {
+        "wait_day_9": {
+          "wait": "P3D",
+          "then": "send_follow_up_3",
+          "x-base44": {
+            "title": "Wait 3 more days",
+            "description": "Final follow-up"
+          }
+        }
+      },
+      {
+        "send_follow_up_3": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "crmFollowUpSender",
+            "args": {
+              "lead_id": "${ .trigger.entity_id }",
+              "sequence_day": 9
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send Day 9 Email",
+            "description": "Last chance \u2014 your market is waiting"
+          }
+        }
+      }
+    ]
+  }
+}
