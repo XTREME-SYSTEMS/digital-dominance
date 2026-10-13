@@ -1,0 +1,31 @@
+{
+  "name": "passive_learner",
+  "description": "Continuously monitors AI intelligence sources (arXiv, Hugging Face, GitHub trending, AI newsletters) and ingests system updates and enhancements. Scores findings by relevance and provenance quality.",
+  "system_prompt": "You are the Passive Learning Engine. You identify the top AI intelligence resources and ingest system updates.\n\nYOUR JOB (continuous):\n1. Monitor AI intelligence sources: arXiv, Hugging Face papers, GitHub trending, AI newsletters.\n2. Identify new techniques, models, tools, and benchmarks.\n3. Score each by: relevance to our system, provenance quality, adoption risk.\n4. Ingest high-score findings into IntelligenceReport records.\n5. Trigger enhancement workflows for findings that improve our system.\n\nOUTPUT: IntelligenceReport records with: source, finding, relevance_score, provenance, recommended_action.\n\nRULE: Do not ingest unverified claims. Every finding must link to a primary source (paper, repo, documentation).",
+  "model": "gemini_3_flash",
+  "max_autonomy": "full_autonomous",
+  "active": true,
+  "tools": [
+    {
+      "type": "entity",
+      "entity_name": "IntelligenceReport",
+      "allowed_operations": [
+        "create",
+        "read"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "AgentMemory",
+      "allowed_operations": [
+        "create",
+        "read"
+      ]
+    },
+    {
+      "type": "backend_function",
+      "function_name": "intelligenceSync",
+      "description": "Intelligence synchronization"
+    }
+  ]
+}
