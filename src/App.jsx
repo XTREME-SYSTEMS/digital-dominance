@@ -137,6 +137,10 @@ import SystemInventory from '@/pages/admin/SystemInventory';
 import SiteInventory from '@/pages/admin/SiteInventory';
 import PromptTestingLab from '@/pages/admin/PromptTestingLab';
 import BackgroundOperations from '@/pages/admin/BackgroundOperations';
+import NationalStrategy from '@/pages/admin/NationalStrategy';
+import SystemCapabilities from '@/pages/admin/SystemCapabilities';
+import BulkVideoGenerator from '@/pages/admin/BulkVideoGenerator';
+import AutomatedSocialMedia from '@/pages/admin/AutomatedSocialMedia';
 import MultiTemplateLauncher from '@/pages/admin/MultiTemplateLauncher';
 import GoogleHappiness from '@/pages/admin/GoogleHappiness';
 import GoogleBatchSubmission from '@/pages/admin/GoogleBatchSubmission';
@@ -398,6 +402,10 @@ const AuthenticatedApp = () => {
         <Route path="site-inventory" element={<SiteInventory />} />
         <Route path="prompt-testing" element={<PromptTestingLab />} />
         <Route path="background-ops" element={<BackgroundOperations />} />
+        <Route path="national-strategy" element={<NationalStrategy />} />
+        <Route path="system-capabilities" element={<SystemCapabilities />} />
+        <Route path="bulk-video" element={<BulkVideoGenerator />} />
+        <Route path="social-media" element={<AutomatedSocialMedia />} />
         <Route path="multi-launch" element={<MultiTemplateLauncher />} />
         <Route path="google-happiness" element={<GoogleHappiness />} />
         <Route path="google-batch" element={<GoogleBatchSubmission />} />
