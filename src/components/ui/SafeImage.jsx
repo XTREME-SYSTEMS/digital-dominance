@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Image } from "@/components/ui/image";
 
 // Industry-relevant fallback images (Unsplash, verified stable URLs).
 // These guarantee every image slot renders something meaningful — never blank.
@@ -55,19 +54,16 @@ export default function SafeImage({ src, alt = "", category = "default", classNa
     }
   };
 
-  // For the gradient placeholder (data URI), use a plain img — Image component
-  // tries to parse Wix Media URLs which would fail on a data URI.
-  if (currentSrc === GRADIENT_PLACEHOLDER) {
-    return <img src={currentSrc} alt={alt} className={className} onError={() => {}} {...props} />;
-  }
-
+  // Always use a plain img — the platform Image component's size-measurement
+  // logic can fail to render in certain layouts, leaving image slots blank.
+  // Plain img tags load reliably and the fallback chain above handles errors.
   return (
-    <Image
+    <img
       src={currentSrc}
       alt={alt}
-      fittingType={fittingType}
       className={className}
       onError={handleError}
+      loading="lazy"
       {...props}
     />
   );
