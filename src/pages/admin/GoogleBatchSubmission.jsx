@@ -7,20 +7,21 @@ export default function GoogleBatchSubmission() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [mode, setMode] = useState("all");
+  const [provisionGa4, setProvisionGa4] = useState(false);
 
   const runBatch = useCallback(async () => {
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const res = await base44.functions.invoke("googleBatchSubmissionEngine", { mode });
+      const res = await base44.functions.invoke("googleBatchSubmissionEngine", { mode, provision_ga4: provisionGa4 });
       setResult(res.data);
     } catch (e) {
       setError(e.message || "Failed to run batch submission");
     } finally {
       setLoading(false);
     }
-  }, [mode]);
+  }, [mode, provisionGa4]);
 
   return (
     <div className="min-h-screen bg-[#050508] text-white p-6 md:p-10">
@@ -76,9 +77,23 @@ export default function GoogleBatchSubmission() {
               className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#00a2ff] to-[#0066cc] text-white font-bold text-sm flex items-center gap-2 hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px] justify-center"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
-              {loading ? "Submitting..." : "Submit Everything"}
+              {loading ? "Provisioning..." : provisionGa4 ? "Provision Everything" : "Submit Everything"}
             </button>
           </div>
+
+          {/* Provision GA4 toggle */}
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={provisionGa4}
+              onChange={(e) => setProvisionGa4(e.target.checked)}
+              className="w-5 h-5 rounded border-white/20 bg-[#0a1220] text-[#00a2ff] focus:ring-[#00a2ff] cursor-pointer"
+            />
+            <span className="text-sm font-semibold">
+              Also create GA4 properties for every site
+              <span className="text-white/40 font-normal ml-2">— provisions a new Google Analytics 4 property under your first GA account for each site that doesn't have one</span>
+            </span>
+          </label>
           {error && (
             <div className="flex items-center gap-2 text-red-400 text-sm">
               <AlertCircle className="w-4 h-4" />
@@ -129,6 +144,30 @@ export default function GoogleBatchSubmission() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* GA4 Provisioning Results */}
+            {provisionGa4 && result.ga4_provisioned_count !== undefined && (
+              <div className="rounded-2xl border border-[#ec4899]/20 bg-[#ec4899]/5 p-6">
+                <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-[#ec4899]" />
+                  GA4 Provisioning
+                </h3>
+                <p className="text-sm text-white/70">
+                  Created <b className="text-[#ec4899]">{result.ga4_provisioned_count}</b> new GA4 properties
+                  {result.ga4_accounts?.length > 0 && <> under account <b className="text-white">{result.ga4_accounts[0].displayName}</b></>}.
+                </p>
+                {result.ga4_provision_errors?.length > 0 && (
+                  <div className="mt-3 space-y-1">
+                    <p className="text-xs font-bold text-red-400">Errors ({result.ga4_provision_errors.length}):</p>
+                    {result.ga4_provision_errors.slice(0, 5).map((e, i) => (
+                      <p key={i} className="text-xs font-mono text-red-400/70 truncate">
+                        {e.site || "unknown"}: {e.error || JSON.stringify(e.data || e.error).slice(0, 120)}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

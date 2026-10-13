@@ -142,12 +142,54 @@ async function listGA4Properties(accessToken: string) {
           property_id: prop.property.replace("properties/", ""),
           display_name: prop.displayName,
           account: acc.displayName,
+          parent: acc.account,
         });
       }
     }
     return properties;
   } catch {
     return [];
+  }
+}
+
+// List GA4 accounts (needed to create properties — requires a parent account)
+async function listGA4Accounts(accessToken: string): Promise<any[]> {
+  try {
+    const res = await fetch(`${GA_ADMIN_URL}/accounts`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      signal: AbortSignal.timeout(15000),
+    });
+    const data = await res.json();
+    return (data.accounts || []).map((a: any) => ({
+      name: a.name, // "accounts/123456"
+      displayName: a.displayName,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// Create a GA4 property for a site under the given account parent
+async function createGA4Property(accessToken: string, accountParent: string, siteUrl: string, displayName: string) {
+  const host = normalizeDomain(siteUrl);
+  try {
+    const res = await fetch(`${GA_ADMIN_URL}/properties`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        parent: accountParent,
+        displayName: displayName.slice(0, 80) || host,
+        url: siteUrl,
+        industryCategory: "CONSTRUCTION",
+        timeZone: "America/New_York",
+      }),
+      signal: AbortSignal.timeout(20000),
+    });
+    const text = await res.text();
+    let data: any; try { data = JSON.parse(text); } catch { data = text; }
+    return { ok: res.ok || res.status === 200, status: res.status, data };
+  } catch (e: any) {
+    return { ok: false, error: e.message };
   }
 }
 
@@ -192,7 +234,7 @@ export default async function (req: Request): Promise<Response> {
 
     const svc = base44.asServiceRole;
     const body = await req.json().catch(() => ({}));
-    const { mode } = body; // 'all' | 'canonical_only' | undefined = all
+    const { mode, provision_ga4 } = body; // mode: 'all' | 'canonical_only'; provision_ga4: create GA4 properties
 
     // Get tokens (both may not be connected — handle gracefully)
     let gscToken: string | null = null;
@@ -253,8 +295,41 @@ export default async function (req: Request): Promise<Response> {
 
     // GA4 properties listing (one call, not per site)
     let ga4Properties: any[] = [];
+    let ga4Accounts: any[] = [];
+    let ga4Provisioned: any[] = [];
+    let ga4ProvisionErrors: any[] = [];
     if (gaToken) {
       ga4Properties = await listGA4Properties(gaToken);
+      if (provision_ga4) {
+        ga4Accounts = await listGA4Accounts(gaToken);
+        if (ga4Accounts.length === 0) {
+          ga4ProvisionErrors.push({ error: "No GA4 accounts found — create a Google Analytics account first at analytics.google.com" });
+        } else {
+          const accountParent = ga4Accounts[0].name; // use first account
+          const existingUrls = new Set(
+            ga4Properties.map((p) => normalizeDomain(p.display_name).toLowerCase())
+          );
+          // Provision a property for each site that doesn't already have one
+          const provisionResults = await Promise.allSettled(
+            results
+              .filter((r) => !r.skipped && r.site && !existingUrls.has(normalizeDomain(r.site).toLowerCase()))
+              .map(async (r) => {
+                const created = await createGA4Property(gaToken, accountParent, r.site, r.domain || r.keyword || normalizeDomain(r.site));
+                return { site: r.site, ...created };
+              })
+          );
+          for (const pr of provisionResults) {
+            if (pr.status === "fulfilled") {
+              if (pr.value.ok) ga4Provisioned.push(pr.value);
+              else ga4ProvisionErrors.push(pr.value);
+            } else {
+              ga4ProvisionErrors.push({ error: pr.reason?.message || "Unknown" });
+            }
+          }
+          // Re-list to include newly created
+          ga4Properties = await listGA4Properties(gaToken);
+        }
+      }
     }
 
     // Compile summary
@@ -267,6 +342,7 @@ export default async function (req: Request): Promise<Response> {
     const summary = {
       ok: true,
       mode: mode || "all",
+      provision_ga4: !!provision_ga4,
       gsc_connected: !!gscToken,
       ga_connected: !!gaToken,
       total_sites_processed: results.length,
@@ -277,6 +353,9 @@ export default async function (req: Request): Promise<Response> {
       total_urls_across_all_sites: totalUrls,
       ga4_properties_found: ga4Properties.length,
       ga4_properties: ga4Properties,
+      ga4_accounts: ga4Accounts,
+      ga4_provisioned_count: ga4Provisioned.length,
+      ga4_provision_errors: ga4ProvisionErrors,
       results,
       completed_at: new Date().toISOString(),
     };
@@ -284,7 +363,7 @@ export default async function (req: Request): Promise<Response> {
     await logStep(base44, {
       category: "seo",
       action: "Google batch submission engine",
-      detail: `${sitemapsGenerated} sitemaps, ${gscSubmitted} GSC submissions, ${indexNowSubmitted} IndexNow pings, ${totalUrls} total URLs, ${ga4Properties.length} GA4 properties`,
+      detail: `${sitemapsGenerated} sitemaps, ${gscSubmitted} GSC submissions, ${indexNowSubmitted} IndexNow pings, ${totalUrls} total URLs, ${ga4Properties.length} GA4 properties${provision_ga4 ? `, ${ga4Provisioned.length} GA4 provisioned` : ""}`,
       source: "googleBatchSubmissionEngine",
     });
 
