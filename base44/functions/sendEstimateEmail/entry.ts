@@ -1,3 +1,4 @@
+import { suppressLeadEmail } from "../../shared/leadEmailSafety.ts";
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.40";
 import { buildMime, base64Url } from "../../shared/gmailMime.ts";
 import { estimateEmailHtml, estimateSubject } from "../../shared/estimateEmail.ts";
@@ -45,6 +46,9 @@ export default async function (req: Request): Promise<Response> {
     if (!lead_id) return Response.json({ error: "lead_id required" }, { status: 400 });
     const lead = await base44.asServiceRole.entities.Lead.get(lead_id);
     if (!lead) return Response.json({ error: "Lead not found" }, { status: 404 });
+    if (suppressLeadEmail(lead, body.to_email)) {
+      return Response.json({ ok: true, sent: false, skipped: true, reason: "nonproduction_lead" });
+    }
     const recipient = to_email || lead.email;
     if (!recipient) return Response.json({ error: "No recipient email address" }, { status: 400 });
 

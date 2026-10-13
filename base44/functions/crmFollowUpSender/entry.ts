@@ -1,3 +1,4 @@
+import { suppressLeadEmail } from "../../shared/leadEmailSafety.ts";
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 
 export default async function(req) {
@@ -10,6 +11,9 @@ export default async function(req) {
 
     const lead = await base44.asServiceRole.entities.Lead.get(lead_id).catch(() => null);
     if (!lead) return Response.json({ error: 'Lead not found' }, { status: 404 });
+    if (suppressLeadEmail(lead, body.to_email)) {
+      return Response.json({ ok: true, sent: false, skipped: true, reason: "nonproduction_lead" });
+    }
 
     const email = lead.email;
     if (!email) return Response.json({ error: 'Lead has no email' }, { status: 400 });
