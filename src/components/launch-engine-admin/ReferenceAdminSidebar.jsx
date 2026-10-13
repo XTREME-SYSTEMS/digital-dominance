@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield } from "lucide-react";
+import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database } from "lucide-react";
 
 export default function ReferenceAdminSidebar() {
   const { pathname } = useLocation();
@@ -31,6 +31,9 @@ export default function ReferenceAdminSidebar() {
       <nav className="wle-nav-container" aria-label="Inventory and deployment">
         <Link to="/admin/site-inventory" className={`wle-side-nav${isCore(["/admin/site-inventory"]) ? " active" : ""}`}>
           <Globe aria-hidden="true" />Site Inventory
+        </Link>
+        <Link to="/admin/site-bank" className={`wle-side-nav${isCore(["/admin/site-bank"]) ? " active" : ""}`}>
+          <Database aria-hidden="true" />Site Bank Automation
         </Link>
         <Link to="/admin/multi-launch" className={`wle-side-nav${isCore(["/admin/multi-launch"]) ? " active" : ""}`}>
           <Rocket aria-hidden="true" />Multi-Template Launcher

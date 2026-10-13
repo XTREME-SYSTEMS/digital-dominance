@@ -129,6 +129,7 @@ import GapAnalysis from '@/pages/admin/GapAnalysis';
 import SiteProject from '@/pages/admin/SiteProject';
 import BrandGuidelines from '@/pages/admin/BrandGuidelines';
 import BrandComplianceGuardian from '@/pages/admin/BrandComplianceGuardian';
+import SiteBankAutomation from '@/pages/admin/SiteBankAutomation';
 import SystemInventory from '@/pages/admin/SystemInventory';
 import SiteInventory from '@/pages/admin/SiteInventory';
 import PromptTestingLab from '@/pages/admin/PromptTestingLab';
@@ -386,6 +387,7 @@ const AuthenticatedApp = () => {
         <Route path="site-project/:id" element={<SiteProject />} />
         <Route path="brand-guidelines" element={<BrandGuidelines />} />
         <Route path="brand-guardian" element={<BrandComplianceGuardian />} />
+        <Route path="site-bank" element={<SiteBankAutomation />} />
         <Route path="system-inventory" element={<SystemInventory />} />
         <Route path="site-inventory" element={<SiteInventory />} />
         <Route path="prompt-testing" element={<PromptTestingLab />} />

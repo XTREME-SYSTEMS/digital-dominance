@@ -1,0 +1,170 @@
+{
+  "name": "SiteBank",
+  "type": "object",
+  "properties": {
+    "site_slug": {
+      "type": "string",
+      "description": "Deterministic unique slug (niche-city-state-template)"
+    },
+    "site_name": {
+      "type": "string",
+      "description": "Human-readable site name"
+    },
+    "template_id": {
+      "type": "string",
+      "description": "Reference to TemplateLibrary record"
+    },
+    "template_name": {
+      "type": "string"
+    },
+    "niche": {
+      "type": "string",
+      "description": "Industry niche this site targets"
+    },
+    "target_city": {
+      "type": "string"
+    },
+    "target_state": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Domain or subdomain this site deploys to"
+    },
+    "site_url": {
+      "type": "string",
+      "description": "Live URL once deployed"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Deterministic SEO tags (niche, city, state, keyword patterns)"
+    },
+    "backlinks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "target_site_slug": {
+            "type": "string"
+          },
+          "target_url": {
+            "type": "string"
+          },
+          "anchor_text": {
+            "type": "string"
+          },
+          "link_type": {
+            "type": "string",
+            "enum": [
+              "footer",
+              "blog_roll",
+              "related_service",
+              "location_page",
+              "directory"
+            ]
+          }
+        }
+      },
+      "default": [],
+      "description": "Outbound backlinks this site points to (deterministic network)"
+    },
+    "inbound_link_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "How many other SiteBank entries link to this site"
+    },
+    "seo_meta": {
+      "type": "object",
+      "description": "Deterministically generated SEO metadata (no AI)",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "og_title": {
+          "type": "string"
+        }
+      }
+    },
+    "gpt_synced": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this site has been logged as a SyncEvent to GPT"
+    },
+    "gpt_synced_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sync_event_id": {
+      "type": "string",
+      "description": "SyncEvent record ID for the GPT sync log"
+    },
+    "launch_batch_id": {
+      "type": "string",
+      "description": "Batch ID this site was launched in"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "deploying",
+        "live",
+        "synced",
+        "archived"
+      ],
+      "default": "queued"
+    },
+    "launched_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deployed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_autonomous": {
+      "type": "boolean",
+      "default": true,
+      "description": "True if launched by the autonomous cron system"
+    }
+  },
+  "required": [
+    "site_slug",
+    "site_name",
+    "niche"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

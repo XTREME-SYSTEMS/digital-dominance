@@ -1,0 +1,63 @@
+{
+  "description": "Deterministic, credit-free autonomous site launch system. Runs every 6 hours \u2014 launches new sites from active templates, builds backlink network, tags, and syncs to GPT. Zero integration credits consumed.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "site_bank_automation",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "launch_batch": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "siteBankOrchestrator",
+            "args": {
+              "action": "launchBatch"
+            }
+          },
+          "then": "sync_unsynced",
+          "x-base44": {
+            "title": "Launch new site batch",
+            "description": "Create sites from active templates \u00d7 locations, build backlinks, sync to GPT"
+          }
+        }
+      },
+      {
+        "sync_unsynced": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "siteBankOrchestrator",
+            "args": {
+              "action": "syncToGpt"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync remaining unsynced sites",
+            "description": "Log any pending SyncEvents for sites not yet synced to GPT"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 */6 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Site Bank Automation"
+}
