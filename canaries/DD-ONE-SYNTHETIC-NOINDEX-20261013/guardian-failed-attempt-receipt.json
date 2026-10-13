@@ -1,0 +1,36 @@
+{
+  "validator": "independent guardian-validator",
+  "timestamp_utc": "2026-10-13T12:27:14.950788+00:00",
+  "deployment_id": "dpl_7Lgwu8V6W7Jc7LMikn4yC8JGqCAG",
+  "url": "https://funnel-floor-visualizer-epoxy-website-o1lkz3lv0.vercel.app/",
+  "overall": "FAIL",
+  "checks": {
+    "terminal_ready": {
+      "status": "FAIL",
+      "state": "ERROR",
+      "errorCode": "ENOENT",
+      "errorMessage": "Command \"vite build\" exited with 127"
+    },
+    "production_aliases": {
+      "status": "PASS",
+      "aliases": [],
+      "target": null
+    },
+    "template_identity": {
+      "status": "FAIL",
+      "expected_sha256": "ad337b29124479c449f4b76a98a4e5966f97642b24c1fee79e1f1ebe17a87f61",
+      "local_sha256_without_trailing_newline": "ad337b29124479c449f4b76a98a4e5966f97642b24c1fee79e1f1ebe17a87f61",
+      "served_title": "Deployment has failed",
+      "authenticated_provider_fetch_status": 200
+    },
+    "browser_security_functionality": {
+      "status": "UNKNOWN",
+      "reason": "Deployment failed; provider error page is not the template under test."
+    }
+  },
+  "limitations": [
+    "X1 worker dispatch not performed.",
+    "Connector-driven template export only.",
+    "No production or provider mutations performed by validator."
+  ]
+}
