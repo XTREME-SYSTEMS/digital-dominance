@@ -7,11 +7,11 @@ const INDUSTRY_FALLBACKS = {
   contractor: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
   health: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
   legal: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80",
-  professional: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b67?w=800&q=80",
-  realestate: "https://images.unsplash.com/photo-1564013799919-ab6000f00a91?w=800&q=80",
-  home: "https://images.unsplash.com/photo-1521799267631-32f99f4c9746?w=800&q=80",
-  automotive: "https://images.unsplash.com/photo-1486001178350-2a3ff6b37e2c?w=800&q=80",
-  default: "https://images.unsplash.com/photo-1467232004584-a551f7af35c3?w=800&q=80",
+  professional: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3a?w=800&q=80",
+  realestate: "https://images.unsplash.com/photo-1568605114987-395e3a5eb4c5?w=800&q=80",
+  home: "https://images.unsplash.com/photo-1581578731548-c64695cccae9?w=800&q=80",
+  automotive: "https://images.unsplash.com/photo-1492144534155-93156a5f2de7?w=800&q=80",
+  default: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
 };
 
 // Generic gradient placeholder (data URI) — the ultimate fallback that never fails.
