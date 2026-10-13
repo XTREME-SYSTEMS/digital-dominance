@@ -1,0 +1,98 @@
+{
+  "validator": "independent guardian-validator /root/guardian_validator",
+  "timestamp_utc": "2026-10-13T18:24:41.354Z",
+  "scope": "PR23 merge and Base44 sandbox source synchronization only",
+  "overall": "PASS",
+  "repository": "XTREME-SYSTEMS/digital-dominance",
+  "app_id": "6a77f4491f0bf92de9a3ed8b",
+  "merge": {
+    "status": "PASS",
+    "merged": true,
+    "state": "closed",
+    "approved_head_sha": "084ec6a8f704cc00c998597d6b781a422e31c166",
+    "merge_commit_sha": "04b5f4bc2ccb42438762b03a82af5a806c6079d2"
+  },
+  "source_sync": {
+    "status": "PASS",
+    "checked_files": [
+      {
+        "path": "base44/shared/leadEmailSafety.ts",
+        "github_blob_sha": "e0692c115183455ed224cb6dabe6edaa243c96fc",
+        "exact": false,
+        "line_content_match": true,
+        "base44_truncated": false
+      },
+      {
+        "path": "base44/functions/sendEstimateEmail/entry.ts",
+        "github_blob_sha": "d86b2521b6cb939a27c0b3c88d450be041532a5d",
+        "exact": true,
+        "line_content_match": true,
+        "base44_truncated": false
+      },
+      {
+        "path": "base44/functions/sendFollowUpEmail/entry.ts",
+        "github_blob_sha": "0603cb244b4e1b4a7daf48a61e039795f0ad0767",
+        "exact": true,
+        "line_content_match": true,
+        "base44_truncated": false
+      },
+      {
+        "path": "base44/functions/crmFollowUpSender/entry.ts",
+        "github_blob_sha": "078e7f5c3f1f7bbfd382c0a613219d138bf1db3f",
+        "exact": true,
+        "line_content_match": true,
+        "base44_truncated": false
+      },
+      {
+        "path": "base44/functions/sendReviewRequest/entry.ts",
+        "github_blob_sha": "78c6c7e32494083fb350f932811d9824cb70b862",
+        "exact": true,
+        "line_content_match": true,
+        "base44_truncated": false
+      },
+      {
+        "path": "base44/workflows/Immediate Lead Follow-Up.jsonc",
+        "github_blob_sha": "296ccfe2408bb5341ade54ddae5f9406628457cb",
+        "exact": false,
+        "line_content_match": true,
+        "base44_truncated": false
+      },
+      {
+        "path": "base44/workflows/Lead Follow-Up.jsonc",
+        "github_blob_sha": "2410e74c84866d85cca86524a112b2481f448adf",
+        "exact": false,
+        "line_content_match": true,
+        "base44_truncated": false
+      },
+      {
+        "path": "base44/workflows/CRM Follow-Up Sequence.jsonc",
+        "github_blob_sha": "1d276279f73cab074949bb286b2073867ebb81e2",
+        "exact": false,
+        "line_content_match": true,
+        "base44_truncated": false
+      },
+      {
+        "path": "base44/workflows/Review Request.jsonc",
+        "github_blob_sha": "bec9eb46074f4f75d8bd9ffe902a9c98f199a132",
+        "exact": false,
+        "line_content_match": true,
+        "base44_truncated": false
+      }
+    ],
+    "normalization": "All9 files match at line-content level. Four sender readbacks byte-identical. Base44 line reader omits final LF on helper and four workflow files; exact raw-byte equality cannot be asserted for those5."
+  },
+  "hosted_deployment": {
+    "status": "UNKNOWN",
+    "reason": "No hosted deployment identity or function/workflow activation evidence from sandbox source read."
+  },
+  "live_crm_canary": {
+    "status": "BLOCKED",
+    "reason": "Requires verified hosted guard deployment before Lead submission."
+  },
+  "mutations_performed_by_validator": [],
+  "limitations": [
+    "Read-only comparison against pinned merged GitHub commit; no Lead created or email sent.",
+    "Reported checkpoint6ace76fc85ea692a3d5150a7 not independently queried in this receipt.",
+    "Base44 SDK/DSL runtime not exercised."
+  ]
+}
