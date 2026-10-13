@@ -9,7 +9,7 @@
         "create"
       ]
     },
-    "condition": "${ .trigger.data.form_type == \"contact\" and .trigger.data.email != null }"
+    "condition": "${ .trigger.data.form_type == \"contact\" and .trigger.data.email != null and .trigger.data.test_data_classification != \"test_confirmed\" and .trigger.data.test_data_classification != \"test_likely\" }"
   },
   "definition": {
     "document": {
@@ -96,7 +96,7 @@
           "then": "end",
           "x-base44": {
             "title": "Send Day 9 Email",
-            "description": "Last chance \u2014 your market is waiting"
+            "description": "Last chance — your market is waiting"
           }
         }
       }
