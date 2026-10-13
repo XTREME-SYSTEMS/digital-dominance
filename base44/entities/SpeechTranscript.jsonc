@@ -1,0 +1,93 @@
+{
+  "name": "SpeechTranscript",
+  "type": "object",
+  "properties": {
+    "voice_session_id": {
+      "type": "string",
+      "description": "AiVoiceSession ID this transcript belongs to"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant",
+        "system"
+      ],
+      "default": "user"
+    },
+    "content": {
+      "type": "string",
+      "description": "Transcribed speech text"
+    },
+    "stt_confidence": {
+      "type": "number",
+      "description": "Speech-to-text confidence score 0-1"
+    },
+    "tts_audio_url": {
+      "type": "string",
+      "description": "Generated TTS audio URL for assistant turns"
+    },
+    "interrupted": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if this turn was interrupted by barge-in"
+    },
+    "turn_index": {
+      "type": "integer",
+      "default": 0
+    },
+    "sentiment": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "enum": [
+            "positive",
+            "neutral",
+            "negative",
+            "frustrated",
+            "confused"
+          ]
+        },
+        "score": {
+          "type": "number"
+        }
+      }
+    },
+    "latency_ms": {
+      "type": "number",
+      "default": 0,
+      "description": "Response latency in milliseconds"
+    },
+    "silence_gap_ms": {
+      "type": "number",
+      "default": 0,
+      "description": "Silence gap before this turn in milliseconds"
+    }
+  },
+  "required": [
+    "voice_session_id"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "name": "CommsEvent",
+  "type": "object",
+  "properties": {
+    "channel": {
+      "type": "string",
+      "enum": [
+        "voice",
+        "sms",
+        "mms",
+        "whatsapp",
+        "rcs",
+        "email",
+        "video"
+      ]
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound"
+      ]
+    },
+    "from_addr": {
+      "type": "string",
+      "description": "Sender phone/email address"
+    },
+    "to_addr": {
+      "type": "string",
+      "description": "Recipient phone/email address"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "queued",
+        "sent",
+        "delivered",
+        "completed",
+        "ringing",
+        "failed",
+        "undelivered",
+        "expired",
+        "suppressed",
+        "cancelled"
+      ],
+      "default": "active"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "twilio",
+        "telnyx",
+        "heygen",
+        "internal"
+      ],
+      "default": "twilio"
+    },
+    "provider_message_id": {
+      "type": "string",
+      "description": "Provider's message/call ID for correlation"
+    },
+    "error_code": {
+      "type": "string"
+    },
+    "error_detail": {
+      "type": "string"
+    },
+    "duration_sec": {
+      "type": "number"
+    },
+    "body": {
+      "type": "string",
+      "description": "Message body or call summary"
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "LIVE",
+        "PROVIDER-BACKED",
+        "SANDBOX",
+        "MOCK/DEV-ONLY"
+      ],
+      "default": "LIVE"
+    },
+    "agent_name": {
+      "type": "string",
+      "description": "Which agent handled this event (e.g. Eden Skye)"
+    }
+  },
+  "required": [
+    "channel",
+    "direction"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
