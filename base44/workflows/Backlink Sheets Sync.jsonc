@@ -1,0 +1,47 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "backlink_sheets_sync",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_opportunities": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "backlinkSheetsLogger",
+            "args": {
+              "action": "sync"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync to Google Sheets",
+            "description": "Append new backlink opportunities to master sheet"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/30 * * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "description": "Logs new backlink opportunities to the master Google Sheet every 30 minutes for tracking and outreach coordination.",
+  "name": "Backlink Sheets Sync"
+}

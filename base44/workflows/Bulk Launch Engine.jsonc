@@ -1,0 +1,47 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "bulk_launch_engine",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "auto_process": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "bulkLaunchEngine",
+            "args": {
+              "action": "auto"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Auto-process pending sites",
+            "description": "Deploy queued SiteBank entries to Vercel + sync to GPT"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 3,
+      "interval_unit": "hours",
+      "interval_anchor": "2026-10-13T20:00:00Z",
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "description": "Auto-processes pending SiteBank entries every 3 hours \u2014 deploys to Vercel subdomains and syncs to GPT for the unlimited websites network.",
+  "name": "Bulk Launch Engine"
+}
