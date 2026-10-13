@@ -1,0 +1,275 @@
+{
+  "name": "WebsiteBuildPlan",
+  "type": "object",
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "Stable deterministic build-plan identifier"
+    },
+    "opportunity_id": {
+      "type": "string"
+    },
+    "policy_version": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "blocked",
+        "spec_ready",
+        "validating",
+        "validated_for_preview",
+        "preview_failed",
+        "preview_ready",
+        "release_review"
+      ],
+      "default": "draft"
+    },
+    "build_mode": {
+      "type": "string",
+      "enum": [
+        "preview_only"
+      ],
+      "default": "preview_only"
+    },
+    "release_authorized": {
+      "type": "boolean",
+      "default": false,
+      "description": "Must remain false in the V3 planning layer. Release approval is handled outside this entity."
+    },
+    "primary_service": {
+      "type": "string"
+    },
+    "intent": {
+      "type": "string"
+    },
+    "geography": {
+      "type": "string"
+    },
+    "buyer_archetype": {
+      "type": "string"
+    },
+    "proposed_domain": {
+      "type": "string",
+      "description": "Planning-only suggestion. Does not represent availability or ownership."
+    },
+    "domain_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "opportunity_decision_score": {
+      "type": "number",
+      "default": 0
+    },
+    "opportunity_evidence_state": {
+      "type": "string"
+    },
+    "opportunity_evidence_coverage_pct": {
+      "type": "number",
+      "default": 0
+    },
+    "source_evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "canonical_location_id": {
+      "type": "string"
+    },
+    "serviceability_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "local_value_score": {
+      "type": "number",
+      "default": 0
+    },
+    "page_specs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "page_type": {
+            "type": "string",
+            "enum": [
+              "home",
+              "service",
+              "pricing",
+              "process",
+              "proof",
+              "faq",
+              "contact",
+              "location",
+              "resource"
+            ]
+          },
+          "primary_query": {
+            "type": "string"
+          },
+          "search_intent": {
+            "type": "string"
+          },
+          "canonical_path": {
+            "type": "string"
+          },
+          "index_eligibility": {
+            "type": "string",
+            "enum": [
+              "noindex_until_validated",
+              "eligible_after_preview_validation",
+              "blocked"
+            ],
+            "default": "noindex_until_validated"
+          },
+          "presence_claim": {
+            "type": "string",
+            "enum": [
+              "none",
+              "service_area_only",
+              "verified_physical_location"
+            ],
+            "default": "none"
+          },
+          "unique_value_requirements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          },
+          "visible_schema_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          }
+        }
+      },
+      "default": []
+    },
+    "proof_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "schema_policy": {
+      "type": "string",
+      "enum": [
+        "visible_content_only"
+      ],
+      "default": "visible_content_only"
+    },
+    "canonical_policy": {
+      "type": "string",
+      "enum": [
+        "self_canonical"
+      ],
+      "default": "self_canonical"
+    },
+    "robots_policy": {
+      "type": "string",
+      "enum": [
+        "noindex_until_preview_validated"
+      ],
+      "default": "noindex_until_preview_validated"
+    },
+    "pilot_page_limit": {
+      "type": "number",
+      "default": 25
+    },
+    "validation_state": {
+      "type": "string",
+      "enum": [
+        "unvalidated",
+        "passed",
+        "failed"
+      ],
+      "default": "unvalidated"
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "validation_warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "validation_receipt": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Explicit planning assumptions that must not be presented as verified facts"
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "plan_id",
+    "opportunity_id",
+    "policy_version",
+    "build_mode"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
