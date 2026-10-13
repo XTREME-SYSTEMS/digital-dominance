@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Diamond, Loader2, CheckCircle2, AlertCircle, Search, ChevronDown, ChevronRight } from "lucide-react";
+import { Diamond, Loader2, CheckCircle2, AlertCircle, Search, ChevronDown, ChevronRight, Eye, ShieldCheck } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
 import { TOP_20_INDUSTRIES } from "@/data/topIndustries";
@@ -10,6 +10,28 @@ export default function BenchmarkReverseEngineer() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [expandedSites, setExpandedSites] = useState({});
+  const [vqcImageUrl, setVqcImageUrl] = useState("");
+  const [vqcRunning, setVqcRunning] = useState(false);
+  const [vqcResult, setVqcResult] = useState(null);
+  const [vqcError, setVqcError] = useState(null);
+
+  const runVisualCheck = async () => {
+    if (!vqcImageUrl || !selectedIndustry) return;
+    setVqcRunning(true);
+    setVqcError(null);
+    setVqcResult(null);
+    try {
+      const res = await base44.functions.invoke("benchmarkVisualQualityCheck", {
+        imageUrl: vqcImageUrl,
+        industryKey: selectedIndustry.id,
+      });
+      setVqcResult(res.data);
+    } catch (err) {
+      setVqcError(err.message || "Visual quality check failed");
+    } finally {
+      setVqcRunning(false);
+    }
+  };
 
   const run = async () => {
     if (!selectedIndustry) return;
@@ -39,7 +61,7 @@ export default function BenchmarkReverseEngineer() {
         ["Industry Categories", "20"],
         ["Sites Per Category", "5"],
         ["Validation Gate", "70+"],
-        ["Layout Score", result?.validation?.score ? `${result.validation.score}/100` : "—"],
+        ["Visual Gate", vqcResult ? `${vqcResult.score}/100` : "75+"],
       ]}
     >
       {/* Industry Selector */}
@@ -230,6 +252,111 @@ export default function BenchmarkReverseEngineer() {
           )}
         </div>
       )}
+
+      {/* Visual Quality Gate */}
+      <div className="rounded-lg border border-[#dce6f1] bg-white p-4 mt-4">
+        <div className="flex items-center gap-2 mb-3">
+          <ShieldCheck className="w-5 h-5 text-[#126fc8]" />
+          <h3 className="text-sm font-bold text-[#112940]">Visual Quality Gate</h3>
+          <span className="text-[10px] text-[#8faec9] ml-auto">
+            Forces images to match the high-end style of the top 5 reverse-engineered sites
+          </span>
+        </div>
+        <p className="text-xs text-[#607790] mb-3">
+          Paste any generated image URL to validate it against the visual DNA extracted from the top 5
+          {selectedIndustry ? ` ${selectedIndustry.label}` : ""} benchmark sites. Images scoring below 75 are rejected.
+        </p>
+        <div className="flex items-center gap-2 mb-3">
+          <input
+            value={vqcImageUrl}
+            onChange={(e) => setVqcImageUrl(e.target.value)}
+            placeholder="https://...image-url.png"
+            className="flex-1 h-9 px-3 rounded-lg border border-[#dce6f1] text-sm text-[#112940] focus:border-[#126fc8] outline-none"
+          />
+          <button
+            onClick={runVisualCheck}
+            disabled={!vqcImageUrl || !selectedIndustry || vqcRunning}
+            className="flex items-center gap-2 h-9 px-4 rounded-lg bg-[#126fc8] text-white text-xs font-bold hover:bg-[#0d58a8] disabled:opacity-40 transition"
+          >
+            {vqcRunning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Eye className="w-3.5 h-3.5" />}
+            {vqcRunning ? "Evaluating..." : "Run Visual Check"}
+          </button>
+        </div>
+        {!selectedIndustry && (
+          <p className="text-[10px] text-[#d97706]">Select an industry category above first.</p>
+        )}
+        {vqcError && (
+          <div className="flex items-center gap-2 text-red-600 text-xs bg-red-50 border border-red-200 rounded-lg p-2.5 mb-3">
+            <AlertCircle className="w-3.5 h-3.5" /> {vqcError}
+          </div>
+        )}
+        {vqcResult && (
+          <div className="space-y-3">
+            {/* Score banner */}
+            <div className={`rounded-lg border p-3 ${vqcResult.passed ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}>
+              <div className="flex items-center gap-2">
+                {vqcResult.passed ? (
+                  <CheckCircle2 className="w-5 h-5 text-[#16a34a]" />
+                ) : (
+                  <AlertCircle className="w-5 h-5 text-red-500" />
+                )}
+                <span className={`text-sm font-bold ${vqcResult.passed ? "text-[#16a34a]" : "text-red-600"}`}>
+                  {vqcResult.passed ? "PASSED" : "REJECTED"} — Score: {vqcResult.score}/100
+                </span>
+                <span className="text-[10px] text-[#607790] ml-auto">
+                  Validated against {vqcResult.benchmarkCount} benchmark sites
+                </span>
+              </div>
+              {vqcResult.feedback && (
+                <p className="text-xs text-[#607790] mt-2">{vqcResult.feedback}</p>
+              )}
+            </div>
+
+            {/* Per-dimension scores */}
+            {vqcResult.checks && vqcResult.checks.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {vqcResult.checks.map((check, i) => (
+                  <div
+                    key={i}
+                    className={`rounded-lg border p-2.5 ${check.passed ? "border-green-200 bg-green-50/50" : "border-red-200 bg-red-50/50"}`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      {check.passed ? (
+                        <CheckCircle2 className="w-3 h-3 text-[#16a34a]" />
+                      ) : (
+                        <AlertCircle className="w-3 h-3 text-red-500" />
+                      )}
+                      <span className="text-[10px] font-bold text-[#112940]">{check.name}</span>
+                    </div>
+                    <p className="text-lg font-black text-[#112940] mt-1">{check.score}</p>
+                    {check.detail && (
+                      <p className="text-[9px] text-[#607790] mt-0.5 line-clamp-2">{check.detail}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Benchmark sites used */}
+            {vqcResult.benchmarkSites && vqcResult.benchmarkSites.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap pt-1">
+                <span className="text-[10px] font-bold text-[#607790] uppercase">Validated against:</span>
+                {vqcResult.benchmarkSites.map((s, i) => (
+                  <a
+                    key={i}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[10px] text-[#126fc8] font-bold hover:underline"
+                  >
+                    {s.name}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </AdminSystemPage>
   );
 }

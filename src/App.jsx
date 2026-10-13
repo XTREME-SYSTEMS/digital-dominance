@@ -132,6 +132,7 @@ import SystemInventory from '@/pages/admin/SystemInventory';
 import SiteInventory from '@/pages/admin/SiteInventory';
 import PromptTestingLab from '@/pages/admin/PromptTestingLab';
 import BackgroundOperations from '@/pages/admin/BackgroundOperations';
+import MultiTemplateLauncher from '@/pages/admin/MultiTemplateLauncher';
 import GoogleHappiness from '@/pages/admin/GoogleHappiness';
 import GoogleBatchSubmission from '@/pages/admin/GoogleBatchSubmission';
 import GodModeSimulationLab from '@/pages/admin/GodModeSimulationLab';
@@ -387,6 +388,7 @@ const AuthenticatedApp = () => {
         <Route path="site-inventory" element={<SiteInventory />} />
         <Route path="prompt-testing" element={<PromptTestingLab />} />
         <Route path="background-ops" element={<BackgroundOperations />} />
+        <Route path="multi-launch" element={<MultiTemplateLauncher />} />
         <Route path="google-happiness" element={<GoogleHappiness />} />
         <Route path="google-batch" element={<GoogleBatchSubmission />} />
         <Route path="god-mode-lab" element={<GodModeSimulationLab />} />

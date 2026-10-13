@@ -1,10 +1,33 @@
-import React from "react";
-import { X, Sparkles, Star, ThumbsUp, ThumbsDown, RefreshCw, Loader2, CheckCircle2 } from "lucide-react";
+import React, { useState } from "react";
+import { X, Sparkles, Star, ThumbsUp, ThumbsDown, RefreshCw, Loader2, CheckCircle2, ShieldCheck, AlertCircle } from "lucide-react";
 import { Image } from "@/components/ui/image";
+import { base44 } from "@/api/base44Client";
 
 export default function PromptTestPreview({ prompt, onClose, onTest, onApprove, onReject }) {
   const score = prompt.quality_score || 0;
   const scoreColor = score >= 85 ? "#16a34a" : score >= 60 ? "#d97706" : "#dc2626";
+  const [vqcRunning, setVqcRunning] = useState(false);
+  const [vqcResult, setVqcResult] = useState(null);
+  const [vqcError, setVqcError] = useState(null);
+
+  const runVisualCheck = async () => {
+    if (!prompt.test_image_url) return;
+    setVqcRunning(true);
+    setVqcError(null);
+    setVqcResult(null);
+    try {
+      const res = await base44.functions.invoke("benchmarkVisualQualityCheck", {
+        imageUrl: prompt.test_image_url,
+        industryKey: prompt.industry || "generic",
+        promptText: prompt.prompt_text,
+      });
+      setVqcResult(res.data);
+    } catch (err) {
+      setVqcError(err.message || "Visual quality check failed");
+    } finally {
+      setVqcRunning(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
@@ -60,6 +83,48 @@ export default function PromptTestPreview({ prompt, onClose, onTest, onApprove, 
               <div className="rounded-lg bg-[#fff8e6] border border-[#e2ab3e]/30 p-3 text-sm text-[#725119]">
                 {prompt.test_notes}
               </div>
+            </div>
+          )}
+
+          {/* Visual Quality Check against benchmarks */}
+          {prompt.test_image_url && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-bold text-[#607790] uppercase tracking-wider">Visual Quality Gate</p>
+                <button
+                  onClick={runVisualCheck}
+                  disabled={vqcRunning}
+                  className="flex items-center gap-1.5 text-[10px] font-bold text-[#126fc8] hover:underline disabled:opacity-50"
+                >
+                  {vqcRunning ? <Loader2 className="w-3 h-3 animate-spin" /> : <ShieldCheck className="w-3 h-3" />}
+                  {vqcRunning ? "Checking..." : "Run Benchmark Check"}
+                </button>
+              </div>
+              {vqcError && (
+                <div className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg p-2">
+                  <AlertCircle className="w-3 h-3" /> {vqcError}
+                </div>
+              )}
+              {vqcResult && (
+                <div className={`rounded-lg border p-3 ${vqcResult.passed ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    {vqcResult.passed ? (
+                      <CheckCircle2 className="w-4 h-4 text-[#16a34a]" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-red-500" />
+                    )}
+                    <span className={`text-xs font-bold ${vqcResult.passed ? "text-[#16a34a]" : "text-red-600"}`}>
+                      {vqcResult.passed ? "PASSED" : "REJECTED"} — {vqcResult.score}/100
+                    </span>
+                    <span className="text-[9px] text-[#607790] ml-auto">
+                      vs {vqcResult.benchmarkCount} benchmark sites
+                    </span>
+                  </div>
+                  {vqcResult.feedback && (
+                    <p className="text-[11px] text-[#607790]">{vqcResult.feedback}</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

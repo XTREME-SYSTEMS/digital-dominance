@@ -39,6 +39,7 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/site-inventory" className="wle-side-nav"><Globe aria-hidden="true" />Site Inventory</Link>
         <Link to="/admin/prompt-testing" className="wle-side-nav"><Sparkles aria-hidden="true" />Prompt Testing Lab</Link>
         <Link to="/admin/background-ops" className="wle-side-nav"><Bot aria-hidden="true" />Background Operations</Link>
+        <Link to="/admin/multi-launch" className="wle-side-nav"><Rocket aria-hidden="true" />Multi-Template Launcher</Link>
         <Link to="/admin/benchmark-reverse" className="wle-side-nav"><Diamond aria-hidden="true" />Benchmark Reverse-Engineer</Link>
         <Link to="/admin/contents" className="wle-side-nav wle-tools-mobile">All Tools</Link>
       </nav>
