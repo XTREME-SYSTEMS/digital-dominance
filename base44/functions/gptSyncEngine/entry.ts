@@ -10,6 +10,7 @@ import {
 } from '../../shared/gptSyncCore.ts';
 import { operatorEntities, operatorFunctions, operatorInstructions } from '../../shared/operatorCatalog.js';
 import { operatorTools } from '../../shared/operatorLoop.js';
+import {authorizeSyncAction, SAFE_SYNC_ENTITIES, sanitizeSyncEvent, scrubSyncData, boundedLimit, SYNC_CONTRACT_VERSION} from '../../shared/gptSyncGuard.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // gptSyncEngine — Bi-directional sync between the admin and GPT. v2
@@ -33,9 +34,17 @@ export default async function(req: Request): Promise<Response> {
     const authHeader = req.headers.get('authorization') || '';
     const bearerKey = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
     const body = await req.json().catch(() => ({}));
-    const apiKey = bearerKey || body.api_key || '';
+    // External credentials must be sent in the Authorization header, never in JSON payloads.
+    const apiKey = bearerKey;
     const syncKey = secrets.get('GPT_SYNC_API_KEY') || '';
-    const isApiKeyAuth = syncKey && apiKey && apiKey === syncKey;
+    let isApiKeyAuth = false;
+    if (syncKey && apiKey) {
+      const hashes = await Promise.all([apiKey, syncKey].map(async (key) =>
+        new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(key)))));
+      let mismatch = 0;
+      for (let i = 0; i < 32; i++) mismatch |= hashes[0][i] ^ hashes[1][i];
+      isApiKeyAuth = mismatch === 0;
+    }
 
     let svc;
     if (isApiKeyAuth) {
@@ -49,13 +58,16 @@ export default async function(req: Request): Promise<Response> {
       svc = base44.asServiceRole;
     }
     const action = body.action || 'stats';
+    // Preview-only. Deny all mutations and LLM execution loops on this branch.
+    const permission = authorizeSyncAction(action, body);
+    if (!permission.allowed) return Response.json({ ok: false, state: 'PENDING_APPROVAL', code: permission.reason }, { status: 403 });
 
     // ── getConfig: Return full sync config JSON for external GPT ──
     if (action === 'getConfig') {
       const githubRepo = secrets.get('GITHUB_REPO') || 'XTREME-SYSTEMS/digital-dominance';
       const config = {
         system_name: 'Digital Dominance GPT Sync Pipeline',
-        version: '3.0',
+        version: SYNC_CONTRACT_VERSION,
         github_repo: `https://github.com/${githubRepo}.git`,
         sync_endpoint: 'gptSyncEngine',
         endpoint_url: 'https://unlimitedwebsites.base44.app/functions/gptSyncEngine',
@@ -63,32 +75,33 @@ export default async function(req: Request): Promise<Response> {
         authentication: {
           method: 'Bearer token (API key)',
           header: 'Authorization: Bearer <GPT_SYNC_API_KEY>',
-          alternative: 'Pass api_key in the JSON body. The key is the b44u_... value set in the Secrets dashboard as GPT_SYNC_API_KEY.',
-          note: 'With the API key, no admin session is required — the external GPT authenticates directly and gets service-role access to all entities and functions.',
+          alternative: 'No credential values are accepted in request bodies. Use an authenticated provider connection.',
+          note: 'The external bearer key is limited to read-only metadata access in this branch. Writes need a separate approved adapter.',
         },
-        sdk_instructions: 'The Base44 SDK is initialized server-side inside the gptSyncEngine function. The external GPT does NOT install the SDK directly. Instead, it calls the execute action below with the API key in the Authorization header. The function authenticates via the SDK and runs typed entity operations and backend function invocations on the GPT\'s behalf.',
+        sdk_instructions: 'The Base44 SDK remains server-side; no SDK or credential in a GPT prompt. This preview allows only a small metadata-read tool set and never invokes provider write functions.',
         sync_actions: {
-          execute: 'POST { action: "execute", tool: "<tool_name>", args: { entity, operation, data, function_name, payload, query, id, count_only, cursor } } — Execute a hosted tool via the Base44 SDK. This is the primary execution path. Available tools: get_capabilities, read_entities, write_entity, invoke_function.',
-          takeOver: 'POST { action: "takeOver", command: "<your command>" } — GPT executes with full admin context via the internal operator loop',
-          sync: 'POST { action: "sync", command: "<optional>" } — Bi-directional sync cycle',
-          getPending: 'POST { action: "getPending" } — Get pending admin events for GPT context (auto-seeds a snapshot if empty)',
-          snapshot: 'POST { action: "snapshot" } — Capture current admin state',
-          logEvent: 'POST { action: "logEvent", event_type, entity_name, data_summary, direction } — Log a state change',
+          execute: 'POST action=execute for get_capabilities or allowlisted read_entities only. write_entity and invoke_function are blocked.',
+          takeOver: 'BLOCKED in read-only branch preview. Requires server-verified approval and an independently tested write adapter.',
+          sync: 'BLOCKED until guarded durable bidirectional handoff validation; use previewSync for safe inspection.',
+          getPending: 'POST action=getPending; returns read-only bounded event metadata, never auto-seeds a snapshot.',
+          previewSync: 'POST action=previewSync; read-only handoff preflight with no provider mutations.',
+          snapshot: 'BLOCKED in read-only branch preview; old snapshot implementation writes an event.',
+          logEvent: 'BLOCKED pending authenticated, tenant-scoped draft-event adapter.',
           stats: 'POST { action: "stats" } — Sync statistics',
           listEvents: 'POST { action: "listEvents", status?, direction?, limit? } — List recent sync events',
         },
-        operator_instructions: operatorInstructions,
-        operator_entities: operatorEntities,
-        operator_functions: operatorFunctions,
-        operator_tools: operatorTools,
+        operator_instructions: 'GPT SYNC READ-ONLY PREVIEW: inspect event metadata and propose versioned changes. Never call write_entity, invoke_function, takeOver, sync, snapshot or logEvent. No action is deployed.',
+        operator_entities: SAFE_SYNC_ENTITIES,
+        operator_functions: {},
+        operator_tools: operatorTools.filter(t => ['get_capabilities','read_entities'].includes(t.function.name)),
         execution_protocol: {
           step_1: 'Call getPending to read any pending admin events (live context).',
-          step_2: 'Call execute with a tool name and args to run any entity operation or backend function. The Base44 SDK authenticates as admin and returns typed results.',
-          step_3: 'Call logEvent to record what you did (direction: "from_gpt") so the admin dashboard sees your actions.',
-          step_4: 'Repeat until the command is complete. Every action must produce a tool receipt.',
+          step_2: 'Read allowlisted metadata using execute or previewSync; do not submit provider mutations.',
+          step_3: 'Compile a signed-off proposal outside the live endpoint, then wait for an approved write adapter.',
+          step_4: 'Use immutable evidence receipts; metadata reads do not establish a completed write.',
         },
-        runtime: 'base44-sdk (authenticated server-side)',
-        llm_gateway: 'groq (llama-3.3-70b-versatile) with openrouter fallback — used only for internal takeOver/sync operator loop. External GPTs use their own LLM and call execute for tool operations.',
+        runtime: 'base44-sdk (branch preview, metadata read-only)',
+        llm_gateway: 'Internal takeover/sync is disabled in this branch preview. Model routing is not evaluated.',
       };
       return Response.json({ ok: true, config });
     }
@@ -97,8 +110,11 @@ export default async function(req: Request): Promise<Response> {
     if (action === 'execute') {
       const { tool, args } = body;
       if (!tool) return Response.json({ error: 'tool required' }, { status: 400 });
+      if (tool === 'get_capabilities') {
+        return Response.json({ ok: true, tool, scope: 'read_only', entities: SAFE_SYNC_ENTITIES, actions: ['getConfig','stats','listEvents','getPending','previewSync','execute'] });
+      }
       const result = await executeHostedTool(base44, tool, args || {});
-      return Response.json({ ok: true, tool, result });
+      return Response.json({ ok: true, tool, scope: 'read_only', result: scrubSyncData(result) });
     }
 
     // ── logEvent: Log an admin state change ──
@@ -118,9 +134,15 @@ export default async function(req: Request): Promise<Response> {
     }
 
     // ── getPending: Get pending events for GPT ──
-    if (action === 'getPending') {
-      const events = await getPendingEvents(svc);
-      return Response.json({ ok: true, count: events.length, events });
+    if (action === 'getPending' || action === 'previewSync') {
+      // Avoid gptSyncCore.getPendingEvents: it creates a SyncEvent when none exist.
+      const raw = await svc.entities.SyncEvent.filter({ status: 'pending', direction: 'to_gpt' }, '-created_date', 20);
+      const events = (Array.isArray(raw) ? raw : (raw?.items || [])).map(sanitizeSyncEvent);
+      return Response.json({
+        ok: true, state: 'READ_ONLY_PREVIEW', action, count: events.length, events,
+        provider_writes: 0, llm_calls: 0, source_repo: 'XTREME-SYSTEMS/digital-dominance',
+        next: 'Review evidence and produce a versioned PENDING_REVIEW handoff before applying changes.',
+      });
     }
 
     // ── snapshot: Capture current admin state ──
@@ -174,7 +196,9 @@ export default async function(req: Request): Promise<Response> {
           total,
           last_sync: lastSynced?.synced_at || null,
         },
-        recent: allEvents.slice(0, 10),
+        recent: allEvents.slice(0, 10).map(sanitizeSyncEvent),
+        sampled_records: allEvents.length,
+        sample_is_not_total: true,
       });
     }
 
@@ -184,13 +208,14 @@ export default async function(req: Request): Promise<Response> {
       const filter: any = {};
       if (status) filter.status = status;
       if (direction) filter.direction = direction;
-      const events = await svc.entities.SyncEvent.filter(filter, '-created_date', limit);
-      return Response.json({ ok: true, count: events.length, events });
+      const raw = await svc.entities.SyncEvent.filter(filter, '-created_date', boundedLimit(limit));
+      const events = (Array.isArray(raw) ? raw : (raw?.items || [])).map(sanitizeSyncEvent);
+      return Response.json({ ok: true, count: events.length, events, scope: 'read_only' });
     }
 
     return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
   } catch (error: any) {
     console.error('[gptSyncEngine] Error:', error.message);
-    return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
+    return Response.json({ error: 'GPT_SYNC_OPERATION_FAILED', state: 'UNKNOWN' }, { status: 500 });
   }
 }
