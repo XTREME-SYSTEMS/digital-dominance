@@ -1,0 +1,269 @@
+{
+  "name": "MandatoryBranding",
+  "type": "object",
+  "properties": {
+    "brand_name": {
+      "type": "string",
+      "description": "Display name of the brand (e.g. 'Website Launch Engine')"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Short brand tagline shown in the sidebar"
+    },
+    "logo_emoji": {
+      "type": "string",
+      "default": "\ud83d\ude80",
+      "description": "Emoji used in the sidebar brand lockup"
+    },
+    "colors": {
+      "type": "object",
+      "description": "Canonical brand color tokens injected as CSS variables into every admin page",
+      "properties": {
+        "canvas": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "surface": {
+          "type": "string"
+        },
+        "rail": {
+          "type": "string"
+        },
+        "rail_text": {
+          "type": "string"
+        },
+        "rail_border": {
+          "type": "string"
+        },
+        "rail_muted": {
+          "type": "string"
+        },
+        "rail_link": {
+          "type": "string"
+        },
+        "primary": {
+          "type": "string"
+        },
+        "primary_border": {
+          "type": "string"
+        },
+        "sky": {
+          "type": "string"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "border": {
+          "type": "string"
+        },
+        "muted": {
+          "type": "string"
+        },
+        "accent_green": {
+          "type": "string"
+        },
+        "accent_gold": {
+          "type": "string"
+        }
+      },
+      "default": {}
+    },
+    "fonts": {
+      "type": "object",
+      "description": "Canonical font families for the admin",
+      "properties": {
+        "heading": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "mono": {
+          "type": "string"
+        }
+      },
+      "default": {}
+    },
+    "spacing_scale": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "4px",
+        "8px",
+        "12px",
+        "16px",
+        "24px",
+        "32px",
+        "48px",
+        "64px"
+      ],
+      "description": "Standard spacing scale"
+    },
+    "radii": {
+      "type": "object",
+      "properties": {
+        "sm": {
+          "type": "string"
+        },
+        "md": {
+          "type": "string"
+        },
+        "lg": {
+          "type": "string"
+        },
+        "xl": {
+          "type": "string"
+        }
+      },
+      "default": {}
+    },
+    "shadows": {
+      "type": "object",
+      "properties": {
+        "card": {
+          "type": "string"
+        },
+        "glow": {
+          "type": "string"
+        },
+        "blue": {
+          "type": "string"
+        }
+      },
+      "default": {}
+    },
+    "nav_structure": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "route": {
+            "type": "string"
+          },
+          "section": {
+            "type": "string"
+          },
+          "is_archived": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "label",
+          "route"
+        ]
+      },
+      "default": [],
+      "description": "Canonical admin navigation structure. Items marked is_archived are hidden in the collapsible Archived Systems section."
+    },
+    "compliance_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 100,
+      "description": "Current branding compliance score (0-100), updated by the Brand Compliance Guardian"
+    },
+    "deviations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "recommended_fix": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Branding deviations found by the guardian"
+    },
+    "hidden_systems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "route": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "hidden_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "default": [],
+      "description": "Over-complicated systems the guardian has hidden into the background"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "Only one MandatoryBranding record can be active at a time \u2014 it governs the entire admin"
+    },
+    "last_audited_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "audit_notes": {
+      "type": "string",
+      "maxLength": 5000,
+      "description": "Notes from the last compliance audit"
+    }
+  },
+  "required": [
+    "brand_name",
+    "colors",
+    "fonts",
+    "is_active"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
