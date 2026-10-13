@@ -1,0 +1,571 @@
+[
+  {
+    "id": "D01",
+    "name": "SaaS Sidebar Workspace",
+    "family": "desktop",
+    "archetype": "application",
+    "best_for": [
+      "SaaS",
+      "internal tools",
+      "portals"
+    ],
+    "layout_rule": "persistent/collapsible left nav + top utility bar + content canvas",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D02",
+    "name": "Top-Nav Workspace",
+    "family": "desktop",
+    "archetype": "application",
+    "best_for": [
+      "simple SaaS",
+      "team apps"
+    ],
+    "layout_rule": "global top nav + page tabs + centered content",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D03",
+    "name": "Dense Admin Data Table",
+    "family": "desktop",
+    "archetype": "data",
+    "best_for": [
+      "admin",
+      "operations",
+      "inventory"
+    ],
+    "layout_rule": "header + filters + high-density table + batch actions",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D04",
+    "name": "Analytics / BI Dashboard",
+    "family": "desktop",
+    "archetype": "analytics",
+    "best_for": [
+      "reporting",
+      "executive intelligence"
+    ],
+    "layout_rule": "KPI row + charts + drilldown panels + date/filter bar",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D05",
+    "name": "CRM Pipeline Board",
+    "family": "desktop",
+    "archetype": "workflow",
+    "best_for": [
+      "sales",
+      "recruiting",
+      "cases"
+    ],
+    "layout_rule": "sidebar + pipeline columns + record drawer",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D06",
+    "name": "Project Kanban Workspace",
+    "family": "desktop",
+    "archetype": "workflow",
+    "best_for": [
+      "project",
+      "content",
+      "production"
+    ],
+    "layout_rule": "workspace header + board/list switch + task drawer",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D07",
+    "name": "Docs / Knowledge Base",
+    "family": "desktop",
+    "archetype": "content",
+    "best_for": [
+      "documentation",
+      "help",
+      "knowledge"
+    ],
+    "layout_rule": "left tree + article content + right TOC/metadata",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D08",
+    "name": "Marketplace Catalog",
+    "family": "desktop",
+    "archetype": "commerce",
+    "best_for": [
+      "B2B/B2C catalogs",
+      "directories"
+    ],
+    "layout_rule": "header/search + filter sidebar + product/result grid",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D09",
+    "name": "Ecommerce Product Page",
+    "family": "desktop",
+    "archetype": "commerce-detail",
+    "best_for": [
+      "retail",
+      "DTC",
+      "B2B product"
+    ],
+    "layout_rule": "gallery + product purchase column + proof/details sections",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D10",
+    "name": "Marketing Landing Page",
+    "family": "desktop",
+    "archetype": "marketing",
+    "best_for": [
+      "lead generation",
+      "SaaS",
+      "services"
+    ],
+    "layout_rule": "hero + proof + benefit sections + CTA rhythm + footer",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D11",
+    "name": "Pricing / Plan Comparison",
+    "family": "desktop",
+    "archetype": "conversion",
+    "best_for": [
+      "SaaS",
+      "memberships",
+      "packages"
+    ],
+    "layout_rule": "plan cards + comparison matrix + FAQ + CTA",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D12",
+    "name": "Search / Directory",
+    "family": "desktop",
+    "archetype": "discovery",
+    "best_for": [
+      "local",
+      "jobs",
+      "services",
+      "content"
+    ],
+    "layout_rule": "search header + faceted filters + results + optional map",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D13",
+    "name": "Social / Creator Studio",
+    "family": "desktop",
+    "archetype": "content-ops",
+    "best_for": [
+      "social publishing",
+      "media teams"
+    ],
+    "layout_rule": "navigation + content calendar/grid + editor/analytics drawers",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D14",
+    "name": "AI Copilot Workspace",
+    "family": "desktop",
+    "archetype": "ai",
+    "best_for": [
+      "research",
+      "coding",
+      "assistants"
+    ],
+    "layout_rule": "prompt/chat pane + working canvas + sources/tool panel",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D15",
+    "name": "Multi-Pane Workbench",
+    "family": "desktop",
+    "archetype": "power-tool",
+    "best_for": [
+      "IDE",
+      "investigation",
+      "operations"
+    ],
+    "layout_rule": "tree/list pane + central canvas + inspector/console pane",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D16",
+    "name": "Customer Account Portal",
+    "family": "desktop",
+    "archetype": "portal",
+    "best_for": [
+      "billing",
+      "subscriptions",
+      "service"
+    ],
+    "layout_rule": "account nav + summary + invoices/orders/tickets/cards",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D17",
+    "name": "Scheduler / Resource Planner",
+    "family": "desktop",
+    "archetype": "time",
+    "best_for": [
+      "bookings",
+      "teams",
+      "equipment"
+    ],
+    "layout_rule": "resource sidebar + time grid + event drawer",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D18",
+    "name": "Map Operations Console",
+    "family": "desktop",
+    "archetype": "location",
+    "best_for": [
+      "fleet",
+      "delivery",
+      "field service"
+    ],
+    "layout_rule": "map canvas + left filters/list + right selected-item panel",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D19",
+    "name": "Command Center / NOC",
+    "family": "desktop",
+    "archetype": "monitoring",
+    "best_for": [
+      "infrastructure",
+      "AI agents",
+      "logistics"
+    ],
+    "layout_rule": "full-width dense grid of status/KPI/alerts with drilldown",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D20",
+    "name": "Settings / Configuration Console",
+    "family": "desktop",
+    "archetype": "configuration",
+    "best_for": [
+      "accounts",
+      "integrations",
+      "system admin"
+    ],
+    "layout_rule": "settings nav + grouped forms + inline validation + audit/status",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "permission",
+      "responsive-collapse"
+    ],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D21",
+    "name": "Email / Communication Hub",
+    "family": "desktop",
+    "archetype": "application",
+    "best_for": ["email", "messaging", "team collaboration"],
+    "layout_rule": "folder sidebar + message list + reading pane",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D22",
+    "name": "File / Media Manager",
+    "family": "desktop",
+    "archetype": "content",
+    "best_for": ["file management", "DAM", "drives"],
+    "layout_rule": "folder tree + file grid/list + detail drawer",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D23",
+    "name": "Calendar / Week Planner",
+    "family": "desktop",
+    "archetype": "time",
+    "best_for": ["scheduling", "bookings", "teams"],
+    "layout_rule": "date header + day columns + event blocks + create",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D24",
+    "name": "Gantt / Roadmap",
+    "family": "desktop",
+    "archetype": "planning",
+    "best_for": ["project", "product", "operations"],
+    "layout_rule": "timeline header + task bars across date columns",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D25",
+    "name": "Form / Survey Builder",
+    "family": "desktop",
+    "archetype": "power-tool",
+    "best_for": ["forms", "surveys", "intake"],
+    "layout_rule": "form canvas + field palette + properties panel",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D26",
+    "name": "Team Chat",
+    "family": "desktop",
+    "archetype": "messaging",
+    "best_for": ["chat", "support", "collaboration"],
+    "layout_rule": "channel sidebar + thread + composer",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D27",
+    "name": "Funnel / Conversion Analytics",
+    "family": "desktop",
+    "archetype": "analytics",
+    "best_for": ["marketing", "sales", "growth"],
+    "layout_rule": "funnel stages + conversion metrics + breakdown",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D28",
+    "name": "Inventory / Warehouse",
+    "family": "desktop",
+    "archetype": "operations",
+    "best_for": ["inventory", "stock", "logistics"],
+    "layout_rule": "location filter + item grid + stock levels",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D29",
+    "name": "Helpdesk Ticket Queue",
+    "family": "desktop",
+    "archetype": "workflow",
+    "best_for": ["support", "IT", "service"],
+    "layout_rule": "ticket list + status filters + detail drawer",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D30",
+    "name": "Pivot / Reporting Table",
+    "family": "desktop",
+    "archetype": "data",
+    "best_for": ["BI", "finance", "reporting"],
+    "layout_rule": "pivot fields + grouped table + chart",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D31",
+    "name": "Onboarding / Setup Wizard",
+    "family": "desktop",
+    "archetype": "guided-flow",
+    "best_for": ["activation", "setup", "provisioning"],
+    "layout_rule": "stepper header + step form + side summary",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  },
+  {
+    "id": "D32",
+    "name": "AI Agent Operations Console",
+    "family": "desktop",
+    "archetype": "monitoring",
+    "best_for": ["AI ops", "automation", "agents"],
+    "layout_rule": "agent list + log stream + controls",
+    "grid_default": "12-column responsive grid; allow 16-column high-density variant for D03/D04/D19.",
+    "required_states": ["default", "loading", "empty", "error", "permission", "responsive-collapse"],
+    "mobile_transform": "Collapse sidebars to drawer/rail; stack panes; preserve primary task and actions."
+  }
+]

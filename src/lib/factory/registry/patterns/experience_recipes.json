@@ -1,0 +1,362 @@
+[
+  {
+    "id": "R01",
+    "name": "Mobile Social Feed",
+    "domain": "social/community",
+    "canonical_flow": "feed > detail > create > comments > profile",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R02",
+    "name": "Short Video / Reels",
+    "domain": "creator/media",
+    "canonical_flow": "immersive feed > comments sheet > creator > create/upload",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R03",
+    "name": "Local Discovery",
+    "domain": "directory/local",
+    "canonical_flow": "location/search > results/map > business detail > contact/book > saved",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R04",
+    "name": "Marketplace",
+    "domain": "marketplace",
+    "canonical_flow": "search/browse > filters > item detail > seller > save/share > transaction",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R05",
+    "name": "Ecommerce Store",
+    "domain": "commerce",
+    "canonical_flow": "home > category > PDP > cart > checkout > confirmation > account",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R06",
+    "name": "SaaS Workspace",
+    "domain": "saas",
+    "canonical_flow": "home dashboard > object list > object detail > create/edit > settings",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R07",
+    "name": "CRM",
+    "domain": "crm",
+    "canonical_flow": "pipeline > contact/company > activity > task > reporting > settings",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R08",
+    "name": "Analytics Dashboard",
+    "domain": "analytics",
+    "canonical_flow": "overview > drilldown > filter > comparison > export/share",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R09",
+    "name": "AI Chat + Artifacts",
+    "domain": "ai",
+    "canonical_flow": "thread list > conversation > tool/artifact panel > approvals > history",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R10",
+    "name": "AI Agent Control Plane",
+    "domain": "ai/ops",
+    "canonical_flow": "overview > agent registry > queue > task detail > receipts > approvals",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R11",
+    "name": "Booking / Scheduling",
+    "domain": "booking",
+    "canonical_flow": "availability > service > slot > details > payment/confirm > manage",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R12",
+    "name": "Field Service",
+    "domain": "operations",
+    "canonical_flow": "today route > job detail > checklist > media/signature > complete",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R13",
+    "name": "Project Management",
+    "domain": "productivity",
+    "canonical_flow": "workspace > board/list > item > timeline > files > activity",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R14",
+    "name": "Messaging",
+    "domain": "communication",
+    "canonical_flow": "inbox > thread > composer > attachments > info > search",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R15",
+    "name": "Learning Platform",
+    "domain": "education",
+    "canonical_flow": "catalog > course > lesson > assessment > progress > certificate",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R16",
+    "name": "Membership Community",
+    "domain": "community",
+    "canonical_flow": "home > groups > post > events > members > profile",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R17",
+    "name": "Content Publisher",
+    "domain": "content",
+    "canonical_flow": "home > topic > article > author > search > saved",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R18",
+    "name": "Real Estate Search",
+    "domain": "real-estate",
+    "canonical_flow": "search/map > property > compare > save > inquiry > account",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R19",
+    "name": "Lead Generation Funnel",
+    "domain": "marketing",
+    "canonical_flow": "landing > qualification > estimator > proof > capture > thank-you",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R20",
+    "name": "Service Business Site",
+    "domain": "local-service",
+    "canonical_flow": "home > services > project proof > estimate > about > contact",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R21",
+    "name": "Corporate / Consulting",
+    "domain": "corporate",
+    "canonical_flow": "home > capabilities > case studies > insights > about > contact",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R22",
+    "name": "Product Launch",
+    "domain": "marketing",
+    "canonical_flow": "hero > product story > features > proof > pricing > FAQ > conversion",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R23",
+    "name": "Pricing / Subscription",
+    "domain": "saas",
+    "canonical_flow": "plan compare > feature matrix > checkout > account/subscription",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R24",
+    "name": "Admin Console",
+    "domain": "admin",
+    "canonical_flow": "overview > users > permissions > config > audit > system health",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R25",
+    "name": "Knowledge Base",
+    "domain": "knowledge",
+    "canonical_flow": "home/search > category > article > feedback > related > support",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R26",
+    "name": "Document Workspace",
+    "domain": "productivity",
+    "canonical_flow": "documents > editor/viewer > comments > versions > share",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R27",
+    "name": "Inventory / POS",
+    "domain": "commerce/ops",
+    "canonical_flow": "catalog > inventory > item > order > transaction > reporting",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R28",
+    "name": "Finance Dashboard",
+    "domain": "finance",
+    "canonical_flow": "overview > transactions > category > transfer/action > statements",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R29",
+    "name": "Event Experience",
+    "domain": "events",
+    "canonical_flow": "discover > event > ticket/register > schedule > attendee profile",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  },
+  {
+    "id": "R30",
+    "name": "Multi-step Intake",
+    "domain": "forms",
+    "canonical_flow": "intro > stepper > review > submit > confirmation > status",
+    "composition_contract": {
+      "stable_navigation": true,
+      "required_state_matrix": true,
+      "semantic_tokens_only": true,
+      "responsive_transform_required": true
+    }
+  }
+]

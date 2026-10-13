@@ -1,0 +1,760 @@
+[
+  {
+    "id": "M01",
+    "name": "Bottom-Tab Feed",
+    "family": "mobile",
+    "archetype": "feed",
+    "best_for": [
+      "social",
+      "content",
+      "community"
+    ],
+    "layout_rule": "persistent 4-5 item bottom tab bar; vertically scrolling primary feed",
+    "navigation_rule": "bottom tabs",
+    "required_components": [
+      "top app bar",
+      "feed cards",
+      "composer/FAB",
+      "badges"
+    ],
+    "guardrail": "Do not exceed five persistent tabs.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M02",
+    "name": "Full-Screen Swipe Feed",
+    "family": "mobile",
+    "archetype": "immersive",
+    "best_for": [
+      "short video",
+      "stories",
+      "media"
+    ],
+    "layout_rule": "edge-to-edge content; one item per viewport; action rail",
+    "navigation_rule": "vertical swipe + overlay actions",
+    "required_components": [
+      "media stage",
+      "creator/meta overlay",
+      "action rail",
+      "progress",
+      "comments sheet"
+    ],
+    "guardrail": "Keep chrome minimal and respect safe areas.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M03",
+    "name": "Dashboard Tiles",
+    "family": "mobile",
+    "archetype": "dashboard",
+    "best_for": [
+      "business",
+      "operations",
+      "utilities"
+    ],
+    "layout_rule": "summary header plus 2-column metric/action tile grid",
+    "navigation_rule": "bottom tabs or compact top bar",
+    "required_components": [
+      "KPI cards",
+      "quick actions",
+      "recent activity",
+      "alerts"
+    ],
+    "guardrail": "Avoid dense desktop-style tables.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M04",
+    "name": "Search-First Discovery",
+    "family": "mobile",
+    "archetype": "discovery",
+    "best_for": [
+      "marketplaces",
+      "directories",
+      "local search"
+    ],
+    "layout_rule": "search field dominates first viewport; filters and result cards follow",
+    "navigation_rule": "search + filters + result list",
+    "required_components": [
+      "search",
+      "chips",
+      "filters sheet",
+      "result cards",
+      "saved state"
+    ],
+    "guardrail": "Search must remain reachable during scroll.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M05",
+    "name": "Map + Bottom Sheet",
+    "family": "mobile",
+    "archetype": "location",
+    "best_for": [
+      "near-me",
+      "delivery",
+      "travel",
+      "field service"
+    ],
+    "layout_rule": "full map canvas with draggable result sheet",
+    "navigation_rule": "map gestures + bottom sheet",
+    "required_components": [
+      "map markers",
+      "search",
+      "filter chips",
+      "bottom sheet",
+      "detail preview"
+    ],
+    "guardrail": "Never hide critical actions behind map gestures only.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M06",
+    "name": "Inbox + Conversation",
+    "family": "mobile",
+    "archetype": "messaging",
+    "best_for": [
+      "chat",
+      "support",
+      "collaboration"
+    ],
+    "layout_rule": "thread list leading to full conversation view",
+    "navigation_rule": "list-detail navigation",
+    "required_components": [
+      "search",
+      "thread rows",
+      "message bubbles",
+      "composer",
+      "attachments"
+    ],
+    "guardrail": "Preserve clear sender/state hierarchy.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M07",
+    "name": "Marketplace Storefront",
+    "family": "mobile",
+    "archetype": "commerce",
+    "best_for": [
+      "retail",
+      "DTC",
+      "catalog"
+    ],
+    "layout_rule": "promo/header, categories, product grid, cart affordance",
+    "navigation_rule": "bottom tabs",
+    "required_components": [
+      "hero/promo",
+      "category rail",
+      "product cards",
+      "cart badge",
+      "recommendations"
+    ],
+    "guardrail": "Keep purchase path obvious and thumb-friendly.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M08",
+    "name": "Product Detail Commerce",
+    "family": "mobile",
+    "archetype": "commerce-detail",
+    "best_for": [
+      "product",
+      "subscription",
+      "booking"
+    ],
+    "layout_rule": "media gallery, title/price, options, proof, sticky CTA",
+    "navigation_rule": "stacked detail + sticky action",
+    "required_components": [
+      "gallery",
+      "variant picker",
+      "price",
+      "reviews/proof",
+      "sticky add/buy"
+    ],
+    "guardrail": "Primary CTA remains visible after initial scroll.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M09",
+    "name": "Wizard / Stepper",
+    "family": "mobile",
+    "archetype": "guided-flow",
+    "best_for": [
+      "onboarding",
+      "forms",
+      "quotes",
+      "intake"
+    ],
+    "layout_rule": "one decision cluster per step with visible progress",
+    "navigation_rule": "back/next stepper",
+    "required_components": [
+      "progress",
+      "field group",
+      "validation",
+      "save/resume",
+      "completion"
+    ],
+    "guardrail": "Do not overload a single step.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M10",
+    "name": "Calendar / Schedule",
+    "family": "mobile",
+    "archetype": "time",
+    "best_for": [
+      "booking",
+      "workforce",
+      "events"
+    ],
+    "layout_rule": "date selector plus agenda/cards",
+    "navigation_rule": "calendar tabs + agenda",
+    "required_components": [
+      "calendar",
+      "time slots",
+      "event cards",
+      "filters",
+      "create action"
+    ],
+    "guardrail": "Time zones and empty states must be explicit.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M11",
+    "name": "List + Detail",
+    "family": "mobile",
+    "archetype": "content",
+    "best_for": [
+      "tasks",
+      "contacts",
+      "records",
+      "orders"
+    ],
+    "layout_rule": "searchable list that opens focused detail page",
+    "navigation_rule": "stack navigation",
+    "required_components": [
+      "search",
+      "segmented filters",
+      "rows/cards",
+      "detail header",
+      "actions"
+    ],
+    "guardrail": "Keep list state when returning from detail.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M12",
+    "name": "Card Stack / Swipe",
+    "family": "mobile",
+    "archetype": "decision",
+    "best_for": [
+      "matching",
+      "review",
+      "triage"
+    ],
+    "layout_rule": "single dominant card with swipe/decision actions",
+    "navigation_rule": "gesture + explicit buttons",
+    "required_components": [
+      "card",
+      "decision buttons",
+      "progress",
+      "undo",
+      "details"
+    ],
+    "guardrail": "Provide non-gesture alternatives.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M13",
+    "name": "Profile Hub",
+    "family": "mobile",
+    "archetype": "identity",
+    "best_for": [
+      "creator",
+      "member",
+      "customer portal"
+    ],
+    "layout_rule": "identity header, stats, tabs, content/action sections",
+    "navigation_rule": "profile tabs",
+    "required_components": [
+      "avatar/logo",
+      "stats",
+      "tabs",
+      "content grid",
+      "settings action"
+    ],
+    "guardrail": "Separate public profile from private account controls.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M14",
+    "name": "Creator / Capture First",
+    "family": "mobile",
+    "archetype": "creation",
+    "best_for": [
+      "camera",
+      "posting",
+      "scanning",
+      "uploads"
+    ],
+    "layout_rule": "create action is primary; capture/import/edit/publish flow",
+    "navigation_rule": "central create action",
+    "required_components": [
+      "capture",
+      "media picker",
+      "editor",
+      "metadata",
+      "publish state"
+    ],
+    "guardrail": "Ask permissions contextually.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M15",
+    "name": "AI Chat Copilot",
+    "family": "mobile",
+    "archetype": "ai",
+    "best_for": [
+      "assistant",
+      "support",
+      "research"
+    ],
+    "layout_rule": "conversation canvas with suggestion chips and composer",
+    "navigation_rule": "chat + tool/result cards",
+    "required_components": [
+      "assistant messages",
+      "composer",
+      "attachments",
+      "suggestions",
+      "citations/tool cards"
+    ],
+    "guardrail": "Separate generated content, user content, and tool results.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M16",
+    "name": "Wallet / Finance",
+    "family": "mobile",
+    "archetype": "finance",
+    "best_for": [
+      "banking",
+      "payments",
+      "rewards"
+    ],
+    "layout_rule": "balance/summary top, action row, transaction feed",
+    "navigation_rule": "bottom tabs",
+    "required_components": [
+      "balance",
+      "action buttons",
+      "transactions",
+      "cards",
+      "security states"
+    ],
+    "guardrail": "Mask sensitive values when appropriate.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M17",
+    "name": "Media Library",
+    "family": "mobile",
+    "archetype": "media",
+    "best_for": [
+      "music",
+      "video",
+      "podcasts",
+      "courses"
+    ],
+    "layout_rule": "featured content plus shelves/collections",
+    "navigation_rule": "bottom tabs + search",
+    "required_components": [
+      "hero",
+      "shelves",
+      "media cards",
+      "player mini-bar",
+      "downloads"
+    ],
+    "guardrail": "Playback state must persist across navigation.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M18",
+    "name": "Super-App Hub",
+    "family": "mobile",
+    "archetype": "hub",
+    "best_for": [
+      "multi-service consumer apps"
+    ],
+    "layout_rule": "personalized header and icon/service grid with recent/recommended",
+    "navigation_rule": "bottom tabs + service launcher",
+    "required_components": [
+      "service grid",
+      "search",
+      "recent",
+      "offers",
+      "notifications"
+    ],
+    "guardrail": "Group services; do not show an unstructured icon wall.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M19",
+    "name": "Timeline / Activity",
+    "family": "mobile",
+    "archetype": "timeline",
+    "best_for": [
+      "projects",
+      "social",
+      "audit",
+      "field work"
+    ],
+    "layout_rule": "chronological events with filters and grouped dates",
+    "navigation_rule": "tabs + filters",
+    "required_components": [
+      "timeline",
+      "event cards",
+      "status chips",
+      "attachments",
+      "quick actions"
+    ],
+    "guardrail": "Make event type and timestamp instantly scannable.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M20",
+    "name": "Adaptive Master-Detail",
+    "family": "mobile",
+    "archetype": "adaptive",
+    "best_for": [
+      "tablet-capable productivity",
+      "CRM",
+      "mail"
+    ],
+    "layout_rule": "single-column phone layout transforms into split list/detail on larger screens",
+    "navigation_rule": "adaptive rail/tabs",
+    "required_components": [
+      "list pane",
+      "detail pane",
+      "toolbar",
+      "filters",
+      "resizable optional pane"
+    ],
+    "guardrail": "Phone must never depend on side-by-side layout.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "offline/slow",
+      "permission where relevant"
+    ]
+  },
+  {
+    "id": "M21",
+    "name": "Onboarding Carousel",
+    "family": "mobile",
+    "archetype": "guided-flow",
+    "best_for": ["first-run", "education", "signup"],
+    "layout_rule": "edge-to-edge slide + progress dots + next",
+    "navigation_rule": "paged carousel + next/skip",
+    "required_components": ["hero illustration", "headline", "progress dots", "next/skip"],
+    "guardrail": "Keep one idea per slide.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M22",
+    "name": "Scanner / QR Capture",
+    "family": "mobile",
+    "archetype": "creation",
+    "best_for": ["check-in", "inventory", "auth"],
+    "layout_rule": "camera frame + reticle + result card",
+    "navigation_rule": "capture + result",
+    "required_components": ["camera viewfinder", "reticle", "torch", "result sheet"],
+    "guardrail": "Ask camera permission contextually.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M23",
+    "name": "Checkout / Payment",
+    "family": "mobile",
+    "archetype": "commerce",
+    "best_for": ["retail", "DTC", "booking"],
+    "layout_rule": "order summary + payment method + sticky pay",
+    "navigation_rule": "stacked summary + sticky CTA",
+    "required_components": ["line items", "totals", "payment method", "pay button"],
+    "guardrail": "Primary pay CTA remains visible.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M24",
+    "name": "Fitness / Activity Rings",
+    "family": "mobile",
+    "archetype": "dashboard",
+    "best_for": ["health", "fitness", "wearables"],
+    "layout_rule": "activity rings + stat tiles + history",
+    "navigation_rule": "bottom tabs",
+    "required_components": ["rings", "stat tiles", "history list", "goal states"],
+    "guardrail": "Show progress toward goals clearly.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M25",
+    "name": "Food / Order Menu",
+    "family": "mobile",
+    "archetype": "commerce",
+    "best_for": ["restaurants", "delivery", "cafés"],
+    "layout_rule": "category rail + menu items + cart bar",
+    "navigation_rule": "scroll + cart bar",
+    "required_components": ["category rail", "menu cards", "cart bar", "qty controls"],
+    "guardrail": "Cart total stays reachable.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M26",
+    "name": "Ride / Trip Track",
+    "family": "mobile",
+    "archetype": "location",
+    "best_for": ["mobility", "delivery", "logistics"],
+    "layout_rule": "map + ETA sheet + trip actions",
+    "navigation_rule": "map + bottom sheet",
+    "required_components": ["map", "ETA", "driver info", "trip actions"],
+    "guardrail": "Trip status and ETA always visible.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M27",
+    "name": "Notes / Capture",
+    "family": "mobile",
+    "archetype": "content",
+    "best_for": ["notes", "journals", "docs"],
+    "layout_rule": "note list + search + compose FAB",
+    "navigation_rule": "list + editor",
+    "required_components": ["search", "note cards", "compose FAB", "editor"],
+    "guardrail": "Preserve list scroll on return.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M28",
+    "name": "Habit / Streak Tracker",
+    "family": "mobile",
+    "archetype": "dashboard",
+    "best_for": ["habits", "goals", "wellness"],
+    "layout_rule": "streak calendar + habit cards + check-in",
+    "navigation_rule": "bottom tabs",
+    "required_components": ["calendar grid", "habit cards", "check-in", "streaks"],
+    "guardrail": "Make today's check-in obvious.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M29",
+    "name": "Event Ticket / Pass",
+    "family": "mobile",
+    "archetype": "identity",
+    "best_for": ["events", "travel", "memberships"],
+    "layout_rule": "pass card + QR + details + add-to-wallet",
+    "navigation_rule": "single pass view",
+    "required_components": ["pass card", "QR", "details", "wallet action"],
+    "guardrail": "QR must be high-contrast and tappable.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M30",
+    "name": "Community / Forum Feed",
+    "family": "mobile",
+    "archetype": "feed",
+    "best_for": ["forums", "communities", "Q&A"],
+    "layout_rule": "thread list + tags + vote/comment actions",
+    "navigation_rule": "bottom tabs + thread detail",
+    "required_components": ["thread cards", "tags", "vote/comment", "compose FAB"],
+    "guardrail": "Make thread rank and reply count scannable.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M31",
+    "name": "Course / Lesson Player",
+    "family": "mobile",
+    "archetype": "media",
+    "best_for": ["education", "training", "courses"],
+    "layout_rule": "lesson list + progress + video stage + notes",
+    "navigation_rule": "bottom tabs + lesson detail",
+    "required_components": ["progress", "lesson list", "player", "completion"],
+    "guardrail": "Persist playback/progress across navigation.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  },
+  {
+    "id": "M32",
+    "name": "Health Vitals Dashboard",
+    "family": "mobile",
+    "archetype": "dashboard",
+    "best_for": ["health", "chronic care", "telehealth"],
+    "layout_rule": "vital charts + readings + reminders",
+    "navigation_rule": "bottom tabs",
+    "required_components": ["charts", "reading tiles", "trends", "reminders"],
+    "guardrail": "Mask sensitive values when appropriate.",
+    "responsive_behavior": "Designed phone-first; promote controls to rail/split-pane only when width and task benefit justify it.",
+    "states_required": ["default", "loading", "empty", "error", "offline/slow", "permission where relevant"]
+  }
+]
