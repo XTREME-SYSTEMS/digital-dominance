@@ -1,0 +1,11 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {createTwilioProxy} from '../base44/functions/gptTwilio/proxy.mjs';
+const req=body=>new Request('https://test.invalid',{method:'POST',body:JSON.stringify(body)});
+const make=(options={})=>createTwilioProxy({authenticate:async()=>true,getKey:()=> 'synthetic-key',fetcher:async()=>Response.json({provider:'twilio',live_voice:'UNKNOWN'}),...options});
+test('proxy rejects non-admin before upstream',async()=>{let calls=0;assert.equal((await make({authenticate:async()=>false,fetcher:async()=>calls++})(req({action:'status'}))).status,403);assert.equal(calls,0);});
+test('proxy requires server key',async()=>assert.equal((await make({getKey:()=>null})(req({action:'status'}))).status,503));
+test('proxy rejects mutation',async()=>assert.equal((await make()(req({action:'send_sms'}))).status,400));
+test('proxy strips caller secrets and uses fixed endpoint',async()=>{let args;await make({fetcher:async(...a)=>{args=a;return Response.json({provider:'twilio'});}})(req({action:'status',api_key:'injected',url:'https://evil.invalid'}));assert.equal(args[0],'https://xtreme-communications.com/api/functions/gptTwilio');assert.deepEqual(JSON.parse(args[1].body),{action:'status'});assert.equal(args[1].headers.Authorization,'Bearer synthetic-key');});
+test('proxy strips unexpected upstream fields',async()=>{const res=await make({fetcher:async()=>Response.json({provider:'twilio',auth_token:'never-output'})})(req({action:'status'}));assert.deepEqual(await res.json(),{provider:'twilio'});});
+test('proxy preserves missing credential status',async()=>{const res=await make({fetcher:async()=>Response.json({status:'credentials_required',error:'secret-detail'},{status:503})})(req({action:'status'}));assert.equal(res.status,503);assert.ok(!(await res.text()).includes('secret-detail'));});
