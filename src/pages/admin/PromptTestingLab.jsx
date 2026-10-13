@@ -54,6 +54,21 @@ export default function PromptTestingLab() {
       : 0,
   };
 
+  // ── Autonomous agent activity stats ───────────────────────────────────
+  const agentStats = (() => {
+    const testedPrompts = prompts.filter((p) => p.tested_at);
+    const lastTested = testedPrompts.length > 0
+      ? testedPrompts.reduce((max, p) => p.tested_at > max ? p.tested_at : max, testedPrompts[0].tested_at)
+      : null;
+    const nextRun = lastTested ? new Date(new Date(lastTested).getTime() + 12 * 60 * 60 * 1000) : null;
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const recentlyTested = testedPrompts.filter((p) => new Date(p.tested_at) > oneDayAgo).length;
+    const autoFeatured = prompts.filter((p) => p.is_featured && p.quality_score >= 85).length;
+    const deactivated = prompts.filter((p) => !p.is_active).length;
+    const stale = prompts.filter((p) => p.is_active && (!p.tested_at || new Date(p.tested_at) < oneDayAgo)).length;
+    return { lastTested, nextRun, recentlyTested, autoFeatured, deactivated, stale };
+  })();
+
   const handleTest = async (prompt) => {
     setTesting(prompt.id);
     setError(null);
@@ -187,6 +202,57 @@ export default function PromptTestingLab() {
         )}
       </div>
 
+      {/* Autonomous agent status panel */}
+      <div className="rounded-lg border border-[#dce6f1] bg-white p-4 mb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Clock className="w-4 h-4 text-[#126fc8]" />
+          <h3 className="text-sm font-bold text-[#112940]">Autonomous Agent Status</h3>
+          <span className="text-[10px] text-[#8faec9] ml-auto font-mono">cron: 0 */12 * * *</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <AgentStat
+            icon={Clock}
+            label="Last Run"
+            value={agentStats.lastTested ? new Date(agentStats.lastTested).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "Never"}
+            color="#126fc8"
+          />
+          <AgentStat
+            icon={RefreshCw}
+            label="Next Run"
+            value={agentStats.nextRun ? new Date(agentStats.nextRun).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "Pending"}
+            color="#7c3aed"
+          />
+          <AgentStat
+            icon={Zap}
+            label="Tested (24h)"
+            value={String(agentStats.recentlyTested)}
+            color="#d97706"
+          />
+          <AgentStat
+            icon={Star}
+            label="Auto-Featured"
+            value={String(agentStats.autoFeatured)}
+            color="#16a34a"
+          />
+          <AgentStat
+            icon={AlertCircle}
+            label="Stale Prompts"
+            value={String(agentStats.stale)}
+            color={agentStats.stale > 0 ? "#dc2626" : "#607790"}
+          />
+          <AgentStat
+            icon={XCircle}
+            label="Deactivated"
+            value={String(agentStats.deactivated)}
+            color="#8faec9"
+          />
+        </div>
+        <div className="mt-3 pt-3 border-t border-[#e4edf5] flex items-center gap-2 text-[11px] text-[#607790]">
+          <Bot className="w-3 h-3 text-[#16a34a]" />
+          <span>The autonomous agent runs every 12 hours via cron, testing up to 5 stale prompts per cycle. Prompts scoring 85+ are auto-featured; prompts scoring below 50 across 3+ tests are auto-deactivated.</span>
+        </div>
+      </div>
+
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
@@ -275,5 +341,17 @@ export default function PromptTestingLab() {
         />
       )}
     </AdminSystemPage>
+  );
+}
+
+function AgentStat({ icon: Icon, label, value, color }) {
+  return (
+    <div className="rounded-lg bg-[#f8fbfe] border border-[#e4edf5] p-2.5 text-center">
+      <div className="w-7 h-7 rounded-lg grid place-items-center mx-auto mb-1" style={{ background: color + "15", color }}>
+        <Icon className="w-3.5 h-3.5" />
+      </div>
+      <p className="text-xs font-extrabold text-[#112940] truncate">{value}</p>
+      <p className="text-[9px] text-[#607790] uppercase tracking-wider mt-0.5">{label}</p>
+    </div>
   );
 }

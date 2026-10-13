@@ -3,11 +3,42 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Globe, Smartphone, LayoutGrid, Server, Activity, CheckCircle2,
   AlertCircle, Loader2, Clock, XCircle, Search, RefreshCw,
-  ExternalLink, Zap, TrendingUp, Shield, MapPin, Eye,
+  ExternalLink, Zap, TrendingUp, Shield, MapPin, Eye, Rocket, Building2, ShoppingBag, Code2, Briefcase, HeartPulse, Palette,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+
+// ── Industry category mapping ───────────────────────────────────────────
+const INDUSTRY_CATEGORIES = {
+  construction: { label: "Construction & Contracting", icon: Building2, color: "#d97706" },
+  saas: { label: "SaaS / Software", icon: Code2, color: "#126fc8" },
+  b2b: { label: "B2B Services", icon: Briefcase, color: "#7c3aed" },
+  ecommerce: { label: "E-commerce", icon: ShoppingBag, color: "#0d9488" },
+  health: { label: "Health & Wellness", icon: HeartPulse, color: "#dc2626" },
+  creative: { label: "Creative / Agency", icon: Palette, color: "#db2777" },
+  other: { label: "Other", icon: Globe, color: "#607790" },
+};
+
+const NICHE_TO_CATEGORY = {
+  epoxy_garage: "construction", epoxy_flooring: "construction", garage_coating: "construction",
+  decorative_concrete: "construction", polished_concrete: "construction", concrete_resurfacing: "construction",
+  roofing: "construction", plumbing: "construction", hvac: "construction", electrical: "construction",
+  flooring: "construction", painting: "construction", landscaping: "construction",
+  saas: "saas", software: "saas", tech: "saas", app: "saas", platform: "saas",
+  b2b: "b2b", consulting: "b2b", professional: "b2b", legal: "b2b", accounting: "b2b",
+  ecommerce: "ecommerce", retail: "ecommerce", shop: "ecommerce", store: "ecommerce", product: "ecommerce",
+  health: "health", medical: "health", dental: "health", fitness: "health", wellness: "health", spa: "health",
+  creative: "creative", design: "creative", agency: "creative", marketing: "creative", media: "creative",
+};
+
+function deriveIndustryCategory(site) {
+  const niche = (site.niche || site.meta || site.name || "").toLowerCase();
+  for (const [key, cat] of Object.entries(NICHE_TO_CATEGORY)) {
+    if (niche.includes(key)) return cat;
+  }
+  return "other";
+}
 
 // ── Status helpers ──────────────────────────────────────────────────────
 const DEPLOY_STYLES = {
@@ -117,28 +148,34 @@ export default function SiteInventory() {
   const [search, setSearch] = useState("");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [industryFilter, setIndustryFilter] = useState("all");
 
   // ── Pull from all four site sources in parallel ─────────────────────
   const { data: pwaBuilds = [], isLoading: pwaLoading } = useQuery({
     queryKey: ["inventory-pwa"],
     queryFn: async () => {
       const page = await base44.entities.AppBuild.filter({ platform: "pwa" }, { sort: "-created_date", limit: 200 });
-      return (page.items || []).map((b) => ({
-        id: b.id,
-        name: b.app_name,
-        slug: b.app_slug,
-        source: "pwa",
-        status: b.status,
-        url: b.published_url,
-        healthStatus: b.status === "published" ? "healthy" : "unknown",
-        healthScore: b.status === "published" ? 100 : 0,
-        indexingStatus: b.gsc_indexing_status || "",
-        indexingSubmitted: b.gsc_indexing_status === "INDEXED" || b.gsc_indexing_status === "INDEXING_STATE_INDEXED",
-        searchImpressions: b.gsc_impressions || 0,
-        searchClicks: b.gsc_clicks || 0,
-        createdAt: b.created_date,
-        meta: `${b.manifest?.display || "standalone"} · ${b.nav_config?.length || 0} nav`,
-      }));
+      return (page.items || []).map((b) => {
+        const site = {
+          id: b.id,
+          name: b.app_name,
+          slug: b.app_slug,
+          source: "pwa",
+          status: b.status,
+          url: b.published_url,
+          healthStatus: b.status === "published" ? "healthy" : "unknown",
+          healthScore: b.status === "published" ? 100 : 0,
+          indexingStatus: b.gsc_indexing_status || "",
+          indexingSubmitted: b.gsc_indexing_status === "INDEXED" || b.gsc_indexing_status === "INDEXING_STATE_INDEXED",
+          searchImpressions: b.gsc_impressions || 0,
+          searchClicks: b.gsc_clicks || 0,
+          createdAt: b.created_date,
+          meta: `${b.manifest?.display || "standalone"} · ${b.nav_config?.length || 0} nav`,
+          niche: b.app_slug || "",
+        };
+        site.industryCategory = deriveIndustryCategory(site);
+        return site;
+      });
     },
     refetchInterval: 15000,
   });
@@ -150,20 +187,25 @@ export default function SiteInventory() {
         { target_environment: "vercel", status: { $in: ["deployed", "deploying", "failed", "monitoring"] } },
         { sort: "-deployed_at", limit: 200 }
       );
-      return (page.items || []).map((d) => ({
-        id: d.id,
-        name: d.task_description?.replace("Template Studio deploy: ", "") || "Template Site",
-        slug: d.deployment_id,
-        source: "template",
-        status: d.status,
-        url: d.vercel_url,
-        healthStatus: d.health_status || "unknown",
-        healthScore: d.health_score || 0,
-        indexingSubmitted: d.status === "deployed",
-        createdAt: d.created_at,
-        deployedAt: d.deployed_at,
-        meta: d.target_environment,
-      }));
+      return (page.items || []).map((d) => {
+        const site = {
+          id: d.id,
+          name: d.task_description?.replace("Template Studio deploy: ", "") || "Template Site",
+          slug: d.deployment_id,
+          source: "template",
+          status: d.status,
+          url: d.vercel_url,
+          healthStatus: d.health_status || "unknown",
+          healthScore: d.health_score || 0,
+          indexingSubmitted: d.status === "deployed",
+          createdAt: d.created_at,
+          deployedAt: d.deployed_at,
+          meta: d.target_environment,
+          niche: d.task_description || "",
+        };
+        site.industryCategory = deriveIndustryCategory(site);
+        return site;
+      });
     },
     refetchInterval: 15000,
   });
@@ -175,22 +217,27 @@ export default function SiteInventory() {
         { status: { $in: ["live", "monitoring", "deploying", "generating", "optimizing"] } },
         { sort: "-deployed_at", limit: 500 }
       );
-      return (page.items || []).map((s) => ({
-        id: s.id,
-        name: `${s.target_city || s.keyword || "Site"}, ${s.target_state || ""}`,
-        slug: s.domain || s.keyword,
-        source: "mass_launch",
-        status: s.status,
-        url: s.generated_url,
-        healthStatus: s.status === "live" ? "healthy" : s.status === "monitoring" ? "healthy" : "unknown",
-        healthScore: s.traffic_score || 0,
-        indexingStatus: s.indexing_status || "",
-        indexingSubmitted: s.indexing_status === "INDEXED" || s.indexing_status === "INDEXING_STATE_INDEXED" || s.status === "live" || s.status === "monitoring",
-        searchImpressions: s.search_impressions || 0,
-        searchClicks: s.search_clicks || 0,
-        createdAt: s.deployed_at,
-        meta: `${s.niche} · SEO ${s.seo_score || 0}/100`,
-      }));
+      return (page.items || []).map((s) => {
+        const site = {
+          id: s.id,
+          name: `${s.target_city || s.keyword || "Site"}, ${s.target_state || ""}`,
+          slug: s.domain || s.keyword,
+          source: "mass_launch",
+          status: s.status,
+          url: s.generated_url,
+          healthStatus: s.status === "live" ? "healthy" : s.status === "monitoring" ? "healthy" : "unknown",
+          healthScore: s.traffic_score || 0,
+          indexingStatus: s.indexing_status || "",
+          indexingSubmitted: s.indexing_status === "INDEXED" || s.indexing_status === "INDEXING_STATE_INDEXED" || s.status === "live" || s.status === "monitoring",
+          searchImpressions: s.search_impressions || 0,
+          searchClicks: s.search_clicks || 0,
+          createdAt: s.deployed_at,
+          meta: `${s.niche} · SEO ${s.seo_score || 0}/100`,
+          niche: s.niche || "",
+        };
+        site.industryCategory = deriveIndustryCategory(site);
+        return site;
+      });
     },
     refetchInterval: 15000,
   });
@@ -199,19 +246,24 @@ export default function SiteInventory() {
     queryKey: ["inventory-canonical"],
     queryFn: async () => {
       const page = await base44.entities.CanonicalSiteRegistry.filter({}, { limit: 100 });
-      return (page.items || []).map((c) => ({
-        id: c.id,
-        name: c.canonical_domain,
-        slug: c.canonical_domain,
-        source: "canonical",
-        status: c.active_environment === "production" ? "live" : "pending",
-        url: `https://${c.canonical_domain}`,
-        healthStatus: c.current_health_score > 70 ? "healthy" : c.current_health_score > 0 ? "degraded" : "unknown",
-        healthScore: c.current_health_score || 0,
-        indexingSubmitted: !!c.google_search_console_property,
-        createdAt: c.last_source_truth_sync,
-        meta: `GSC: ${c.google_search_console_property ? "✓" : "✗"} · GA4: ${c.ga4_property_id ? "✓" : "✗"}`,
-      }));
+      return (page.items || []).map((c) => {
+        const site = {
+          id: c.id,
+          name: c.canonical_domain,
+          slug: c.canonical_domain,
+          source: "canonical",
+          status: c.active_environment === "production" ? "live" : "pending",
+          url: `https://${c.canonical_domain}`,
+          healthStatus: c.current_health_score > 70 ? "healthy" : c.current_health_score > 0 ? "degraded" : "unknown",
+          healthScore: c.current_health_score || 0,
+          indexingSubmitted: !!c.google_search_console_property,
+          createdAt: c.last_source_truth_sync,
+          meta: `GSC: ${c.google_search_console_property ? "✓" : "✗"} · GA4: ${c.ga4_property_id ? "✓" : "✗"}`,
+          niche: c.canonical_domain || "",
+        };
+        site.industryCategory = deriveIndustryCategory(site);
+        return site;
+      });
     },
     refetchInterval: 15000,
   });
@@ -224,6 +276,7 @@ export default function SiteInventory() {
   const filtered = useMemo(() => {
     return allSites.filter((s) => {
       if (sourceFilter !== "all" && s.source !== sourceFilter) return false;
+      if (industryFilter !== "all" && s.industryCategory !== industryFilter) return false;
       if (statusFilter !== "all") {
         if (statusFilter === "live" && !["live", "deployed", "published", "monitoring"].includes(s.status)) return false;
         if (statusFilter === "building" && !["building", "deploying", "generating", "researching", "built", "queued"].includes(s.status)) return false;
@@ -235,7 +288,20 @@ export default function SiteInventory() {
       }
       return true;
     });
-  }, [allSites, sourceFilter, statusFilter, search]);
+  }, [allSites, sourceFilter, statusFilter, industryFilter, search]);
+
+  // ── Industry category stats ──────────────────────────────────────────
+  const industryStats = useMemo(() => {
+    const stats = {};
+    for (const s of allSites) {
+      const cat = s.industryCategory || "other";
+      if (!stats[cat]) stats[cat] = { total: 0, live: 0, healthy: 0 };
+      stats[cat].total++;
+      if (["live", "deployed", "published", "monitoring"].includes(s.status)) stats[cat].live++;
+      if (s.healthStatus === "healthy") stats[cat].healthy++;
+    }
+    return stats;
+  }, [allSites]);
 
   // ── Summary stats ────────────────────────────────────────────────────
   const stats = useMemo(() => {
@@ -261,7 +327,16 @@ export default function SiteInventory() {
         ["Building", String(stats.building)],
       ]}
     >
-      {/* Source breakdown cards */}
+      {/* Bulk launch CTA + Source breakdown cards */}
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <h3 className="text-sm font-bold text-[#112940]">Deployment Sources</h3>
+        <Link
+          to="/admin/multi-launch"
+          className="flex items-center gap-2 h-9 px-4 rounded-lg bg-[#126fc8] text-white text-xs font-bold hover:bg-[#0d58a8] transition shrink-0"
+        >
+          <Rocket className="w-3.5 h-3.5" /> Bulk Launch Templates
+        </Link>
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         {[
           { key: "pwa", count: pwaBuilds.length, loading: pwaLoading },
@@ -291,6 +366,49 @@ export default function SiteInventory() {
             </button>
           );
         })}
+      </div>
+
+      {/* Industry category filters */}
+      <div className="mb-4">
+        <p className="text-xs font-bold text-[#607790] uppercase tracking-wider mb-2">Industry Categories</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setIndustryFilter("all")}
+            className={`flex items-center gap-1.5 px-3 h-8 rounded-lg text-xs font-bold border transition ${
+              industryFilter === "all"
+                ? "border-[#112940] bg-[#112940] text-white"
+                : "border-[#e4e4e7] bg-white text-[#607790] hover:border-[#112940]/40"
+            }`}
+          >
+            <Globe className="w-3 h-3" /> All Industries
+            <span className="ml-1 text-[10px] opacity-70">{allSites.length}</span>
+          </button>
+          {Object.entries(INDUSTRY_CATEGORIES).map(([key, cat]) => {
+            const stat = industryStats[key];
+            if (!stat || stat.total === 0) return null;
+            const Icon = cat.icon;
+            const active = industryFilter === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setIndustryFilter(active ? "all" : key)}
+                className={`flex items-center gap-1.5 px-3 h-8 rounded-lg text-xs font-bold border transition ${
+                  active
+                    ? "text-white"
+                    : "border-[#e4e4e7] bg-white text-[#607790] hover:border-[#112940]/40"
+                }`}
+                style={active ? { background: cat.color, borderColor: cat.color } : {}}
+              >
+                <Icon className="w-3 h-3" />
+                {cat.label}
+                <span className="ml-1 text-[10px] opacity-70">{stat.total}</span>
+                {stat.live > 0 && (
+                  <span className="ml-0.5 text-[9px] text-[#16a34a] font-bold">●{stat.live}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* GSC fleet summary */}
