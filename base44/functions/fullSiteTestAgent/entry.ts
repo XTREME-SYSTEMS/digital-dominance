@@ -52,35 +52,49 @@ async function testSite(base44, url, site_id, depth, engineHealthy) {
 
   // Phase 2: Cloud browser full test (real button/form/image/link testing)
   let browserTests = null;
+  let engineError = null;
   if (engineHealthy) {
     try {
-      // Store base44 client for screenshot upload
       (globalThis as any).__base44 = base44;
       browserTests = await runFullSiteTest(url);
     } catch (e) {
-      browserTests = { overall: 'error', error: e.message, tests: {} };
+      engineError = e.message;
+      browserTests = null;
     }
+  }
+
+  // Phase 2b: HTTP fallback — parse HTML to check basic issues when browser unavailable
+  let httpFallback = null;
+  if (!browserTests && httpOk) {
+    try {
+      const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
+      const html = await resp.text();
+      httpFallback = analyzeHtml(html, url);
+    } catch (e) { /* best effort */ }
   }
 
   // Phase 3: Compile report
   const bt = browserTests?.tests || {};
+  const hf = httpFallback || {};
   const report = {
     url,
     site_id,
     tested_at: new Date().toISOString(),
-    engine_used: engineHealthy,
+    engine_used: !!browserTests,
+    engine_error: engineError,
+    test_method: browserTests ? 'cloud_browser' : httpFallback ? 'http_fallback' : 'http_only',
     screenshot_uri: browserTests?.screenshot_uri || null,
-    overall: !httpOk ? 'failed' : (browserTests?.overall || 'partial'),
+    overall: !httpOk ? 'failed' : (browserTests?.overall || (httpFallback ? 'partial' : 'partial')),
     http: { status: httpStatus, ok: httpOk },
     tests: {
-      buttons: bt.buttons || { passed: null, detail: 'Not tested (cloud browser unavailable)', total: 0, clickable: 0, broken: 0 },
+      buttons: bt.buttons || { passed: null, detail: engineError ? `Browser engine error: ${engineError.slice(0, 100)}` : 'Not tested', total: 0, clickable: 0, broken: 0 },
       forms: bt.forms || { passed: null, detail: 'Not tested', total: 0, broken: 0 },
-      links: bt.links || { passed: null, detail: 'Not tested', total: 0, valid: 0, broken: 0 },
-      images: bt.images || { passed: null, detail: 'Not tested', total: 0, loaded: 0, broken: 0 },
-      console_errors: bt.console_errors || { passed: null, detail: 'Not tested', errors: 0 },
-      performance: bt.performance || { passed: null, detail: 'Not tested', load_time_ms: 0, lcp_ms: 0, cls: 0 },
-      responsive: bt.responsive || { passed: null, detail: 'Not tested', mobile: false, tablet: false, desktop: false },
-      seo: bt.seo || { passed: null, detail: 'Not tested', title: '', h1_count: 0, schema_found: false },
+      links: bt.links || (hf.links ? { passed: hf.links.broken === 0, total: hf.links.total, valid: hf.links.valid, broken: hf.links.broken, detail: hf.links.detail } : { passed: null, detail: 'Not tested', total: 0, valid: 0, broken: 0 }),
+      images: bt.images || (hf.images ? { passed: hf.images.broken === 0, total: hf.images.total, loaded: hf.images.total - hf.images.broken, broken: hf.images.broken, detail: hf.images.detail } : { passed: null, detail: 'Not tested', total: 0, loaded: 0, broken: 0 }),
+      console_errors: bt.console_errors || { passed: null, detail: 'Not tested (requires browser)', errors: 0 },
+      performance: bt.performance || { passed: null, detail: 'Not tested (requires browser)', load_time_ms: 0, lcp_ms: 0, cls: 0 },
+      responsive: bt.responsive || { passed: null, detail: 'Not tested (requires browser)', mobile: false, tablet: false, desktop: false },
+      seo: bt.seo || (hf.seo ? { passed: hf.seo.passed, title: hf.seo.title, meta_description: hf.seo.meta_description, h1_count: hf.seo.h1_count, schema_found: hf.seo.schema_found, detail: hf.seo.detail } : { passed: null, detail: 'Not tested', title: '', h1_count: 0, schema_found: false }),
     },
     summary: '',
     recommendations: [],
@@ -102,7 +116,53 @@ async function testSite(base44, url, site_id, depth, engineHealthy) {
     ? 'All tests passed — every button, form, link, and image is functional'
     : report.overall === 'failed'
     ? 'Site test failed — see recommendations for fixes'
-    : engineHealthy ? 'Test completed with issues' : 'Partial test — cloud browser engine unavailable, only HTTP liveness checked';
+    : browserTests ? 'Test completed with issues' : engineError ? `Browser engine error — fell back to HTTP analysis: ${engineError.slice(0, 80)}` : 'Partial test — HTTP fallback used (browser engine unavailable)';
 
   return report;
+}
+
+// HTTP fallback: parse HTML to check basic SEO and content issues without a browser
+function analyzeHtml(html, url) {
+  const result = { links: { total: 0, valid: 0, broken: 0, detail: '' }, images: { total: 0, broken: 0, detail: '' }, seo: { passed: false, title: '', meta_description: '', h1_count: 0, schema_found: false, detail: '' } };
+
+  // Links
+  const linkMatches = html.match(/<a[^>]+href=["']([^"']+)["']/gi) || [];
+  result.links.total = linkMatches.length;
+  let badLinks = 0;
+  for (const m of linkMatches) {
+    const href = m.match(/href=["']([^"']+)["']/i)?.[1] || '';
+    if (!href || href === '#' || href.startsWith('javascript:') || href === '') badLinks++;
+  }
+  result.links.broken = badLinks;
+  result.links.valid = result.links.total - badLinks;
+  result.links.detail = badLinks > 0 ? `${badLinks} links with bad/empty href` : 'All links have valid href attributes';
+
+  // Images
+  const imgMatches = html.match(/<img[^>]+src=["']([^"']+)["']/gi) || [];
+  result.images.total = imgMatches.length;
+  let badImgs = 0;
+  for (const m of imgMatches) {
+    const src = m.match(/src=["']([^"']+)["']/i)?.[1] || '';
+    if (!src || src === '') badImgs++;
+  }
+  result.images.broken = badImgs;
+  result.images.detail = badImgs > 0 ? `${badImgs} images with empty src` : 'All images have src attributes';
+
+  // SEO
+  const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+  result.seo.title = titleMatch ? titleMatch[1].trim() : '';
+  const descMatch = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
+  result.seo.meta_description = descMatch ? descMatch[1] : '';
+  result.seo.h1_count = (html.match(/<h1[\s>]/gi) || []).length;
+  result.seo.schema_found = html.includes('application/ld+json');
+  const issues = [];
+  if (!result.seo.title) issues.push('missing title');
+  if (!result.seo.meta_description) issues.push('missing meta description');
+  if (result.seo.h1_count === 0) issues.push('no H1');
+  if (result.seo.h1_count > 1) issues.push(`multiple H1s (${result.seo.h1_count})`);
+  if (!result.seo.schema_found) issues.push('no JSON-LD schema');
+  result.seo.passed = issues.length === 0;
+  result.seo.detail = issues.length === 0 ? 'SEO basics look good' : `Issues: ${issues.join(', ')}`;
+
+  return result;
 }
