@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.52";
 import { logStep } from "../../shared/sopLog.ts";
+import { isEngineConfigured, createSession, navigate, evaluate, closeSession, cleanStaleSessions } from "../../shared/cloudBrowserEngine.ts";
 
 // ═══════════════════════════════════════════════
 // GOOGLE BATCH SUBMISSION ENGINE
@@ -193,6 +194,132 @@ async function createGA4Property(accessToken: string, accountParent: string, sit
   }
 }
 
+// ═══════════════════════════════════════════════
+// GOOGLE TRENDS SEARCH via Cloud Browser
+// Navigates to Google Trends explore page, extracts
+// interest-over-time, related queries and related topics
+// for a keyword (name) and a URL.
+// ═══════════════════════════════════════════════
+
+async function searchGoogleTrends(query: string): Promise<any> {
+  if (!isEngineConfigured()) {
+    return { ok: false, error: "Cloud browser engine not configured" };
+  }
+  let sessionId: string | null = null;
+  try {
+    sessionId = await createSession({ timeout_ms: 60000 });
+    const trendsUrl = `https://trends.google.com/trends/explore?q=${encodeURIComponent(query)}&geo=US`;
+    await navigate(sessionId, trendsUrl);
+
+    // Wait for the trends widgets to render (they load asynchronously)
+    await new Promise((r) => setTimeout(r, 4000));
+
+    // Extract interest-over-time, related queries, and related topics via JS
+    const script = `JSON.stringify((function() {
+      var result = { query: ${JSON.stringify(query)}, interest_over_time: [], related_queries: [], related_topics: [], title: document.title || '' };
+      // Interest over time chart — try to grab the numbers from the sparkline/points
+      try {
+        var iotWidgets = document.querySelectorAll('[widget-name="TIMESERIES"]');
+        if (iotWidgets.length > 0) {
+          var pts = iotWidgets[0].querySelectorAll('rect, circle');
+          var vals = [];
+          for (var i = 0; i < pts.length; i++) {
+            var v = pts[i].getAttribute('aria-label') || pts[i].getAttribute('data-value');
+            if (v) vals.push(v);
+          }
+          result.interest_over_time = vals.slice(0, 52);
+        }
+      } catch(e) { result.iot_error = e.message; }
+      // Related queries
+      try {
+        var rqWidgets = document.querySelectorAll('[widget-name="RELATED_QUERIES"]');
+        if (rqWidgets.length > 0) {
+          var rows = rqWidgets[0].querySelectorAll('tr, [role="row"]');
+          for (var i = 0; i < Math.min(rows.length, 15); i++) {
+            var cells = rows[i].querySelectorAll('td, [role="cell"]');
+            if (cells.length >= 2) {
+              result.related_queries.push({
+                query: (cells[1].textContent || '').trim(),
+                value: (cells[0].textContent || '').trim()
+              });
+            }
+          }
+        }
+      } catch(e) { result.rq_error = e.message; }
+      // Related topics
+      try {
+        var rtWidgets = document.querySelectorAll('[widget-name="RELATED_TOPICS"]');
+        if (rtWidgets.length > 0) {
+          var rows = rtWidgets[0].querySelectorAll('tr, [role="row"]');
+          for (var i = 0; i < Math.min(rows.length, 15); i++) {
+            var cells = rows[i].querySelectorAll('td, [role="cell"]');
+            if (cells.length >= 2) {
+              result.related_topics.push({
+                topic: (cells[1].textContent || '').trim(),
+                value: (cells[0].textContent || '').trim()
+              });
+            }
+          }
+        }
+      } catch(e) { result.rt_error = e.message; }
+      return result;
+    })())`;
+
+    const evalRes = await evaluate(sessionId, script);
+    const rawStr = evalRes.data || evalRes.result || "";
+    const data = typeof rawStr === "string" ? JSON.parse(rawStr) : rawStr;
+    return { ok: true, data };
+  } catch (e: any) {
+    return { ok: false, error: e.message };
+  } finally {
+    if (sessionId) await closeSession(sessionId);
+  }
+}
+
+// Use GPT (InvokeLLM) to synthesize raw Trends data into actionable insights
+async function analyzeTrendsWithGPT(svc: any, siteUrl: string, keyword: string, nameTrends: any, urlTrends: any): Promise<any> {
+  try {
+    const prompt = `You are an SEO and market intelligence analyst. Analyze the following Google Trends data for a website and its primary keyword. Provide a concise, actionable intelligence brief.
+
+SITE: ${siteUrl}
+KEYWORD: ${keyword || normalizeDomain(siteUrl)}
+
+GOOGLE TRENDS — NAME SEARCH (${keyword || normalizeDomain(siteUrl)}):
+${JSON.stringify(nameTrends?.data || nameTrends || {}).slice(0, 3000)}
+
+GOOGLE TRENDS — URL SEARCH (${normalizeDomain(siteUrl)}):
+${JSON.stringify(urlTrends?.data || urlTrends || {}).slice(0, 3000)}
+
+Produce a JSON object with these fields:
+- "interest_summary": one sentence on whether interest is rising, falling, or flat
+- "top_related_queries": array of up to 5 related search queries (strings)
+- "top_related_topics": array of up to 5 related topics (strings)
+- "seasonality": one sentence on any seasonal pattern visible
+- "opportunity": one sentence on the biggest content or SEO opportunity
+- "risk": one sentence on any risk or declining trend
+- "recommended_actions": array of up to 3 concrete next actions for this site`;
+
+    const res = await svc.integrations.Core.InvokeLLM({
+      prompt,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          interest_summary: { type: "string" },
+          top_related_queries: { type: "array", items: { type: "string" } },
+          top_related_topics: { type: "array", items: { type: "string" } },
+          seasonality: { type: "string" },
+          opportunity: { type: "string" },
+          risk: { type: "string" },
+          recommended_actions: { type: "array", items: { type: "string" } },
+        },
+      },
+    });
+    return res;
+  } catch (e: any) {
+    return { error: e.message };
+  }
+}
+
 async function processSite(svc: any, site: any, gscToken: string, gaToken: string) {
   const siteUrl = buildSiteUrl(site);
   if (!siteUrl) {
@@ -234,7 +361,7 @@ export default async function (req: Request): Promise<Response> {
 
     const svc = base44.asServiceRole;
     const body = await req.json().catch(() => ({}));
-    const { mode, provision_ga4 } = body; // mode: 'all' | 'canonical_only'; provision_ga4: create GA4 properties
+    const { mode, provision_ga4, trends_search } = body; // mode: 'all' | 'canonical_only'; provision_ga4: create GA4 properties; trends_search: Google Trends name+URL via cloud browser + GPT synthesis
 
     // Get tokens (both may not be connected — handle gracefully)
     let gscToken: string | null = null;
@@ -332,6 +459,41 @@ export default async function (req: Request): Promise<Response> {
       }
     }
 
+    // Google Trends search (name + URL) via cloud browser + GPT synthesis
+    let trendsResults: any[] = [];
+    let trendsErrors: any[] = [];
+    if (trends_search) {
+      if (!isEngineConfigured()) {
+        trendsErrors.push({ error: "Cloud browser engine not configured — set CLOUD_BROWSER_ENGINE_URL and ENGINE_API_KEY secrets" });
+      } else {
+        // Clean stale sessions first to avoid resource exhaustion
+        try { await cleanStaleSessions(); } catch {}
+        // Process trends sequentially (cloud browser has limited session capacity)
+        for (const r of results) {
+          if (r.skipped || !r.site) continue;
+          const domain = normalizeDomain(r.site);
+          const keyword = r.keyword || domain;
+          try {
+            const [nameTrends, urlTrends] = await Promise.all([
+              searchGoogleTrends(keyword),
+              searchGoogleTrends(domain),
+            ]);
+            const gptAnalysis = await analyzeTrendsWithGPT(svc, r.site, keyword, nameTrends, urlTrends);
+            trendsResults.push({
+              site: r.site,
+              domain,
+              keyword,
+              name_search: nameTrends,
+              url_search: urlTrends,
+              gpt_analysis: gptAnalysis,
+            });
+          } catch (e: any) {
+            trendsErrors.push({ site: r.site, error: e.message });
+          }
+        }
+      }
+    }
+
     // Compile summary
     const sitemapsGenerated = results.filter((r) => r.sitemap).length;
     const indexNowSubmitted = results.filter((r) => r.index_now?.central?.ok || r.index_now?.yandex?.ok).length;
@@ -343,6 +505,7 @@ export default async function (req: Request): Promise<Response> {
       ok: true,
       mode: mode || "all",
       provision_ga4: !!provision_ga4,
+      trends_search: !!trends_search,
       gsc_connected: !!gscToken,
       ga_connected: !!gaToken,
       total_sites_processed: results.length,
@@ -356,6 +519,9 @@ export default async function (req: Request): Promise<Response> {
       ga4_accounts: ga4Accounts,
       ga4_provisioned_count: ga4Provisioned.length,
       ga4_provision_errors: ga4ProvisionErrors,
+      trends_results_count: trendsResults.length,
+      trends_results: trendsResults,
+      trends_errors: trendsErrors,
       results,
       completed_at: new Date().toISOString(),
     };
@@ -363,7 +529,7 @@ export default async function (req: Request): Promise<Response> {
     await logStep(base44, {
       category: "seo",
       action: "Google batch submission engine",
-      detail: `${sitemapsGenerated} sitemaps, ${gscSubmitted} GSC submissions, ${indexNowSubmitted} IndexNow pings, ${totalUrls} total URLs, ${ga4Properties.length} GA4 properties${provision_ga4 ? `, ${ga4Provisioned.length} GA4 provisioned` : ""}`,
+      detail: `${sitemapsGenerated} sitemaps, ${gscSubmitted} GSC submissions, ${indexNowSubmitted} IndexNow pings, ${totalUrls} total URLs, ${ga4Properties.length} GA4 properties${provision_ga4 ? `, ${ga4Provisioned.length} GA4 provisioned` : ""}${trends_search ? `, ${trendsResults.length} Trends searches` : ""}`,
       source: "googleBatchSubmissionEngine",
     });
 

@@ -8,20 +8,25 @@ export default function GoogleBatchSubmission() {
   const [error, setError] = useState(null);
   const [mode, setMode] = useState("all");
   const [provisionGa4, setProvisionGa4] = useState(false);
+  const [trendsSearch, setTrendsSearch] = useState(false);
 
   const runBatch = useCallback(async () => {
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const res = await base44.functions.invoke("googleBatchSubmissionEngine", { mode, provision_ga4: provisionGa4 });
+      const res = await base44.functions.invoke("googleBatchSubmissionEngine", {
+        mode,
+        provision_ga4: provisionGa4,
+        trends_search: trendsSearch,
+      });
       setResult(res.data);
     } catch (e) {
       setError(e.message || "Failed to run batch submission");
     } finally {
       setLoading(false);
     }
-  }, [mode, provisionGa4]);
+  }, [mode, provisionGa4, trendsSearch]);
 
   return (
     <div className="min-h-screen bg-[#050508] text-white p-6 md:p-10">
@@ -77,7 +82,7 @@ export default function GoogleBatchSubmission() {
               className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#00a2ff] to-[#0066cc] text-white font-bold text-sm flex items-center gap-2 hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px] justify-center"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
-              {loading ? "Provisioning..." : provisionGa4 ? "Provision Everything" : "Submit Everything"}
+              {loading ? "Provisioning..." : provisionGa4 || trendsSearch ? "Provision Everything" : "Submit Everything"}
             </button>
           </div>
 
@@ -92,6 +97,20 @@ export default function GoogleBatchSubmission() {
             <span className="text-sm font-semibold">
               Also create GA4 properties for every site
               <span className="text-white/40 font-normal ml-2">— provisions a new Google Analytics 4 property under your first GA account for each site that doesn't have one</span>
+            </span>
+          </label>
+
+          {/* Google Trends toggle */}
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={trendsSearch}
+              onChange={(e) => setTrendsSearch(e.target.checked)}
+              className="w-5 h-5 rounded border-white/20 bg-[#0a1220] text-[#00a2ff] focus:ring-[#00a2ff] cursor-pointer"
+            />
+            <span className="text-sm font-semibold">
+              Also run Google Trends search (name + URL) for every site
+              <span className="text-white/40 font-normal ml-2">— uses the cloud browser to search Google Trends for each site's keyword and domain, then synthesizes the data with GPT into an intelligence brief</span>
             </span>
           </label>
           {error && (
@@ -168,6 +187,59 @@ export default function GoogleBatchSubmission() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Google Trends Results */}
+            {trendsSearch && result.trends_results?.length > 0 && (
+              <div className="rounded-2xl border border-[#f59e0b]/20 bg-[#f59e0b]/5 p-6">
+                <h3 className="font-bold text-sm mb-4 flex items-center gap-2">
+                  <Search className="w-4 h-4 text-[#f59e0b]" />
+                  Google Trends Intelligence ({result.trends_results.length} sites)
+                </h3>
+                <div className="space-y-4">
+                  {result.trends_results.map((t, i) => (
+                    <div key={i} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-[#00a2ff] flex-shrink-0" />
+                        <span className="text-sm font-mono font-semibold truncate">{t.domain}</span>
+                        <span className="text-xs text-white/40">keyword: {t.keyword}</span>
+                      </div>
+                      {t.gpt_analysis && !t.gpt_analysis.error ? (
+                        <div className="space-y-2 text-sm">
+                          <p className="text-white/80"><b className="text-[#f59e0b]">Interest:</b> {t.gpt_analysis.interest_summary}</p>
+                          <p className="text-white/80"><b className="text-[#f59e0b]">Seasonality:</b> {t.gpt_analysis.seasonality}</p>
+                          <p className="text-white/80"><b className="text-[#22c55e]">Opportunity:</b> {t.gpt_analysis.opportunity}</p>
+                          <p className="text-white/80"><b className="text-red-400">Risk:</b> {t.gpt_analysis.risk}</p>
+                          {t.gpt_analysis.top_related_queries?.length > 0 && (
+                            <div>
+                              <p className="text-xs font-bold text-white/50 uppercase mb-1">Related Queries</p>
+                              <div className="flex flex-wrap gap-1">
+                                {t.gpt_analysis.top_related_queries.slice(0, 5).map((q, j) => (
+                                  <span key={j} className="text-xs bg-white/5 px-2 py-0.5 rounded text-white/70">{q}</span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {t.gpt_analysis.recommended_actions?.length > 0 && (
+                            <div>
+                              <p className="text-xs font-bold text-white/50 uppercase mb-1">Recommended Actions</p>
+                              <ul className="list-disc list-inside text-white/70 text-xs space-y-0.5">
+                                {t.gpt_analysis.recommended_actions.map((a, j) => <li key={j}>{a}</li>)}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-red-400/70">GPT analysis failed: {t.gpt_analysis?.error || "unknown"}</p>
+                      )}
+                      <details className="text-xs">
+                        <summary className="cursor-pointer text-white/40 hover:text-white/60">Raw Trends data</summary>
+                        <pre className="mt-2 text-[10px] text-white/30 overflow-x-auto max-h-40">{JSON.stringify({ name: t.name_search, url: t.url_search }, null, 1)}</pre>
+                      </details>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
