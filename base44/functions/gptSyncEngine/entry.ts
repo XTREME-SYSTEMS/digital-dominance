@@ -64,6 +64,19 @@ export default async function(req: Request): Promise<Response> {
       ok:false,state:'PENDING_APPROVAL',reason:permission.reason,
       contract_version:SYNC_PREVIEW_VERSION
     },{status:403});
+    // An external API key does not establish a tenant or actor identity.
+    // Restrict external callers to metadata-free preflight requests until
+    // a tenant-scoped, provider-readback adapter has been independently tested.
+    if (isApiKeyAuth) {
+      if (action === 'getConfig') return Response.json({
+        ok:true,contract_version:SYNC_PREVIEW_VERSION,mode:'EXTERNAL_PREFLIGHT_ONLY',
+        actions:['getConfig','previewPacket'],entity_access:'NONE',provider_writes:0,
+        next:'Authenticated tenant and actor binding required before reading SyncEvent records.'
+      });
+      if (action !== 'previewPacket') return Response.json({
+        ok:false,state:'TENANT_SCOPED_AUTH_REQUIRED',provider_writes:0
+      },{status:403});
+    }
 
     // ── getConfig: Return full sync config JSON for external GPT ──
     if (action === 'getConfig') {
