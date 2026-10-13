@@ -41,24 +41,43 @@ export default async function(req: Request): Promise<Response> {
       const githubRepo = secrets.get('GITHUB_REPO') || 'XTREME-SYSTEMS/digital-dominance';
       const config = {
         system_name: 'Digital Dominance GPT Sync Pipeline',
-        version: '2.0',
+        version: '3.0',
         github_repo: `https://github.com/${githubRepo}.git`,
         sync_endpoint: 'gptSyncEngine',
+        execution_model: 'Base44 SDK (server-side, authenticated as admin)',
+        sdk_instructions: 'The Base44 SDK is initialized server-side inside the gptSyncEngine function. The external GPT does NOT install the SDK directly. Instead, it calls the execute action below, which authenticates via the SDK and runs typed entity operations and backend function invocations on the GPT\'s behalf.',
         sync_actions: {
-          takeOver: 'POST { action: "takeOver", command: "<your command>" } — GPT executes with full admin context',
+          execute: 'POST { action: "execute", tool: "<tool_name>", args: { entity, operation, data, function_name, payload, query, id, count_only, cursor } } — Execute a hosted tool via the Base44 SDK. This is the primary execution path. Available tools: get_capabilities, read_entities, write_entity, invoke_function.',
+          takeOver: 'POST { action: "takeOver", command: "<your command>" } — GPT executes with full admin context via the internal operator loop',
           sync: 'POST { action: "sync", command: "<optional>" } — Bi-directional sync cycle',
-          getPending: 'POST { action: "getPending" } — Get pending admin events for GPT context',
+          getPending: 'POST { action: "getPending" } — Get pending admin events for GPT context (auto-seeds a snapshot if empty)',
           snapshot: 'POST { action: "snapshot" } — Capture current admin state',
           logEvent: 'POST { action: "logEvent", event_type, entity_name, data_summary, direction } — Log a state change',
+          stats: 'POST { action: "stats" } — Sync statistics',
+          listEvents: 'POST { action: "listEvents", status?, direction?, limit? } — List recent sync events',
         },
         operator_instructions: operatorInstructions,
         operator_entities: operatorEntities,
         operator_functions: operatorFunctions,
         operator_tools: operatorTools,
-        runtime: 'base44-hosted',
-        llm_gateway: 'groq (llama-3.1-8b-instant) with openrouter fallback',
+        execution_protocol: {
+          step_1: 'Call getPending to read any pending admin events (live context).',
+          step_2: 'Call execute with a tool name and args to run any entity operation or backend function. The Base44 SDK authenticates as admin and returns typed results.',
+          step_3: 'Call logEvent to record what you did (direction: "from_gpt") so the admin dashboard sees your actions.',
+          step_4: 'Repeat until the command is complete. Every action must produce a tool receipt.',
+        },
+        runtime: 'base44-sdk (authenticated server-side)',
+        llm_gateway: 'groq (llama-3.3-70b-versatile) with openrouter fallback — used only for internal takeOver/sync operator loop. External GPTs use their own LLM and call execute for tool operations.',
       };
       return Response.json({ ok: true, config });
+    }
+
+    // ── execute: External GPT calls a hosted tool via the Base44 SDK ──
+    if (action === 'execute') {
+      const { tool, args } = body;
+      if (!tool) return Response.json({ error: 'tool required' }, { status: 400 });
+      const result = await executeHostedTool(base44, tool, args || {});
+      return Response.json({ ok: true, tool, result });
     }
 
     // ── logEvent: Log an admin state change ──

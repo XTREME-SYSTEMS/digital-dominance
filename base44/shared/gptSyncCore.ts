@@ -58,7 +58,23 @@ export async function logSyncEvent(svc, event) {
 
 export async function getPendingEvents(svc, sinceId) {
   const records = await svc.entities.SyncEvent.filter({ status: 'pending', direction: 'to_gpt' }, '-created_date', 50);
-  return records || [];
+  const events = Array.isArray(records) ? records : (records?.items || []);
+  // If no pending events exist, seed a fresh snapshot so the external GPT always
+  // receives live admin context on its first poll.
+  if (events.length === 0) {
+    const snapshot = await captureSnapshot(svc);
+    await logSyncEvent(svc, {
+      event_type: 'state_snapshot',
+      action: 'auto_snapshot',
+      data_summary: `Auto-seeded snapshot: ${Object.entries(snapshot).map(([k, v]) => `${k}=${v}`).join(', ')}`,
+      source: 'sync_engine',
+      direction: 'to_gpt',
+      status: 'pending',
+    });
+    const fresh = await svc.entities.SyncEvent.filter({ status: 'pending', direction: 'to_gpt' }, '-created_date', 50);
+    return Array.isArray(fresh) ? fresh : (fresh?.items || []);
+  }
+  return events;
 }
 
 export async function markSynced(svc, eventIds, gptResponse) {
