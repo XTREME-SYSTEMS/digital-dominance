@@ -1,0 +1,47 @@
+{
+  "system_name": "Digital Dominance GPT Sync: Scoped Read-Only Handoff",
+  "version": "3.1-proposed",
+  "status": "PROPOSAL_NOT_CONNECTED",
+  "github_repo": "https://github.com/XTREME-SYSTEMS/digital-dominance.git",
+  "documented_existing_endpoint": "https://unlimitedwebsites.base44.app/functions/gptSyncEngine",
+  "important_security_notice": "Current endpoint source grants service-role privileges to matching API keys and cannot safely be made read-only by prompt instructions alone. Do not call with a privileged token until server-side authorization is hardened.",
+  "runtime_policy": {
+    "mode": "read_only_until_server_hardening",
+    "bearer_key_location": "server_secrets_only",
+    "allow_actions": [
+      "get_capabilities",
+      "read_approved_site_metadata",
+      "read_validation_receipts"
+    ],
+    "deny_actions": [
+      "takeOver",
+      "sync",
+      "write_entity",
+      "invoke_function",
+      "delete",
+      "publish",
+      "manage_domains",
+      "send_outreach"
+    ],
+    "tenant_scope_required": true,
+    "approval_required_for": [
+      "production",
+      "DNS",
+      "secrets",
+      "spend",
+      "customer_messaging",
+      "public_publishing",
+      "destructive_actions"
+    ]
+  },
+  "sample_command_envelope": {
+    "project_id": "<approved-project-id>",
+    "tenant_id": "<approved-tenant-id>",
+    "action": "read_approved_site_metadata",
+    "site_id": "<approved-site-id>",
+    "idempotency_key": "<unique-request-id>",
+    "dry_run": true,
+    "approved": false
+  },
+  "notes": "External GPT system instructions can describe behavior, but executable controls belong to the server. This manifest is not proof of a connected GPT, Vercel deployment, or functioning endpoint."
+}
