@@ -1,15 +1,12 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone } from "lucide-react";
-import ReferenceAdminViews, { getReferenceAdminView } from "@/components/launch-engine-admin/ReferenceAdminViews";
+import ReferenceAdminViews from "@/components/launch-engine-admin/ReferenceAdminViews";
 
 const ICONS = [Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Radio, Activity, Settings];
 
 export default function ReferenceAdminSidebar() {
-  const { pathname, hash } = useLocation();
-  const base = pathname === "/admin.html" ? "/admin.html" : "/admin";
-  const isReference = ["/admin", "/admin/", "/admin.html"].includes(pathname);
-  const selected = getReferenceAdminView(hash);
+  const { pathname } = useLocation();
   return (
     <aside className="wle-aside">
       <Link to="/" className="wle-brand">
@@ -23,9 +20,9 @@ export default function ReferenceAdminSidebar() {
         </Link>
         {ReferenceAdminViews.map((view, index) => {
           const Icon = ICONS[index];
-          const active = isReference ? selected.name === view.name : pathname === view.toolPath;
+          const active = pathname === view.toolPath;
           return (
-            <Link key={view.name} replace to={`${base}#${encodeURIComponent(view.name)}`}
+            <Link key={view.name} to={view.toolPath}
               className={`wle-side-nav${active ? " active" : ""}`} aria-current={active ? "page" : undefined}>
               <Icon aria-hidden="true" />{view.name}
             </Link>
