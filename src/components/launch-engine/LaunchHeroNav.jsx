@@ -7,9 +7,8 @@ const links = [['Industries', '#industries'], ['Templates', '#templates'], ['How
 export default function LaunchHeroNav() {
   return <nav className="wle-home-nav" aria-label="Main navigation">
     <div className="wle-home-nav-in">
-      <Link to="/" className="wle-home-logo" aria-label="Website Launch Engine home">
-        <span className="wle-home-rocket" aria-hidden="true">🚀</span>
-        <span>Website<br />Launch Engine<small>FLORIDA BASED · NATIONWIDE REACH</small></span>
+      <Link to="/" className="wle-home-logo" aria-label="Unlimited Websites home">
+        <img src="https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ceeb745d3_generated_image.png" alt="Unlimited Websites" style={{ height: "40px", width: "auto", objectFit: "contain" }} />
       </Link>
       <div className="wle-home-nav-links">
         {links.map(([label, href]) => href.startsWith('/') ? <Link key={label} to={href}>{label}</Link> : <a key={label} href={href}>{label}{label === 'Industries' ? ' ▾' : ''}</a>)}
