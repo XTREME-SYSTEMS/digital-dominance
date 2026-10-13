@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
-import { completeGateway } from '../../shared/aiGateway.ts';
+import { completeGateway } from '../../shared/openRouterGateway.ts';
 import { executeHostedTool } from '../../shared/operatorHosted.js';
 import {
   captureSnapshot,
