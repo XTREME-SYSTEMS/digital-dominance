@@ -9,7 +9,7 @@
         "update"
       ]
     },
-    "condition": "${ .trigger.data.status == \"WON\" and .trigger.old_data.status != \"WON\" }"
+    "condition": "${ .trigger.data.status == \"WON\" and .trigger.old_data.status != \"WON\" and .trigger.data.test_data_classification != \"test_confirmed\" and .trigger.data.test_data_classification != \"test_likely\" }"
   },
   "definition": {
     "document": {
@@ -42,7 +42,7 @@
           "then": "wait_5d",
           "x-base44": {
             "title": "Send review request",
-            "description": "Day 3 \u2014 initial ask"
+            "description": "Day 3 — initial ask"
           }
         }
       },
@@ -68,7 +68,7 @@
           "then": "end",
           "x-base44": {
             "title": "Send follow-up",
-            "description": "Day 8 \u2014 reminder"
+            "description": "Day 8 — reminder"
           }
         }
       }
