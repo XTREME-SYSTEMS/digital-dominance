@@ -9,7 +9,7 @@
         "create"
       ]
     },
-    "condition": "${ .trigger.data.email != \"\" and .trigger.data.email != null and .trigger.data.estimate_low != null }"
+    "condition": "${ .trigger.data.email != \"\" and .trigger.data.email != null and .trigger.data.estimate_low != null and .trigger.data.test_data_classification != \"test_confirmed\" and .trigger.data.test_data_classification != \"test_likely\" }"
   },
   "definition": {
     "document": {
