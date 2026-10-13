@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Dices, Loader2, AlertCircle, TrendingUp, DollarSign, Target, Award, Zap, ArrowUp, ArrowDown, Activity } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
-export default function OutcomeSimulator() {
+export default function OutcomeSimulator({ onResult }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -20,12 +20,13 @@ export default function OutcomeSimulator() {
         overhead_per_booking: overheadPerBooking,
       });
       setResult(res.data);
+      if (onResult) onResult(res.data);
     } catch (e) {
       setError(e.message || "Simulation failed");
     } finally {
       setLoading(false);
     }
-  }, [numSims, costPerLead, overheadPerBooking]);
+  }, [numSims, costPerLead, overheadPerBooking, onResult]);
 
   const fmt = (n) => "$" + (n || 0).toLocaleString();
 

@@ -4,11 +4,13 @@ import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import OutcomeSimulator from "@/components/predictive-scoring/OutcomeSimulator";
+import VariableTracker from "@/components/predictive-scoring/VariableTracker";
 
 export default function PredictiveLeadScoring() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [lastSimulation, setLastSimulation] = useState(null);
 
   const runScorer = useCallback(async (action) => {
     setLoading(true);
@@ -210,7 +212,12 @@ export default function PredictiveLeadScoring() {
 
         {/* Parallel Outcome Simulator */}
         <div className="rounded-2xl border border-[#22c55e]/20 bg-[#22c55e]/[0.02] p-6">
-          <OutcomeSimulator />
+          <OutcomeSimulator onResult={setLastSimulation} />
+        </div>
+
+        {/* Variable Tracking System */}
+        <div className="rounded-2xl border border-[#f59e0b]/20 bg-[#f59e0b]/[0.02] p-6">
+          <VariableTracker lastSimulation={lastSimulation} />
         </div>
 
         {/* Info */}

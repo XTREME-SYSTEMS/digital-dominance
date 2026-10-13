@@ -1,0 +1,99 @@
+{
+  "name": "SimulationTracking",
+  "type": "object",
+  "properties": {
+    "tracking_type": {
+      "type": "string",
+      "enum": [
+        "variable_checklist",
+        "simulation_snapshot"
+      ],
+      "description": "variable_checklist = saved control/uncontrollable variable state; simulation_snapshot = saved simulation result for trend tracking"
+    },
+    "control_variables_checked": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Which control variables are actively being managed"
+    },
+    "uncontrollable_variables_checked": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Which uncontrollable variables are being monitored/acknowledged"
+    },
+    "simulations_run": {
+      "type": "number",
+      "default": 0
+    },
+    "leads_simulated": {
+      "type": "number",
+      "default": 0
+    },
+    "net_revenue_p50": {
+      "type": "number",
+      "default": 0
+    },
+    "net_revenue_p90": {
+      "type": "number",
+      "default": 0
+    },
+    "bookings_p50": {
+      "type": "number",
+      "default": 0
+    },
+    "bookings_p90": {
+      "type": "number",
+      "default": 0
+    },
+    "conversion_rate_p50": {
+      "type": "number",
+      "default": 0
+    },
+    "conversion_rate_p90": {
+      "type": "number",
+      "default": 0
+    },
+    "cost_per_lead": {
+      "type": "number",
+      "default": 0
+    },
+    "overhead_per_booking": {
+      "type": "number",
+      "default": 0
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "required": [
+    "tracking_type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
