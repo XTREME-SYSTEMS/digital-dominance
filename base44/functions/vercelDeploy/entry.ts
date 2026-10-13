@@ -125,7 +125,12 @@ export default async function (req: Request): Promise<Response> {
     // Add vercel.json for routing
     files.push({
       file: 'vercel.json',
-      data: JSON.stringify({ rewrites: pages.map((p: any) => ({ source: `/p/${p.slug}`, destination: `/p/${p.slug}.html` })) }, null, 2)
+      data: JSON.stringify({
+        // Explicit static outputs prevent an existing Vite project preset
+        // from trying to run vite build on an HTML-only export.
+        builds: [{ src: '**/*.html', use: '@vercel/static' }],
+        rewrites: pages.map((p: any) => ({ source: `/p/${p.slug}`, destination: `/p/${p.slug}.html` })),
+      }, null, 2)
     });
 
     // Create the deployment
