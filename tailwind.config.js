@@ -22,7 +22,15 @@ module.exports = {
   				800: '#614704',
   				900: '#443003'
   			},
-  			'launch-admin': {
+  			'launch-home': {
+				navy: 'rgb(var(--launch-home-navy) / <alpha-value>)',
+				background: 'rgb(var(--launch-home-background) / <alpha-value>)',
+				paper: 'rgb(var(--launch-home-paper) / <alpha-value>)',
+				text: 'rgb(var(--launch-home-text) / <alpha-value>)',
+				cyan: 'rgb(var(--launch-home-cyan) / <alpha-value>)',
+				blue: 'rgb(var(--launch-home-blue) / <alpha-value>)'
+			},
+			'launch-admin': {
   				canvas: 'var(--launch-admin-canvas)',
   				text: 'var(--launch-admin-text)',
   				surface: 'var(--launch-admin-surface)',
@@ -84,6 +92,7 @@ module.exports = {
   			}
   		},
   		fontFamily: {
+  			'launch-home': ['var(--font-launch-home)'],
   			heading: ['var(--font-heading)'],
   			body: ['var(--font-body)'],
   			display: ['var(--font-display)'],
