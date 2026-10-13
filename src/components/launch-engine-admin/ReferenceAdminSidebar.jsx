@@ -39,6 +39,9 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/site-inventory" className={`wle-side-nav${isCore(["/admin/site-inventory"]) ? " active" : ""}`}>
           <Globe aria-hidden="true" />Site Inventory
         </Link>
+        <Link to="/admin/launch-control" className={`wle-side-nav${isCore(["/admin/launch-control"]) ? " active" : ""}`}>
+          <Rocket aria-hidden="true" />Launch Control Center
+        </Link>
         <Link to="/admin/site-bank" className={`wle-side-nav${isCore(["/admin/site-bank"]) ? " active" : ""}`}>
           <Database aria-hidden="true" />Site Bank Automation
         </Link>

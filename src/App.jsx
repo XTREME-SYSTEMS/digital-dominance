@@ -130,6 +130,7 @@ import SiteProject from '@/pages/admin/SiteProject';
 import BrandGuidelines from '@/pages/admin/BrandGuidelines';
 import BrandComplianceGuardian from '@/pages/admin/BrandComplianceGuardian';
 import SiteBankAutomation from '@/pages/admin/SiteBankAutomation';
+import LaunchControlCenter from '@/pages/admin/LaunchControlCenter';
 import VisualRenderLibrary from '@/pages/admin/VisualRenderLibrary';
 import MasterPlan from '@/pages/admin/MasterPlan';
 import SystemInventory from '@/pages/admin/SystemInventory';
@@ -390,6 +391,7 @@ const AuthenticatedApp = () => {
         <Route path="brand-guidelines" element={<BrandGuidelines />} />
         <Route path="brand-guardian" element={<BrandComplianceGuardian />} />
         <Route path="site-bank" element={<SiteBankAutomation />} />
+      <Route path="launch-control" element={<LaunchControlCenter />} />
         <Route path="visual-library" element={<VisualRenderLibrary />} />
         <Route path="master-plan" element={<MasterPlan />} />
         <Route path="system-inventory" element={<SystemInventory />} />
