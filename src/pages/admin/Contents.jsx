@@ -75,6 +75,7 @@ const DEFAULT_ITEMS = [
   { name: "GPT Pack Sync", path: "/admin/pack-sync", icon: "Package", category: "Development & Code", description: "Pack sync" },
   { name: "Code Studio", path: "/admin/code-studio", icon: "Code2", category: "Development & Code", description: "Code studio" },
   { name: "Template Studio", path: "/admin/template-studio", icon: "Layers", category: "Content & SEO", description: "Universal template studio" },
+  { name: "God Mode Lab", path: "/admin/god-mode-lab", icon: "Cpu", category: "Command & Control", description: "Monte Carlo simulation + portfolio strategy" },
   { name: "Google SEO", path: "/admin/google", icon: "Globe", category: "Content & SEO", description: "Google SEO tools" },
   { name: "SEO Generator", path: "/admin/seo-generator", icon: "TrendingUp", category: "Content & SEO", description: "SEO content generator" },
   { name: "SEO Dominance", path: "/admin/seo-dominance", icon: "Rocket", category: "Content & SEO", description: "SEO dominance" },

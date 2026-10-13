@@ -1,0 +1,101 @@
+{
+  "name": "StrategyTournament",
+  "type": "object",
+  "properties": {
+    "strategy_id": {
+      "type": "string",
+      "description": "S01-S10"
+    },
+    "model_name": {
+      "type": "string",
+      "description": "e.g. Single flagship authority site"
+    },
+    "differentiation": {
+      "type": "string"
+    },
+    "content_quality": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "practicality": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "buyer_fit": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "reusability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "heuristic_points": {
+      "type": "number",
+      "default": 0
+    },
+    "measurement_inputs": {
+      "type": "string",
+      "description": "GSC + GA4 + buyer contract + costs"
+    },
+    "evidence_class": {
+      "type": "string",
+      "enum": [
+        "ILLUSTRATIVE_ONLY",
+        "CALIBRATED",
+        "VERIFIED"
+      ],
+      "default": "ILLUSTRATIVE_ONLY"
+    },
+    "cost_multiplier": {
+      "type": "number",
+      "default": 1,
+      "description": "Relative cost factor vs baseline"
+    },
+    "priority_score": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "researching",
+        "ready",
+        "active",
+        "archived"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "strategy_id",
+    "model_name",
+    "differentiation"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

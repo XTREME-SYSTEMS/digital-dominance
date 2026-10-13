@@ -127,6 +127,7 @@ import BrandGuidelines from '@/pages/admin/BrandGuidelines';
 import SystemInventory from '@/pages/admin/SystemInventory';
 import GoogleHappiness from '@/pages/admin/GoogleHappiness';
 import GoogleBatchSubmission from '@/pages/admin/GoogleBatchSubmission';
+import GodModeSimulationLab from '@/pages/admin/GodModeSimulationLab';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -371,6 +372,7 @@ const AuthenticatedApp = () => {
         <Route path="system-inventory" element={<SystemInventory />} />
         <Route path="google-happiness" element={<GoogleHappiness />} />
         <Route path="google-batch" element={<GoogleBatchSubmission />} />
+        <Route path="god-mode-lab" element={<GodModeSimulationLab />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>

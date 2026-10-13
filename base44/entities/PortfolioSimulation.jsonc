@@ -1,0 +1,133 @@
+{
+  "name": "PortfolioSimulation",
+  "type": "object",
+  "properties": {
+    "simulation_id": {
+      "type": "string",
+      "description": "Deterministic run ID"
+    },
+    "strategy_id": {
+      "type": "string"
+    },
+    "strategy_name": {
+      "type": "string"
+    },
+    "site_count": {
+      "type": "number",
+      "default": 1
+    },
+    "conversion_case": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "CAUTIOUS",
+        "BASE",
+        "HIGH",
+        "OPTIMISTIC"
+      ],
+      "default": "BASE"
+    },
+    "demand_cvr_multiplier": {
+      "type": "number",
+      "default": 1
+    },
+    "simulated_draws": {
+      "type": "number",
+      "default": 500,
+      "description": "Monte Carlo iterations"
+    },
+    "cost_p10": {
+      "type": "number",
+      "description": "10th percentile cost $"
+    },
+    "cost_p50": {
+      "type": "number",
+      "description": "Median cost $"
+    },
+    "cost_p90": {
+      "type": "number",
+      "description": "90th percentile cost $"
+    },
+    "budget_fit_probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "P(cost <= budget)"
+    },
+    "est_impressions_mo": {
+      "type": "number"
+    },
+    "est_clicks_mo": {
+      "type": "number"
+    },
+    "est_accepted_leads_mo": {
+      "type": "number"
+    },
+    "est_revenue_mo": {
+      "type": "number"
+    },
+    "est_opex_mo": {
+      "type": "number"
+    },
+    "initial_build_cost": {
+      "type": "number"
+    },
+    "net_cash_12mo": {
+      "type": "number"
+    },
+    "payback_months": {
+      "type": "number"
+    },
+    "gross_margin_pct": {
+      "type": "number"
+    },
+    "model_assumptions": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Snapshot of inputs used"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "SIMULATED_UNCALIBRATED",
+        "CALIBRATING",
+        "CALIBRATED",
+        "VERIFIED"
+      ],
+      "default": "SIMULATED_UNCALIBRATED"
+    },
+    "run_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "simulation_id",
+    "strategy_id",
+    "site_count",
+    "conversion_case",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
