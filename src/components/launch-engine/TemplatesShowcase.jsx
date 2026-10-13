@@ -4,6 +4,7 @@ import { Loader2, ArrowRight } from 'lucide-react';
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import StockTemplateCard from '@/components/template-studio/StockTemplateCard';
 import StockPreviewDialog from '@/components/template-studio/StockPreviewDialog';
+import SafeImage from '@/components/ui/SafeImage';
 
 const CATEGORIES = [
   { id: 'all', label: 'All Styles', image: 'https://images.unsplash.com/photo-1467232004584-a551f7af35c3?w=400&q=80' },
@@ -49,7 +50,7 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
               className={`group relative overflow-hidden rounded-2xl border-2 transition-all duration-300 ${category === cat.id ? 'border-green-400 shadow-[0_0_16px_-2px_rgba(34,197,94,0.5)]' : 'border-gray-200 hover:border-green-400/50'}`}
             >
               <div className="h-16 w-24 sm:h-20 sm:w-32 overflow-hidden">
-                <img src={cat.image} alt={cat.label} className="h-full w-full object-cover transition-transform group-hover:scale-110" />
+                <SafeImage src={cat.image} alt={cat.label} category={cat.id} className="h-full w-full object-cover transition-transform group-hover:scale-110" />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-1.5 text-center">

@@ -25,10 +25,39 @@ function Section({ title, icon: Icon, children, defaultOpen = true }) {
   );
 }
 
-export default function ConfigPanel({ config, setConfig, pattern, setPattern, viewport, setViewport, form, setForm }) {
+export default function ConfigPanel({ config, setConfig, pattern, setPattern, viewport, setViewport, form, setForm, selectedIndustry }) {
   const mobilePatterns = GALLERY_FAMILIES[1].items;
   const desktopPatterns = GALLERY_FAMILIES[0].items;
-  const patterns = viewport === "desktop" ? desktopPatterns : mobilePatterns;
+  const allPatterns = viewport === "desktop" ? desktopPatterns : mobilePatterns;
+
+  // Filter patterns based on selected industry — each industry maps to
+  // recommended layout patterns so the correct templates display.
+  const INDUSTRY_PATTERN_MAP = {
+    water_damage: ["M01", "M03", "M23", "D01", "D04"],
+    mold_remediation: ["M01", "M04", "M27", "D01", "D03"],
+    emergency_plumbing: ["M01", "M03", "M23", "D01", "D02"],
+    roof_repair: ["M01", "M02", "M25", "D01", "D05"],
+    epoxy_flooring: ["M01", "M03", "M24", "D01", "D04"],
+    hvac: ["M01", "M04", "M27", "D01", "D02"],
+    electrical: ["M01", "M03", "M23", "D01", "D03"],
+    landscaping: ["M01", "M02", "M25", "D01", "D05"],
+    pest_control: ["M01", "M04", "M27", "D01", "D02"],
+    cleaning: ["M01", "M03", "M24", "D01", "D04"],
+    auto_detailing: ["M01", "M02", "M25", "D01", "D05"],
+    med_spa: ["M02", "M04", "M24", "D02", "D04"],
+    dental: ["M01", "M04", "M27", "D01", "D03"],
+    legal: ["M01", "M03", "M23", "D01", "D03"],
+    real_estate: ["M02", "M03", "M25", "D02", "D05"],
+    insurance: ["M01", "M04", "M27", "D01", "D02"],
+    roofing: ["M01", "M02", "M25", "D01", "D05"],
+    remodeling: ["M01", "M03", "M24", "D01", "D04"],
+    moving: ["M01", "M04", "M27", "D01", "D02"],
+  };
+
+  const recommendedIds = selectedIndustry ? (INDUSTRY_PATTERN_MAP[selectedIndustry.id] || []) : [];
+  const patterns = recommendedIds.length > 0
+    ? allPatterns.filter((p) => recommendedIds.includes(p.id))
+    : allPatterns;
 
   const updateConfig = (patch) => setConfig({ ...config, ...patch });
   const updateForm = (patch) => setForm({ ...form, ...patch });

@@ -165,6 +165,7 @@ async function runGoogleSyncAsync(base44: any, liveUrl: string) {
       base44.functions.invoke('pingIndexNow', { url: liveUrl }),
       base44.functions.invoke('generateSitemap', { domain: liveUrl }),
       base44.functions.invoke('addSearchConsoleProperty', { url: liveUrl }),
+      base44.functions.invoke('googleAnalytics', { url: liveUrl, action: 'provision' }),
     ]);
   } catch (e) {
     console.error('pwaPublishLive Google sync failed:', e.message);

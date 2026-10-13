@@ -68,6 +68,8 @@ import TemplateManager from '@/pages/admin/TemplateManager';
 import AppFactory from '@/pages/admin/AppFactory';
 import PwaAppFactory from '@/pages/admin/PwaAppFactory';
 import LaunchStatusDashboard from '@/pages/admin/LaunchStatusDashboard';
+import PwaLaunchDashboard from '@/pages/admin/PwaLaunchDashboard';
+import BenchmarkReverseEngineer from '@/pages/admin/BenchmarkReverseEngineer';
 import NationalLaunch from '@/pages/admin/NationalLaunch';
 import SeoGenerator from '@/pages/admin/SeoGenerator';
 import XtremeComms from '@/pages/admin/XtremeComms';
@@ -299,6 +301,8 @@ const AuthenticatedApp = () => {
         <Route path="app-factory" element={<AppFactory />} />
         <Route path="pwa-factory" element={<PwaAppFactory />} />
         <Route path="launch-status" element={<LaunchStatusDashboard />} />
+        <Route path="pwa-launches" element={<PwaLaunchDashboard />} />
+        <Route path="benchmark-reverse" element={<BenchmarkReverseEngineer />} />
         <Route path="national-launch" element={<NationalLaunch />} />
         <Route path="seo-generator" element={<SeoGenerator />} />
         <Route path="xtreme-comms" element={<XtremeComms />} />

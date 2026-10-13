@@ -195,6 +195,7 @@ ${rendered.html}
             setViewport={setViewport}
             form={form}
             setForm={setForm}
+            selectedIndustry={selectedIndustry}
           />
           <div className="flex gap-2">
             <button onClick={handleSave} disabled={saving} className="wle-action flex-1">
