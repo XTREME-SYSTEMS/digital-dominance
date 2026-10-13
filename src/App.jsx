@@ -123,6 +123,8 @@ import SuperAgents from '@/pages/admin/SuperAgents';
 import SystemHeal from '@/pages/admin/SystemHeal';
 import GapAnalysis from '@/pages/admin/GapAnalysis';
 import SiteProject from '@/pages/admin/SiteProject';
+import BrandGuidelines from '@/pages/admin/BrandGuidelines';
+import SystemInventory from '@/pages/admin/SystemInventory';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -363,6 +365,8 @@ const AuthenticatedApp = () => {
         <Route path="system-heal" element={<SystemHeal />} />
         <Route path="gap-analysis" element={<GapAnalysis />} />
         <Route path="site-project/:id" element={<SiteProject />} />
+        <Route path="brand-guidelines" element={<BrandGuidelines />} />
+        <Route path="system-inventory" element={<SystemInventory />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>
