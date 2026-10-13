@@ -1,0 +1,60 @@
+{
+  "validator": "independent guardian-validator /root/guardian_validator",
+  "timestamp_utc": "2026-10-13T18:12:02.699209+00:00",
+  "scope": "Synthetic lead email safety CODE prerequisite only; NOT live CRM canary",
+  "repository": "XTREME-SYSTEMS/digital-dominance",
+  "base_sha": "9bc65fefffffe9a244b1390b975d3cae42b1529f",
+  "reviewed_head_sha": "a9a0377c47a78ea16f09191215261686b36c1570",
+  "pull_request": 23,
+  "overall": "PASS",
+  "checks": {
+    "supplied_regression_tests": {
+      "status": "PASS",
+      "passed": 41,
+      "failed": 0,
+      "command": "node --test scripts/synthetic-lead-email.test.mjs"
+    },
+    "guard_placement": {
+      "status": "PASS",
+      "senders": 4,
+      "evidence": "Guards execute after current Lead retrieval and before provider connection, network send, EmailLog creation and Lead updates. Estimate preview remains read-only."
+    },
+    "workflows": {
+      "status": "PASS",
+      "count": 4,
+      "evidence": "Both canonical classification exclusions present; prior predicates and delayed steps retained. Reserved .invalid records without classification may enqueue but sender blocks current fetched record."
+    },
+    "remote_key_file_readback": {
+      "status": "PASS",
+      "pinned_updated_helper_blob_sha": "e0692c115183455ed224cb6dabe6edaa243c96fc",
+      "evidence": "Independent pinned GitHub helper read matches local helper string including trailing newline. Earlier sender and workflow reads inspected at initial head, but final sender/test remote byte parity not independently checked.",
+      "helper_local_trailing_newline": true,
+      "helper_exact_match_including_newline": true
+    },
+    "independent_guard_edge_cases": {
+      "status": "PASS",
+      "passed": 13,
+      "failed": 0,
+      "evidence": "Independent VM edge assertions rerun: original three findings fixed; real recipient invalid.com and invalid-foo.com not suppressed; list input containing reserved recipient suppressed."
+    }
+  },
+  "file_sha256": {
+    "base44/workflows/Immediate Lead Follow-Up.jsonc": "554fd8119473743b1922a0a6f42022012b16eded8bf9831a142bedcfc123f3fc",
+    "base44/workflows/Lead Follow-Up.jsonc": "9a095af409f25e72dac99ed6f089c9db9c99f815c6fb98629bb4355655d3812f",
+    "base44/workflows/CRM Follow-Up Sequence.jsonc": "33164bf5878ef0e05f452bcaa024d47a2fb5a688090510654c543c222428b82b",
+    "base44/workflows/Review Request.jsonc": "a6839279a53623f4989f6f363176d5758d9627c4ef3ab30b36bd807d891eaea2",
+    "base44/shared/leadEmailSafety.ts": "0c8241a8da268c8f1f784fa63449163f81a1659d3acc13360b3f8294e6b8d856",
+    "base44/functions/sendFollowUpEmail/entry.ts": "c801eae73e413bd9f503151c63dab0e556fde52d9a3e662fdc550880a94738e2",
+    "base44/functions/sendEstimateEmail/entry.ts": "a14698bd25013189c66b92518ab4941fb1fd2275a2f9fb5d5c187c8b783c4111",
+    "base44/functions/crmFollowUpSender/entry.ts": "45c6a33c381ecf061a9894eb319833dedd403bbf373ee780b0471f53c5ccc31c",
+    "base44/functions/sendReviewRequest/entry.ts": "038cc3a95d7872081cd3526145d7a10c7449df119e49985ff69d3a423269b3a0",
+    "scripts/synthetic-lead-email.test.mjs": "5ecded02d7484485bea23f64ed9188a68afc3633b4a9956c6d08dba064c3c453"
+  },
+  "limitations": [
+    "Base44 SDK/DSL deployment and delayed workflow runtime NOT exercised.",
+    "No email sent, Lead created, app deployment or infrastructure changed.",
+    "PASS applies to local code safety checks only, not deployed Base44 runtime or live CRM flow.",
+    "Live CRM test blocked until deployed guard identity is verified."
+  ],
+  "initial_findings_receipt": "guardian-synthetic-lead-email-guards-initial.json"
+}
