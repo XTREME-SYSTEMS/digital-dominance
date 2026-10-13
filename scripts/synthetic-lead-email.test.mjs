@@ -38,6 +38,21 @@ function fixture(name, lead) {
 }
 
 for (const name of functions) {
+  for (const email of ['a@invalid', 'Canary <a@dd.invalid>', 'person@example.com, a@dd.invalid']) test(`${name}: reserved recipient format ${email}`, async () => {
+    const f = fixture(name, { email: 'person@example.com' });
+    assert.equal((await f.run({ to_email: email })).body.skipped, true);
+    assert.deepEqual(f.effects, []);
+  });
+  test(`${name}: classification normalization blocks noncanonical test input`, async () => {
+    const f = fixture(name, { email: 'person@example.com', test_data_classification: ' TEST_CONFIRMED ' });
+    assert.equal((await f.run()).body.skipped, true);
+    assert.deepEqual(f.effects, []);
+  });
+  test(`${name}: invalid.com remains an ordinary domain`, async () => {
+    const f = fixture(name, { email: 'person@invalid.com' });
+    assert.equal((await f.run()).body.skipped, undefined);
+    assert.ok(f.effects.includes('email.send'));
+  });
   for (const classification of ['test_confirmed', 'test_likely']) test(`${name}: ${classification} blocks all outbound effects, including recipient override`, async () => {
     const f = fixture(name, { id: 'mock-lead', email: 'real@example.com', test_data_classification: classification, status: 'NEW ESTIMATE' });
     const result = await f.run({ to_email: 'override@example.com' });
