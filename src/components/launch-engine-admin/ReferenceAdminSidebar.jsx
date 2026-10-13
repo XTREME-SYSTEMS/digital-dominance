@@ -18,6 +18,9 @@ export default function ReferenceAdminSidebar() {
       </Link>
       <div className="wle-rail-label">PLATFORM OPERATIONS</div>
       <nav className="wle-nav-container" aria-label="Platform operations">
+        <Link to="/admin" className={`wle-side-nav${pathname === "/admin" || pathname === "/admin/" ? " active" : ""}`} aria-current={pathname === "/admin" ? "page" : undefined}>
+          <Grid3X3 aria-hidden="true" />Template Studio
+        </Link>
         {ReferenceAdminViews.map((view, index) => {
           const Icon = ICONS[index];
           const active = isReference ? selected.name === view.name : pathname === view.toolPath;
@@ -28,7 +31,6 @@ export default function ReferenceAdminSidebar() {
             </Link>
           );
         })}
-        <Link to="/admin/template-studio" className="wle-side-nav">Template Studio</Link>
         <div className="wle-rail-label" style={{ marginTop: "16px" }}>ADDITIONAL SYSTEMS</div>
         <Link to="/admin/vision-intelligence" className="wle-side-nav"><Radar aria-hidden="true" />Vision Intelligence</Link>
         <Link to="/admin/fault-line" className="wle-side-nav"><Bug aria-hidden="true" />FaultLine Scanner</Link>

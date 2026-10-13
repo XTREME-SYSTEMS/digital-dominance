@@ -258,7 +258,7 @@ const AuthenticatedApp = () => {
       <Route path="/app-settings" element={<AppSettings />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login?returnTo=%2Fadmin" replace />} />}>
       <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<LaunchEngineAdmin />} />
+        <Route index element={<TemplateStudio />} />
         <Route path="contents" element={<Contents />} />
         <Route path="capabilities" element={<Capabilities />} />
         <Route path="gap-filler" element={<GapFiller />} />
@@ -382,7 +382,7 @@ const AuthenticatedApp = () => {
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>
-        <Route index element={<LaunchEngineAdmin />} />
+        <Route index element={<TemplateStudio />} />
       </Route>
       </Route>
       <Route path="/:state/:citySlug" element={<LocationSeoPage />} />
