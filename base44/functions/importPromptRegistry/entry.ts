@@ -7,7 +7,7 @@ const MAX_BATCH = 20;
 const shaPattern = /^[0-9a-f]{64}$/;
 const idPattern = /^PB-[0-9]{3}$/;
 const versionPattern = /^[0-9]+\.[0-9]+\.[0-9]+$/;
-const badStrings = ["sk-", "-----BEGIN PRIVATE KEY", "ghp_", "xoxb-"];
+const secretPatterns = [/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/, /\bsk-(?:proj-)?[A-Za-z0-9_-]{16,}/, /\bghp_[A-Za-z0-9]{20,}/, /\bxoxb-[A-Za-z0-9-]{20,}/];
 function fail(message, status = 400) {
   return Response.json({ok:false, error:message}, {status});
 }
@@ -25,12 +25,13 @@ async function validateBatch(prompts) {
   for (const p of prompts) {
     const id = clean(p?.prompt_id), version = clean(p?.version);
     const title = clean(p?.title), category = clean(p?.category);
-    const text = clean(p?.prompt_text), declared = clean(p?.prompt_sha256).toLowerCase();
+    const text = typeof p?.prompt_text === "string" ? p.prompt_text : "";
+    const declared = clean(p?.prompt_sha256).toLowerCase();
     if (!idPattern.test(id) || !versionPattern.test(version) || !title || !category ||
-        !text || text.length > 40000 || !shaPattern.test(declared)) {
+        !text.trim() || text.length > 40000 || !shaPattern.test(declared)) {
       return {error:"Prompt ID, version, title, category, text or SHA is invalid for " + (id || "unknown")};
     }
-    if (badStrings.some(marker => text.includes(marker))) {
+    if (secretPatterns.some(pattern => pattern.test(text))) {
       return {error:"Potential secret material in " + id + "; hold for review"};
     }
     const key = id + "@" + version;
