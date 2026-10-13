@@ -215,7 +215,7 @@ const AuthenticatedApp = () => {
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00a2ff] to-[#0066cc]">
           <Rocket className="h-9 w-9 text-white" />
         </div>
-        <span className="text-sm font-extrabold tracking-tight text-white">Website Launch Engine</span>
+        <span className="text-sm font-extrabold tracking-tight text-white">Unlimited Websites</span>
         <div className="w-8 h-8 border-4 border-white/10 border-t-[#00a2ff] rounded-full animate-spin"></div>
       </div>
     );

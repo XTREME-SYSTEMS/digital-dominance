@@ -11,8 +11,7 @@ export default function ReferenceAdminSidebar() {
   return (
     <aside className="wle-aside">
       <Link to="/" className="wle-brand">
-        <em aria-hidden="true">🚀</em>
-        <span>Website<br />Launch Engine<small>STRATEGIC MINDS AI</small></span>
+        <img src="https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ceeb745d3_generated_image.png" alt="Unlimited Websites" style={{ height: "36px", width: "auto", objectFit: "contain" }} />
       </Link>
 
       {/* ── MASTER COMMAND CENTER ──────────────────────────── */}

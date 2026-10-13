@@ -1,31 +1,31 @@
 {
-  "name": "Epoxy Garage Floor Estimates",
-  "short_name": "Epoxy Floors",
-  "description": "Get an instant epoxy garage floor cost estimate. Visualize your floor with real manufacturer colors, then book your installation.",
+  "name": "Unlimited Websites",
+  "short_name": "Unlimited Websites",
+  "description": "The AI-powered launch engine that builds, scales, and manages unlimited high-performance websites on autopilot.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0c0a09",
-  "theme_color": "#0c0a09",
-  "categories": ["business", "lifestyle", "productivity"],
+  "background_color": "#031327",
+  "theme_color": "#031327",
+  "categories": ["business", "productivity", "developer"],
   "icons": [
     {
-      "src": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/20999222a_Logo_XPS_Color_12-20-24.webp",
+      "src": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ceeb745d3_generated_image.png",
       "sizes": "192x192",
-      "type": "image/webp",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/20999222a_Logo_XPS_Color_12-20-24.webp",
+      "src": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ceeb745d3_generated_image.png",
       "sizes": "512x512",
-      "type": "image/webp",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/20999222a_Logo_XPS_Color_12-20-24.webp",
+      "src": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ceeb745d3_generated_image.png",
       "sizes": "512x512",
-      "type": "image/webp",
+      "type": "image/png",
       "purpose": "maskable"
     }
   ],
