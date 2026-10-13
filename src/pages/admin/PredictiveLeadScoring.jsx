@@ -3,6 +3,7 @@ import { Activity, Zap, Loader2, AlertCircle, Target, Award, Brain, Cpu, Trendin
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
+import OutcomeSimulator from "@/components/predictive-scoring/OutcomeSimulator";
 
 export default function PredictiveLeadScoring() {
   const [loading, setLoading] = useState(false);
@@ -206,6 +207,11 @@ export default function PredictiveLeadScoring() {
             </div>
           </>
         )}
+
+        {/* Parallel Outcome Simulator */}
+        <div className="rounded-2xl border border-[#22c55e]/20 bg-[#22c55e]/[0.02] p-6">
+          <OutcomeSimulator />
+        </div>
 
         {/* Info */}
         {!result && !loading && (
