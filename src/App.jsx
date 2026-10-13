@@ -66,6 +66,7 @@ import ToolHub from '@/pages/ToolHub';
 import WebsiteFactory from '@/pages/admin/WebsiteFactory';
 import TemplateManager from '@/pages/admin/TemplateManager';
 import AppFactory from '@/pages/admin/AppFactory';
+import PwaAppFactory from '@/pages/admin/PwaAppFactory';
 import NationalLaunch from '@/pages/admin/NationalLaunch';
 import SeoGenerator from '@/pages/admin/SeoGenerator';
 import XtremeComms from '@/pages/admin/XtremeComms';
@@ -295,6 +296,7 @@ const AuthenticatedApp = () => {
         <Route path="website-factory" element={<WebsiteFactory />} />
         <Route path="templates" element={<TemplateManager />} />
         <Route path="app-factory" element={<AppFactory />} />
+        <Route path="pwa-factory" element={<PwaAppFactory />} />
         <Route path="national-launch" element={<NationalLaunch />} />
         <Route path="seo-generator" element={<SeoGenerator />} />
         <Route path="xtreme-comms" element={<XtremeComms />} />
