@@ -3,29 +3,26 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const US_CENTER: [number, number] = [39.5, -98.35];
+const US_CENTER = [39.5, -98.35];
 
-// City coordinate lookup — built from the curated US_CITIES list
 import { US_CITIES } from "@/lib/usCities";
 
-const cityCoords = new Map<string, { lat: number; lng: number }>();
+const cityCoords = new Map();
 US_CITIES.forEach((c) => {
   cityCoords.set(`${c.city.toLowerCase()}|${c.state.toLowerCase()}`, { lat: c.lat, lng: c.lng });
 });
 
-function lookupCoords(city?: string, state?: string): { lat: number; lng: number } | null {
+function lookupCoords(city, state) {
   if (!city) return null;
   const key = `${city.toLowerCase()}|${(state || "").toLowerCase()}`;
   const found = cityCoords.get(key);
   if (found) return found;
-  // Try just city
   for (const [k, v] of cityCoords) {
     if (k.startsWith(city.toLowerCase() + "|")) return v;
   }
   return null;
 }
 
-// Custom star icon — glowing star for each website location
 const starIcon = L.divIcon({
   className: "mp-star-marker",
   html: `<div style="position:relative;width:28px;height:28px;">
@@ -59,8 +56,7 @@ const queuedIcon = L.divIcon({
   popupAnchor: [0, -12],
 });
 
-// Auto-fit bounds to all markers
-function FitBounds({ sites }: { sites: Array<{ lat: number; lng: number }> }) {
+function FitBounds({ sites }) {
   const map = useMap();
   useEffect(() => {
     if (sites.length === 0) return;
@@ -68,17 +64,16 @@ function FitBounds({ sites }: { sites: Array<{ lat: number; lng: number }> }) {
       map.setView([sites[0].lat, sites[0].lng], 6);
       return;
     }
-    const bounds = L.latLngBounds(sites.map((s) => [s.lat, s.lng] as [number, number]));
+    const bounds = L.latLngBounds(sites.map((s) => [s.lat, s.lng]));
     map.fitBounds(bounds, { padding: [40, 40] });
   }, [sites, map]);
   return null;
 }
 
-export default function USMap({ sites }: { sites: Array<any> }) {
+export default function USMap({ sites }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // Map each site to coordinates
   const mappedSites = useMemo(() => {
     return sites
       .map((s) => {
@@ -86,7 +81,7 @@ export default function USMap({ sites }: { sites: Array<any> }) {
         if (!coords) return null;
         return { ...s, lat: coords.lat, lng: coords.lng };
       })
-      .filter(Boolean) as Array<any>;
+      .filter(Boolean);
   }, [sites]);
 
   if (!mounted) return <div style={{ height: 500 }} />;

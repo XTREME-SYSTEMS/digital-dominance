@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database } from "lucide-react";
+import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target } from "lucide-react";
 
 export default function ReferenceAdminSidebar() {
   const { pathname } = useLocation();
@@ -14,6 +14,14 @@ export default function ReferenceAdminSidebar() {
         <em aria-hidden="true">🚀</em>
         <span>Website<br />Launch Engine<small>STRATEGIC MINDS AI</small></span>
       </Link>
+
+      {/* ── MASTER COMMAND CENTER ──────────────────────────── */}
+      <div className="wle-rail-label" style={{ marginTop: "14px" }}>COMMAND CENTER</div>
+      <nav className="wle-nav-container" aria-label="Master plan">
+        <Link to="/admin/master-plan" className={`wle-side-nav${isCore(["/admin/master-plan"]) ? " active" : ""}`}>
+          <Target aria-hidden="true" />Master Plan & Strategy
+        </Link>
+      </nav>
 
       {/* ── CORE: Template & Catalog ──────────────────────────── */}
       <div className="wle-rail-label">TEMPLATE & CATALOG</div>
