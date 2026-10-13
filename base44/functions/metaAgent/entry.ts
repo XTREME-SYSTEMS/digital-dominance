@@ -17,7 +17,8 @@
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
 import { patchCore } from '../../shared/aiGateway.ts';
-import { searchPromptLibrary } from '../../shared/engineeringPromptLibrary.ts';
+import { ENGINEERING_PROMPTS } from '../../shared/engineeringPromptLibrary.ts';
+import { buildPromptCatalog, routeSituationalPrompts } from '../../shared/situationalPromptRouter.mjs';
 
 // ── Deterministic intent patterns ─────────────────────────────────────────
 const INTENT_PATTERNS: Record<string, string[]> = {
@@ -335,8 +336,23 @@ function detectGaps(capabilityMap: any, intents: string[], systemTypes: string[]
   return gaps;
 }
 
+// Reuse the existing AgentIntelligence registry; import records stay inert until
+// reviewed, versioned, explicitly approved, and enabled by the owner.
+async function loadApprovedPromptCatalog(svc: any, ownerId: string) {
+  let external: any[] = [];
+  try {
+    const records = await svc.entities.AgentIntelligence.filter(
+      { active: true, category: 'prompt_registry' }, '-created_date', 200,
+    );
+    external = (records || []).filter((r: any) => r.owner_id === ownerId);
+  } catch (err) {
+    console.warn('Prompt registry read unavailable; using approved built-in prompts only');
+  }
+  return buildPromptCatalog({ builtins: ENGINEERING_PROMPTS, intelligence: external, tenantId: ownerId });
+}
+
 // ── Generate work packets from analysis ──────────────────────────────────
-function generateWorkPackets(sessionId: string, intents: string[], systemTypes: string[], matchedAssets: any[], gaps: any[], matchedPrompts: any[]) {
+function generateWorkPackets(sessionId: string, intents: string[], systemTypes: string[], matchedAssets: any[], gaps: any[], promptCatalog: any[]) {
   const packets: any[] = [];
   let order = 0;
 
@@ -481,22 +497,17 @@ function generateWorkPackets(sessionId: string, intents: string[], systemTypes: 
                        template.risk === 'BRANCH_WRITE' ? ['read', 'analyze', 'generate', 'write_branch'] :
                        ['read', 'analyze', 'plan'],
       forbidden_actions: template.risk === 'PROTECTED' ? ['execute', 'deploy', 'modify_secrets', 'delete'] : [],
-      recommended_prompts: matchedPrompts
-        .filter(p => {
-          if (intent === 'AUDIT' && (p.id === 'PROMPT-001' || p.id === 'PROMPT-004' || p.id === 'PROMPT-005')) return true;
-          if (intent === 'COMPLETE' && (p.id === 'PROMPT-002' || p.id === 'PROMPT-050')) return true;
-          if (intent === 'REPAIR' || intent === 'HEAL') return p.id === 'PROMPT-003' || p.id === 'PROMPT-032';
-          if (intent === 'HARDEN') return p.id === 'PROMPT-034' || p.id === 'PROMPT-023';
-          if (intent === 'MIGRATE') return p.id === 'PROMPT-011' || p.id === 'PROMPT-012' || p.id === 'PROMPT-013' || p.id === 'PROMPT-019';
-          if (intent === 'TEST' || intent === 'VALIDATE') return p.id === 'PROMPT-005' || p.id === 'PROMPT-049';
-          if (intent === 'DOCUMENT') return p.id === 'PROMPT-047' || p.id === 'PROMPT-048';
-          if (intent === 'OPTIMIZE') return p.id === 'PROMPT-033' || p.id === 'PROMPT-043';
-          if (intent === 'ARCHITECTURE') return p.id === 'PROMPT-008' || p.id === 'PROMPT-046';
-          if (intent === 'RELEASE_PREP') return p.id === 'PROMPT-050' || p.id === 'PROMPT-017';
-          return false;
-        })
-        .slice(0, 5)
-        .map(p => ({ name: p.name, reason: p.reason })),
+      // Route per execution phase; never hard-code a small set of prompt IDs.
+      // Registry candidates without APPROVED status are rejected by the router.
+      recommended_prompts: routeSituationalPrompts({
+        goal: template.objective + ' ' + systemTypes.join(' '),
+        intents: [intent], systemTypes,
+        phase: template.phase, agentRole: template.executor,
+      }, promptCatalog, { maxPrompts: 5, minScore: 40 }).selected.map(p => ({
+        id: p.id, name: p.name, version: p.version, source: p.source,
+        reason: p.reason, risk_class: p.riskClass, requires_approval: p.requiresApproval,
+        relevance: Math.min(100, p.score),
+      })),
       recommended_tools: [template.executor],
       recommended_executor: template.executor,
       fallback_executor: 'HUMAN',
@@ -600,8 +611,13 @@ export default async function (req: Request): Promise<Response> {
         // Search Arsenal
         const matchedAssets = await searchArsenal(svc, goal, intents, systemTypes);
 
-        // Search Engineering Prompt Library
-        const matchedPrompts = searchPromptLibrary(goal, intents, systemTypes);
+        // Read the approved catalog once and route based on the actual current situation.
+        const promptCatalog = await loadApprovedPromptCatalog(svc, user.id);
+        const matchedPrompts = routeSituationalPrompts({ goal, intents, systemTypes }, promptCatalog,
+          { maxPrompts: 5, minScore: 40 }).selected.map(p => ({
+          id: p.id, name: p.name, category: p.category, risk_class: p.riskClass,
+          relevance: Math.min(100, p.score), reason: p.reason, version: p.version,
+        }));
 
         // Build capability map
         const capabilityMap = buildCapabilityMap(matchedAssets, intents, systemTypes);
@@ -610,7 +626,7 @@ export default async function (req: Request): Promise<Response> {
         const gaps = detectGaps(capabilityMap, intents, systemTypes);
 
         // Generate work packets
-        const packets = generateWorkPackets(sessionId, intents, systemTypes, matchedAssets, gaps, matchedPrompts);
+        const packets = generateWorkPackets(sessionId, intents, systemTypes, matchedAssets, gaps, promptCatalog);
 
         // Create WorkPacket records
         const packetIds: string[] = [];
@@ -801,8 +817,8 @@ export default async function (req: Request): Promise<Response> {
             const allAssets = [...matchedAssets, ...focusedAssets].filter((a, i, arr) => arr.findIndex(b => b.item_id === a.item_id) === i);
             const capMap = buildCapabilityMap(allAssets, allIntents, systemTypes);
             const gaps = detectGaps(capMap, allIntents, systemTypes);
-            const focusedPrompts = searchPromptLibrary(focusedGoal, allIntents, systemTypes);
-            const newPackets = generateWorkPackets(body.session_id, focusedIntents, systemTypes, allAssets, gaps, focusedPrompts);
+            const promptCatalog = await loadApprovedPromptCatalog(svc, user.id);
+            const newPackets = generateWorkPackets(body.session_id, focusedIntents, systemTypes, allAssets, gaps, promptCatalog);
 
             for (const pkt of newPackets) {
               const existing = await svc.entities.WorkPacket.filter({ packet_id: pkt.packet_id }, '-created_date', 1);
