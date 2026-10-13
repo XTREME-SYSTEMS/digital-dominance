@@ -1,0 +1,139 @@
+{
+  "name": "FaultLineFinding",
+  "type": "object",
+  "properties": {
+    "scan_id": {
+      "type": "string",
+      "description": "Deterministic scan batch ID"
+    },
+    "site_url": {
+      "type": "string",
+      "description": "The URL that was scanned"
+    },
+    "site_name": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short title of the finding"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 3000,
+      "description": "Detailed description of the problem found"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "security",
+        "performance",
+        "seo",
+        "functionality",
+        "content",
+        "visual",
+        "interaction",
+        "infrastructure",
+        "conversion",
+        "accessibility"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "evidence": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Raw evidence from the scan (HTTP headers, DOM state, console errors, etc.)"
+    },
+    "root_cause": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "AI sentinel root-cause analysis"
+    },
+    "recommended_repair": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "annual_impact_min": {
+      "type": "number",
+      "description": "Estimated minimum annual revenue impact in USD"
+    },
+    "annual_impact_max": {
+      "type": "number",
+      "description": "Estimated maximum annual revenue impact in USD"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Confidence score 0-100"
+    },
+    "scan_source": {
+      "type": "string",
+      "enum": [
+        "cloud_browser",
+        "forensic_http",
+        "security_headers",
+        "coverage_audit",
+        "sentinel_reflection",
+        "manual"
+      ],
+      "default": "cloud_browser"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "acknowledged",
+        "repairing",
+        "resolved",
+        "wont_fix"
+      ],
+      "default": "open"
+    },
+    "screenshot_uri": {
+      "type": "string",
+      "description": "Cloud browser screenshot evidence (private file URI)"
+    },
+    "found_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "scan_id",
+    "site_url",
+    "title",
+    "category",
+    "severity"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
