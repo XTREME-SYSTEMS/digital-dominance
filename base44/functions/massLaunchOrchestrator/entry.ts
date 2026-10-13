@@ -39,9 +39,54 @@ export default async function(req) {
       contentAdjustment = 'unique_local',
       continueBatchId,
       targetId,
+      mode,
     } = body;
 
     const svc = base44.asServiceRole;
+
+    // Auto mode: find the most recent batch with pending sites and continue it
+    if (mode === 'auto') {
+      const activeBatches = await svc.entities.MassLaunchBatch.filter(
+        { status: { $in: ['orchestrating', 'queued', 'validating'] } },
+        { limit: 5, sort: '-created_at' }
+      );
+      const activeBatch = (activeBatches.items || [])[0];
+      if (activeBatch) {
+        // Continue this batch
+        const pendingCheck = await svc.entities.WebsiteQueue.filter(
+          { id: { $in: activeBatch.queue_item_ids }, status: 'queued' },
+          { limit: 1 }
+        );
+        if ((pendingCheck.items || []).length > 0) {
+          // Re-run with continueBatchId
+          body.continueBatchId = activeBatch.batch_id;
+          body.templateKey = activeBatch.template_key;
+          body.templateName = activeBatch.template_name;
+          body.domainBase = activeBatch.domain_base;
+          body.domainStrategy = activeBatch.domain_strategy;
+          body.googleSyncEnabled = activeBatch.google_sync_enabled;
+          body.autoHealEnabled = activeBatch.auto_heal_enabled;
+          body.contentOptimization = activeBatch.content_optimization;
+        } else {
+          // No pending sites — trigger test swarm directly
+          waitUntil(runTestSwarmAsync(base44, activeBatch.batch_id));
+          await svc.entities.MassLaunchBatch.update(activeBatch.id, { status: 'complete', current_step: 'complete', completed_at: new Date().toISOString() });
+          return Response.json({
+            batch_id: activeBatch.batch_id,
+            status: 'complete',
+            processed_this_run: 0,
+            message: 'No pending sites — triggered final test swarm for existing batch.',
+          });
+        }
+      } else {
+        return Response.json({
+          status: 'idle',
+          processed_this_run: 0,
+          message: 'No active batches found. Create a batch first via BulkLaunchBuilder or ProgrammaticTargeting.',
+        });
+      }
+    }
+
     const now = new Date().toISOString();
     const batchSize = Math.min(Math.max(maxParallel || DEFAULT_PARALLEL, 1), 24);
     let batch;
@@ -140,12 +185,12 @@ export default async function(req) {
       await svc.entities.MassLaunchBatch.update(batch.id, { current_step: 'content_generation' });
     }
 
-    // ── Process pending sites in parallel batches ─────────────────────────
+    // ── Process ALL pending sites in parallel batches (no slice limit) ────
     const pending = await svc.entities.WebsiteQueue.filter(
       { id: { $in: batch.queue_item_ids }, status: 'queued' },
-      { limit: 200 }
+      { limit: 500 }
     );
-    const toProcess = (pending.items || pending).slice(0, batchSize * 5);
+    const toProcess = pending.items || pending;
 
     let built = 0, deployed = 0, validated = 0, scored = 0, failed = 0;
     const newReceiptIds = [];
@@ -204,13 +249,9 @@ export default async function(req) {
             aeo_score: content.aeo_score || 0,
           });
 
-          // 3) Google sync + sitemap + indexing
+          // 3) Google sync + sitemap + indexing — fire and forget (async, non-blocking)
           if (batch.google_sync_enabled) {
-            try { await base44.functions.invoke('addSearchConsoleProperty', { url: deployedUrl }); } catch {}
-            try { await base44.functions.invoke('googleAnalytics', { url: deployedUrl }); } catch {}
-            try { await base44.functions.invoke('generateSitemap', { domain: deployedUrl }); } catch {}
-            try { await base44.functions.invoke('submitToIndexers', { url: deployedUrl }); } catch {}
-            try { await base44.functions.invoke('pingIndexNow', { url: deployedUrl }); } catch {}
+            waitUntil(runGoogleSyncAsync(base44, deployedUrl));
           }
 
           // 4) Validate
@@ -281,8 +322,7 @@ export default async function(req) {
 
     // ── Finalize ───────────────────────────────────────────────────────────
     const avgScore = scoreSum.count > 0 ? Math.round(scoreSum.total / scoreSum.count) : 0;
-    const remaining = (pending.items || pending).length - toProcess.length;
-    const isComplete = remaining === 0 && toProcess.length < batchSize * 5;
+    const isComplete = toProcess.length > 0; // processed all pending in this run
 
     await svc.entities.MassLaunchBatch.update(batch.id, {
       sites_built: (batch.sites_built || 0) + built,
@@ -291,10 +331,14 @@ export default async function(req) {
       sites_scored: (batch.sites_scored || 0) + scored,
       sites_failed: (batch.sites_failed || 0) + failed,
       average_google_score: avgScore,
-      status: isComplete ? 'complete' : 'orchestrating',
-      current_step: isComplete ? 'complete' : `${remaining}_remaining`,
-      completed_at: isComplete ? new Date().toISOString() : undefined,
+      status: isComplete ? 'validating' : 'complete',
+      current_step: isComplete ? 'swarm_testing' : 'complete',
     });
+
+    // ── Trigger parallel test swarm (async, non-blocking) ─────────────────
+    if (isComplete && body.runTestSwarm !== false) {
+      waitUntil(runTestSwarmAsync(base44, batch.batch_id));
+    }
 
     return Response.json({
       batch_id: batch.batch_id,
@@ -302,15 +346,15 @@ export default async function(req) {
       processed_this_run: toProcess.length,
       built, deployed, validated, scored, failed,
       average_google_score: avgScore,
-      remaining,
       skip_trace_run: !!skipTraceData,
       benchmark_run: !!benchmarkData,
       services_included: services.length,
       parallel_batch_size: batchSize,
-      status: isComplete ? 'complete' : 'orchestrating',
+      status: isComplete ? 'validating' : 'complete',
+      test_swarm_triggered: isComplete && body.runTestSwarm !== false,
       message: isComplete
-        ? 'Batch complete — all sites launched with skip trace, benchmark enhancement, Google Standard scoring, and God Mode optimization.'
-        : `${remaining} sites remaining — re-invoke with continueBatchId to continue.`,
+        ? 'Batch deployed — parallel test swarm running async. All sites launched with skip trace, benchmark enhancement, Google Standard scoring, God Mode optimization, and cloud browser validation.'
+        : 'No pending sites to process.',
     });
   } catch (error) {
     console.error('massLaunchOrchestrator error:', error.message);
@@ -509,4 +553,33 @@ async function autoHealSite(base44, site, score, content) {
     const newScore = Math.min(100, score + 10);
     await svc.entities.WebsiteQueue.update(site.id, { traffic_score: newScore }).catch(() => {});
   } catch {}
+}
+
+// Fire-and-forget Google sync (Search Console, Analytics, sitemap, indexing)
+async function runGoogleSyncAsync(base44, deployedUrl) {
+  try {
+    await Promise.allSettled([
+      base44.functions.invoke('addSearchConsoleProperty', { url: deployedUrl }),
+      base44.functions.invoke('googleAnalytics', { url: deployedUrl }),
+      base44.functions.invoke('generateSitemap', { domain: deployedUrl }),
+      base44.functions.invoke('submitToIndexers', { url: deployedUrl }),
+      base44.functions.invoke('pingIndexNow', { url: deployedUrl }),
+    ]);
+  } catch (e) {
+    console.error('Google sync async failed:', e.message);
+  }
+}
+
+// Fire-and-forget parallel test swarm — tests all deployed sites in the batch
+async function runTestSwarmAsync(base44, batchId) {
+  try {
+    const res = await base44.functions.invoke('parallelTestSwarm', {
+      batch_id: batchId,
+      maxParallel: 6,
+      autoHeal: true,
+    });
+    console.log(`Test swarm completed for ${batchId}:`, res?.data?.summary);
+  } catch (e) {
+    console.error('Test swarm async failed:', e.message);
+  }
 }

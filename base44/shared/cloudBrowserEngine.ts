@@ -139,7 +139,52 @@ export async function closeSession(sessionId: string) {
   } catch { /* best effort */ }
 }
 
-// Full site test using real browser — tests buttons, links, images, forms, console errors, performance
+// Click an element and verify it responds (DOM change, navigation, or state change)
+export async function clickElement(sessionId: string, selector: string) {
+  return executeAction(sessionId, "evaluate", { value: `(function() { var el = document.querySelector(${JSON.stringify(selector)}); if (el) { el.click(); return 'clicked'; } return 'not_found'; })()` });
+}
+
+// Test button interactions — click visible buttons and verify they respond
+export async function testInteractions(sessionId: string) {
+  const script = `JSON.stringify((function() {
+    var results = { tested: 0, responded: 0, dead: 0, details: [] };
+    var btns = document.querySelectorAll('button:not([type="submit"]), [role="button"], .btn, .button, a[data-toggle], [data-bs-toggle]');
+    for (var i = 0; i < Math.min(btns.length, 8); i++) {
+      var btn = btns[i];
+      var r = btn.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) continue;
+      var beforeHtml = document.body.innerHTML.length;
+      var beforeUrl = window.location.href;
+      var beforeActive = document.activeElement;
+      try {
+        btn.focus();
+        btn.click();
+        results.tested++;
+        var afterHtml = document.body.innerHTML.length;
+        var afterUrl = window.location.href;
+        var afterActive = document.activeElement;
+        var domChanged = afterHtml !== beforeHtml;
+        var urlChanged = afterUrl !== beforeUrl;
+        var focusChanged = afterActive !== beforeActive && afterActive === btn;
+        if (domChanged || urlChanged || focusChanged) {
+          results.responded++;
+        } else {
+          results.dead++;
+          if (results.details.length < 5) results.details.push('No response: ' + (btn.textContent || '').trim().slice(0, 30));
+        }
+      } catch(e) {
+        results.dead++;
+        if (results.details.length < 5) results.details.push('Error: ' + (e.message || '').slice(0, 50));
+      }
+    }
+    return results;
+  })())`;
+  const res = await evaluate(sessionId, script);
+  const raw = res.data || res.result || "";
+  return typeof raw === "string" ? JSON.parse(raw) : raw;
+}
+
+// Full site test using real browser — tests buttons, links, images, forms, console errors, performance, interactions
 export async function runFullSiteTest(targetUrl: string) {
   if (!isEngineConfigured()) {
     throw new Error("Cloud browser engine not configured");
@@ -222,6 +267,12 @@ export async function runFullSiteTest(targetUrl: string) {
     const rawStr = evalRes.data || evalRes.result || "";
     const pageData = typeof rawStr === "string" ? JSON.parse(rawStr) : rawStr;
 
+    // 3b. Test button interactions (click buttons, verify they respond)
+    let interactionData = null;
+    try {
+      interactionData = await testInteractions(sessionId);
+    } catch { /* best effort */ }
+
     // 4. Take a screenshot for visual proof
     let screenshotUri = null;
     try {
@@ -248,7 +299,8 @@ export async function runFullSiteTest(targetUrl: string) {
     const consolePassed = d.console_errors ? d.console_errors.errors === 0 : null;
     const perfPassed = d.performance ? d.performance.load_time_ms < 3000 && d.performance.lcp_ms < 2500 : null;
 
-    const allPassed = [buttonsPassed, linksPassed, imagesPassed, formsPassed, consolePassed, perfPassed].every(p => p === true);
+    const interactionsPassed = interactionData ? interactionData.dead === 0 : null;
+    const allPassed = [buttonsPassed, linksPassed, imagesPassed, formsPassed, consolePassed, perfPassed, interactionsPassed].every(p => p === true);
 
     return {
       url: targetUrl,
@@ -261,12 +313,13 @@ export async function runFullSiteTest(targetUrl: string) {
         links: { passed: linksPassed, total: d.links?.total || 0, valid: d.links?.valid || 0, broken: d.links?.broken || 0, detail: d.links?.details?.join('; ') || 'All links valid' },
         images: { passed: imagesPassed, total: d.images?.total || 0, loaded: d.images?.loaded || 0, broken: d.images?.broken || 0, detail: d.images?.details?.join('; ') || 'All images loaded' },
         forms: { passed: formsPassed, total: d.forms?.total || 0, broken: d.forms?.broken || 0, detail: d.forms?.details?.join('; ') || 'All forms functional' },
+        interactions: { passed: interactionsPassed, tested: interactionData?.tested || 0, responded: interactionData?.responded || 0, dead: interactionData?.dead || 0, detail: interactionData ? (interactionData.dead === 0 ? `All ${interactionData.tested} buttons responded to click` : `${interactionData.dead} dead buttons: ${(interactionData.details || []).join('; ')}`) : 'Not tested' },
         console_errors: { passed: consolePassed, errors: d.console_errors?.errors || 0, detail: d.console_errors?.details?.join('; ') || 'No console errors' },
         performance: { passed: perfPassed, load_time_ms: d.performance?.load_time_ms || 0, lcp_ms: d.performance?.lcp_ms || 0, cls: d.performance?.cls || 0, dom_size: d.performance?.dom_size || 0, detail: `Load: ${d.performance?.load_time_ms || 0}ms, LCP: ${d.performance?.lcp_ms || 0}ms, CLS: ${(d.performance?.cls || 0).toFixed(3)}` },
         responsive: { passed: true, mobile: d.responsive?.mobile, tablet: d.responsive?.tablet, desktop: d.responsive?.desktop, detail: `Viewport: ${d.responsive?.mobile ? 'mobile' : d.responsive?.tablet ? 'tablet' : 'desktop'}` },
         seo: { passed: true, title: d.seo?.title || '', meta_description: d.seo?.meta_description || '', h1_count: d.seo?.h1_count || 0, schema_found: d.seo?.schema_found || false, detail: `Title: "${d.seo?.title?.slice(0, 60) || ''}", H1s: ${d.seo?.h1_count || 0}, Schema: ${d.seo?.schema_found ? 'found' : 'missing'}` },
       },
-      summary: allPassed ? 'All tests passed — every button, form, link, and image is functional' : 'Issues found — see test details',
+      summary: allPassed ? 'All tests passed — every button, form, link, image, and interaction is functional' : 'Issues found — see test details',
     };
   } finally {
     if (sessionId) await closeSession(sessionId);

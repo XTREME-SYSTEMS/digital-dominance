@@ -1,0 +1,116 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "unified_site_generator",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "launch_batch": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "massLaunchOrchestrator",
+            "args": {
+              "mode": "auto",
+              "maxParallel": 12,
+              "runTestSwarm": false
+            }
+          },
+          "then": "check_batch_status",
+          "x-base44": {
+            "title": "Launch batch of sites",
+            "description": "Deploy all pending sites in parallel"
+          }
+        }
+      },
+      {
+        "check_batch_status": {
+          "switch": [
+            {
+              "when": "${ (.launch_batch.status == \"validating\") or (.launch_batch.status == \"complete\") or (.launch_batch.processed_this_run // 0) > 0 }",
+              "then": "wait_for_deploy"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Check if batch deployed",
+            "description": "Skip testing if no sites were deployed"
+          }
+        }
+      },
+      {
+        "wait_for_deploy": {
+          "wait": "PT2M",
+          "then": "run_test_swarm",
+          "x-base44": {
+            "title": "Wait for deployments",
+            "description": "Let Vercel deployments propagate"
+          }
+        }
+      },
+      {
+        "run_test_swarm": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "parallelTestSwarm",
+            "args": {
+              "batch_id": "${ .launch_batch.batch_id }",
+              "maxParallel": 6,
+              "autoHeal": true
+            }
+          },
+          "then": "log_results",
+          "x-base44": {
+            "title": "Run parallel test swarm",
+            "description": "Cloud browser validates every site's UI"
+          }
+        }
+      },
+      {
+        "log_results": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "systemAuditor",
+            "args": {
+              "action": "log_generator_cycle",
+              "batch_id": "${ .launch_batch.batch_id }",
+              "sites_tested": "${ .run_test_swarm.total_sites }",
+              "sites_passed": "${ .run_test_swarm.passed }",
+              "sites_failed": "${ .run_test_swarm.failed }",
+              "swarm_summary": "${ .run_test_swarm.summary }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Log generator results",
+            "description": "Record cycle outcome for audit"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": "${ (.trigger.data.auto_start // false) == true }",
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 6,
+      "interval_unit": "hours",
+      "interval_anchor": "2026-10-13T09:00:00Z",
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Unified Site Generator",
+  "description": "One-click generator workflow: deploys a batch of industry websites in parallel, waits for deployments to settle, then runs the parallel cloud browser test swarm to validate every site's UI, buttons, links, forms, and interactions. Repeatable for any batch."
+}

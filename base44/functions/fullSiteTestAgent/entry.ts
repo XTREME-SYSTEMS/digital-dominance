@@ -18,17 +18,34 @@ export default async function(req) {
       try { engineHealthy = await engineHealth(); } catch { engineHealthy = false; }
     }
 
-    // Mode: 'all' = test all deployed sites
+    // Mode: 'all' = test all deployed sites (parallel swarm)
     if (mode === 'all') {
-      const sites = await base44.asServiceRole.entities.DeploymentRecord.filter({ status: 'deployed' }, { limit: 500 }).catch(() => ({ items: [] }));
-      const results = [];
-      for (const site of sites.items || []) {
-        const siteUrl = site.url || site.deployment_url;
-        if (!siteUrl) continue;
-        const result = await testSite(base44, siteUrl, site.id, depth || 'full', engineHealthy);
-        results.push(result);
-      }
-      return Response.json({ mode: 'all', engine_healthy: engineHealthy, total: results.length, results });
+      const sites = await base44.asServiceRole.entities.WebsiteQueue.filter(
+        { status: { $in: ['live', 'monitoring'] } },
+        { limit: 500, sort: '-deployed_at' }
+      ).catch(() => ({ items: [] }));
+      const siteUrls = (sites.items || []).map((s) => ({
+        url: s.generated_url || (s.domain?.startsWith('http') ? s.domain : `https://${s.domain}`),
+        site_id: s.id,
+      })).filter((s) => s.url);
+
+      // Delegate to parallelTestSwarm for parallel testing
+      const swarmRes = await base44.functions.invoke('parallelTestSwarm', {
+        urls: siteUrls,
+        maxParallel: 6,
+        depth: depth || 'full',
+      });
+      return Response.json(swarmRes.data || swarmRes);
+    }
+
+    // Mode: 'parallel' = test multiple URLs in parallel
+    if (mode === 'parallel' && Array.isArray(body.urls)) {
+      const swarmRes = await base44.functions.invoke('parallelTestSwarm', {
+        urls: body.urls,
+        maxParallel: body.maxParallel || 6,
+        depth: depth || 'full',
+      });
+      return Response.json(swarmRes.data || swarmRes);
     }
 
     if (!url) return Response.json({ error: 'url is required' }, { status: 400 });
@@ -89,6 +106,7 @@ async function testSite(base44, url, site_id, depth, engineHealthy) {
     tests: {
       buttons: bt.buttons || { passed: null, detail: engineError ? `Browser engine error: ${engineError.slice(0, 100)}` : 'Not tested', total: 0, clickable: 0, broken: 0 },
       forms: bt.forms || { passed: null, detail: 'Not tested', total: 0, broken: 0 },
+      interactions: bt.interactions || { passed: null, detail: 'Not tested (requires browser)', tested: 0, responded: 0, dead: 0 },
       links: bt.links || (hf.links ? { passed: hf.links.broken === 0, total: hf.links.total, valid: hf.links.valid, broken: hf.links.broken, detail: hf.links.detail } : { passed: null, detail: 'Not tested', total: 0, valid: 0, broken: 0 }),
       images: bt.images || (hf.images ? { passed: hf.images.broken === 0, total: hf.images.total, loaded: hf.images.total - hf.images.broken, broken: hf.images.broken, detail: hf.images.detail } : { passed: null, detail: 'Not tested', total: 0, loaded: 0, broken: 0 }),
       console_errors: bt.console_errors || { passed: null, detail: 'Not tested (requires browser)', errors: 0 },
@@ -111,6 +129,7 @@ async function testSite(base44, url, site_id, depth, engineHealthy) {
   if (report.tests.performance.lcp_ms > 2500) report.recommendations.push(`LCP ${report.tests.performance.lcp_ms}ms exceeds 2.5s — optimize largest contentful paint`);
   if (!report.tests.seo.schema_found) report.recommendations.push('No structured data (JSON-LD schema) found — add LocalBusiness/FAQ schema for Google');
   if (report.tests.seo.h1_count === 0) report.recommendations.push('No H1 tag found — add a primary heading for SEO');
+  if (report.tests.interactions?.dead > 0) report.recommendations.push(`${report.tests.interactions.dead} buttons have no response on click — fix click handlers`);
 
   report.summary = report.overall === 'passed'
     ? 'All tests passed — every button, form, link, and image is functional'
