@@ -10,9 +10,9 @@ import { Link } from "react-router-dom";
 
 const SEVERITY_COLORS = {
   critical: "text-red-400 bg-red-500/10 border-red-500/30",
-  high: "text-orange-400 bg-orange-500/10 border-orange-500/30",
-  medium: "text-amber-400 bg-amber-500/10 border-amber-500/30",
-  low: "text-blue-400 bg-blue-500/10 border-blue-500/30",
+  high: "text-[#f59e0b] bg-[#f59e0b]/10 border-[#f59e0b]/30",
+  medium: "text-[#00a2ff] bg-[#00a2ff]/10 border-[#00a2ff]/30",
+  low: "text-white/60 bg-white/5 border-white/10",
 };
 
 const CATEGORY_ICONS = {
@@ -94,7 +94,7 @@ export default function FaultLineScanner() {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00a2ff] to-[#0066cc] flex items-center justify-center">
             <Bug className="w-7 h-7 text-white" />
           </div>
           <div>
@@ -118,7 +118,7 @@ export default function FaultLineScanner() {
             <button
               onClick={() => runScan(singleUrl ? "site" : "all")}
               disabled={loading}
-              className="px-8 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-700 text-white font-bold text-sm flex items-center gap-2 hover:brightness-110 transition disabled:opacity-50 min-w-[200px] justify-center"
+              className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#00a2ff] to-[#0066cc] text-white font-bold text-sm flex items-center gap-2 hover:brightness-110 transition disabled:opacity-50 min-w-[200px] justify-center neon-green-hover"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
               {loading ? "Scanning..." : "Run Fault Line Scan"}

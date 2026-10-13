@@ -130,6 +130,7 @@ import GoogleBatchSubmission from '@/pages/admin/GoogleBatchSubmission';
 import GodModeSimulationLab from '@/pages/admin/GodModeSimulationLab';
 import PredictiveLeadScoring from '@/pages/admin/PredictiveLeadScoring';
 import FaultLineScanner from '@/pages/admin/FaultLineScanner';
+import VisionIntelligence from '@/pages/admin/VisionIntelligence';
 import WebsiteEmpire from '@/pages/admin/WebsiteEmpire';
 import X1Company from '@/pages/admin/X1Company';
 import SiteHealthMonitor from '@/pages/admin/SiteHealthMonitor';
@@ -377,6 +378,7 @@ const AuthenticatedApp = () => {
         <Route path="god-mode-lab" element={<GodModeSimulationLab />} />
         <Route path="predictive-scoring" element={<PredictiveLeadScoring />} />
         <Route path="fault-line" element={<FaultLineScanner />} />
+        <Route path="vision-intelligence" element={<VisionIntelligence />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>
