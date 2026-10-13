@@ -434,13 +434,14 @@ async function syncSitesToGpt(svc, sites) {
 
   const createdEvents = await svc.entities.SyncEvent.bulkCreate(events);
 
-  // Mark sites as synced
+  // Mark sites as GPT-synced but keep status as 'queued' so bulkLaunchEngine
+  // can still pick them up for Vercel deployment. Status only changes to
+  // 'live'/'synced' after actual Vercel deployment.
   const updates = sites.map((site, i) => ({
     id: site.id,
     gpt_synced: true,
     gpt_synced_at: new Date().toISOString(),
     sync_event_id: createdEvents[i]?.id || '',
-    status: 'synced',
   }));
   await svc.entities.SiteBank.bulkUpdate(updates);
 
