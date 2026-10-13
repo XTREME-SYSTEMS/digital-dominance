@@ -1,0 +1,20 @@
+{
+  "validator": "independent guardian-validator /root/guardian_validator",
+  "scope": "Synthetic lead email safety CODE prerequisite only; NOT live CRM canary",
+  "reviewed_head_sha": "9ce76b682e46f4af89769c6df0c0b12f67f1da31",
+  "overall": "FAIL",
+  "regressions": {
+    "passed": 21,
+    "failed": 0
+  },
+  "independent_edges": {
+    "passed": 7,
+    "failed": 3,
+    "gaps": [
+      "bare a@invalid not suppressed",
+      "name-address Canary <a@dd.invalid> not suppressed",
+      "uppercase TEST_CONFIRMED not suppressed"
+    ]
+  },
+  "status_note": "Initial review findings subsequently repaired and retested; reconstructed from original recorded independent results."
+}
