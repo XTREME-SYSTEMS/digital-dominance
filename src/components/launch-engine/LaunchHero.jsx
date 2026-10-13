@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Rocket, Phone, ChevronDown } from "lucide-react";
-import StockHeroCollage from '@/components/template-studio/StockHeroCollage';
+import CinematicHeroVisual from '@/components/launch-engine/CinematicHeroVisual';
+import '@/components/launch-engine/cinematicHero.css';
 
 const NAV_LINKS = [
   { label: "Industries", href: "#industries" },
@@ -47,7 +48,7 @@ export default function LaunchHero({ onBrowse }) {
           <div className="space-y-6">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/50">FAST WEBSITES. REAL LEADS. BIGGER BUSINESS.</p>
             <h1 className="text-4xl md:text-6xl font-black leading-[1.05] tracking-tight text-white">
-              Explore <span className="text-[#00a2ff]">200</span> Original <span className="text-[#00a2ff]">Website Designs.</span>
+              Launch <em className="not-italic text-[#00a2ff]">100s</em> of Websites in <em className="not-italic text-[#00a2ff]">Minutes.</em>
             </h1>
             <p className="text-base md:text-lg text-white/60 max-w-lg leading-relaxed">
               Explore premium, conversion-focused websites for high-value industries. Choose an industry, preview a design, and plan your next launch. Live builds and delivery are confirmed after approval.
@@ -65,15 +66,15 @@ export default function LaunchHero({ onBrowse }) {
             </div>
           </div>
 
-          <StockHeroCollage />
+          <CinematicHeroVisual />
         </div>
 
         {/* Feature row */}
         <div className="mt-12 md:mt-16 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-white/10 pt-6">
           {[
-            { icon: "⚡", label: "Fast website preview planning" },
+            { icon: "ϟ", label: "Fast website preview planning" },
             { icon: "▥", label: "Conversion-focused premium designs" },
-            { icon: "◉", label: "10 designs across each of 20 industries" },
+            { icon: "◉", label: "Built for 20+ industries" },
             { icon: "♧", label: "Florida based nationwide reach" },
           ].map((f) => (
             <div key={f.label} className="flex items-center gap-2 text-sm text-white/60">
