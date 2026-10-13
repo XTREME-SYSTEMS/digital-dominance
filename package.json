@@ -14,7 +14,7 @@
     "test:seo-parity": "node --test scripts/seo-parity.test.mjs",
     "test:semrush-evidence": "node --test scripts/semrush-evidence.test.mjs",
     "preview": "vite preview",
-    "test:god-mode-sync": "node --test scripts/test-github-sync-safety.mjs && node scripts/validate-god-mode-contract.mjs"
+    "test:god-mode-sync": "node --test scripts/test-github-sync-safety.mjs scripts/test-god-mode-simulation-preview.mjs && node scripts/validate-god-mode-contract.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.53",
