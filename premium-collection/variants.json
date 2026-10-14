@@ -1,0 +1,90 @@
+{
+  "schema": "apex_premium_preview_variants_v1",
+  "status": "DRAFT_NOINDEX",
+  "synthetic": true,
+  "production_approved": false,
+  "source_master_count": 3,
+  "variants": [
+    {
+      "id": "nova-surfaces",
+      "master": "monolith",
+      "brand": "NOVA SURFACES",
+      "headline_top": "BEYOND THE",
+      "headline_emphasis": "EXPECTED.",
+      "accent": "#e4c18c",
+      "label": "Architectural flooring"
+    },
+    {
+      "id": "strata-materials",
+      "master": "monolith",
+      "brand": "STRATA MATERIALS",
+      "headline_top": "FORM MEETS",
+      "headline_emphasis": "FUNCTION.",
+      "accent": "#b8c6d1",
+      "label": "Modern material design"
+    },
+    {
+      "id": "ember-studio",
+      "master": "monolith",
+      "brand": "EMBER SURFACE STUDIO",
+      "headline_top": "BUILT TO",
+      "headline_emphasis": "STAND OUT.",
+      "accent": "#d49d70",
+      "label": "Decorative surface concepts"
+    },
+    {
+      "id": "summit-counsel",
+      "master": "argent",
+      "brand": "SUMMIT COUNSEL",
+      "headline_top": "Clarity through",
+      "headline_emphasis": "complexity.",
+      "accent": "#b59970",
+      "label": "Editorial legal"
+    },
+    {
+      "id": "willow-partners",
+      "master": "argent",
+      "brand": "WILLOW PARTNERS",
+      "headline_top": "Counsel with",
+      "headline_emphasis": "perspective.",
+      "accent": "#8b9a86",
+      "label": "Institutional advisory"
+    },
+    {
+      "id": "mason-advisory",
+      "master": "argent",
+      "brand": "MASON ADVISORY",
+      "headline_top": "Grounded in",
+      "headline_emphasis": "principle.",
+      "accent": "#ad9a84",
+      "label": "Professional services"
+    },
+    {
+      "id": "atelier-nova",
+      "master": "atelier",
+      "brand": "ATELIER NOVA",
+      "headline_top": "Beauty in",
+      "headline_emphasis": "every detail.",
+      "accent": "#93735d",
+      "label": "Luxury skincare"
+    },
+    {
+      "id": "verdant-ritual",
+      "master": "atelier",
+      "brand": "VERDANT RITUAL",
+      "headline_top": "A quieter",
+      "headline_emphasis": "ritual.",
+      "accent": "#889678",
+      "label": "Organic lifestyle"
+    },
+    {
+      "id": "cove-botanical",
+      "master": "atelier",
+      "brand": "COVE BOTANICAL",
+      "headline_top": "A moment of",
+      "headline_emphasis": "stillness.",
+      "accent": "#9f86a2",
+      "label": "Editorial commerce"
+    }
+  ]
+}
