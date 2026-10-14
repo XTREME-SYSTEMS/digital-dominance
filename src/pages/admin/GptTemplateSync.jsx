@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ const SUPPORTED_NICHES = [
   "dental", "chiropractic", "solar", "automotive", "cleaning", "identity",
 ];
 
-const NICHE_LABELS: Record<string, string> = {
+const NICHE_LABELS = {
   epoxy: "Epoxy Flooring", water_damage: "Water Damage", roofing: "Roofing",
   hvac: "HVAC", plumbing: "Plumbing", electrician: "Electrical",
   pest_control: "Pest Control", landscaping: "Landscaping",
@@ -28,10 +28,9 @@ const NICHE_LABELS: Record<string, string> = {
 export default function GptTemplateSync() {
   const queryClient = useQueryClient();
   const [generating, setGenerating] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
-  const [selectedNiche, setSelectedNiche] = useState<string | null>(null);
+  const [results, setResults] = useState([]);
+  const [selectedNiche, setSelectedNiche] = useState(null);
 
-  // Load GPT-generated templates
   const { data: gptTemplates, isLoading } = useQuery({
     queryKey: ["gpt-templates"],
     queryFn: async () => {
@@ -43,14 +42,13 @@ export default function GptTemplateSync() {
     },
   });
 
-  // Count GPT templates per niche
-  const nicheCounts: Record<string, number> = {};
-  (gptTemplates?.items || []).forEach((t: any) => {
+  const nicheCounts = {};
+  (gptTemplates?.items || []).forEach((t) => {
     const n = t.niche || "unknown";
     nicheCounts[n] = (nicheCounts[n] || 0) + 1;
   });
 
-  const handleGenerate = useCallback(async (niche?: string) => {
+  const handleGenerate = useCallback(async (niche) => {
     setGenerating(true);
     setResults([]);
     try {
@@ -59,10 +57,10 @@ export default function GptTemplateSync() {
         : { action: "generate_batch", niches: SUPPORTED_NICHES };
 
       const response = await base44.functions.invoke("gptTemplateIngestor", payload);
-      const data = (response as any)?.data || response;
+      const data = response?.data || response;
       setResults(data?.results || [data]);
       queryClient.invalidateQueries({ queryKey: ["gpt-templates"] });
-    } catch (err: any) {
+    } catch (err) {
       setResults([{ status: "failed", error: err.message }]);
     } finally {
       setGenerating(false);
@@ -86,7 +84,6 @@ export default function GptTemplateSync() {
       ]}
     >
       <div className="space-y-6">
-        {/* Action Bar */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -100,11 +97,7 @@ export default function GptTemplateSync() {
               Each template is a complete, production-ready HTML page with industry-specific copy and design.
             </p>
             <div className="flex gap-3 flex-wrap">
-              <Button
-                onClick={() => handleGenerate()}
-                disabled={generating}
-                className="gap-2"
-              >
+              <Button onClick={() => handleGenerate()} disabled={generating} className="gap-2">
                 {generating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
                 {generating ? "Generating..." : "Generate All Niches"}
               </Button>
@@ -123,21 +116,16 @@ export default function GptTemplateSync() {
           </CardContent>
         </Card>
 
-        {/* Niche Grid */}
         <Card>
-          <CardHeader>
-            <CardTitle>Supported Niches</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>Supported Niches</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {SUPPORTED_NICHES.map(niche => (
+              {SUPPORTED_NICHES.map((niche) => (
                 <button
                   key={niche}
                   onClick={() => setSelectedNiche(selectedNiche === niche ? null : niche)}
                   className={`flex flex-col items-center gap-1 rounded-lg border p-3 text-center transition-all ${
-                    selectedNiche === niche
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50"
+                    selectedNiche === niche ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                   }`}
                 >
                   <span className="text-sm font-semibold">{NICHE_LABELS[niche]}</span>
@@ -150,12 +138,9 @@ export default function GptTemplateSync() {
           </CardContent>
         </Card>
 
-        {/* Generation Results */}
         {results.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle>Generation Results</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Generation Results</CardTitle></CardHeader>
             <CardContent>
               <div className="space-y-2">
                 {results.map((r, i) => (
@@ -171,9 +156,7 @@ export default function GptTemplateSync() {
                       <XCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold">
-                        {NICHE_LABELS[r.niche] || r.niche || "Unknown"}
-                      </div>
+                      <div className="text-sm font-semibold">{NICHE_LABELS[r.niche] || r.niche || "Unknown"}</div>
                       {r.status === "success" ? (
                         <div className="text-xs text-muted-foreground">
                           {r.template_name} · {r.html_length?.toLocaleString()} chars
@@ -189,7 +172,6 @@ export default function GptTemplateSync() {
           </Card>
         )}
 
-        {/* Existing GPT Templates */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -209,7 +191,7 @@ export default function GptTemplateSync() {
               </div>
             ) : (
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {(gptTemplates?.items || []).map((t: any) => (
+                {(gptTemplates?.items || []).map((t) => (
                   <div key={t.id} className="flex items-center gap-3 rounded-lg border border-border p-3">
                     <Sparkles className="h-4 w-4 text-primary flex-shrink-0" />
                     <div className="flex-1 min-w-0">
