@@ -6,6 +6,8 @@ on:
     paths:
       - 'scripts/build-premium-20.mjs'
       - 'scripts/verify-premium-20.mjs'
+      - 'scripts/verify-premium-composer.mjs'
+      - 'public/premium/launch-composer/**'
       - 'data/premium-collection-20.json'
       - 'package.json'
       - 'package-lock.json'
@@ -35,6 +37,8 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Generate and hash all 17 custom + 3 V2 master references
         run: npm run test:premium-20
+      - name: Validate approval-first SitePack composer contract
+        run: node scripts/verify-premium-composer.mjs
       - name: Build the unmodified app shell and premium previews
         run: npm run build
       - name: Ensure all premium previews remain noindex and unreleased
