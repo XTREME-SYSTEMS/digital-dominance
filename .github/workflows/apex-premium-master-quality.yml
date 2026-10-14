@@ -7,6 +7,7 @@ on:
       - 'scripts/build-premium-20.mjs'
       - 'scripts/verify-premium-20.mjs'
       - 'scripts/verify-premium-composer.mjs'
+      - 'scripts/write-premium-build-provenance.mjs'
       - 'public/premium/launch-composer/**'
       - 'data/premium-collection-20.json'
       - 'package.json'
@@ -41,6 +42,18 @@ jobs:
         run: node scripts/verify-premium-composer.mjs
       - name: Build the unmodified app shell and premium previews
         run: npm run build
+      - name: Validate generated source identity against exact catalog bytes
+        run: |
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import {createHash} from "node:crypto";
+            const m=fs.readFileSync("public/premium/collection/catalog-manifest.json");
+            const p=JSON.parse(fs.readFileSync("public/premium/launch-composer/source-identity.json","utf8"));
+            const h=createHash("sha256").update(m).digest("hex");
+            if(p.catalog_manifest_sha256!==h||p.repo!=="XTREME-SYSTEMS/digital-dominance"||p.source_sha_provider_verified!==false||p.production_release_allowed!==false)process.exit(1);
+            if(p.source_commit_sha&&!/^[a-f0-9]{40}$/.test(p.source_commit_sha))process.exit(1);
+            console.log("PASS sourced preview identity",p.source_sha_authority,p.source_commit_sha);
+          '
       - name: Ensure all premium previews remain noindex and unreleased
         run: |
           node --input-type=module -e '
