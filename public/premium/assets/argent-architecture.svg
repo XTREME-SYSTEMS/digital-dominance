@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1450" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#171b19"/><stop offset=".48" stop-color="#4e524c"/><stop offset="1" stop-color="#181d1a"/></linearGradient>
+ <linearGradient id="stone" x1="0" x2="1"><stop stop-color="#141918"/><stop offset=".16" stop-color="#5a605b"/><stop offset=".38" stop-color="#a1a39b"/><stop offset=".7" stop-color="#5e635e"/><stop offset=".9" stop-color="#272b29"/></linearGradient>
+ <linearGradient id="lit" x1="0" x2="1"><stop stop-color="#aaa998"/><stop offset=".35" stop-color="#505850"/><stop offset="1" stop-color="#1c211f"/></linearGradient>
+ <linearGradient id="roof" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#7d8379"/><stop offset="1" stop-color="#282f2a"/></linearGradient>
+ <linearGradient id="fog" x1="0" x2="0" y1="1" y2="0"><stop stop-color="#141816" stop-opacity=".85"/><stop offset="1" stop-color="#1c211e" stop-opacity="0"/></linearGradient>
+ <filter id="noise"><feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="3" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".085"/></feComponentTransfer></filter>
+ <filter id="blur"><feGaussianBlur stdDeviation="60"/></filter>
+</defs>
+<rect width="1200" height="1450" fill="url(#bg)"/>
+<path d="M0 0h1200v260Q700 160 0 350Z" fill="#8f9187" opacity=".22"/>
+<rect x="175" y="170" width="870" height="1110" fill="#191d19"/>
+<path d="M175 230L610 60l435 170v100H175Z" fill="url(#roof)"/>
+<path d="M175 310h870v62H175Z" fill="#9d9e90"/>
+<path d="M152 360h916v72H152Z" fill="#565d54"/>
+<path d="M195 360h850v20H195Z" fill="#b1b4a6" opacity=".7"/>
+<g fill="url(#stone)">
+<rect x="245" y="430" width="170" height="740"/><rect x="525" y="430" width="170" height="740"/><rect x="805" y="430" width="170" height="740"/>
+</g>
+<g fill="#c3c4b6" opacity=".35"><path d="M271 430h10v740h-10zm35 0h8v740h-8zm39 0h8v740h-8zm215 0h10v740h-10zm35 0h8v740h-8zm39 0h8v740h-8zm215 0h10v740h-10zm35 0h8v740h-8zm39 0h8v740h-8z"/></g>
+<g fill="#8b9188"><rect x="222" y="411" width="220" height="39"/><rect x="502" y="411" width="220" height="39"/><rect x="782" y="411" width="220" height="39"/></g>
+<g fill="#3b4139"><rect x="220" y="1165" width="220" height="42"/><rect x="500" y="1165" width="220" height="42"/><rect x="780" y="1165" width="220" height="42"/></g>
+<path d="M0 1230L1200 1130V1450H0Z" fill="#131a17"/>
+<ellipse cx="740" cy="340" rx="300" ry="330" fill="#f9df9c" opacity=".16" filter="url(#blur)"/>
+<path d="M0 0h1200v1450H0" fill="none" stroke="#c3b69a" stroke-opacity=".2" stroke-width="14"/>
+<rect width="1200" height="1450" filter="url(#noise)" opacity=".75"/>
+<rect width="1200" height="1450" fill="url(#fog)"/>
+</svg>
