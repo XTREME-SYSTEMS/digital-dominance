@@ -26,6 +26,8 @@ test('preview reports no applied writes',()=>assert.match(route,/state:'NOT_APPL
 test('GitHub export requires preview branch',()=>assert.match(git,/ensurePreviewTarget\(repo,input\?\.branch\)/));
 test('GitHub export has no hard-coded main target',()=>assert.doesNotMatch(git,/const branch\s*=\s*['"]main['"]/));
 test('GitHub export defaults to dry run',()=>assert.match(git,/dryRun=input\?\.dry_run!==false/));
-test('GitHub export refuses missing branch',()=>assert.match(git,/PREVIEW_BRANCH_NOT_FOUND_OR_UNAUTHORIZED/));
-test('GitHub export computes actual partial/full result',()=>assert.match(git,/summarizeExport\(intendedPaths\.length/));
+test('GitHub export refuses missing branch',()=>assert.match(git,/EXPECTED_BRANCH_HEAD_REQUIRED/));
+test('GitHub export uses atomic branch ref update with verified output',()=>assert.match(git,/runAtomicPreviewExport\(/));
 test('GitHub export never unconditional success',()=>assert.doesNotMatch(git,/return Response\.json\(\{\s*success:\s*true,/));
+
+test('GitHub export never performs repeated contents PUT calls',()=>assert.doesNotMatch(git,/method:\s*['\"]PUT['\"]/));
