@@ -690,6 +690,36 @@ const NICHES: Record<string, NicheProfile> = {
     ],
     trustBadges: ["Bonded & Insured", "Eco-Friendly", "Satisfaction Guaranteed", "Background Checked"],
   },
+  generic: {
+    hero: "Professional Services — Quality You Can Trust",
+    sub: "Experienced, licensed, and dedicated to delivering exceptional results. Free consultations, upfront pricing, and a satisfaction guarantee on every project.",
+    cta: "Get Free Quote",
+    phone: "(555) 300-0000",
+    primary: "#1e3a5f",
+    primaryDark: "#0f1e3a",
+    accent: "#3b82f6",
+    bgImage: IMG.generic_hero,
+    serviceName: "Professional Services",
+    services: [
+      { title: "Consultation & Assessment", desc: "Free initial consultation to understand your needs and provide expert recommendations.", img: IMG.gallery1 },
+      { title: "Professional Service", desc: "Experienced team delivering quality results with attention to every detail.", img: IMG.gallery2 },
+      { title: "Project Management", desc: "Dedicated project manager keeping you informed every step of the way.", img: IMG.gallery1 },
+      { title: "Ongoing Support", desc: "Continued support and maintenance to ensure long-term satisfaction.", img: IMG.gallery2 },
+    ],
+    gallery: [IMG.gallery1, IMG.gallery2, IMG.gallery1, IMG.gallery2],
+    testimonials: [
+      { name: "Client A.", text: "Professional, reliable, and delivered exactly what they promised. Highly recommend.", avatar: IMG.avatar1, rating: 5 },
+      { name: "Client B.", text: "Excellent communication throughout the project. The results exceeded our expectations.", avatar: IMG.avatar2, rating: 5 },
+      { name: "Client C.", text: "Fair pricing, quality work, and a team that truly cares about customer satisfaction.", avatar: IMG.avatar4, rating: 5 },
+    ],
+    stats: [
+      { value: "10+ yrs", label: "In business" },
+      { value: "2,000+", label: "Projects done" },
+      { value: "4.9★", label: "Average rating" },
+      { value: "100%", label: "Satisfaction" },
+    ],
+    trustBadges: ["Licensed & Insured", "Free Consultation", "Satisfaction Guaranteed", "5-Star Reviews"],
+  },
   identity: {
     hero: "Brand Identity & Web Design That Converts",
     sub: "Custom branding, logo design, and website development. We build brands that stand out and drive action. Award-winning design, fast turnaround.",
@@ -723,16 +753,33 @@ const NICHES: Record<string, NicheProfile> = {
 };
 
 const DISPLAY_MAP: Record<string, string> = {
-  "Legal": "legal", "Real Estate": "real_estate", "Epoxy Flooring": "epoxy",
+  "Legal": "legal", "Personal Injury": "legal", "Real Estate": "real_estate",
+  "Epoxy Flooring": "epoxy", "epoxy_flooring": "epoxy",
   "Roofing": "roofing", "HVAC": "hvac", "Plumbing": "plumbing",
   "Electrical": "electrician", "Med Spa": "med_spa", "Dental": "dental",
   "Chiropractic": "chiropractic", "Remodeling": "remodeling",
   "Landscaping": "landscaping", "Solar": "solar", "Pest Control": "pest_control",
+  "Cleaning Services": "cleaning", "Auto Detailing": "automotive",
+  "Mortgage": "generic", "Insurance": "generic", "Moving": "generic",
+  "Restaurants": "generic", "Locksmith": "generic",
+  // Non-contractor niches → generic professional template
+  "creative": "generic", "branding": "generic", "agency": "generic",
+  "community": "generic", "social": "generic", "photography": "generic",
+  "design": "generic", "art": "generic", "booking": "generic",
+  "reservation": "generic", "calendar": "generic", "appointment": "generic",
+  "content_gen": "generic", "seo_content": "generic", "funnel": "generic",
+  "ai_tool": "generic", "pwa": "generic", "lead_gen": "generic",
+  "marketplace": "generic", "app_pack": "generic", "logo_gen": "generic",
+  "brand_gen": "generic", "logo": "generic", "scheduler": "generic",
+  "brand_mark": "generic", "image_gen": "generic", "visual_gen": "generic",
+  "ecommerce": "generic", "dropshipping": "generic", "prompt_showcase": "generic",
+  "web_pack": "generic", "saas": "generic", "ai_chat": "generic",
+  "prompt_lab": "generic",
 };
 
 function getConfig(niche: string): NicheProfile {
   const key = (niche || "").toLowerCase().replace(/ /g, "_");
-  return NICHES[key] || NICHES[DISPLAY_MAP[niche]] || NICHES.epoxy;
+  return NICHES[key] || NICHES[DISPLAY_MAP[niche]] || NICHES[DISPLAY_MAP[key]] || NICHES.generic;
 }
 
 function esc(s: string): string {
