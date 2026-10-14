@@ -23,7 +23,7 @@ for(const s of [
 ])assert.ok(wizard.includes(s),'Missing essential release/safety declaration: '+s);
 for(const id of ['monolith','argent','atelier'])assert.match(wizard,new RegExp("id:'"+id+"'"));
 assert.ok(wizard.includes('launch-composer'));
-assert.match(wizard, /source-identity\\.json/, 'Composer must load source identity from current deployment');
+assert.ok(wizard.includes('source-identity.json'), 'Composer must load source identity from current deployment');
 assert.match(wizard, /PREVIEW_BUILD_IDENTITY_MISMATCH/, 'Stale or mismatched catalog manifests must fail');
 assert.match(wizard, /UNBOUND_NO_VERIFIED_SOURCE/, 'Unbound checkout must be labeled honestly');
 assert.match(wizard, /source_sha_provider_verified:false/, 'Build metadata is not independent provider validation');
