@@ -7,6 +7,7 @@ import TemplateCard from "@/components/universal-template/TemplateCard.jsx";
 import BrandConfigPanel from "@/components/universal-template/BrandConfigPanel.jsx";
 import TemplateEditor from "@/components/universal-template/TemplateEditor.jsx";
 import IngestionPanel from "@/components/universal-template/IngestionPanel.jsx";
+import GptTemplateIntake from "@/components/universal-template/GptTemplateIntake.jsx";
 
 export default function UniversalTemplateStudio() {
   const [templates, setTemplates] = useState([]);
@@ -197,7 +198,11 @@ export default function UniversalTemplateStudio() {
         <button onClick={() => setTab("templates")} className={tabCls(tab === "templates")}><Layers className="w-4 h-4" /> Templates</button>
         <button onClick={() => setTab("editor")} className={tabCls(tab === "editor")} disabled={!editing}><Settings className="w-4 h-4" /> Editor</button>
         <button onClick={() => setTab("ingestion")} className={tabCls(tab === "ingestion")}><Globe className="w-4 h-4" /> XPS Ingestion</button>
+        <button onClick={() => setTab("gpt-intake")} className={tabCls(tab === "gpt-intake")}><Layers className="w-4 h-4" /> GPT Intake · Review</button>
       </div>
+
+      {/* Read-only cross-entity GPT intake; existing BrandTemplate editor preserved. */}
+      {tab === "gpt-intake" && <GptTemplateIntake />}
 
       {/* Templates tab */}
       {tab === "templates" && (
