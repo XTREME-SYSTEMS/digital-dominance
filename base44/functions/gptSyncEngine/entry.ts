@@ -10,6 +10,7 @@ import {
 } from '../../shared/gptSyncCore.ts';
 import { operatorEntities, operatorFunctions, operatorInstructions } from '../../shared/operatorCatalog.js';
 import { operatorTools } from '../../shared/operatorLoop.js';
+import { SYNC_PREVIEW_VERSION, SAFE_SYNC_ENTITIES, authorizeSyncAction, safeEventFilter, sanitizeEvents, boundedLimit, compilePreviewPacket } from '../../shared/gptSyncGuard.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // gptSyncEngine — Bi-directional sync between the admin and GPT. v2
@@ -33,9 +34,18 @@ export default async function(req: Request): Promise<Response> {
     const authHeader = req.headers.get('authorization') || '';
     const bearerKey = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
     const body = await req.json().catch(() => ({}));
-    const apiKey = bearerKey || body.api_key || '';
+    // Reject body-carried keys. External authentication is header-only.
+    const apiKey = bearerKey.length <= 512 ? bearerKey : '';
     const syncKey = secrets.get('GPT_SYNC_API_KEY') || '';
-    const isApiKeyAuth = syncKey && apiKey && apiKey === syncKey;
+    let isApiKeyAuth = false;
+    if (syncKey && apiKey) {
+      const encoded = new TextEncoder();
+      const [a,b] = await Promise.all([apiKey,syncKey].map(async k =>
+        new Uint8Array(await crypto.subtle.digest('SHA-256',encoded.encode(k)))));
+      let mismatch = 0;
+      for (let i=0; i<a.length; i++) mismatch |= a[i]^b[i];
+      isApiKeyAuth = mismatch === 0;
+    }
 
     let svc;
     if (isApiKeyAuth) {
@@ -49,6 +59,24 @@ export default async function(req: Request): Promise<Response> {
       svc = base44.asServiceRole;
     }
     const action = body.action || 'stats';
+    const permission = authorizeSyncAction(action, body);
+    if (!permission.allowed) return Response.json({
+      ok:false,state:'PENDING_APPROVAL',reason:permission.reason,
+      contract_version:SYNC_PREVIEW_VERSION
+    },{status:403});
+    // An external API key does not establish a tenant or actor identity.
+    // Restrict external callers to metadata-free preflight requests until
+    // a tenant-scoped, provider-readback adapter has been independently tested.
+    if (isApiKeyAuth) {
+      if (action === 'getConfig') return Response.json({
+        ok:true,contract_version:SYNC_PREVIEW_VERSION,mode:'EXTERNAL_PREFLIGHT_ONLY',
+        actions:['getConfig','previewPacket'],entity_access:'NONE',provider_writes:0,
+        next:'Authenticated tenant and actor binding required before reading SyncEvent records.'
+      });
+      if (action !== 'previewPacket') return Response.json({
+        ok:false,state:'TENANT_SCOPED_AUTH_REQUIRED',provider_writes:0
+      },{status:403});
+    }
 
     // ── getConfig: Return full sync config JSON for external GPT ──
     if (action === 'getConfig') {
@@ -260,6 +288,28 @@ export default async function(req: Request): Promise<Response> {
         runtime: 'base44-sdk (authenticated server-side)',
         llm_gateway: 'groq (llama-3.3-70b-versatile) with openrouter fallback — used only for internal takeOver/sync operator loop. External GPTs use their own LLM and call execute for tool operations.',
       };
+      // Historical capabilities are documented above, not granted to this GPT caller.
+      config.version = SYNC_PREVIEW_VERSION;
+      config.security_mode = 'READ_ONLY_BRANCH_PREVIEW';
+      config.authentication = { method:'Bearer token in Authorization header or authenticated admin session',
+        permissions:'READ_ONLY_EVENT_METADATA', body_api_key_supported:false };
+      config.sdk_instructions = 'Use only approved metadata reads and versioned preview packets. Protected tools are not enabled.';
+      config.sync_actions = {
+        getConfig:'Read safe configuration summary',
+        getPending:'Read bounded pending event metadata without auto-seeding a snapshot',
+        listEvents:'Read bounded, filtered event metadata',
+        stats:'Read bounded sample counts, not global totals',
+        previewSync:'Read pending event metadata without side effects',
+        previewPacket:'Compile deterministic PENDING_REVIEW/HOLD sync envelope without provider writes',
+        execute:'Read get_capabilities or SyncEvent metadata only',
+        takeOver:'BLOCKED',sync:'BLOCKED',snapshot:'BLOCKED',logEvent:'BLOCKED'
+      };
+      config.operator_instructions = 'READ-ONLY PREVIEW. Do not invoke writes, takeOver, sync, publishing, communication or provisioning.';
+      config.operator_entities = SAFE_SYNC_ENTITIES;
+      config.operator_functions = {};
+      config.operator_tools = operatorTools.filter(t => ['get_capabilities','read_entities'].includes(t.function.name));
+      config.execution_protocol = {step_1:'Read pending event metadata',step_2:'Prepare previewPacket with exact source/target revision IDs',step_3:'Wait for independent validation and scoped approval',step_4:'Do not claim applied changes from preview'};
+      config.system_architecture.bi_directional_sync = {state:'HARDENING_PREVIEW',live_bidirectional_handshake:'NOT_VERIFIED',execute:'METADATA_READ_ONLY',approval_required_for_writes:true};
       return Response.json({ ok: true, config });
     }
 
@@ -267,8 +317,12 @@ export default async function(req: Request): Promise<Response> {
     if (action === 'execute') {
       const { tool, args } = body;
       if (!tool) return Response.json({ error: 'tool required' }, { status: 400 });
-      const result = await executeHostedTool(base44, tool, args || {});
-      return Response.json({ ok: true, tool, result });
+      if (tool === 'get_capabilities')
+        return Response.json({ok:true,tool,scope:'read_only',entities:SAFE_SYNC_ENTITIES,actions:['getConfig','getPending','listEvents','stats','previewSync','previewPacket','execute']});
+      const filters = safeEventFilter(args?.query || {});
+      const raw = await svc.entities.SyncEvent.filter(filters,'-created_date',boundedLimit(args?.limit));
+      const events = sanitizeEvents(raw);
+      return Response.json({ok:true,tool,scope:'event_metadata_only',count:events.length,events,provider_writes:0});
     }
 
     // ── logEvent: Log an admin state change ──
@@ -288,9 +342,19 @@ export default async function(req: Request): Promise<Response> {
     }
 
     // ── getPending: Get pending events for GPT ──
-    if (action === 'getPending') {
-      const events = await getPendingEvents(svc);
-      return Response.json({ ok: true, count: events.length, events });
+    if (action === 'getPending' || action === 'previewSync') {
+      // getPendingEvents() would create an event on empty queues. Use pure read.
+      const raw = await svc.entities.SyncEvent.filter({status:'pending',direction:'to_gpt'},'-created_date',20);
+      const events=sanitizeEvents(raw);
+      return Response.json({ok:true,state:'READ_ONLY_PREVIEW',action,count:events.length,events,provider_writes:0});
+    }
+    if (action === 'previewPacket') {
+      try {
+        const packet=await compilePreviewPacket(body.packet);
+        return Response.json({ok:true,state:'NOT_APPLIED',packet,provider_writes:0});
+      } catch {
+        return Response.json({ok:false,state:'INVALID_PREVIEW_PACKET'}, {status:400});
+      }
     }
 
     // ── snapshot: Capture current admin state ──
@@ -331,7 +395,7 @@ export default async function(req: Request): Promise<Response> {
 
     // ── stats: Sync statistics ──
     if (action === 'stats') {
-      const allEvents = await svc.entities.SyncEvent.filter({}, '-created_date', 100);
+      const allEvents = sanitizeEvents(await svc.entities.SyncEvent.filter({}, '-created_date', 50));
       const pending = allEvents.filter(e => e.status === 'pending').length;
       const synced = allEvents.filter(e => e.status === 'synced').length;
       const total = allEvents.length;
@@ -341,7 +405,8 @@ export default async function(req: Request): Promise<Response> {
         stats: {
           pending,
           synced,
-          total,
+          sampled_events: total,
+          sample_is_not_total: true,
           last_sync: lastSynced?.synced_at || null,
         },
         recent: allEvents.slice(0, 10),
@@ -350,17 +415,19 @@ export default async function(req: Request): Promise<Response> {
 
     // ── listEvents: List recent sync events ──
     if (action === 'listEvents') {
-      const { status, direction, limit = 50 } = body;
-      const filter: any = {};
-      if (status) filter.status = status;
-      if (direction) filter.direction = direction;
-      const events = await svc.entities.SyncEvent.filter(filter, '-created_date', limit);
-      return Response.json({ ok: true, count: events.length, events });
+      let filter;
+      try { filter=safeEventFilter(Object.fromEntries(Object.entries({
+        status:body.status,direction:body.direction
+      }).filter(([,v])=>v!==undefined))); }
+      catch { return Response.json({ok:false,state:'INVALID_EVENT_FILTER'},{status:400}); }
+      const raw=await svc.entities.SyncEvent.filter(filter,'-created_date',boundedLimit(body.limit));
+      const events=sanitizeEvents(raw);
+      return Response.json({ok:true,count:events.length,events,scope:'event_metadata_only'});
     }
 
     return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
   } catch (error: any) {
-    console.error('[gptSyncEngine] Error:', error.message);
-    return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
+    console.error('[gptSyncEngine] Operation failed without external disclosure of sensitive data.');
+    return Response.json({ ok:false,error:'GPT_SYNC_OPERATION_FAILED',state:'UNKNOWN' }, {status:500});
   }
 }
