@@ -77,10 +77,10 @@ export default function GptTemplateSync() {
       description="ChatGPT generates fresh, industry-specific website templates and syncs them into the Template Library. A workflow runs every 6 hours to keep the library stocked."
       badge="AI Sync"
       stats={[
-        { label: "GPT Templates", value: totalGpt },
-        { label: "Niches Covered", value: `${nichesCovered}/${SUPPORTED_NICHES.length}` },
-        { label: "Sync Schedule", value: "6h" },
-        { label: "Status", value: "Active" },
+        ["GPT Templates", totalGpt],
+        ["Niches Covered", `${nichesCovered}/${SUPPORTED_NICHES.length}`],
+        ["Sync Schedule", "6h"],
+        ["Status", "Active"],
       ]}
     >
       <div className="space-y-6">
