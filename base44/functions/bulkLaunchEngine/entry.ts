@@ -129,7 +129,7 @@ export default async function(req: Request): Promise<Response> {
       const siteIds = siteRecords.map((s) => s.id);
 
       // Deploy in parallel batches
-      let deployed = 0, failed = 0, synced = 0;
+      let deployed = 0, accepted = 0, failed = 0, synced = 0, syncEventsEmitted = 0;
       const deployResults = [];
 
       for (let i = 0; i < siteRecords.length; i += batchSize) {
@@ -138,30 +138,26 @@ export default async function(req: Request): Promise<Response> {
           try {
             await svc.entities.SiteBank.update(site.id, { status: 'deploying' });
 
-            // Deploy to Vercel via publishTemplateLive
-            let deployUrl = site.site_url;
-            try {
-              const deployRes = await base44.functions.invoke('publishTemplateLive', {
-                templateId: site.template_id || templateId,
-                appName: site.site_name,
-                appSlug: site.site_slug,
-                brand: { accent: '#126fc8' },
-              });
-              if (deployRes?.data?.url) {
-                deployUrl = deployRes.data.url;
-              }
-            } catch (e) {
-              // Vercel deploy may fail — use the subdomain URL as fallback
-              console.error(`Deploy failed for ${site.site_slug}: ${e.message}`);
-            }
-
-            await svc.entities.SiteBank.update(site.id, {
-              status: 'live',
-              site_url: deployUrl,
-              deployed_at: new Date().toISOString(),
-              launched_at: new Date().toISOString(),
+            // Deployment acceptance is NOT evidence of a live, functional site.
+            // No fallback to an invented hostname. Only a separately validated
+            // READY deployment + browser/form receipt may transition to LIVE.
+            const response = await base44.functions.invoke('publishTemplateLive', {
+              templateId: site.template_id || templateId,
+              appName: site.site_name,
+              appSlug: site.site_slug,
+              brand: { accent: '#126fc8' },
             });
-            deployed++;
+            const proof = response?.data;
+            if (!proof || proof.success !== true || typeof proof.deployment_id !== 'string' ||
+                typeof proof.url !== 'string' || !/^https:\/\/[a-z0-9.-]+(?:\/|$)/i.test(proof.url)) {
+              throw new Error(`Missing Vercel acceptance receipt for ${site.site_slug}`);
+            }
+            const deployUrl = proof.url;
+            await svc.entities.SiteBank.update(site.id, {
+              status: 'deploying',
+              site_url: deployUrl,
+            });
+            accepted++;
 
             // Sync to GPT
             if (autoSync) {
@@ -171,23 +167,19 @@ export default async function(req: Request): Promise<Response> {
                   event_type: 'entity_create',
                   entity_name: 'SiteBank',
                   record_id: site.id,
-                  data_summary: `Launched ${site.site_name} at ${deployUrl}`,
+                  data_summary: `Vercel deployment accepted for ${site.site_name} at ${deployUrl}; pending independent verification`,
                   source: 'bulkLaunchEngine',
                   direction: 'to_gpt',
                   status: 'pending',
                 });
-                await svc.entities.SiteBank.update(site.id, {
-                  gpt_synced: true,
-                  gpt_synced_at: new Date().toISOString(),
-                  status: 'synced',
-                });
-                synced++;
+                // Event accepted is not GPT acknowledgement or LIVE status.
+                syncEventsEmitted++;
               } catch (e) {
                 console.error(`GPT sync failed for ${site.site_slug}: ${e.message}`);
               }
             }
 
-            return { id: site.id, slug: site.site_slug, url: deployUrl, success: true };
+            return { id: site.id, slug: site.site_slug, url: deployUrl, accepted: true, live: false, status: 'awaiting_validation' };
           } catch (err) {
             failed++;
             await svc.entities.SiteBank.update(site.id, {
@@ -206,9 +198,13 @@ export default async function(req: Request): Promise<Response> {
         ok: true,
         batch_id: batchId,
         total_sites: siteIds.length,
-        deployed,
+        deployed, // Zero until an independent validator produces a live receipt.
+        deployments_accepted: accepted,
+        awaiting_validation: accepted,
+        release_ready: false,
         failed,
-        synced,
+        synced, // Zero until actual GPT acknowledgement.
+        sync_events_emitted: syncEventsEmitted,
         results: deployResults.slice(0, 50),
       });
     }
@@ -225,7 +221,7 @@ export default async function(req: Request): Promise<Response> {
         return Response.json({ ok: true, message: 'No pending sites to process', processed: 0 });
       }
 
-      let deployed = 0, failed = 0, synced = 0;
+      let deployed = 0, accepted = 0, failed = 0, synced = 0, syncEventsEmitted = 0;
 
       for (let i = 0; i < items.length; i += PARALLEL_BATCH) {
         const chunk = items.slice(i, i + PARALLEL_BATCH);
@@ -233,25 +229,23 @@ export default async function(req: Request): Promise<Response> {
           try {
             await svc.entities.SiteBank.update(site.id, { status: 'deploying' });
 
-            let deployUrl = site.site_url;
-            try {
-              const deployRes = await base44.functions.invoke('publishTemplateLive', {
-                templateId: site.template_id,
-                appName: site.site_name,
-                appSlug: site.site_slug,
-                brand: { accent: '#126fc8' },
-              });
-              if (deployRes?.data?.url) deployUrl = deployRes.data.url;
-            } catch (e) {
-              console.error(`Auto-deploy failed for ${site.site_slug}: ${e.message}`);
-            }
-
-            await svc.entities.SiteBank.update(site.id, {
-              status: 'live',
-              site_url: deployUrl,
-              deployed_at: new Date().toISOString(),
+            const response = await base44.functions.invoke('publishTemplateLive', {
+              templateId: site.template_id,
+              appName: site.site_name,
+              appSlug: site.site_slug,
+              brand: { accent: '#126fc8' },
             });
-            deployed++;
+            const proof = response?.data;
+            if (!proof || proof.success !== true || typeof proof.deployment_id !== 'string' ||
+                typeof proof.url !== 'string' || !/^https:\/\/[a-z0-9.-]+(?:\/|$)/i.test(proof.url)) {
+              throw new Error(`Missing Vercel acceptance receipt for ${site.site_slug}`);
+            }
+            const deployUrl = proof.url;
+            await svc.entities.SiteBank.update(site.id, {
+              status: 'deploying',
+              site_url: deployUrl,
+            });
+            accepted++;
 
             // Sync to GPT
             try {
@@ -260,17 +254,13 @@ export default async function(req: Request): Promise<Response> {
                 event_type: 'entity_create',
                 entity_name: 'SiteBank',
                 record_id: site.id,
-                data_summary: `Auto-launched ${site.site_name} at ${deployUrl}`,
+                data_summary: `Vercel deployment accepted for ${site.site_name} at ${deployUrl}; pending independent verification`,
                 source: 'bulkLaunchEngine',
                 direction: 'to_gpt',
                 status: 'pending',
               });
-              await svc.entities.SiteBank.update(site.id, {
-                gpt_synced: true,
-                gpt_synced_at: new Date().toISOString(),
-                status: 'synced',
-              });
-              synced++;
+              // Event accepted is not GPT acknowledgement or LIVE status.
+              syncEventsEmitted++;
             } catch (e) {
               console.error(`GPT sync failed: ${e.message}`);
             }
@@ -284,9 +274,13 @@ export default async function(req: Request): Promise<Response> {
       return Response.json({
         ok: true,
         processed: items.length,
-        deployed,
+        deployed, // Zero until independent validation.
+        deployments_accepted: accepted,
+        awaiting_validation: accepted,
+        release_ready: false,
         failed,
-        synced,
+        synced, // Zero until actual GPT acknowledgement.
+        sync_events_emitted: syncEventsEmitted,
       });
     }
 
