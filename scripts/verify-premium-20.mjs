@@ -37,5 +37,7 @@ for(const t of templates){
  assert.doesNotMatch(body,/<script[^>]*src=["']https?:/i,t.id+' should not include remote executable JS');
  checks.push({master:t.id,layout:t.layout,html_sha256:rec.sha256,byte_count:Buffer.byteLength(body)});
 }
-for(const id of ['monolith','argent','atelier'])assert.ok(gallery.includes('/premium/templates/'+id+'/index.html'),id+' existing master link missing');
+for(const id of ['monolith','argent','atelier'])assert.ok(gallery.includes('../templates/'+id+'/index.html'),id+' existing master link missing');
+assert.ok(gallery.includes('href="../launch-composer/index.html"'),'Launch composer link missing from premium gallery');
+assert.doesNotMatch(gallery,/digital-dominance-oeahjexvu/i,'Stale absolute Vercel preview host must not be preserved');
 console.log('PASS PREMIUM_20_STATIC_PROOF '+JSON.stringify({new_masters:17,existing_v2_linked:3,total:20,unique_layouts:17,hashes_verified:17,noindex:true,customer_sites_released:0,proof:checks.map(x=>x.master)}));
