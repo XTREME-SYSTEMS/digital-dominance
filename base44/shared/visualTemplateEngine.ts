@@ -16,6 +16,8 @@
  * 10. Each niche gets unique images, colors, and copy
  */
 
+import { generateLayoutVariantHtml, getLayoutForNiche } from "./templateLayoutVariants.ts";
+
 interface NicheProfile {
   hero: string;
   sub: string;
@@ -742,6 +744,16 @@ function stars(n: number): string {
 }
 
 export function generateTemplateHtml(niche: string, brandName?: string): string {
+  const c = getConfig(niche);
+  const brand = brandName || c.serviceName;
+
+  // Use layout variants for unique visual styles per niche
+  const layoutVariant = getLayoutForNiche(niche);
+  return generateLayoutVariantHtml(c as any, brand, layoutVariant);
+}
+
+// Legacy single-layout generator (kept as fallback)
+function generateLegacyTemplateHtml(niche: string, brandName?: string): string {
   const c = getConfig(niche);
   const brand = brandName || c.serviceName;
 

@@ -1,0 +1,70 @@
+{
+  "name": "GPT Template Sync",
+  "description": "Syncs with ChatGPT every 6 hours to generate fresh, AI-designed website templates. ChatGPT creates complete HTML templates for each industry niche, which are ingested into the Template Library for deployment.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": 6,
+      "interval_unit": "hours",
+      "interval_anchor": "2026-10-14T06:00:00Z",
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "gpt_template_sync",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "generate_templates": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "gptTemplateIngestor",
+            "args": {
+              "action": "generate_batch",
+              "niches": [
+                "epoxy",
+                "water_damage",
+                "roofing",
+                "hvac",
+                "plumbing",
+                "electrician",
+                "pest_control",
+                "landscaping",
+                "mold_remediation",
+                "fire_damage",
+                "garage_door",
+                "legal",
+                "real_estate",
+                "remodeling",
+                "med_spa",
+                "dental",
+                "chiropractic",
+                "solar",
+                "automotive",
+                "cleaning",
+                "identity"
+              ]
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Generate templates via ChatGPT",
+            "description": "ChatGPT creates fresh website templates for all supported niches"
+          }
+        }
+      }
+    ]
+  }
+}
