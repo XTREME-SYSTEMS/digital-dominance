@@ -229,42 +229,74 @@ export default async function(req) {
 
           // 2) Deploy via Vercel
           await svc.entities.WebsiteQueue.update(site.id, { status: 'deploying' });
-          let deployedUrl = site.domain;
+          // Require actual Vercel provider receipt; a proposed domain is NOT a deployment.
+          const deployRes = await base44.functions.invoke('vercelDeploy', {
+            domain: site.domain,
+            city: site.target_city,
+            state: site.target_state,
+            templateKey: batch.template_key,
+            content,
+          });
+          const proof = deployRes?.data || {};
+          if (proof.success !== true || !/^dpl_[A-Za-z0-9]+$/.test(String(proof.deployment_id || '')) || !proof.url) {
+            throw new Error('DEPLOY_PROOF_MISSING: Vercel did not provide a successful deployment identity');
+          }
+          let deployedUrl;
           try {
-            const deployRes = await base44.functions.invoke('vercelDeploy', {
-              domain: site.domain,
-              city: site.target_city,
-              state: site.target_state,
-              templateKey: batch.template_key,
-              content,
-            });
-            deployedUrl = deployRes?.data?.url || deployedUrl;
-          } catch (e) { /* deployment may fail if Vercel not configured */ }
+            const parsed = new URL(proof.url);
+            if (parsed.protocol !== 'https:' || !parsed.hostname.endsWith('.vercel.app') || parsed.username || parsed.password || parsed.port) {
+              throw new Error('Unapproved deployment host');
+            }
+            deployedUrl = parsed.href;
+          } catch {
+            throw new Error('DEPLOY_PROOF_INVALID_URL');
+          }
+          // The legacy vercelDeploy function ignores content and deploys Code Studio.
+          // It MUST NOT count toward a per-location launch unless live HTML proves
+          // the actual site's title and city were deployed to this preview URL.
+          const response = await fetch(deployedUrl, { method: 'GET', redirect: 'manual', signal: AbortSignal.timeout(12000) });
+          if (response.status !== 200 || !/text\/html/i.test(response.headers.get('content-type') || '')) {
+            throw new Error('DEPLOY_HTTP_NOT_READY: exact preview not verified');
+          }
+          const html = (await response.text()).slice(0, 500000);
+          if (!html.toLowerCase().includes(String(site.target_city).toLowerCase()) ||
+              !html.toLowerCase().includes(String(content.title || '').toLowerCase())) {
+            throw new Error('DEPLOY_CONTENT_MISMATCH: preview does not contain this site content');
+          }
+          const noindexHeader = /noindex/i.test(response.headers.get('x-robots-tag') || '');
+          const noindexMeta = /<meta\b[^>]*name\s*=\s*["']robots["'][^>]*content\s*=\s*["'][^"']*noindex/i.test(html);
+          if (!noindexHeader || !noindexMeta) {
+            throw new Error('DEPLOY_NOINDEX_MISSING: release gate for synthetic canary not satisfied');
+          }
           deployed++;
           await svc.entities.WebsiteQueue.update(site.id, {
             status: 'live',
-            generated_url: deployedUrl.startsWith('http') ? deployedUrl : `https://${deployedUrl}`,
+            generated_url: deployedUrl,
             deployed_at: new Date().toISOString(),
             seo_score: content.seo_score || 0,
             aeo_score: content.aeo_score || 0,
           });
 
-          // 3) Google sync + sitemap + indexing — fire and forget (async, non-blocking)
-          if (batch.google_sync_enabled) {
-            waitUntil(runGoogleSyncAsync(base44, deployedUrl));
-          }
-
-          // 4) Validate
-          const validation = runValidation(deployedUrl, site, content);
+          // A noindex canary MUST NEVER trigger Search Console submission,
+          // sitemap indexing, social posting, or any public promotion.
+          // 4) Produce PRELIMINARY evidence, not independent validation PASS.
+          const validation = runValidation(deployedUrl, site, content, {
+            deployment_id: proof.deployment_id,
+            http_status: response.status,
+            noindex_header: noindexHeader,
+            noindex_meta: noindexMeta,
+            content_match: true,
+          });
           const receipt = await svc.entities.SiteValidationReceipt.create({
-            canonical_url: `https://${deployedUrl.replace(/^https?:\/\//, '')}`,
+            canonical_url: deployedUrl,
             location_id: site.id,
             validated_at: new Date().toISOString(),
-            validator_version: '3.0',
-            deployment_id: batch.batch_id,
+            validator_version: 'preflight:1.0',
+            deployment_id: proof.deployment_id,
             ...validation,
           });
           newReceiptIds.push(receipt.id);
+          // Only an INDEPENDENT Guardian validator may mark a site validated.
           if (validation.overall_pass) validated++;
 
           // 5) Google 2026 Programmatic Standard scoring (deterministic)
@@ -353,7 +385,7 @@ export default async function(req) {
       status: isComplete ? 'validating' : 'complete',
       test_swarm_triggered: isComplete && body.runTestSwarm !== false,
       message: isComplete
-        ? 'Batch deployed — parallel test swarm running async. All sites launched with skip trace, benchmark enhancement, Google Standard scoring, God Mode optimization, and cloud browser validation.'
+        ? 'Preflight processed. Sites require independent Guardian receipt; deployment, indexing and browser validation are NOT implied.'
         : 'No pending sites to process.',
     });
   } catch (error) {
@@ -485,45 +517,37 @@ async function runGodModeOptimization(base44, site, currentScore, googleStandard
   }
 }
 
-function runValidation(url, site, content) {
-  const failures = [];
-  const hasUrl = !!url;
-  const hasContent = !!content?.title;
-  const hasStructured = !!content?.structured_data;
-  const hasFaqs = (content?.faqs?.length || 0) > 0;
-  const hasLocal = !!content?.local_content;
-
-  if (!hasUrl) failures.push('No deployment URL');
-  if (!hasContent) failures.push('Missing title/meta content');
-  if (!hasStructured) failures.push('Missing structured data');
-  if (!hasFaqs) failures.push('No FAQs for AEO');
-  if (!hasLocal) failures.push('No local-specific content');
-
+function runValidation(url, site, content, observed = {}) {
+  const failures = ['INDEPENDENT_GUARDIAN_VALIDATION_REQUIRED'];
+  if (!observed.deployment_id || !/^dpl_[A-Za-z0-9]+$/.test(observed.deployment_id)) failures.push('No provider deployment ID');
+  if (observed.http_status !== 200) failures.push('Exact preview not HTTP 200');
+  if (!observed.noindex_header || !observed.noindex_meta) failures.push('Noindex was not verified');
+  if (!observed.content_match) failures.push('Deployed content not verified');
   return {
-    dns_reachable: hasUrl,
-    tls_valid: hasUrl,
-    http_status: hasUrl ? 200 : 0,
-    final_url: url,
-    render_complete: hasContent,
-    correct_city: !!site.target_city,
-    correct_state: !!site.target_state,
-    correct_h1: hasContent,
-    correct_title: hasContent,
-    correct_description: hasContent,
-    correct_canonical: hasUrl,
-    correct_robots: true,
-    correct_og_url: hasUrl,
-    structured_data_valid: hasStructured,
-    correct_business_facts: hasContent,
-    internal_nav_works: true,
-    estimate_cta_present: true,
-    visualizer_accessible: true,
-    mobile_viewport_ok: true,
-    desktop_viewport_ok: true,
+    dns_reachable: observed.http_status === 200,
+    tls_valid: typeof url === 'string' && url.startsWith('https://'),
+    http_status: observed.http_status || 0,
+    final_url: url || '',
+    render_complete: !!observed.content_match,
+    correct_city: !!observed.content_match && !!site.target_city,
+    correct_state: !!observed.content_match && !!site.target_state,
+    correct_h1: false, // Browser and DOM inspection are not yet executed.
+    correct_title: !!observed.content_match && !!content?.title,
+    correct_description: false,
+    correct_canonical: false,
+    correct_robots: !!observed.noindex_header && !!observed.noindex_meta,
+    correct_og_url: false,
+    structured_data_valid: false,
+    correct_business_facts: false,
+    internal_nav_works: false,
+    estimate_cta_present: false,
+    visualizer_accessible: false,
+    mobile_viewport_ok: false,
+    desktop_viewport_ok: false,
     canonical_conflict: false,
-    sitemap_member: hasUrl,
-    registry_member: hasUrl,
-    overall_pass: failures.length === 0,
+    sitemap_member: false,
+    registry_member: false,
+    overall_pass: false,
     failure_reasons: failures,
   };
 }
