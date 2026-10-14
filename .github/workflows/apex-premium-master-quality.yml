@@ -10,6 +10,7 @@ on:
       - 'scripts/write-premium-build-provenance.mjs'
       - 'public/premium/launch-composer/**'
       - 'data/premium-collection-20.json'
+      - 'docs/quality/premium-hero-image-evidence-20261014.json'
       - 'package.json'
       - 'package-lock.json'
       - 'vercel.json'
