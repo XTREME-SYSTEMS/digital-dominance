@@ -1,0 +1,58 @@
+name: DD Universal Phase Independent QA
+
+on:
+  pull_request:
+    paths:
+      - "base44/shared/universalGenerator.ts"
+      - "base44/shared/universalPhaseRuntime.js"
+      - "base44/shared/universalPhaseQa.js"
+      - "scripts/universal-*.mjs"
+      - "src/components/universal/**"
+      - "src/pages/admin/GeneratorSandbox.jsx"
+      - "src/App.jsx"
+      - "vercel.json"
+      - "vite.config.js"
+      - "package*.json"
+      - ".github/workflows/dd-universal-phase-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dd-universal-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-universal-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DD_SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run actual Universal Generator and independent QA
+        run: npm run test:universal-phase
+      - name: Build Vite frontend without releasing
+        run: npm run build
+      - name: Verify sandbox route and fail-closed operational invariants
+        shell: bash
+        run: |
+          test -f dist/index.html
+          test -f vercel.json
+          grep -q 'generator-sandbox' src/App.jsx
+          grep -q 'noindex,nofollow' base44/shared/universalPhaseRuntime.js
+          grep -q 'release_ready: false' base44/shared/universalPhaseQa.js
+          if grep -E 'schedule:|cron:' .github/workflows/dd-universal-phase-qa.yml; then
+            echo "Unexpected schedule/cron detected: fail closed"
+            exit 1
+          fi
+          echo "PASS: no scheduler, deploy or production mutation"
