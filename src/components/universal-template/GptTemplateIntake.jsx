@@ -105,7 +105,7 @@ export default function GptTemplateIntake() {
                   referrerPolicy="no-referrer"
                   loading="lazy"
                   srcDoc={selected.content || "<!doctype html><title>No HTML available</title>"}
-                  style={{width:device==="mobile"?390:1200,maxWidth:device==="mobile"?"none":"100%",height:"68vh",border:"1px solid #a8a29e",background:"#fff",display:"block",margin:"0 auto"}}
+                  style={{width:device==="mobile"?390:1200,maxWidth:"none",height:"68vh",border:"1px solid #a8a29e",background:"#fff",display:"block",margin:"0 auto"}}
                 />
               </div>
               <p className="text-xs text-stone-500 px-4 py-3 border-t">
