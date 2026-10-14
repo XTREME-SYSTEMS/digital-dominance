@@ -6,8 +6,10 @@ on:
       - 'base44/functions/githubSync/**'
       - 'base44/shared/gptSyncGuard.js'
       - 'base44/shared/githubSyncPolicy.js'
+      - 'base44/shared/githubAtomicExport.js'
       - 'tests/gpt-sync-*.test.mjs'
       - 'tests/github-sync-*.test.mjs'
+      - 'tests/github-atomic-*.test.mjs'
   push:
     branches:
       - 'feature/dd-gpt-sync-v4-current-main-20261013'
@@ -28,6 +30,7 @@ jobs:
         run: |
           node --check base44/shared/gptSyncGuard.js
           node --check base44/shared/githubSyncPolicy.js
+          node --check base44/shared/githubAtomicExport.js
       - name: Run safety, replay and source-boundary tests
         run: |
-          node --test tests/gpt-sync-v4-safe-preview.test.mjs tests/github-sync-policy.test.mjs tests/gpt-sync-source-boundary.test.mjs
+          node --test tests/gpt-sync-v4-safe-preview.test.mjs tests/github-sync-policy.test.mjs tests/github-atomic-export.test.mjs tests/gpt-sync-source-boundary.test.mjs
