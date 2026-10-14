@@ -188,7 +188,7 @@ export default async function(req: Request): Promise<Response> {
           const label = NICHE_LABELS[niche] || niche;
           const prompt = buildPrompt(niche);
 
-          // Call ChatGPT via InvokeLLM
+          // Call the configured Base44 Core.InvokeLLM (model identity is not assumed to be ChatGPT)
           const llmResponse = await base44.asServiceRole.integrations.Core.InvokeLLM({
             prompt,
             model: "automatic",
@@ -206,13 +206,13 @@ export default async function(req: Request): Promise<Response> {
           // Strict minimum document contract. Marking a generated string as
           // "production-ready" without browser/Guardian review is prohibited.
           const structurallyValid = /<!doctype html/i.test(html) &&
-            /<html[\\s>]/i.test(html) &&
-            /<head[\\s>]/i.test(html) &&
-            /<style[\\s>]/i.test(html) &&
-            /<main[\\s>]/i.test(html) &&
-            /<h1[\\s>]/i.test(html) &&
+            /<html[\s>]/i.test(html) &&
+            /<head[\s>]/i.test(html) &&
+            /<style[\s>]/i.test(html) &&
+            /<main[\s>]/i.test(html) &&
+            /<h1[\s>]/i.test(html) &&
             /<meta[^>]+name=["']viewport["']/i.test(html) &&
-            (html.match(/<section[\\s>]/gi) || []).length >= 4 &&
+            (html.match(/<section[\s>]/gi) || []).length >= 4 &&
             html.length >= 6000 && html.length <= 48000;
           if (!structurallyValid) {
             results.push({ niche, status: "failed", error: "HTML failed minimum structure and preview-size gates" });
@@ -221,7 +221,7 @@ export default async function(req: Request): Promise<Response> {
 
           // Ensure every draft refuses public indexing by default.
           if (!/<meta[^>]+name=["\']robots["\']/i.test(html)) {
-            html = html.replace(/<head([\\s>])/i, '<head$1<meta name="robots" content="noindex,nofollow,noarchive">');
+            html = html.replace(/<head([\s>])/i, '<head$1<meta name="robots" content="noindex,nofollow,noarchive">');
           }
 
           // Extract title from generated HTML
