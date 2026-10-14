@@ -91,6 +91,9 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/brand-guardian" className={`wle-side-nav${isCore(["/admin/brand-guardian"]) ? " active" : ""}`}>
           <Shield aria-hidden="true" />Brand Guardian
         </Link>
+        <Link to="/admin/image-validator" className={`wle-side-nav${isCore(["/admin/image-validator"]) ? " active" : ""}`}>
+          <Shield aria-hidden="true" />Image Validator
+        </Link>
         <Link to="/admin/visual-library" className={`wle-side-nav${isCore(["/admin/visual-library"]) ? " active" : ""}`}>
           <Layers aria-hidden="true" />Visual Render Library
         </Link>

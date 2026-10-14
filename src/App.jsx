@@ -140,6 +140,7 @@ import BackgroundOperations from '@/pages/admin/BackgroundOperations';
 import MultiTemplateLauncher from '@/pages/admin/MultiTemplateLauncher';
 import GptTemplateSync from '@/pages/admin/GptTemplateSync';
 import JsonGptSync from '@/pages/admin/JsonGptSync';
+import ImageValidationDashboard from '@/pages/admin/ImageValidationDashboard';
 import GoogleHappiness from '@/pages/admin/GoogleHappiness';
 import GoogleBatchSubmission from '@/pages/admin/GoogleBatchSubmission';
 import GodModeSimulationLab from '@/pages/admin/GodModeSimulationLab';
@@ -403,6 +404,7 @@ const AuthenticatedApp = () => {
         <Route path="multi-launch" element={<MultiTemplateLauncher />} />
         <Route path="gpt-template-sync" element={<GptTemplateSync />} />
       <Route path="json-gpt-sync" element={<JsonGptSync />} />
+      <Route path="image-validator" element={<ImageValidationDashboard />} />
         <Route path="google-happiness" element={<GoogleHappiness />} />
         <Route path="google-batch" element={<GoogleBatchSubmission />} />
         <Route path="god-mode-lab" element={<GodModeSimulationLab />} />
