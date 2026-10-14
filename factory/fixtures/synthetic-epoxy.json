@@ -1,0 +1,22 @@
+{
+  "schema_version": "apex-synthetic-site-v1",
+  "site_id": "apex-epoxy-fixture-001",
+  "synthetic": true,
+  "industry": "epoxy_flooring",
+  "business_name": "APEX Epoxy Studio | Synthetic Demonstration",
+  "location": {
+    "city": "Synthetic City",
+    "state": "ZZ"
+  },
+  "headline": "Beautiful surfaces. Built from a better blueprint.",
+  "subheadline": "An interactive design and lead-funnel demonstration for the Digital Dominance website factory. This is not an operating contractor.",
+  "services": [
+    "Garage epoxy systems",
+    "Decorative flake finishes",
+    "Polished concrete concepts"
+  ],
+  "theme": "dark_cinematic_blue",
+  "contact_mode": "synthetic_fixture_only",
+  "production_release": false,
+  "indexable": false
+}
