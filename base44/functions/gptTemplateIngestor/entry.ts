@@ -102,7 +102,8 @@ REQUIREMENTS:
 10. Use your assigned creative direction in every major section. Do not merely vary gradients and colors. Maintain responsive 390px mobile layouts and keyboard access.
 11. No real lead collection, public publication, SEO indexing, external payment or social links. Use clearly labeled placeholder contact interactions only.
 12. Include <meta name="robots" content="noindex,nofollow,noarchive"> and <meta name="viewport" content="width=device-width,initial-scale=1">.
-13. Minimum 5 fully composed content sections and at least 1 meaningful interactive demo with non-persistent data.
+13. Minimum 5 fully composed content sections and at least 1 meaningful CSS-only, non-persistent interactive demo. Do not create forms that appear to send real leads.
+14. No <script>, <iframe>, <object>, <embed>, inline on* handlers, javascript: or data: URLs, or external JavaScript. Approved front-end components add real behavior AFTER review.
 
 OUTPUT: Return ONLY the complete HTML document. No markdown code fences, no explanations, no comments before or after. Just <!DOCTYPE html>...</html>.
 
@@ -214,15 +215,29 @@ export default async function(req: Request): Promise<Response> {
             /<meta[^>]+name=["']viewport["']/i.test(html) &&
             (html.match(/<section[\s>]/gi) || []).length >= 4 &&
             html.length >= 6000 && html.length <= 48000;
+          // Avoid stored XSS inside admin galleries that may render raw HTML.
+          // This intentionally permits only non-executable design drafts. Real
+          // form/commerce logic must come from reviewed React/Vite components.
+          const unsafeExecutableMarkup =
+            /<(?:script|iframe|object|embed|base)\b/i.test(html) ||
+            /\son[a-z]+\s*=/i.test(html) ||
+            /(?:javascript|data):/i.test(html) ||
+            /<meta[^>]+http-equiv=["']refresh/i.test(html) ||
+            /@import\s/i.test(html);
+          if (unsafeExecutableMarkup) {
+            results.push({ niche, status: "failed", error: "Executable or unsafe markup is forbidden in a preview draft" });
+            continue;
+          }
           if (!structurallyValid) {
             results.push({ niche, status: "failed", error: "HTML failed minimum structure and preview-size gates" });
             continue;
           }
 
-          // Ensure every draft refuses public indexing by default.
-          if (!/<meta[^>]+name=["\']robots["\']/i.test(html)) {
-            html = html.replace(/<head([\s>])/i, '<head$1<meta name="robots" content="noindex,nofollow,noarchive">');
-          }
+          // Remove any conflicting robots directive, then insert one
+          // explicit noindex directive at a verified <head> location.
+          html = html.replace(/<meta[^>]+name=["']robots["'][^>]*>/gi, "");
+          html = html.replace(/<head(\s[^>]*)?>/i,
+            tag => tag + '\n<meta name="robots" content="noindex,nofollow,noarchive">');
 
           // Extract title from generated HTML
           const titleMatch = html.match(/<title>(.*?)<\/title>/i);
@@ -274,7 +289,8 @@ export default async function(req: Request): Promise<Response> {
           });
 
         } catch (err: any) {
-          results.push({ niche, status: "failed", error: err.message });
+          console.error("GPT_TEMPLATE_CANDIDATE_FAILED", err?.name || "Error");
+          results.push({ niche, status: "failed", error: "GENERATION_OR_STORAGE_FAILED" });
         }
       }
 
