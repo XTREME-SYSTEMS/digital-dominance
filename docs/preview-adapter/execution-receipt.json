@@ -1,0 +1,68 @@
+{
+  "schema": "dd-preview-execution-evidence-v1",
+  "overall": "PARTIAL",
+  "execution_mode": "AUTHENTICATED_CONNECTORS",
+  "worker_execution_observed": false,
+  "signed_guardian_database_receipt_observed": false,
+  "source_sha": "d401fb0db889eca4ac3c20b16c1444f345a09ca2",
+  "deployment_id": "dpl_14C7DEeK52TicCRwjECaSQUdddi4",
+  "auto_git_deployment_id": "dpl_GHByH8kTksKQeT869rJ7x5PBL2s6",
+  "preview_url": "https://digital-dominance-efnmoptp3-strategic-minds-advisory.vercel.app/factory-jobs/be07c310-7878-45ba-88a9-752164c8f712/",
+  "html_sha256": "50e5fffcfe76bec5619b9a0fc777617ef263b995c5b2e0a85bd8345ac184494f",
+  "provider_ready_state": "READY",
+  "provider_target": null,
+  "native_git_source_verified": true,
+  "live_html_manifest_hash_match": true,
+  "dual_noindex": true,
+  "synthetic_api": {
+    "post_exact_fixture": 200,
+    "post_altered_fixture": 422,
+    "get": 405,
+    "persisted": false,
+    "outbound_messages": 0,
+    "receipt_id": "CANARY-e45df9194f0dbb4845542bb0",
+    "source_sha_verified": true
+  },
+  "old_preview_routes_200": true,
+  "production_deployment_unchanged": "dpl_Gtj92uhxbV2RYcdo4HpQHWseCHZm",
+  "domain_inventory_unchanged": true,
+  "local_checks": {
+    "adapter_tests": "7/7 PASS",
+    "x1_typecheck_build_tests": "151/151 PASS",
+    "dd_build": "PASS with preexisting warnings",
+    "changed_file_lint": "PASS",
+    "dd_full_lint": "FAIL:465 errors in untouched application source",
+    "dd_full_typecheck": "FAIL:1641 errors in untouched application source"
+  },
+  "browser_viewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "status": "PASS"
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "status": "PASS"
+    }
+  ],
+  "browser_receipt_location": "C:\\_Strategic_Minds_AI_OS\\13_TESTS\\APEX_CHROME_QA_TOOLKIT\\dd-preview-20261014-receipt.json",
+  "repeatable_batch": "BLOCKED",
+  "paid_ai_calls": 0,
+  "ai_gateway_balance": "UNKNOWN - not used",
+  "secret_changes": 0,
+  "database_changes": 0,
+  "permissions_changes": 0,
+  "production_changes": 0,
+  "blockers": [
+    "Existing worker provider credentials and independent QA endpoint/token/validator bindings missing",
+    "Live completion SQL does not fence DD preview kind or worker-generated hash",
+    "Exact DD signed capability and independent-validator route compatibility unverified",
+    "Worker integration code is branch-only, not activated"
+  ]
+}
