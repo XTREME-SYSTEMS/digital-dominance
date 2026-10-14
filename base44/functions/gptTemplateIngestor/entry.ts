@@ -69,6 +69,23 @@ const ART_DIRECTIONS = [
   { id: "technical_precision", direction: "Premium technical product site with architected diagrams, striking split composition, precise mono annotations, substantial implementation content and restrained motion." },
 ];
 
+// A structural fingerprint detects copies of the same page composition
+// even when the model changes company names, colors, copy, and image URLs.
+// This is a duplicate-rejection signal, NOT a certificate of visual quality.
+// No network access or security-sensitive cryptographic use.
+function layoutDna(html: string): string {
+  if (typeof html !== "string") return "";
+  const stripped = html.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ");
+  const body = stripped.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1] || stripped;
+  const tags = (body.match(/<\/?(?:header|nav|main|section|article|aside|figure|picture|img|h1|h2|h3|ul|form|footer|div)\b/gi) || [])
+    .slice(0, 700).map(t => t.toLowerCase()).join("|");
+  if (tags.length < 90) return "";
+  let h = 2166136261;
+  for (let i = 0; i < tags.length; i++) h = Math.imul(h ^ tags.charCodeAt(i), 16777619);
+  return "dom-dna-v1-" + (h >>> 0).toString(16).padStart(8, "0");
+}
+
 function buildPrompt(niche: string): string {
   const label = NICHE_LABELS[niche] || niche;
   const dna = ART_DIRECTIONS[SUPPORTED_NICHES.indexOf(niche) % ART_DIRECTIONS.length];
@@ -171,6 +188,20 @@ export default async function(req: Request): Promise<Response> {
         }, { status: 400 });
       }
 
+      // First inspect the existing design DNA. Drafts with an identical
+      // landmark/section structure are not counted as NEW premium masters.
+      // Read once per batch, not once per paid model call.
+      const previous = await base44.asServiceRole.entities.TemplateLibrary.filter(
+        { tags: { $all: ["gpt-generated"] } },
+        { limit: 500, fields: ["content", "tags", "niche"] }
+      );
+      const existing: any[] = Array.isArray(previous) ? previous : (previous.items || []);
+      const knownDna = new Set<string>();
+      for (const t of existing) {
+        const sig = (t.tags || []).find((tag: unknown) => typeof tag === "string" && tag.startsWith("dom-dna-v1-"))
+          || layoutDna(t.content || "");
+        if (sig) knownDna.add(sig);
+      }
       const results: any[] = [];
 
       for (const niche of valid) {
@@ -245,6 +276,17 @@ export default async function(req: Request): Promise<Response> {
             ? titleMatch[1].split("—")[0].trim()
             : `${label} — GPT Template`;
 
+          const dna = layoutDna(html);
+          if (!dna) {
+            results.push({ niche, status: "failed", error: "LAYOUT_STRUCTURE_TOO_SHALLOW" });
+            continue;
+          }
+          if (knownDna.has(dna)) {
+            // A recolor or reworded copy must not inflate the master-design catalog.
+            results.push({ niche, status: "skipped", reason: "DUPLICATE_LAYOUT_DNA" });
+            continue;
+          }
+
           // Generate slug
           const slug = `gpt-review-${niche}-${Date.now()}-${Math.floor(Math.random()*1e6)}`;
 
@@ -256,7 +298,7 @@ export default async function(req: Request): Promise<Response> {
             niche,
             description: `Unapproved synthetic ${label} design study via Base44 InvokeLLM. Requires manual content, factual, mobile, accessibility, visual and security verification.`,
             content: html,
-            tags: ["gpt-generated", "pending-visual-review", "synthetic-preview", niche, "premium-dna-v1"],
+            tags: ["gpt-generated", "pending-visual-review", "synthetic-preview", niche, "premium-dna-v1", dna],
             color_scheme: "ai-generated",
             is_active: false,
             is_default: false,
@@ -266,8 +308,10 @@ export default async function(req: Request): Promise<Response> {
             sort_order: 999,
           });
 
+          knownDna.add(dna);
           results.push({
             niche,
+            layout_dna: dna,
             status: "success",
             template_id: (created as any)?.id,
             template_name: templateName,
