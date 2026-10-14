@@ -19,7 +19,7 @@ const transpiled = ts.transpileModule(withoutSdkImport, {
 });
 assert.equal((transpiled.diagnostics || []).filter(d => d.category === ts.DiagnosticCategory.Error).length, 0);
 
-async function callAs(actor, shouldThrow = false) {
+async function callAs(actor, shouldThrow = false, action = 'getStats') {
   let privilegedReads = 0;
   const module = { exports: {} };
   const stubClient = {
@@ -40,17 +40,22 @@ async function callAs(actor, shouldThrow = false) {
   };
   context.globalThis = context;
   vm.runInNewContext(transpiled.outputText, context, { timeout: 2000 });
-  const response = await module.exports.default({ json: async () => ({ action: 'getStats' }) });
+  const response = await module.exports.default({ json: async () => ({ action }) });
   return { response, privilegedReads };
 }
 
-const anonymous = await callAs(null);
-assert.equal(anonymous.response.status, 401);
-assert.equal(anonymous.privilegedReads, 0);
+// Every handler must deny unauthenticated and non-admin callers before
+// acquiring a privileged Base44 service-role client.
+const guardedActions = ['launchBatch', 'buildBacklinks', 'syncToGpt', 'getStats', 'listSites', 'addTags'];
+for (const action of guardedActions) {
+  const anonymous = await callAs(null, false, action);
+  assert.equal(anonymous.response.status, 401, `${action}: anonymous denied`);
+  assert.equal(anonymous.privilegedReads, 0, `${action}: anonymous no service-role reads`);
 
-const nonAdmin = await callAs({ role: 'user' });
-assert.equal(nonAdmin.response.status, 403);
-assert.equal(nonAdmin.privilegedReads, 0);
+  const nonAdmin = await callAs({ role: 'user' }, false, action);
+  assert.equal(nonAdmin.response.status, 403, `${action}: non-admin denied`);
+  assert.equal(nonAdmin.privilegedReads, 0, `${action}: non-admin no service-role reads`);
+}
 
 const admin = await callAs({ role: 'admin' });
 assert.equal(admin.response.status, 200);
@@ -62,4 +67,4 @@ assert.equal(internalError.response.status, 500);
 assert.equal(internalError.response.body.error, 'Internal server error');
 assert.equal(JSON.stringify(internalError.response).includes('NEVER_EXPOSE_INTERNAL_STACK'), false);
 assert.equal(Object.hasOwn(internalError.response.body, 'stack'), false);
-console.log('PASS SiteBank authorization regression (4/4 cases)');
+console.log(`PASS SiteBank authorization regression (${guardedActions.length * 2 + 2}/${guardedActions.length * 2 + 2} cases)`);
