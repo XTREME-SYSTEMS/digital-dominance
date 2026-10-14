@@ -23,9 +23,9 @@ test('unsafe direct hosted tool invocation removed from execute block',()=>{
  assert.ok(match);assert.doesNotMatch(match[1],/executeHostedTool\(/);
 });
 test('preview reports no applied writes',()=>assert.match(route,/state:'NOT_APPLIED'/));
-test('GitHub export requires preview branch',()=>assert.match(git,/ensurePreviewTarget\(repo,input\?\.branch\)/));
+test('GitHub export requires preview branch',()=>assert.match(git,/ensurePreviewTarget\(repo,input\.branch\)/));
 test('GitHub export has no hard-coded main target',()=>assert.doesNotMatch(git,/const branch\s*=\s*['"]main['"]/));
-test('GitHub export defaults to dry run',()=>assert.match(git,/dryRun=input\?\.dry_run!==false/));
+test('GitHub export defaults to dry run',()=>assert.match(git,/dryRun=input\.dry_run!==false/));
 test('GitHub export refuses missing branch',()=>assert.match(git,/EXPECTED_BRANCH_HEAD_REQUIRED/));
 test('GitHub export uses atomic branch ref update with verified output',()=>assert.match(git,/runAtomicPreviewExport\(/));
 test('GitHub export never unconditional success',()=>assert.doesNotMatch(git,/return Response\.json\(\{\s*success:\s*true,/));
