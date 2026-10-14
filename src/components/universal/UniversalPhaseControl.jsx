@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { generateSite, getSupportedNiches } from "../../../base44/shared/universalGenerator.ts";
 import { PHASE_GROUPS, PHASE_STEPS, createMissionPlan, executeSyntheticMission, phaseSummary } from "../../../base44/shared/universalPhaseRuntime.js";
 import { validateSandboxArtifact } from "../../../base44/shared/universalPhaseQa.js";
+import { runSyntheticForesight, FORESIGHT_STATUS } from "../../../base44/shared/godModeForesightSandbox.js";
 
 const SOURCE_SHA = typeof __DD_BUILD_SOURCE_SHA__ === "string" ? __DD_BUILD_SOURCE_SHA__ : "UNKNOWN";
 const badge = status => status === "PASS" ? "bg-emerald-50 text-emerald-800 border-emerald-200" :
@@ -18,6 +19,7 @@ export default function UniversalPhaseControl() {
   const [report, setReport] = useState(null);
   const [error, setError] = useState("");
   const [showStages, setShowStages] = useState(false);
+  const [foresight, setForesight] = useState(null);
   const phases = report ? phaseSummary(report) : PHASE_GROUPS.map(p => ({
     key:p.key, name:p.name, provider:p.provider, total_steps:p.steps.length,
     executed_steps:0, unexecuted_steps:p.steps.length, stage_status:"PARTIAL"
@@ -32,6 +34,13 @@ export default function UniversalPhaseControl() {
       });
       setReport(executeSyntheticMission(plan, generateSite, validateSandboxArtifact));
     } catch (e) { setError(e.message || "Sandbox execution failed"); }
+  }
+
+  function runForesight() {
+    try {
+      setError("");
+      setForesight(runSyntheticForesight({seed:20261013,draws:1000,months:12,synthetic:true}));
+    } catch (e) { setError(e.message||"Synthetic foresight could not run"); }
   }
 
   return <section aria-label="Universal Generator sandbox"
@@ -69,6 +78,10 @@ export default function UniversalPhaseControl() {
         className="rounded-xl bg-violet-700 hover:bg-violet-800 text-white font-bold px-5 py-3 text-sm">
         Run actual generator + independent QA
       </button>
+      <button type="button" onClick={runForesight}
+        className="rounded-xl border border-violet-400 bg-violet-50 px-4 py-3 text-sm font-semibold text-violet-950">
+        Simulate GOD MODE · 10 strategies × 1,000 draws
+      </button>
       <button type="button" onClick={() => setShowStages(v => !v)}
         className="rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700">
         {showStages ? "Hide" : "Inspect"} 30-stage matrix
@@ -96,6 +109,30 @@ export default function UniversalPhaseControl() {
           <td className="p-2">{report?.results.find(r => r.step === s.id)?.status || "NOT_EXECUTED"}</td>
         </tr>)}</tbody>
       </table>
+    </div>}
+    {foresight && <div className="space-y-3 rounded-xl border border-amber-300 bg-amber-50 p-4">
+      <h3 className="text-base font-extrabold text-amber-950">GOD MODE Foresight · Hypothetical strategy tournament</h3>
+      <p className="text-sm text-amber-900">
+        {FORESIGHT_STATUS}. Simulated assumptions only. No Google search metrics, buyer contract,
+        validated lead prices, cost quotes or fulfillment proof. All strategies are HOLD.
+      </p>
+      <div className="overflow-x-auto"><table className="w-full text-xs">
+        <thead><tr><th className="text-left p-2">Strategy</th>
+          <th className="text-right p-2">P10 (12 mo)</th>
+          <th className="text-right p-2">Median (12 mo)</th>
+          <th className="text-right p-2">P90 (12 mo)</th>
+          <th className="text-right p-2">Profit chance</th></tr></thead>
+        <tbody>{foresight.strategies.map(s => <tr key={s.id} className="border-t border-amber-200">
+          <td className="p-2">{s.id} · {s.name}</td>
+          <td className="text-right p-2">{s.net_12mo_p10.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0})}</td>
+          <td className="text-right p-2">{s.net_12mo_p50.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0})}</td>
+          <td className="text-right p-2">{s.net_12mo_p90.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0})}</td>
+          <td className="text-right p-2">{Math.round(s.probability_positive*100)}% · UNVERIFIED</td>
+        </tr>)}</tbody>
+      </table></div>
+      <p className="text-xs font-bold text-amber-950">
+        Release gate: {foresight.decision}. These are example math outputs, not forecasts or promises.
+      </p>
     </div>}
     {report && <>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
