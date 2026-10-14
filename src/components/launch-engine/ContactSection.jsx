@@ -9,8 +9,7 @@ const INDUSTRY_OPTIONS = [
   "Insurance", "Mortgage", "Cleaning Services",
 ];
 
-const PRIMARY_PHONE = "(866) 571-1174";
-const BACKUP_PHONE = "(772) 209-0266";
+const PRIMARY_PHONE = "(772) 209-0266";
 const EMAIL = "jeremy@strategicmindsai.com";
 
 export default function ContactSection() {
@@ -53,16 +52,11 @@ export default function ContactSection() {
         </p>
 
         {/* Contact Info Cards */}
-        <div className="mb-8 grid sm:grid-cols-3 gap-3">
-          <a href={`tel:+18665711174`} className="flex flex-col items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.03] p-4 hover:border-green-400/50 hover:shadow-[0_0_16px_-2px_rgba(34,197,94,0.4)] transition-all duration-300">
+        <div className="mb-8 grid gap-3 sm:grid-cols-2">
+          <a href="tel:+17722090266" className="flex flex-col items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.03] p-4 hover:border-green-400/50 hover:shadow-[0_0_16px_-2px_rgba(34,197,94,0.4)] transition-all duration-300">
             <Phone className="h-5 w-5 text-green-400" />
             <span className="text-[10px] uppercase tracking-wider text-white/40">Primary</span>
             <span className="text-sm font-bold text-white">{PRIMARY_PHONE}</span>
-          </a>
-          <a href={`tel:+17722090266`} className="flex flex-col items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.03] p-4 hover:border-green-400/50 hover:shadow-[0_0_16px_-2px_rgba(34,197,94,0.4)] transition-all duration-300">
-            <Phone className="h-5 w-5 text-white/50" />
-            <span className="text-[10px] uppercase tracking-wider text-white/40">Backup</span>
-            <span className="text-sm font-bold text-white">{BACKUP_PHONE}</span>
           </a>
           <a href={`mailto:${EMAIL}`} className="flex flex-col items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.03] p-4 hover:border-green-400/50 hover:shadow-[0_0_16px_-2px_rgba(34,197,94,0.4)] transition-all duration-300">
             <Mail className="h-5 w-5 text-[#00a2ff]" />
@@ -74,7 +68,7 @@ export default function ContactSection() {
         {submitted ? (
           <div className="rounded-2xl border border-green-400/30 bg-green-500/10 p-6">
             <p className="text-sm font-bold text-green-400 mb-1">Inquiry Received!</p>
-            <p className="text-xs text-white/60">Our AI CRM has logged your inquiry. Eden Skye will follow up with you every 3 days with branded updates and offers.</p>
+            <p className="text-xs text-white/60">Your inquiry has been saved. Our team will review your project details.</p>
           </div>
         ) : (
           <form onSubmit={submitToCRM} className="grid sm:grid-cols-2 gap-4 text-left">
@@ -114,7 +108,7 @@ export default function ContactSection() {
               {submitting ? "Submitting..." : <>Submit to AI CRM <ArrowRight className="h-4 w-4" /></>}
             </button>
             <p className="sm:col-span-2 text-xs text-white/40 text-center">
-              Your inquiry enters our AI-optimized CRM. Eden Skye follows up every 3 days with branded emails and enticing offers.
+              We use your details to respond to your inquiry. No automatic marketing messages are sent by this form.
             </p>
           </form>
         )}
