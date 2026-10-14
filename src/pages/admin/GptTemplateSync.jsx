@@ -35,10 +35,10 @@ export default function GptTemplateSync() {
     queryKey: ["gpt-templates"],
     queryFn: async () => {
       const res = await base44.entities.TemplateLibrary.filter(
-        { tags: { $all: ["gpt-generated"] }, is_active: true },
-        { sort: "-created_date", limit: 100, fields: ["name", "niche", "created_date", "description", "slug"] }
+        { tags: { $all: ["gpt-generated"] } },
+        { sort: "-created_date", limit: 500, fields: ["name", "niche", "created_date", "description", "slug", "status", "is_active"] }
       );
-      return res;
+      return Array.isArray(res) ? { items: res } : res;
     },
   });
 
@@ -69,18 +69,20 @@ export default function GptTemplateSync() {
 
   const totalGpt = gptTemplates?.items?.length || 0;
   const nichesCovered = Object.keys(nicheCounts).length;
+  const pendingReview = (gptTemplates?.items || []).filter(t => t.status === "draft" || !t.is_active).length;
+  const legacyActive = (gptTemplates?.items || []).filter(t => t.status === "active" && t.is_active).length;
 
   return (
     <AdminSystemPage
       title="GPT Template Sync"
       eyebrow="AI-Powered Template Generation"
-      description="ChatGPT generates fresh, industry-specific website templates and syncs them into the Template Library. A workflow runs every 6 hours to keep the library stocked."
+      description="Base44 InvokeLLM drafts synthetic industry designs for quality review. The six-hour scheduler is configured but authenticated operation and external GPT two-way sync are not yet verified."
       badge="AI Sync"
       stats={[
         ["GPT Templates", totalGpt],
+        ["Pending Review", pendingReview],
+        ["Previously Active", legacyActive],
         ["Niches Covered", `${nichesCovered}/${SUPPORTED_NICHES.length}`],
-        ["Sync Schedule", "6h"],
-        ["Status", "Active"],
       ]}
     >
       <div className="space-y-6">
@@ -93,13 +95,13 @@ export default function GptTemplateSync() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Click the button below to have ChatGPT generate fresh website templates for all {SUPPORTED_NICHES.length} supported niches.
-              Each template is a complete, production-ready HTML page with industry-specific copy and design.
+              Generate synthetic design candidates through Base44 InvokeLLM. New results are saved as inactive drafts, not live websites.
+              The batch may incur up to {SUPPORTED_NICHES.length} model calls; repeated niches within 24 hours are skipped. Review actual imagery, real-world claims, forms, accessibility, and mobile layouts before any release.
             </p>
             <div className="flex gap-3 flex-wrap">
-              <Button onClick={() => handleGenerate()} disabled={generating} className="gap-2">
+              <Button onClick={() => { if (window.confirm(`Generate up to ${SUPPORTED_NICHES.length} paid AI design drafts? No websites will be published.`)) handleGenerate(); }} disabled={generating} className="gap-2">
                 {generating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-                {generating ? "Generating..." : "Generate All Niches"}
+                {generating ? "Drafting..." : "Generate Review Drafts"}
               </Button>
               {selectedNiche && (
                 <Button
@@ -130,7 +132,7 @@ export default function GptTemplateSync() {
                 >
                   <span className="text-sm font-semibold">{NICHE_LABELS[niche]}</span>
                   <Badge variant={nicheCounts[niche] ? "default" : "secondary"} className="text-xs">
-                    {nicheCounts[niche] || 0} templates
+                    {nicheCounts[niche] || 0} total
                   </Badge>
                 </button>
               ))}
@@ -147,11 +149,13 @@ export default function GptTemplateSync() {
                   <div
                     key={i}
                     className={`flex items-center gap-3 rounded-lg border p-3 ${
-                      r.status === "success" ? "border-green-500/30 bg-green-500/5" : "border-red-500/30 bg-red-500/5"
+                      r.status === "success" ? "border-amber-500/30 bg-amber-500/5" : r.status === "skipped" ? "border-slate-500/30 bg-slate-500/5" : "border-red-500/30 bg-red-500/5"
                     }`}
                   >
                     {r.status === "success" ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <CheckCircle2 className="h-5 w-5 text-amber-500 flex-shrink-0" />
+                    ) : r.status === "skipped" ? (
+                      <Clock className="h-5 w-5 text-slate-500 flex-shrink-0" />
                     ) : (
                       <XCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
                     )}
@@ -159,10 +163,12 @@ export default function GptTemplateSync() {
                       <div className="text-sm font-semibold">{NICHE_LABELS[r.niche] || r.niche || "Unknown"}</div>
                       {r.status === "success" ? (
                         <div className="text-xs text-muted-foreground">
-                          {r.template_name} · {r.html_length?.toLocaleString()} chars
+                          {r.template_name} · {r.html_length?.toLocaleString()} chars · Pending design approval
                         </div>
+                      ) : r.status === "skipped" ? (
+                        <div className="text-xs text-muted-foreground">Skipped: already generated within 24 hours</div>
                       ) : (
-                        <div className="text-xs text-red-500">{r.error}</div>
+                        <div className="text-xs text-red-500">{r.error || "Generation failed"}</div>
                       )}
                     </div>
                   </div>
@@ -175,7 +181,7 @@ export default function GptTemplateSync() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>GPT-Generated Templates</span>
+              <span>Generated Design Candidates</span>
               <Badge variant="secondary">{totalGpt} total</Badge>
             </CardTitle>
           </CardHeader>
@@ -200,7 +206,7 @@ export default function GptTemplateSync() {
                         {NICHE_LABELS[t.niche] || t.niche} · {new Date(t.created_date).toLocaleDateString()}
                       </div>
                     </div>
-                    <Badge variant="outline" className="text-xs">GPT</Badge>
+                    <Badge variant={t.status === "draft" || !t.is_active ? "secondary" : "outline"} className="text-xs">{t.status === "draft" || !t.is_active ? "Review Draft" : "Legacy Active · Unverified"}</Badge>
                   </div>
                 ))}
               </div>
