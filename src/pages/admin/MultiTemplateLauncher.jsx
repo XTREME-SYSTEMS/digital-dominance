@@ -7,6 +7,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+import TemplatePreviewCard from "@/components/multi-launch/TemplatePreviewCard";
 
 export default function MultiTemplateLauncher() {
   const queryClient = useQueryClient();
@@ -261,46 +262,14 @@ export default function MultiTemplateLauncher() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filtered.map((tpl) => {
-            const isSelected = selected.has(tpl.id);
-            return (
-              <button
-                key={tpl.id}
-                onClick={() => toggleSelect(tpl.id)}
-                className={`text-left rounded-lg border p-3 transition ${
-                  isSelected
-                    ? "border-[#126fc8] bg-[#126fc8]/5 ring-2 ring-[#126fc8]/20"
-                    : "border-[#e4e4e7] bg-white hover:border-[#126fc8]/40"
-                }`}
-              >
-                <div className="flex items-start gap-2">
-                  <div
-                    className={`w-5 h-5 rounded border-2 shrink-0 mt-0.5 grid place-items-center ${
-                      isSelected ? "border-[#126fc8] bg-[#126fc8]" : "border-[#d4d4d8]"
-                    }`}
-                  >
-                    {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-[#112940] truncate">{tpl.name}</p>
-                    <p className="text-[10px] text-[#8faec9] font-mono truncate">{tpl.slug}</p>
-                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                      {tpl.niche && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#126fc8]/10 text-[#126fc8]">{tpl.niche}</span>
-                      )}
-                      <span className="text-[9px] text-[#607790]">{tpl.category}</span>
-                      {tpl.deploy_count > 0 && (
-                        <span className="text-[9px] text-[#d97706] font-bold">{tpl.deploy_count} deploys</span>
-                      )}
-                    </div>
-                    {tpl.description && (
-                      <p className="text-[10px] text-[#607790] mt-1.5 line-clamp-2">{tpl.description}</p>
-                    )}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
+          {filtered.map((tpl) => (
+            <TemplatePreviewCard
+              key={tpl.id}
+              template={tpl}
+              isSelected={selected.has(tpl.id)}
+              onToggle={() => toggleSelect(tpl.id)}
+            />
+          ))}
         </div>
       )}
 
