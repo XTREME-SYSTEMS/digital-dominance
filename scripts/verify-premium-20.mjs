@@ -33,7 +33,7 @@ for(const t of templates){
  assert.match(body,/PREMIUM DESIGN STUDY/);
  assert.match(body,/No information is sent or stored/);
  assert.ok(gallery.includes('href="'+t.id+'/index.html"'),t.id+' has no catalog link');
- assert.ok(/images\.unsplash\.com\/photo-/.test(body),t.id+' image source missing');
+ assert.ok(/images\.(?:unsplash\.com\/photo-|pexels\.com\/photos\/[0-9]+\/pexels-photo-[0-9]+\.jpeg)/.test(body),t.id+' image source missing');
  assert.doesNotMatch(body,/<script[^>]*src=["']https?:/i,t.id+' should not include remote executable JS');
  checks.push({master:t.id,layout:t.layout,html_sha256:rec.sha256,byte_count:Buffer.byteLength(body)});
 }
