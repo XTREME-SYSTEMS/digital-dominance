@@ -1,0 +1,56 @@
+name: APEX Premium Master Quality
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/build-premium-20.mjs'
+      - 'scripts/verify-premium-20.mjs'
+      - 'data/premium-collection-20.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vercel.json'
+      - '.github/workflows/apex-premium-master-quality.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apex-premium-qa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reproducible-masters:
+    name: 20 master designs | generate, verify, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Generate and hash all 17 custom + 3 V2 master references
+        run: npm run test:premium-20
+      - name: Build the unmodified app shell and premium previews
+        run: npm run build
+      - name: Ensure all premium previews remain noindex and unreleased
+        run: |
+          node --input-type=module -e '
+            import fs from "node:fs";
+            const m=JSON.parse(fs.readFileSync("public/premium/collection/catalog-manifest.json","utf8"));
+            const v=JSON.parse(fs.readFileSync("vercel.json","utf8"));
+            if(m.full_page_master_count!==20 || m.source_family_count!==17 || m.published_customer_websites!==0 || m.state!=="NOINDEX_PREVIEW_ONLY")process.exit(1);
+            const h=v.headers?.find(x=>x.source==="/premium/(.*)");
+            if(!h?.headers?.some(x=>x.key==="X-Robots-Tag" && x.value.includes("noindex")))process.exit(1);
+            console.log("PASS 20 preview-only designs, noindex, zero released customer sites");
+          '
+      - name: Preserve source QA receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: apex-premium-20-source-manifest
+          path: public/premium/collection/catalog-manifest.json
+          retention-days: 7
