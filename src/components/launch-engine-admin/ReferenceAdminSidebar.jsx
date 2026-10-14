@@ -31,6 +31,9 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/templates" className={`wle-side-nav${isCore(["/admin/templates"]) ? " active" : ""}`}>
           <Layers aria-hidden="true" />Website Catalog
         </Link>
+        <Link to="/admin/gpt-template-sync" className={`wle-side-nav${isCore(["/admin/gpt-template-sync"]) ? " active" : ""}`}>
+          <Sparkles aria-hidden="true" />GPT Template Sync
+        </Link>
       </nav>
 
       {/* ── CORE: Inventory & Deployment ──────────────────────── */}
