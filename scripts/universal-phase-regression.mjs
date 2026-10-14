@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawnSync, execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { generateSite } from "../base44/shared/universalGenerator.ts";
 import {
@@ -10,7 +10,16 @@ import {
 } from "../base44/shared/universalPhaseRuntime.js";
 import { validateSandboxArtifact } from "../base44/shared/universalPhaseQa.js";
 
-const SOURCE_SHA = process.env.DD_SOURCE_SHA || "939a5cf8fa6d81b020ccd4b4bbcf15df0b1e91ae";
+const SOURCE_SHA = (() => {
+  const configured = process.env.DD_SOURCE_SHA;
+  if (configured && /^[a-f0-9]{40}$/i.test(configured)) return configured;
+  if (configured) throw new Error("DD_SOURCE_SHA_INVALID");
+  const dirty = execFileSync("git", ["status", "--porcelain"], {encoding:"utf8"}).trim();
+  if (dirty) throw new Error("LOCAL_SOURCE_DIRTY_CANNOT_CLAIM_EXACT_SHA");
+  const head = execFileSync("git", ["rev-parse", "HEAD"], {encoding:"utf8"}).trim();
+  if (!/^[a-f0-9]{40}$/i.test(head)) throw new Error("SOURCE_SHA_UNVERIFIED");
+  return head;
+})();
 let checks = 0;
 const check = (ok, label) => {assert.ok(ok, label); checks++;};
 check(PHASE_GROUPS.length === 5, "five canonical phase groups");
