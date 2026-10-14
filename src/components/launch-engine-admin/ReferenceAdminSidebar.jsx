@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target } from "lucide-react";
+import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target, Code2 } from "lucide-react";
 
 export default function ReferenceAdminSidebar() {
   const { pathname } = useLocation();
@@ -33,6 +33,9 @@ export default function ReferenceAdminSidebar() {
         </Link>
         <Link to="/admin/gpt-template-sync" className={`wle-side-nav${isCore(["/admin/gpt-template-sync"]) ? " active" : ""}`}>
           <Sparkles aria-hidden="true" />GPT Template Sync
+        </Link>
+        <Link to="/admin/json-gpt-sync" className={`wle-side-nav${isCore(["/admin/json-gpt-sync"]) ? " active" : ""}`}>
+          <Code2 aria-hidden="true" />JSON GPT Sync
         </Link>
       </nav>
 
