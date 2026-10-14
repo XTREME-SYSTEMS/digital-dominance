@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'base44/functions/gptTemplateIngestor/**'
+      - 'src/pages/admin/GptTemplateSync.jsx'
       - 'scripts/gpt-template-ingestor-regression.mjs'
       - '.github/workflows/apex-gpt-template-quality.yml'
 
