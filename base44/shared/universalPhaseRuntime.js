@@ -45,7 +45,12 @@ export const PHASE_STEPS = Object.freeze(PHASE_GROUPS.flatMap((phase) =>
 if (PHASE_STEPS.length !== 30) throw new Error("UNIVERSAL_PHASE_CONSTITUTION_MUST_HAVE_30_STEPS");
 
 const isString = (v) => typeof v === "string" && v.trim().length > 0;
-const safeText = (v, max) => String(v || "").trim().slice(0, max);
+const safeText = (v, max) => {
+  const text = String(v || "").trim().slice(0, max);
+  if (text && !/^[\p{L}\p{N}\s&._,'()+\/-]+$/u.test(text))
+    throw new Error("UNSAFE_GENERATOR_FIELD");
+  return text;
+};
 export function createMissionPlan(input = {}) {
   if (!isString(input.niche)) throw new Error("NICHE_REQUIRED");
   if (!isString(input.brandName)) throw new Error("SYNTHETIC_BRAND_REQUIRED");
