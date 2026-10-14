@@ -34,7 +34,7 @@ test('invalid file paths rejected before any provider call',()=>{
 test('duplicate paths fail closed',()=>assert.throws(()=>validateExportEntries([...entries,entries[0]]),/UNSAFE_EXPORT/));
 test('large payload fails closed',()=>assert.throws(()=>validateExportEntries([entries[1],{path:'pages/a.json',content:'x'.repeat(500001)}]),/UNSAFE_EXPORT/));
 test('secret signatures fail closed',()=>{
- for(const s of ['-----BEGIN PRIVATE KEY-----','ghp_'+'x'.repeat(24),'sk-proj-'+'x'.repeat(24)])
+ for(const s of ['-----BEGIN PRIVATE KEY-----','ghp_'+'x'.repeat(24),'sk-proj-'+'x'.repeat(24),'sk-'+'x'.repeat(24),'xoxb-'+'x'.repeat(24),'AIza'+'x'.repeat(24)])
  assert.throws(()=>validateExportEntries([{...entries[0],content:s},entries[1]]),/UNSAFE_EXPORT/);
 });
 test('input sorting stable across same batch',()=>{
