@@ -30,3 +30,9 @@ dist-ssr
 .env
 .vite
 base44/.app.jsonc
+
+# Offline synthetic website batch; never include in Vercel deploys
+factory/.synthetic-batch-output/
+
+# Deterministically generated synthetic one-site preview (created by build)
+public/factory-demo/

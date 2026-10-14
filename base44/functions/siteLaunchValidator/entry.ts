@@ -57,7 +57,7 @@ export default async function(req) {
     }
 
     const avgScore = results.length > 0 ? Math.round(totalScore / results.length) : 0;
-    const allPass = passCount === results.length;
+    const allPass = results.length > 0 && passCount === results.length;
 
     // Update batch if validating a batch
     if (batch) {
@@ -65,7 +65,7 @@ export default async function(req) {
         sites_validated: passCount,
         sites_scored: results.length,
         average_google_score: avgScore,
-        status: allPass && avgScore >= 90 ? 'complete' : 'validating',
+        status: allPass ? 'complete' : 'validating',
         current_step: `validated_${passCount}_${results.length}_avg_${avgScore}`,
       }).catch(() => {});
     }
@@ -78,6 +78,7 @@ export default async function(req) {
       average_google_score: avgScore,
       all_pass: allPass,
       target_score: 100,
+      scoring_method: 'internal_preview_evidence_not_google_ranking',
       gap_to_100: Math.max(0, 100 - avgScore),
       sites: results.map((r) => ({
         site_id: r.site_id,
@@ -90,9 +91,9 @@ export default async function(req) {
         recommendations: r.recommendations,
         checks: r.checks,
       })),
-      message: avgScore >= 100
-        ? 'All sites scored 100 — full Google compliance achieved.'
-        : `${Math.max(0, 100 - avgScore)} points to 100. See recommendations per site.`,
+      message: allPass
+        ? 'Preview proof and independently issued Guardian receipts verified for every site; this does not establish Google ranking.'
+        : 'Preflight only. Missing live noindex, provider identity, or independent Guardian evidence. Do not publish or report search compliance.',
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
@@ -101,105 +102,97 @@ export default async function(req) {
 
 async function validateSite(base44, site, batch) {
   const svc = base44.asServiceRole;
-  const url = site.generated_url || (site.domain ? `https://${site.domain}` : null);
-  const city = site.target_city;
-  const state = site.target_state;
-
-  // Fetch existing validation receipt if any
+  // Domain strings and generated URLs are claims, not proof of deployment.
+  const url = typeof site.generated_url === 'string' ? site.generated_url : null;
   let receipt = null;
   try {
-    const r = await svc.entities.SiteValidationReceipt.filter(
-      { location_id: site.id },
-      { sort: '-validated_at', limit: 1 }
+    const records = await svc.entities.SiteValidationReceipt.filter(
+      { location_id: site.id }, { sort: '-validated_at', limit: 1 }
     );
-    receipt = (r.items || r)[0];
-  } catch {}
+    receipt = (records.items || records)[0] || null;
+  } catch { /* Lack of a receipt is a failed evidence check. */ }
 
-  // Run deterministic checks
-  const checks = {
-    queued: site.status !== 'queued' || true,
-    content_generated: !!site.seo_score || !!site.aeo_score,
-    deployed: !!site.generated_url || site.status === 'live' || site.status === 'monitoring',
-    google_synced: batch?.google_sync_enabled !== false,
-    sitemap_generated: true, // validated via receipt
-    indexed: true, // submitted via orchestrator
-    agent_assigned: !!site.assigned_agent,
-    validated: !!receipt,
-    monitoring: site.status === 'monitoring' || site.status === 'optimizing',
-  };
-
-  // Fetch live HTTP status if deployed
   let httpOk = false;
+  let statusCode = 0;
   let latencyMs = 0;
+  let noindexHeader = false;
+  let noindexMeta = false;
+  let approvedPreviewHost = false;
+  let canonicalUrl = null;
+
+  // A narrow *.vercel.app allowlist prevents arbitrary admin-supplied URLs
+  // from reaching localhost, internal metadata endpoints or private networks.
   if (url) {
     try {
-      const start = Date.now();
-      const res = await fetch(url, {
-        method: 'HEAD',
-        signal: AbortSignal.timeout(10000),
-        redirect: 'follow',
-      });
-      latencyMs = Date.now() - start;
-      httpOk = res.ok;
-    } catch {
-      httpOk = false;
-    }
+      const parsed = new URL(url);
+      approvedPreviewHost = parsed.protocol === 'https:' &&
+        parsed.hostname.endsWith('.vercel.app') &&
+        !parsed.username && !parsed.password && !parsed.port &&
+        parsed.pathname.startsWith('/canary/');
+      if (approvedPreviewHost) {
+        canonicalUrl = parsed.href;
+        const start = Date.now();
+        const response = await fetch(canonicalUrl, {
+          method: 'GET',
+          redirect: 'manual',
+          signal: AbortSignal.timeout(12000),
+        });
+        latencyMs = Date.now() - start;
+        statusCode = response.status;
+        httpOk = statusCode === 200 && /text\/html/i.test(response.headers.get('content-type') || '');
+        noindexHeader = /noindex/i.test(response.headers.get('x-robots-tag') || '');
+        const declaredBytes = Number(response.headers.get('content-length') || 0);
+        if (httpOk && (declaredBytes === 0 || declaredBytes <= 1024 * 1024)) {
+          const html = (await response.text()).slice(0, 1024 * 1024);
+          noindexMeta = /<meta\b[^>]*name\s*=\s*["']robots["'][^>]*content\s*=\s*["'][^"']*noindex/i.test(html);
+        }
+      }
+    } catch { /* Errors, redirects, private hosts and invalid URLs fail closed. */ }
   }
 
-  // Compute sub-scores
-  const seoScore = site.seo_score || 0;
-  const aeoScore = site.aeo_score || 0;
-  const geoScore = site.traffic_score || 0;
-
-  const checkScore = Object.values(checks).filter(Boolean).length;
-  const checkTotal = Object.keys(checks).length;
-  const checkPct = (checkScore / checkTotal) * 100;
-
-  const httpBonus = httpOk ? 10 : -20;
-  const validationBonus = receipt?.overall_pass ? 10 : 0;
-
-  const googleScore = Math.max(
-    0,
-    Math.min(
-      100,
-      Math.round(seoScore * 0.3 + aeoScore * 0.2 + geoScore * 0.2 + checkPct * 0.2 + httpBonus + validationBonus)
-    )
+  // Only a distinct Guardian source, matching this exact provider-backed
+  // preview URL and deployment ID, may supply independent validation evidence.
+  const guardianReceipt = Boolean(
+    receipt && receipt.overall_pass === true &&
+    /^guardian:/i.test(String(receipt.validator_version || '')) &&
+    /^dpl_[A-Za-z0-9]+$/.test(String(receipt.deployment_id || '')) &&
+    receipt.http_status === 200 && receipt.correct_robots === true &&
+    canonicalUrl && receipt.canonical_url === canonicalUrl
   );
 
-  const gap = Math.max(0, 100 - googleScore);
-  const recommendations = generateRecommendations(checks, { seoScore, aeoScore, geoScore, httpOk, gap, receipt });
+  const checks = {
+    generated_preview_url: !!url,
+    preview_host_allowlisted: approvedPreviewHost,
+    actual_http_200: httpOk,
+    actual_x_robots_noindex: noindexHeader,
+    actual_meta_noindex: noindexMeta,
+    guardian_receipt_matches_preview: guardianReceipt,
+  };
+  const score = Math.round(Object.values(checks).filter(Boolean).length / Object.keys(checks).length * 100);
+  const overallPass = Object.values(checks).every(Boolean);
+  const recommendations = [];
+  if (!url) recommendations.push('A real generated preview URL is required, not a proposed domain');
+  if (!approvedPreviewHost) recommendations.push('Validate only the isolated HTTPS Vercel /canary/ preview');
+  if (!httpOk) recommendations.push('Verify the exact preview returns HTTP 200 without redirect or errors');
+  if (!noindexHeader || !noindexMeta) recommendations.push('Require both HTTP X-Robots-Tag and HTML meta noindex');
+  if (!guardianReceipt) recommendations.push('Attach an independent Guardian receipt with matching deployment ID, preview URL, HTTP 200 and robots verification');
 
   return {
     site_id: site.id,
     url,
-    city,
-    state,
+    city: site.target_city,
+    state: site.target_state,
     checks,
-    seo_score: seoScore,
-    aeo_score: aeoScore,
-    geo_score: geoScore,
+    seo_score: Number(site.seo_score) || 0,
+    aeo_score: Number(site.aeo_score) || 0,
+    geo_score: Number(site.traffic_score) || 0,
     http_ok: httpOk,
+    http_status: statusCode,
     latency_ms: latencyMs,
-    google_score: googleScore,
-    gap,
-    overall_pass: googleScore >= 90 && Object.values(checks).every(Boolean),
+    google_score: score, // Backward-compatible field; NOT a Google ranking/compliance score.
+    scoring_method: 'internal_preview_evidence_not_google_ranking',
+    gap: 100 - score,
+    overall_pass: overallPass,
     recommendations,
   };
-}
-
-function generateRecommendations(checks, scores) {
-  const recs = [];
-  if (!checks.content_generated) recs.push('Generate SEO/AEO/GEO content for this site');
-  if (!checks.deployed) recs.push('Deploy the site to Vercel or connect domain via GoDaddy');
-  if (!checks.google_synced) recs.push('Sync Google Analytics and Search Console');
-  if (!checks.agent_assigned) recs.push('Assign an optimization agent to monitor this site');
-  if (!checks.validated) recs.push('Run the site validator to create a validation receipt');
-  if (!checks.monitoring) recs.push('Enable monitoring mode for ongoing optimization');
-  if (!scores.httpOk) recs.push('Fix HTTP accessibility — site is not returning 200');
-  if (scores.seoScore < 80) recs.push(`Improve SEO score (currently ${scores.seoScore}) — add unique title, meta, H1, structured data`);
-  if (scores.aeoScore < 80) recs.push(`Improve AEO score (currently ${scores.aeoScore}) — add clear FAQ answers for AI search`);
-  if (scores.geoScore < 80) recs.push(`Improve GEO score (currently ${scores.geoScore}) — add local business schema and location-specific content`);
-  if (!scores.receipt?.overall_pass) recs.push('Resolve validation failures — see SiteValidationReceipt for details');
-  if (recs.length === 0 && scores.gap > 0) recs.push(`Polish content quality to close the final ${scores.gap}-point gap to 100`);
-  return recs;
 }

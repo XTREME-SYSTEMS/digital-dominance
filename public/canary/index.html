@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="googlebot" content="noindex,nofollow,noarchive">
+  <title>APEX | Synthetic Epoxy Website Canary</title>
+  <meta name="description" content="Isolated synthetic website and API integration test. Not a real contractor or lead service.">
+  <style>
+    :root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#090e1c;color:#f4f7ff}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 75% 5%,#153966 0,transparent 35%),linear-gradient(135deg,#080e1c,#13233e)}
+    main{width:min(1110px,calc(100% - 40px));margin:0 auto;padding:26px 0 76px}
+    nav{display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid #536c933b;padding:8px 0 24px}
+    .brand{font-weight:800;letter-spacing:.12em;font-size:15px}.brand span{color:#6cc9ff}.flag{color:#9cb0d3;font-size:12px;letter-spacing:.07em;border:1px solid #3f6083;padding:8px 13px;border-radius:99px}
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:48px;padding:80px 0 70px}
+    .eyebrow{font-size:12px;color:#65d0ff;letter-spacing:.2em;text-transform:uppercase;font-weight:800}
+    h1{font-size:clamp(40px,5.8vw,72px);line-height:1.05;letter-spacing:-.05em;margin:18px 0 22px}
+    h1 em{font-style:normal;color:#75d5ff}
+    p{color:#b6c6df;line-height:1.7;font-size:16px}
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:34px}
+    .feature{border:1px solid #354b70;border-radius:14px;padding:18px;background:#13213b8c}
+    .feature strong{display:block;font-size:22px;color:#a4e6ff}.feature small{display:block;color:#a3b3ca;font-size:12px;margin-top:7px}
+    .panel{background:#0d172bd9;border:1px solid #38557e;box-shadow:0 26px 100px #030b1d88;border-radius:24px;padding:32px;position:relative}
+    .panel:before{content:"";position:absolute;inset:-1px;border-radius:25px;pointer-events:none;border-top:2px solid #5cd3ff}
+    h2{font-size:25px;letter-spacing:-.02em;margin:4px 0}
+    .subtitle{font-size:13px;margin:8px 0 26px}
+    label{display:block;font-size:12px;font-weight:700;color:#bacbe3;letter-spacing:.06em;margin-bottom:7px}
+    input,textarea{width:100%;background:#142641;border:1px solid #375375;border-radius:12px;color:#f3f7ff;padding:13px 14px;font:inherit}
+    input:focus,textarea:focus{outline:2px solid #69c9ff;outline-offset:2px}
+    .field{margin-bottom:19px}textarea{min-height:98px;resize:vertical}
+    button{width:100%;border:0;border-radius:12px;background:linear-gradient(90deg,#67d1ff,#5b9fff);padding:17px;color:#08152a;font-size:15px;font-weight:800;cursor:pointer}
+    button:hover{filter:brightness(1.1)}button:disabled{opacity:.55;cursor:wait}
+    #result{min-height:64px;margin-top:18px;border-radius:12px;padding:12px 14px;color:#a7bbd9;background:#17263e;overflow-wrap:anywhere}
+    #result[data-ok="true"]{color:#b4efdf;background:#12332d}#result[data-ok="false"]{color:#ffcad0;background:#4d2530}
+    .notice{margin-top:35px;border:1px solid #53688c;padding:18px 22px;border-radius:12px;color:#b7c9e1;font-size:13px}
+    code{color:#92deff;font-family:ui-monospace,monospace}
+    @media(max-width:780px){.hero{grid-template-columns:1fr;padding:42px 0;gap:28px}.features{grid-template-columns:1fr 1fr}.panel{padding:22px}}
+    @media(max-width:440px){.features{grid-template-columns:1fr}main{width:calc(100% - 30px)}.flag{font-size:10px}}
+  </style>
+</head>
+<body>
+  <main>
+    <nav><div class="brand">APEX <span>／</span> DIGITAL DOMINANCE</div><span class="flag">SANDBOX · SYNTHETIC · NOINDEX</span></nav>
+    <div class="hero">
+      <section>
+        <div class="eyebrow">Single-site launch proof · test fixture 01</div>
+        <h1>One website.<br><em>Real execution proof.</em></h1>
+        <p>This is a demonstration page for testing the Digital Dominance deployment pipeline. It is not a real contractor, business listing, offer or advertising page.</p>
+        <div class="features">
+          <div class="feature"><strong>01</strong><small>Isolated preview page</small></div>
+          <div class="feature"><strong>02</strong><small>HTTP API round trip</small></div>
+          <div class="feature"><strong>03</strong><small>Noindex and no lead storage</small></div>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="panel-heading">
+        <div class="eyebrow">Synthetic-only form</div>
+        <h2 id="panel-heading">Test the connection</h2>
+        <p class="subtitle">Submitting sends predetermined fake data to a preview-only API. No real leads are collected, sent, or stored.</p>
+        <form id="canary-form" autocomplete="off">
+          <div class="field"><label for="full-name">Fixture name</label><input id="full-name" name="name" readonly value="Synthetic Test Lead"></div>
+          <div class="field"><label for="email">Fixture email</label><input id="email" type="email" name="email" readonly value="synthetic-test@example.invalid"></div>
+          <div class="field"><label for="message">Test message</label><textarea id="message" name="message" readonly>Synthetic canary: form-to-API connectivity test</textarea></div>
+          <button type="submit" id="run-test">Run end-to-end API test</button>
+        </form>
+        <div id="result" aria-live="polite" role="status">Waiting for test. A success receipt must come from the server, never from the browser alone.</div>
+      </section>
+    </div>
+    <aside class="notice">VALIDATION CONTRACT: <code>GET /canary/</code> + <code>POST /api/canary-lead</code>. This synthetic canary is intentionally marked <code>noindex,nofollow</code> and cannot send communications or persist customer data. Production backend and customer-lead operations require separate validation.</aside>
+  </main>
+  <script>
+    const form = document.getElementById('canary-form');
+    const result = document.getElementById('result');
+    const button = document.getElementById('run-test');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      result.removeAttribute('data-ok');
+      result.textContent = 'Running synthetic preview API check...';
+      try {
+        const response = await fetch('/api/canary-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          cache: 'no-store',
+          body: JSON.stringify({
+            fixture_id: 'apex-single-noindex-canary-v1',
+            name: document.getElementById('full-name').value,
+            email: document.getElementById('email').value,
+            message: document.getElementById('message').value
+          })
+        });
+        const data = await response.json();
+        if (!response.ok || data.ok !== true || data.synthetic !== true || !/^CANARY-[0-9a-f]{24}$/.test(data.receipt_id || '')) {
+          throw new Error(data.code || 'Missing server-side synthetic receipt');
+        }
+        result.dataset.ok = 'true';
+        result.textContent = 'PASS · Server verified synthetic request. Receipt: ' + data.receipt_id + ' · No customer data persisted.';
+      } catch (error) {
+        result.dataset.ok = 'false';
+        result.textContent = 'FAIL · ' + (error.message || 'API is unavailable') + '. No success is claimed.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

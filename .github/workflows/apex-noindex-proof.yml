@@ -1,0 +1,55 @@
+name: APEX Noindex Canary Safety Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/canary-lead.js'
+      - 'public/canary/**'
+      - 'vercel.json'
+      - 'base44/functions/siteLaunchValidator/**'
+      - 'base44/functions/massLaunchOrchestrator/**'
+      - 'scripts/apex-canary-regression.mjs'
+      - 'scripts/site-launch-validator-regression.mjs'
+      - 'scripts/mass-launch-pause-regression.mjs'
+      - 'scripts/verify-apex-canary-live.mjs'
+      - 'scripts/compile-synthetic-preview.mjs'
+      - 'scripts/compile-synthetic-batch.mjs'
+      - 'factory/industry_catalog.json'
+      - '.gitignore'
+      - 'scripts/verify-factory-preview-live.mjs'
+      - 'factory/fixtures/**'
+      - 'package.json'
+      - '.github/workflows/apex-noindex-proof.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apex-noindex-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  safety-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Synthetic API validation (no provider writes)
+        run: node scripts/apex-canary-regression.mjs
+      - name: Site evidence validator and SSRF regression
+        run: node scripts/site-launch-validator-regression.mjs
+      - name: Quarantined bulk launcher fails closed
+        run: node scripts/mass-launch-pause-regression.mjs
+      - name: Offline 200-site batch reproducibility, no publication
+        run: npm run test:synthetic-batch
+      - name: Build frontend and compile single synthetic factory fixture
+        run: npm run build
+      - name: Verify deterministic rendered website hash
+        run: node scripts/compile-synthetic-preview.mjs --check
