@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
+import UniversalPhaseControl from "@/components/universal/UniversalPhaseControl";
 import {
   Sparkles, Bot, Shield, Crown, ChevronDown, ChevronRight,
   Wand2, Network, Activity, Target, Zap, ArrowRight, Loader2,
@@ -94,6 +95,8 @@ export default function GeneratorSandbox() {
           </div>
         </div>
       </div>
+
+      <UniversalPhaseControl />
 
       {/* Pipeline Stages */}
       <div className="space-y-4">
