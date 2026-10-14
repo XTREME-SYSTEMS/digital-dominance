@@ -1,0 +1,227 @@
+{
+  "schema": "digital-dominance.asset-provenance.v1",
+  "generated_at": "2026-10-14T21:11:16.187Z",
+  "not_release_approval": true,
+  "items": [
+    {
+      "category": "water_damage",
+      "public_url": "/images/industries/water_damage.png",
+      "sha256": "53b38484034e6bca1518e5b1125efd8937a432c3531462065d57edc54ecd17b7",
+      "bytes": 212992,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/87b7fddba_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/87b7fddba_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "mold_remediation",
+      "public_url": "/images/industries/mold_remediation.png",
+      "sha256": "fc2304f2b03b904c879aa20bf38cab3cf7b1e2500aca5aaa11d16e81d9b05003",
+      "bytes": 219650,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/08601ffcf_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/08601ffcf_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "emergency_plumbing",
+      "public_url": "/images/industries/emergency_plumbing.png",
+      "sha256": "8b5414fb4cb62695ae8d99c7a86460e263fcab9f63637174a1830f6e43b9a592",
+      "bytes": 154378,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/7796eb844_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/7796eb844_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "roof_repair",
+      "public_url": "/images/industries/roof_repair.png",
+      "sha256": "1065669c66dd89f367f25d46176260b176634e0f3fa13e343c9108ec9a8e8255",
+      "bytes": 300960,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/c04efeee7_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/c04efeee7_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "ac_repair",
+      "public_url": "/images/industries/ac_repair.png",
+      "sha256": "e622adbec35be2cfe9a8a129258480a5e7e32aceb614a4bdfd0581928c2a72a1",
+      "bytes": 230286,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/2d921b8d0_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/2d921b8d0_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "electrician",
+      "public_url": "/images/industries/electrician.png",
+      "sha256": "4fbf56afb8f850ee5738e152d4b5e8a595aec8be69c50658143c5eb06d351ecf",
+      "bytes": 185123,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ea9d7a219_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ea9d7a219_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "epoxy_garage",
+      "public_url": "/images/industries/epoxy_garage.png",
+      "sha256": "048eb8f2f7fce4210d7f86e506e45162975578b5ef2fd2f6ff782d9d75be2866",
+      "bytes": 253839,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/090c0dbb8_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/090c0dbb8_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "pest_control",
+      "public_url": "/images/industries/pest_control.png",
+      "sha256": "7f856be55c036d73160b898e6b744e10cd7705f611456cc07250742cdd22789a",
+      "bytes": 308773,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/62099cc37_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/62099cc37_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "landscaping",
+      "public_url": "/images/industries/landscaping.png",
+      "sha256": "4cd24df5d737360cd09031bd2bdd194e57a3f3658ee6eb87d40738c9aae24ffc",
+      "bytes": 422252,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a073d321e_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a073d321e_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "solar_install",
+      "public_url": "/images/industries/solar_install.png",
+      "sha256": "a67b15286f1a5e1f3e639edbe38f5f1800ebac3e2d44206b2c66090aedcd7a57",
+      "bytes": 292900,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a14dfd9c8_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a14dfd9c8_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "emergency_dentist",
+      "public_url": "/images/industries/emergency_dentist.png",
+      "sha256": "6c83407ca07bc82078b58593d1f66f6f3d75ca71cfcba32b6bd7eb159fe04ee0",
+      "bytes": 167573,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/91d9ca217_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/91d9ca217_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "personal_injury",
+      "public_url": "/images/industries/personal_injury.png",
+      "sha256": "658e05b0b9cee0be3de6124a648075f4437d4c16e1af3983007b0de1ae5caca4",
+      "bytes": 231680,
+      "source_type": "base44_owned_generated_asset",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/14edfc94f_generated_image.png",
+      "original_image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/14edfc94f_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "tree_service",
+      "public_url": "/images/industries/tree_service.jpg",
+      "sha256": "7e56904892e4abef15c136674e8b3adee162b4691e6fd5163e3a3e33e9f5aea2",
+      "bytes": 323766,
+      "source_type": "unsplash_license_free",
+      "source_url": "https://unsplash.com/photos/arborist-uses-a-chainsaw-to-cut-a-tree-ZG-1o1R2YQ0",
+      "original_image_url": "https://images.unsplash.com/photo-1754321860056-ca7254d5e7ac?w=1200&h=750&fit=crop&fm=jpg&q=83",
+      "license": "Unsplash License (page explicitly labelled Free to use)",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "pressure_washing",
+      "public_url": "/images/industries/pressure_washing.jpg",
+      "sha256": "c7a7b2ca8c81318419d6d425d0e9d69128e60c4bcb7029726206068234809beb",
+      "bytes": 191247,
+      "source_type": "unsplash_license_free",
+      "source_url": "https://unsplash.com/photos/worker-pressure-washing-a-surface-outdoors-cbvSffXeUO0",
+      "original_image_url": "https://images.unsplash.com/photo-1754797007471-68300d87b793?w=1200&h=750&fit=crop&fm=jpg&q=83",
+      "license": "Unsplash License (page explicitly labelled Free to use)",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "fence_install",
+      "public_url": "/images/industries/fence_install.jpg",
+      "sha256": "b133a68dcdae36ff537f0379ff1775b025976c409b4a48ed36beea306b3506b6",
+      "bytes": 181187,
+      "source_type": "unsplash_license_free",
+      "source_url": "https://unsplash.com/photos/sunlight-casts-a-shadow-on-a-wooden-fence-T8UddGNee24",
+      "original_image_url": "https://images.unsplash.com/photo-1748908271581-b701ab3ad25e?w=1200&h=750&fit=crop&fm=jpg&q=83",
+      "license": "Unsplash License (page explicitly labelled Free to use)",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "garage_door_repair",
+      "public_url": "/images/industries/garage_door_repair.jpg",
+      "sha256": "0e94f48e8e3cfb2bcb92049c7550323283829eecbcdb45502610dc12a513d558",
+      "bytes": 177078,
+      "source_type": "unsplash_license_free",
+      "source_url": "https://unsplash.com/photos/modern-two-story-house-with-a-dark-garage-door-HckCpdBDeDk",
+      "original_image_url": "https://images.unsplash.com/photo-1777106322601-578dc9213ace?w=1200&h=750&fit=crop&fm=jpg&q=83",
+      "license": "Unsplash License (page explicitly labelled Free to use)",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "appliance_repair",
+      "public_url": "/images/industries/appliance_repair.jpg",
+      "sha256": "b6352021e8105967d9027fe125a0ec3123d489f77fc0dd8ac076bbf4821ac706",
+      "bytes": 72728,
+      "source_type": "unsplash_license_free",
+      "source_url": "https://unsplash.com/photos/white-front-load-washing-machine-xOe6g0Ov5yQ",
+      "original_image_url": "https://images.unsplash.com/photo-1617741679940-1477d98551f9?w=1200&h=750&fit=crop&fm=jpg&q=83",
+      "license": "Unsplash License (page explicitly labelled Free to use)",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "towing",
+      "public_url": "/images/industries/towing.jpg",
+      "sha256": "7809239d08486b7bd080e8a52161556db0b7dd45d23b23e0c9db288b5a221859",
+      "bytes": 219394,
+      "source_type": "unsplash_license_free",
+      "source_url": "https://unsplash.com/photos/a-tow-truck-towing-a-car-on-the-road-HZ_6ktzQWZ0",
+      "original_image_url": "https://images.unsplash.com/photo-1730514784243-f0e7f09c9f50?w=1200&h=750&fit=crop&fm=jpg&q=83",
+      "license": "Unsplash License (page explicitly labelled Free to use)",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "carpet_cleaning",
+      "public_url": "/images/industries/carpet_cleaning.jpg",
+      "sha256": "67752e53bcb1c9539949b1fecd01c5dbddb9c27ecb956e0b20eb2067bb8d5e00",
+      "bytes": 131987,
+      "source_type": "unsplash_license_free",
+      "source_url": "https://unsplash.com/photos/a-man-in-yellow-gloves-vacuums-a-carpeted-office-floor-CVcIMnH_7so",
+      "original_image_url": "https://images.unsplash.com/photo-1781637590564-01c65dbf2039?w=1200&h=750&fit=crop&fm=jpg&q=83",
+      "license": "Unsplash License (page explicitly labelled Free to use)",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "deck_building",
+      "public_url": "/images/industries/deck_building.jpg",
+      "sha256": "4e547a96bbc8b01dd48f1167b54ccb9c0d392b3f7224cc94ad560dcabfb82a20",
+      "bytes": 220559,
+      "source_type": "unsplash_license_free",
+      "source_url": "https://unsplash.com/photos/construction-workers-building-a-wooden-deck-near-a-house-yqIfkXal-rk",
+      "original_image_url": "https://images.unsplash.com/photo-1773430273188-bd58cb3aaabf?w=1200&h=750&fit=crop&fm=jpg&q=83",
+      "license": "Unsplash License (page explicitly labelled Free to use)",
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    }
+  ]
+}
