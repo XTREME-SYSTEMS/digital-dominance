@@ -1,0 +1,22 @@
+name: APEX Industry Image Candidate Integrity
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/data/topIndustries.js'
+      - 'docs/quality/proposed-industry-image-replacements-20261014.json'
+      - 'scripts/verify-industry-image-candidates.mjs'
+      - '.github/workflows/apex-industry-image-candidate-qa.yml'
+permissions:
+  contents: read
+jobs:
+  static-candidate-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify candidate identity, provenance and unapproved release state
+        run: node scripts/verify-industry-image-candidates.mjs
