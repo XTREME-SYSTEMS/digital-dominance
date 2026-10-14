@@ -42,6 +42,33 @@ export default async function(req) {
       mode,
     } = body;
 
+    // Operator safety gate: mass launches, indexing and public site publication
+    // remain paused until ONE independently validated synthetic canary receives
+    // Guardian PASS and the actual per-site Vercel adapter is preview-safe.
+    const syntheticOnly = mode === 'synthetic_noindex_canary' &&
+      !continueBatchId &&
+      locations.length === 1 &&
+      locations[0]?.city === 'Synthetic City' &&
+      locations[0]?.state === 'ZZ' &&
+      templateKey === 'epoxy_synthetic_canary' &&
+      googleSyncEnabled === false &&
+      autoHealEnabled === false &&
+      body.runTestSwarm === false &&
+      provisionTarget === 'vercel';
+    if (!syntheticOnly) {
+      return Response.json({
+        error: 'MASS_LAUNCH_PAUSED',
+        detail: 'Only one verified synthetic noindex preview is permitted; no mass indexing, backlink network or production release.',
+      }, { status: 409 });
+    }
+    // The existing vercelDeploy adapter targets production and ignores site
+    // content. Do not create queue records, consume AI credits or call it
+    // until it is replaced by a provider-verified PREVIEW-only adapter.
+    return Response.json({
+      error: 'PREVIEW_ADAPTER_NOT_BOUND',
+      detail: 'Use the existing verified GitHub/Vercel noindex canary while a per-site preview adapter is validated. No provider writes were attempted.',
+    }, { status: 409 });
+
     const svc = base44.asServiceRole;
 
     // Auto mode: find the most recent batch with pending sites and continue it
