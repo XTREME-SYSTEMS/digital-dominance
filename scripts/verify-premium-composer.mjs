@@ -23,6 +23,15 @@ for(const s of [
 ])assert.ok(wizard.includes(s),'Missing essential release/safety declaration: '+s);
 for(const id of ['monolith','argent','atelier'])assert.match(wizard,new RegExp("id:'"+id+"'"));
 assert.ok(wizard.includes('launch-composer'));
+assert.match(wizard, /source-identity\\.json/, 'Composer must load source identity from current deployment');
+assert.match(wizard, /PREVIEW_BUILD_IDENTITY_MISMATCH/, 'Stale or mismatched catalog manifests must fail');
+assert.match(wizard, /UNBOUND_NO_VERIFIED_SOURCE/, 'Unbound checkout must be labeled honestly');
+assert.match(wizard, /source_sha_provider_verified:false/, 'Build metadata is not independent provider validation');
+assert.doesNotMatch(wizard, /8410144f6b3981d478fd8fd7a6115f4624eb2cdb/, 'Hard-coded stale SHA prohibited');
+const provenance=fs.readFileSync(new URL('./write-premium-build-provenance.mjs',import.meta.url),'utf8');
+assert.match(provenance, /VERCEL_GIT_COMMIT_SHA/);
+assert.match(provenance, /catalog_manifest_sha256/);
+assert.match(provenance, /source_sha_provider_verified:false/);
 assert.doesNotMatch(wizard,/(?:fetch|XMLHttpRequest)\([^\n]*\/functions\/(?:publish|deploy|massLaunch|siteBank)/i);
 assert.doesNotMatch(wizard,/import.*['"]base44|window\.base44|base44\.functions\.invoke/);
 console.log('PASS PREMIUM_COMPOSER_CONTRACT: pinned 20 verified designs; sandbox full-page preview; 1-1000 proposed only; SitePack hash; all release gates fail closed');
