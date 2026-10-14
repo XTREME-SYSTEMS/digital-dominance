@@ -15,7 +15,8 @@
     "test:semrush-evidence": "node --test scripts/semrush-evidence.test.mjs",
     "preview": "vite preview",
     "test:universal-phase": "node scripts/universal-phase-regression.mjs",
-    "audit:universal-workflows": "node scripts/universal-workflow-audit.mjs"
+    "audit:universal-workflows": "node scripts/universal-workflow-audit.mjs",
+    "test:public-stock-catalog": "node scripts/public-stock-catalog-regression.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.54",
