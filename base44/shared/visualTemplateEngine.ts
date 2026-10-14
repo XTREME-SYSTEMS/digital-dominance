@@ -1037,12 +1037,12 @@ function stars(n: number): string {
   return "★★★★★".substring(0, n) + "☆☆☆☆☆".substring(0, 5 - n);
 }
 
-export function generateTemplateHtml(niche: string, brandName?: string): string {
+export function generateTemplateHtml(niche: string, brandName?: string, layoutOverride?: 1 | 2 | 3): string {
   const c = getConfig(niche);
   const brand = brandName || c.serviceName;
 
   // Use layout variants for unique visual styles per niche
-  const layoutVariant = getLayoutForNiche(niche);
+  const layoutVariant = layoutOverride ?? getLayoutForNiche(niche);
   return generateLayoutVariantHtml(c as any, brand, layoutVariant);
 }
 

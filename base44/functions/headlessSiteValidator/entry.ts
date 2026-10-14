@@ -67,8 +67,8 @@ export default async function(req) {
         detail: httpError || (httpOk ? 'Site responds with valid HTTP status' : `HTTP ${httpStatus}`),
       },
       page_load: {
-        passed: browserResult?.checks?.load?.passed ?? httpOk,
-        detail: browserResult?.checks?.load?.detail || (httpOk ? 'Page loaded successfully' : 'Page failed to load'),
+        passed: browserResult?.checks?.load?.passed ?? null,
+        detail: browserResult?.checks?.load?.detail || 'Not browser-verified; HTTP liveness alone cannot establish page load correctness',
       },
       buttons_clickable: {
         passed: browserResult?.checks?.buttons?.passed ?? null,
@@ -92,9 +92,12 @@ export default async function(req) {
       },
     };
 
-    const allPassed = Object.values(checks).every(c => c.passed === true || c.passed === null);
+    const allPassed = Object.values(checks).every(c => c.passed === true);
     const anyFailed = Object.values(checks).some(c => c.passed === false);
     const overall = anyFailed ? 'failed' : allPassed ? 'passed' : 'partial';
+    const unverifiedChecks = Object.entries(checks)
+      .filter(([, check]) => check.passed === null)
+      .map(([name]) => name);
 
     const report = {
       url,
@@ -102,9 +105,11 @@ export default async function(req) {
       validated_at: new Date().toISOString(),
       overall_status: overall,
       checks,
-      browser_used: !!browserResult,
+      browser_used: Boolean(browserResult?.checks),
+      unverified_checks: unverifiedChecks,
+      verified_coverage: `${Object.values(checks).filter(check => check.passed === true).length}/${Object.keys(checks).length}`, 
       summary: overall === 'passed'
-        ? 'All checks passed — site is visible and live'
+        ? 'Every declared browser and HTTP check passed with evidence'
         : overall === 'failed'
         ? 'Site validation failed — one or more checks did not pass'
         : 'Partial validation — some checks could not be completed',

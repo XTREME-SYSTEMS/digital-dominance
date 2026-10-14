@@ -81,9 +81,12 @@ function injectLocation(html: string, opts: GenerateSiteOptions): string {
 export function generateSite(opts: GenerateSiteOptions): GeneratedSite {
   const niche = (opts.niche || "generic").toLowerCase().replace(/ /g, "_");
   const brandName = opts.brandName || "";
+  if (opts.layoutOverride !== undefined && ![1, 2, 3].includes(opts.layoutOverride)) {
+    throw new Error("Unsupported layoutOverride: only 1, 2 or 3 may be used");
+  }
 
   // 1. Generate the base HTML with layout variants
-  const html = generateTemplateHtml(niche, brandName);
+  const html = generateTemplateHtml(niche, brandName, opts.layoutOverride as 1 | 2 | 3 | undefined);
 
   // 2. Get the APEX donor pattern profile
   const profile = getVisualTemplateProfile(niche);
@@ -97,7 +100,7 @@ export function generateSite(opts: GenerateSiteOptions): GeneratedSite {
     title: brandName
       ? `${brandName}${locStr ? ` — ${locStr}` : ""}`
       : `${niche.replace(/_/g, " ")}${locStr ? ` — ${locStr}` : ""}`,
-    description: `Professional ${niche.replace(/_/g, " ")} services${locStr ? ` in ${locStr}` : ""}. Licensed, insured, and ready to help.`,
+    description: `Explore ${niche.replace(/_/g, " ")} services${locStr ? ` in ${locStr}` : ""}. Confirm qualifications and availability with the provider.`,
     keywords: [niche.replace(/_/g, " "), opts.city, opts.state].filter(Boolean),
     og_title: brandName || `${niche.replace(/_/g, " ")} Services`,
   };
