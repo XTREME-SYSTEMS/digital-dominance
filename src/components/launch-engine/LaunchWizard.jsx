@@ -164,7 +164,7 @@ export default function LaunchWizard({ initial, onClose }) {
                 <Row label="Location Sites" value={`${selection.count} sites`} />
                 <Row label="Proposed markets" value={selection.locations || "Not selected (market research required)"} />
               </div>
-              <p className="text-xs text-gray-500 text-center">Your quantity and proposed markets will be saved to a review draft. No sites will be generated or published by this step.</p>
+              <p className="text-xs text-gray-500 text-center">Your quantity and proposed markets will be carried into a Studio review draft. No sites will be generated or published by this step.</p>
               {launchError && <p role="alert" className="text-sm text-red-700">{launchError}</p>}
             </div>
           )}
