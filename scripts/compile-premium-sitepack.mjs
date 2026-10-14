@@ -72,7 +72,13 @@ const master=configs.find(x=>x.id===packet.source?.template_id);
 if(!master)throw Error('UNKNOWN_MASTER_TEMPLATE');
 assert.equal(packet.industry.slug,toSlug(master.industry),'INDUSTRY_MASTER_MISMATCH');
 const brand=packet.brand.name.trim();
-const render=page({...master,name:brand});
+// page() is originally nested under /premium/collection/<master>/.
+ // SitePack previews use /premium/sitepacks/<pack>/, so rebase ONLY the
+ // library-return link while keeping the original layout and scripts intact.
+const sourceHtml=page({...master,name:brand});
+const oldGalleryLink='href="../index.html">Browse every master';
+if(!sourceHtml.includes(oldGalleryLink))throw Error('PREMIUM_MASTER_GALLERY_LINK_CHANGED');
+const render=sourceHtml.replace(oldGalleryLink,'href="../../collection/index.html">Browse every master');
 assert.match(render,/<meta name="robots" content="noindex,nofollow,noarchive">/);
 assert.match(render,/PREMIUM DESIGN STUDY \/ FICTIONAL BRAND \/ NO LIVE ENQUIRIES OR PURCHASES/);
 assert.ok(render.includes(brand),'Brand has not been injected');
