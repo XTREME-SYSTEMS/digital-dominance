@@ -6,7 +6,7 @@ const isSha = v => typeof v==='string' && /^[a-f0-9]{40}$/.test(v);
 const allowedPath = path => typeof path==='string' && (/^pages\/[a-z0-9][a-z0-9-]{0,159}\.json$/.test(path) ||
   /^code-blocks\/[A-Za-z0-9][A-Za-z0-9_-]{0,159}\.(css|html|js|json)$/.test(path) ||
   path==='code-studio-manifest.json');
-const sensitive = /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|(?:sk-proj-|ghp_|github_pat_|AKIA)[A-Za-z0-9_-]{14,}/i;
+const sensitive = /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|(?:sk-proj-|sk-|ghp_|github_pat_|xox[baprs]-|AIza|AKIA|sk_live_)[A-Za-z0-9_-]{14,}/i;
 
 export function validateExportEntries(entries) {
   if(!Array.isArray(entries) || entries.length<1 || entries.length>201) throw new Error('INVALID_EXPORT_COUNT');
