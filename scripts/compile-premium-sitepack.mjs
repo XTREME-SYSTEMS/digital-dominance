@@ -81,7 +81,10 @@ if(!sourceHtml.includes(oldGalleryLink))throw Error('PREMIUM_MASTER_GALLERY_LINK
 const render=sourceHtml.replace(oldGalleryLink,'href="../../collection/index.html">Browse every master');
 assert.match(render,/<meta name="robots" content="noindex,nofollow,noarchive">/);
 assert.match(render,/PREMIUM DESIGN STUDY \/ FICTIONAL BRAND \/ NO LIVE ENQUIRIES OR PURCHASES/);
-assert.ok(render.includes(brand),'Brand has not been injected');
+// HTML output escapes punctuation. Compare against the escaped brand, not
+// the raw input, so legitimate names such as "A & B" remain supported.
+const escapedBrand=brand.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+assert.ok(render.includes(escapedBrand),'Brand has not been injected');
 const folder=example?path.join(buildDir,'synthetic-vanta'):path.join(localDir,packet.pack_id.toLowerCase());
 assert.ok(folder.startsWith((example?buildDir:localDir)+path.sep),'OUTPUT_PATH_INVALID');
 fs.mkdirSync(folder,{recursive:true});
