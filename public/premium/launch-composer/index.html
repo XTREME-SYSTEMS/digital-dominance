@@ -74,7 +74,7 @@ footer{border-top:1px solid #3444547d;text-align:center;padding:25px;color:#8da4
    {id:'atelier',industry:'Luxury Ecommerce',family:'Minimal luxury commerce',source:'V2 signature',url:'../templates/atelier/index.html',photo:'../previews/atelier-desktop.png'}
  ];
  const photoSources=['photo-1492144534655-ae79c964c9d7','photo-1600585154340-be6161a56a0c','photo-1544161515-4ab6ce6db874','photo-1551288049-bebda4e38f71','photo-1487958449943-2429e8be8625','photo-1571896349842-33c89424de2d','photo-1600566752355-35792bedcfea','photo-1486406146926-c627a92ad1ab','photo-1509391366360-2e959784a276','photo-1486406146926-c627a92ad1ab','photo-1600607687939-ce8a6c25118c','photo-1558655146-9f40138edfeb','photo-1600607687939-ce8a6c25118c','photo-1600585154340-be6161a56a0c','photo-1517836357463-d25dfeac3438','photo-1523275335684-37898b6baf30','photo-1606811971618-4486d14f3f99'];
- const masterList=[];let selected=null;
+ const masterList=[];let selected=null;let sourceIdentity=null;
  function safeText(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
  function render(){
   const needle=search.value.trim().toLowerCase();list.replaceChildren();
@@ -120,8 +120,10 @@ footer{border-top:1px solid #3444547d;text-align:center;padding:25px;color:#8da4
    const pack={
      pack_id:'APEX-DRAFT-'+new Date().toISOString().slice(0,19).replace(/[^0-9]/g,''),
      version:'universal-sitepack-v1',source:{repository:'XTREME-SYSTEMS/digital-dominance',
-       commit_sha:'8410144f6b3981d478fd8fd7a6115f4624eb2cdb',template_id:selected.id,
-       source_note:'Pinned premium master catalog reference; exact deploy SHA must be bound and provider-verified by worker'},
+       commit_sha:sourceIdentity?.source_commit_sha||null,template_id:selected.id,
+       catalog_manifest_sha256:sourceIdentity?.catalog_manifest_sha256||null,
+       source_identity_status:sourceIdentity?.source_commit_sha?'BUILD_SHA_ATTACHED_PROVIDER_VERIFICATION_PENDING':'UNBOUND_NO_VERIFIED_SOURCE',
+       source_note:'Derived from this preview build, never hard-coded; provider read-back and independent Guardian verification still required'},
      brand:{name:brand,contact_phone:'PENDING_VERIFIED_PHONE',legal_business_name:'PENDING_VERIFIED_LEGAL_NAME'},
      industry:{slug:selected.industry.toLowerCase().replace(/[^a-z0-9]+/g,'_'),services:['PENDING_VERIFIED_FIRST_PARTY_SERVICE_CATALOG']},
      design:{approved_reference:new URL(selected.url,location.href).href,design_token_version:'premium-v3-review-candidate',
@@ -130,7 +132,7 @@ footer{border-top:1px solid #3444547d;text-align:center;padding:25px;color:#8da4
      selection:{requested_quantity:qty,candidate_market_count:cities.length,market_shortfall:Math.max(0,qty-cities.length),
        market_scores:'NOT_AVAILABLE_NO_VERIFIED_DATA',industry_facts_verified:false},
      release_gates:{operator_approved:false,guardian_pass:false,real_customer_content_verified:false,
-       worker_run_id:null,provider_deployment_id:null,public_release_allowed:false,
+       worker_run_id:null,provider_deployment_id:null,source_sha_provider_verified:false,public_release_allowed:false,
        no_data_submitted:true,mass_launch_paused:true},
      packet_state:'DRAFT_FOR_OPERATOR_REVIEW_NOT_QUEUED'
    };
@@ -150,9 +152,28 @@ footer{border-top:1px solid #3444547d;text-align:center;padding:25px;color:#8da4
     status.textContent='DRAFT PACKET COPIED. No backend, Vercel, Base44 or X1 write attempted.';
   }catch(e){status.textContent='COPY UNAVAILABLE: '+(e.message||'Check selection and browser permissions');}
  });
- fetch('../collection/catalog-manifest.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Catalog not reachable');return r.json()})
- .then(c=>{if(c.full_page_master_count!==20||!Array.isArray(c.new_masters)||c.new_masters.length!==17)
-            throw Error('Catalog provenance mismatch');
+ fetch('../collection/catalog-manifest.json',{cache:'no-store'}).then(async r=>{
+   if(!r.ok)throw Error('Catalog not reachable');
+   const raw=await r.text();const c=JSON.parse(raw);
+   const bytes=new TextEncoder().encode(raw);
+   const manifestHash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)))
+     .map(v=>v.toString(16).padStart(2,'0')).join('');
+   return {c,manifestHash};
+ })
+ .then(async ({c,manifestHash})=>{
+   if(c.full_page_master_count!==20||!Array.isArray(c.new_masters)||c.new_masters.length!==17)
+     throw Error('Catalog provenance mismatch');
+   const identityResponse=await fetch('./source-identity.json',{cache:'no-store'});
+   if(identityResponse.ok){
+     const x=await identityResponse.json();
+     if(x.schema_version!=='apex.premium.build-source.v1'||
+        x.repo!=='XTREME-SYSTEMS/digital-dominance'||
+        x.catalog_manifest_sha256!==manifestHash)
+       throw Error('PREVIEW_BUILD_IDENTITY_MISMATCH');
+     if(x.source_commit_sha!==null&&!/^[a-f0-9]{40}$/i.test(x.source_commit_sha))
+       throw Error('INVALID_PREVIEW_SOURCE_COMMIT');
+     sourceIdentity=x;
+   }
    masterList.push(...original);
    for(let i=0;i<c.new_masters.length;i++){const t=c.new_masters[i];if(!/^[a-z0-9-]+$/.test(t.id))throw Error('Invalid template id');
      masterList.push({id:t.id,industry:t.industry,family:t.family,source:'New editorial master',
