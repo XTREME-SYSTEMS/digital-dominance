@@ -1,0 +1,17 @@
+name: Independent Industry Image Evidence Gate
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  image-evidence:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require independent semantic evidence for every homepage category image
+        run: node scripts/independent-image-evidence-gate.mjs
