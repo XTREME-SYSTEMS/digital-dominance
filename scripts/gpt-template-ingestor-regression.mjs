@@ -10,6 +10,12 @@ const require=createRequire(import.meta.url);
 const ts=require('typescript');
 const source=fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)),'..','base44','functions','gptTemplateIngestor','entry.ts'),'utf8');
 assert.match(source,/GPT_TEMPLATE_INGESTOR_TOKEN/);
+const adminPage=fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)),'..','src','pages','admin','GptTemplateSync.jsx'),'utf8');
+assert.match(adminPage,/pendingReview/,'Admin shows pending drafts');
+assert.match(adminPage,/Legacy Active · Unverified/,'Admin distinguishes old active templates from reviewed');
+assert.match(adminPage,/window\.confirm/,'Batch requires actual operator confirmation');
+assert.doesNotMatch(adminPage,/complete, production-ready HTML page/,'Admin must not falsely advertise completed sites');
+
 assert.match(source,/constantTimeEquals/);
 assert.match(source,/pending-visual-review/);
 assert.match(source,/is_active:\s*false/);
@@ -116,4 +122,4 @@ const fails=runtime({role:'admin',failLlm:true});
 const failed=await fails.handle('generate',{niche:'epoxy'});
 assert.equal(failed.body.failed,1);
 assert.equal(fails.calls.create.length,0);
-console.log('PASS GPT TEMPLATE INGESTOR SECURITY AND QUALITY: 14 cases; anonymous/read-only rejected, admin/service token accepted, 24h cooldown, preview-only draft, no fake sync PASS, malformed HTML refused, no real provider access');
+console.log('PASS GPT TEMPLATE INGESTOR SECURITY AND QUALITY: 14 backend cases + 4 UI truth checks; anonymous/read-only rejected, admin/service token accepted, 24h cooldown, preview-only draft, no fake sync PASS, malformed HTML refused, no real provider access');
