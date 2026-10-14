@@ -58,7 +58,13 @@ export function compileSitePreview(input) {
     '<meta name="dd-template-key" content="' + e(templateKey) + '">' +
     '<meta name="dd-preview-location" content="' + e(city + ', ' + state) + '">' +
     '<meta name="robots" content="noindex,nofollow,noarchive">';
-  const html = baseHtml.replace('<head>', '<head>' + siteMeta)
+  const faviconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+    '<rect width="64" height="64" rx="12" fill="#193e48"/>' +
+    '<text x="32" y="43" fill="white" text-anchor="middle" font-size="26"' +
+    ' font-family="Arial">DD</text></svg>';
+  const favicon = '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,' +
+    encodeURIComponent(faviconSvg) + '">';
+  const html = baseHtml.replace('<head>', '<head>' + favicon + siteMeta)
     .replace('</main>', draftSection + '</main>');
   return {
     html,
