@@ -1,0 +1,12 @@
+{
+  "schema": "dd-worker-preview-v1",
+  "work_id": "be07c310-7878-45ba-88a9-752164c8f712",
+  "tenant_id": "666f23bf-61bd-4be0-b5cb-4872e04fad9b",
+  "source_sha": "c647c23331d658674eed36644cce9832833cc8cc",
+  "html_sha256": "50e5fffcfe76bec5619b9a0fc777617ef263b995c5b2e0a85bd8345ac184494f",
+  "fixture_sha256": "e8f074430eca4c845198e2fd32d8d38a81763af65149d1e6c39786155abe911d",
+  "synthetic": true,
+  "indexable": false,
+  "production_release": false,
+  "independent_qa": "PENDING"
+}
