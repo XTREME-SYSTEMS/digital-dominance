@@ -1,0 +1,127 @@
+{
+  "schema_version": "apex_20_industry_synthetic_catalog_v1",
+  "synthetic_only": true,
+  "production_release": false,
+  "industries": [
+    {
+      "slug": "epoxy_flooring",
+      "title": "Epoxy Flooring",
+      "content_focus": "Coating system selection, substrate prep, cure time",
+      "required_real_world_proof": "Substrate condition and owner-approved installed-project evidence"
+    },
+    {
+      "slug": "polished_concrete",
+      "title": "Polished Concrete",
+      "content_focus": "Finish levels, densifiers, maintenance plans",
+      "required_real_world_proof": "Floor inspection and actual finished-project photography"
+    },
+    {
+      "slug": "concrete_resurfacing",
+      "title": "Concrete Resurfacing",
+      "content_focus": "Overlay suitability, crack repair, slip resistance",
+      "required_real_world_proof": "On-site substrate evaluation and system specification"
+    },
+    {
+      "slug": "residential_roofing",
+      "title": "Residential Roofing",
+      "content_focus": "Inspection process, material options, ventilation",
+      "required_real_world_proof": "License, service area and valid project history"
+    },
+    {
+      "slug": "hvac_services",
+      "title": "HVAC Services",
+      "content_focus": "Comfort diagnostics, filter maintenance, equipment lifecycle",
+      "required_real_world_proof": "Technician credentials and equipment-specific recommendations"
+    },
+    {
+      "slug": "plumbing_services",
+      "title": "Plumbing Services",
+      "content_focus": "Leak evaluation, fixture replacement, water protection",
+      "required_real_world_proof": "Local trade license, insurance and actual coverage"
+    },
+    {
+      "slug": "electrical_services",
+      "title": "Electrical Services",
+      "content_focus": "Safety inspections, panel upgrades, energy efficiency",
+      "required_real_world_proof": "Electrical license and code-compliant permit requirements"
+    },
+    {
+      "slug": "water_damage_restoration",
+      "title": "Water Damage Restoration",
+      "content_focus": "Damage documentation, moisture testing, drying process",
+      "required_real_world_proof": "Verified response capability and safety protocols"
+    },
+    {
+      "slug": "tree_services",
+      "title": "Tree Services",
+      "content_focus": "Tree health assessment, pruning, risk mitigation",
+      "required_real_world_proof": "Insurance, access conditions and local regulations"
+    },
+    {
+      "slug": "landscaping",
+      "title": "Landscaping",
+      "content_focus": "Plant selection, irrigation, seasonal care",
+      "required_real_world_proof": "Climate data, property conditions and real portfolio"
+    },
+    {
+      "slug": "pool_resurfacing",
+      "title": "Pool Resurfacing",
+      "content_focus": "Surface assessment, prep, water chemistry",
+      "required_real_world_proof": "Pool condition, actual system specifications and warranty terms"
+    },
+    {
+      "slug": "pest_management",
+      "title": "Pest Management",
+      "content_focus": "Inspection, integrated treatment plans, prevention",
+      "required_real_world_proof": "Applicable licenses, treatment regulations and verified pest ID"
+    },
+    {
+      "slug": "garage_door_services",
+      "title": "Garage Door Services",
+      "content_focus": "Door balance, opener diagnostics, safety checks",
+      "required_real_world_proof": "Technician qualifications and parts availability"
+    },
+    {
+      "slug": "remodeling",
+      "title": "Residential Remodeling",
+      "content_focus": "Scope planning, timelines, material choices",
+      "required_real_world_proof": "Permits, licensed contractors and actual project photos"
+    },
+    {
+      "slug": "commercial_cleaning",
+      "title": "Commercial Cleaning",
+      "content_focus": "Facility scope, sanitation plan, frequency",
+      "required_real_world_proof": "Verified service capacity, chemical safety and insurance"
+    },
+    {
+      "slug": "auto_detailing",
+      "title": "Auto Detailing",
+      "content_focus": "Paint condition, interior care, protection methods",
+      "required_real_world_proof": "Real before-after evidence and material suitability"
+    },
+    {
+      "slug": "medical_spa",
+      "title": "Medical Spa",
+      "content_focus": "Consultation pathways, service education, consent",
+      "required_real_world_proof": "Clinical provider license, scope of practice and approved claims"
+    },
+    {
+      "slug": "real_estate",
+      "title": "Real Estate",
+      "content_focus": "Property discovery, transaction education, market context",
+      "required_real_world_proof": "Agent license, actual MLS property listings and disclosures"
+    },
+    {
+      "slug": "personal_injury_law",
+      "title": "Personal Injury Law",
+      "content_focus": "Case intake process, documentation, client rights",
+      "required_real_world_proof": "Attorney licensing, jurisdiction and compliant advertising disclosures"
+    },
+    {
+      "slug": "luxury_skincare",
+      "title": "Luxury Skincare Ecommerce",
+      "content_focus": "Ingredients, routine matching, fulfillment",
+      "required_real_world_proof": "Verified formulations, claims, supply chain and returns policy"
+    }
+  ]
+}
