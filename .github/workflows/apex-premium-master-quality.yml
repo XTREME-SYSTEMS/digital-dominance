@@ -6,6 +6,8 @@ on:
     paths:
       - 'scripts/build-premium-20.mjs'
       - 'scripts/verify-premium-20.mjs'
+      - 'scripts/compile-premium-sitepack.mjs'
+      - 'scripts/verify-premium-sitepack.mjs'
       - 'scripts/verify-premium-composer.mjs'
       - 'scripts/write-premium-build-provenance.mjs'
       - 'public/premium/launch-composer/**'
@@ -39,6 +41,8 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Generate and hash all 17 custom + 3 V2 master references
         run: npm run test:premium-20
+      - name: Compile and verify isolated premium SitePack with negative security cases
+        run: node scripts/verify-premium-sitepack.mjs
       - name: Validate approval-first SitePack composer contract
         run: node scripts/verify-premium-composer.mjs
       - name: Build the unmodified app shell and premium previews
