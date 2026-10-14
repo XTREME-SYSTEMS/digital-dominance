@@ -44,12 +44,12 @@ assert.equal((compiled.diagnostics||[]).filter(d=>d.category===ts.DiagnosticCate
 const SECRET='test_'+('x'.repeat(55));
 const validFixture='<!DOCTYPE html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Premium Candidate</title><style>body{background:#111;color:white}</style></head><body><main><h1>Premium Study</h1><section>Hero</section><section>Work</section><section>Proof</section><section>Process</section><section>Contact</section><p>'+('Original art direction and specific helpful service information. '.repeat(140))+'</p></main></body></html>';
 assert.ok(validFixture.length>6000);
-function runtime({role=null,bearer='',latest=[],html=validFixture,failLlm=false}={}){
+function runtime({role=null,bearer='',latest=[],priorGenerated=null,html=validFixture,failLlm=false}={}){
  const calls={filter:0,llm:0,create:[],events:[],access:0};
  const service={
   entities:{
    TemplateLibrary:{
-    filter:async(query)=>{calls.filter++;return Object.prototype.hasOwnProperty.call(query,'author')?latest:{items:[{niche:'epoxy',is_active:true,status:'active'},{niche:'roofing',is_active:false,status:'draft'}]};},
+    filter:async(query)=>{calls.filter++;return Object.prototype.hasOwnProperty.call(query,'author')?latest:{items:priorGenerated||[{niche:'epoxy',is_active:true,status:'active'},{niche:'roofing',is_active:false,status:'draft'}]};},
     create:async(fields)=>{calls.create.push(fields);return {id:'test-only-template-id'};}
    },
    SyncEvent:{create:async(fields)=>{calls.events.push(fields);return {id:'test-only-sync-event-id'};}}
@@ -132,4 +132,20 @@ const fails=runtime({role:'admin',failLlm:true});
 const failed=await fails.handle('generate',{niche:'epoxy'});
 assert.equal(failed.body.failed,1);
 assert.equal(fails.calls.create.length,0);
-console.log('PASS GPT TEMPLATE INGESTOR SECURITY AND QUALITY: 14 backend cases + 11 UI/bridge assertions; anonymous/read-only rejected, admin/service token accepted, 24h cooldown, preview-only draft, no fake sync PASS, malformed HTML refused, no real provider access');
+
+assert.match(source,/function layoutDna\(html: string\)/);
+assert.match(source,/DUPLICATE_LAYOUT_DNA/);
+const repeatStructure=runtime({role:'admin',priorGenerated:[{content:validFixture,tags:['gpt-generated']}]});
+const repeatResult=await repeatStructure.handle('generate',{niche:'epoxy'});
+assert.equal(repeatResult.body.skipped,1,'A recolor/copy of the same DOM composition must not be counted as a premium master');
+assert.equal(repeatResult.body.results[0].reason,'DUPLICATE_LAYOUT_DNA');
+assert.equal(repeatStructure.calls.create.length,0,'No duplicate candidate saved');
+
+const withinBatch=runtime({role:'admin'});
+const batchResponse=await withinBatch.handle('generate_batch',{niches:['epoxy','roofing']});
+assert.equal(batchResponse.body.drafted,1,'First distinct composition can be held as draft');
+assert.equal(batchResponse.body.skipped,1,'Second niche with identical composition must be refused');
+assert.equal(withinBatch.calls.create.length,1);
+assert.ok(withinBatch.calls.create[0].tags.some(x=>String(x).startsWith('dom-dna-v1-')),'Draft carries a structural provenance tag');
+
+console.log('PASS GPT TEMPLATE INGESTOR SECURITY AND QUALITY: 17 backend cases + 11 UI/bridge assertions; anonymous/read-only rejected, admin/service token accepted, 24h cooldown, preview-only draft, no fake sync PASS, malformed HTML refused, no real provider access');
