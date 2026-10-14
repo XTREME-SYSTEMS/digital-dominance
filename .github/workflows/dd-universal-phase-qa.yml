@@ -9,6 +9,10 @@ on:
       - "base44/shared/godModeForesightSandbox.js"
       - "scripts/universal-*.mjs"
       - "src/components/universal/**"
+      - "src/components/template-studio/**"
+      - "src/pages/TemplatesGallery.jsx"
+      - "base44/shared/stock*.js"
+      - "scripts/public-stock-catalog-regression.mjs"
       - "src/pages/admin/GeneratorSandbox.jsx"
       - "src/App.jsx"
       - "vercel.json"
@@ -51,6 +55,8 @@ jobs:
           path: universal-workflow-source-audit.json
           retention-days: 7
           if-no-files-found: error
+      - name: Validate 200 canonical noindex stock websites without provider calls
+        run: npm run test:public-stock-catalog
       - name: Build Vite frontend without releasing
         run: npm run build
       - name: Verify sandbox route and fail-closed operational invariants
