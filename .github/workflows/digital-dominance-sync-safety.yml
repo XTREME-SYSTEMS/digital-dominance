@@ -1,0 +1,33 @@
+name: Digital Dominance GPT Sync Safety
+on:
+  pull_request:
+    paths:
+      - 'base44/functions/gptSyncEngine/**'
+      - 'base44/functions/githubSync/**'
+      - 'base44/shared/gptSyncGuard.js'
+      - 'base44/shared/githubSyncPolicy.js'
+      - 'tests/gpt-sync-*.test.mjs'
+      - 'tests/github-sync-*.test.mjs'
+  push:
+    branches:
+      - 'feature/dd-gpt-sync-v4-current-main-20261013'
+permissions:
+  contents: read
+jobs:
+  sync-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate pure sync and export policies
+        run: |
+          node --check base44/shared/gptSyncGuard.js
+          node --check base44/shared/githubSyncPolicy.js
+      - name: Run safety, replay and source-boundary tests
+        run: |
+          node --test tests/gpt-sync-v4-safe-preview.test.mjs tests/github-sync-policy.test.mjs tests/gpt-sync-source-boundary.test.mjs
