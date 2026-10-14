@@ -23,7 +23,7 @@ export function validateSandboxArtifact(html, ctx = {}) {
   });
   if (!ctx.synthetic) checks.push({name:"synthetic_isolation",status:"FAIL"});
   else checks.push({name:"synthetic_isolation",status:"PASS"});
-  if (!ctx.source_sha || ctx.source_sha === "UNKNOWN")
+  if (!/^[a-f0-9]{40}$/i.test(String(ctx.source_sha || "")))
     checks.push({name:"source_identity",status:"FAIL"});
   else checks.push({name:"source_identity",status:"PASS"});
   const falseClaimPatterns = [
