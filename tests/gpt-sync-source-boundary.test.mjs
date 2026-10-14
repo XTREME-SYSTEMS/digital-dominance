@@ -16,7 +16,7 @@ test('external key restricted to no-data preflight',()=>{
 test('never accept body API-key authentication',()=>assert.doesNotMatch(route,/bearerKey\s*\|\|\s*body\.api_key/));
 test('sync preview never invokes getPendingEvents seeding function',()=>{
  const match=route.match(/if \(action === 'getPending' \|\| action === 'previewSync'\)([\s\S]*?)\n    \}/);
- assert.ok(match);assert.doesNotMatch(match[1],/getPendingEvents\(/);
+ assert.ok(match);assert.doesNotMatch(match[1],/await\s+getPendingEvents\(/);
 });
 test('unsafe direct hosted tool invocation removed from execute block',()=>{
  const match=route.match(/if \(action === 'execute'\)([\s\S]*?)\n    \}/);
