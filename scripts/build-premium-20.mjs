@@ -8,7 +8,16 @@ const DEST=path.join(ROOT,'public','premium','collection');
 const configs=JSON.parse(fs.readFileSync(path.join(ROOT,'data','premium-collection-20.json'),'utf8'));
 const digest=s=>createHash('sha256').update(s).digest('hex');
 const E=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const photo=(s,key='photo',w=1800)=>`https://images.unsplash.com/${E(s[key])}?auto=format&fit=crop&w=${w}&q=78`;
+const photo=(s,key='photo',w=1800)=>{
+  // Two strict, allowlisted visual donors only. Never interpolate arbitrary
+  // URLs or run model-generated script/source fragments in a preview asset.
+  const id=String(s[key]||'');
+  const px=/^pexels-([0-9]{4,12})$/.exec(id);
+  const width=Math.max(320,Math.min(2200,Number(w)||1200));
+  if(px)return `https://images.pexels.com/photos/${px[1]}/pexels-photo-${px[1]}.jpeg?auto=compress&cs=tinysrgb&w=${width}&q=78&fit=crop`;
+  if(!/^photo-[a-z0-9-]+$/.test(id))throw Error('IMAGE_SOURCE_NOT_ALLOWLISTED:'+key);
+  return `https://images.unsplash.com/${E(id)}?auto=format&fit=crop&w=${width}&q=78`;
+};
 const img=(s,key='photo',style='')=>`<img src="${photo(s,key)}" alt="${E(s.imageLabel)}" ${style} loading="${key==='photo'?'eager':'lazy'}" decoding="async">`;
 const cta=s=>`<a class="btn" href="#experience">${E(s.cta)} <span aria-hidden="true">↗</span></a>`;
 const k=s=>`<span class="eyebrow"><b class="tiny-index">∎</b> ${E(s.eyebrow)}</span>`;
