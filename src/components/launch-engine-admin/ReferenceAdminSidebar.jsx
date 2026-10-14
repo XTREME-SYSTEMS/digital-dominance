@@ -23,6 +23,9 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/national-strategy" className={`wle-side-nav${isCore(["/admin/national-strategy"]) ? " active" : ""}`}>
           <Globe aria-hidden="true" />National Strategy Plan
         </Link>
+        <Link to="/admin/strategic-commander" className={`wle-side-nav${isCore(["/admin/strategic-commander"]) ? " active" : ""}`}>
+          <Brain aria-hidden="true" />Strategic Commander
+        </Link>
         <Link to="/admin/system-capabilities" className={`wle-side-nav${isCore(["/admin/system-capabilities"]) ? " active" : ""}`}>
           <Cpu aria-hidden="true" />System Capabilities & Audit
         </Link>

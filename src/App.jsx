@@ -138,6 +138,7 @@ import SiteInventory from '@/pages/admin/SiteInventory';
 import PromptTestingLab from '@/pages/admin/PromptTestingLab';
 import BackgroundOperations from '@/pages/admin/BackgroundOperations';
 import NationalStrategy from '@/pages/admin/NationalStrategy';
+import StrategicCommander from '@/pages/admin/StrategicCommander';
 import SystemCapabilities from '@/pages/admin/SystemCapabilities';
 import BulkVideoGenerator from '@/pages/admin/BulkVideoGenerator';
 import AutomatedSocialMedia from '@/pages/admin/AutomatedSocialMedia';
@@ -403,6 +404,7 @@ const AuthenticatedApp = () => {
         <Route path="prompt-testing" element={<PromptTestingLab />} />
         <Route path="background-ops" element={<BackgroundOperations />} />
         <Route path="national-strategy" element={<NationalStrategy />} />
+        <Route path="strategic-commander" element={<StrategicCommander />} />
         <Route path="system-capabilities" element={<SystemCapabilities />} />
         <Route path="bulk-video" element={<BulkVideoGenerator />} />
         <Route path="social-media" element={<AutomatedSocialMedia />} />

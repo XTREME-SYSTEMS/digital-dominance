@@ -1,0 +1,198 @@
+{
+  "name": "StrategicInitiative",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Short name for this strategic initiative"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "template_quality",
+        "market_strategy",
+        "google_dominance",
+        "technology_edge",
+        "cost_optimization",
+        "customer_reach",
+        "competitive_intelligence",
+        "system_sync"
+      ],
+      "description": "What domain this initiative addresses"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "impact_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 50,
+      "description": "How much value this initiative creates (0-100)"
+    },
+    "effort_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 50,
+      "description": "How much effort is required (0-100, lower = easier)"
+    },
+    "roi_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 50,
+      "description": "Calculated ROI = impact / effort ratio"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "identified",
+        "researching",
+        "planned",
+        "executing",
+        "completed",
+        "monitoring",
+        "blocked"
+      ],
+      "default": "identified"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 5000,
+      "description": "What this initiative is and why it matters"
+    },
+    "research_findings": {
+      "type": "string",
+      "maxLength": 10000,
+      "description": "AI research results, competitor analysis, market data"
+    },
+    "action_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string",
+            "description": "What to do"
+          },
+          "done": {
+            "type": "boolean",
+            "default": false
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "step"
+        ]
+      },
+      "default": [],
+      "description": "Ordered execution plan"
+    },
+    "expected_outcome": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "What success looks like"
+    },
+    "actual_results": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "competitor_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "insight": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "google_features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Which Google features this leverages (GSC, GA4, Business Profile, Ads, Maps, etc.)"
+    },
+    "cost_estimate": {
+      "type": "string",
+      "enum": [
+        "free",
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "low"
+    },
+    "assigned_agent": {
+      "type": "string",
+      "description": "Which agent owns this initiative"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "initiative_id": {
+      "type": "string",
+      "description": "Deterministic slug (SI-001, SI-002, etc.)"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_synced_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "priority",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
