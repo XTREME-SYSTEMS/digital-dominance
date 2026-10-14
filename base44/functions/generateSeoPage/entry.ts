@@ -79,6 +79,9 @@ Return only JSON matching the schema.`;
     const existing = await base44.asServiceRole.entities.GeneratedPage.filter({ slug });
     if (existing.length) slug = `${slug}-${Date.now().toString().slice(-5)}`;
 
+    // Resolve niche from the universal generator for visual profile metadata
+    const niche = body.niche || (keyword.toLowerCase().includes("epoxy") ? "epoxy" : "generic");
+
     const created = await base44.asServiceRole.entities.GeneratedPage.create({
       slug,
       keyword: topic,

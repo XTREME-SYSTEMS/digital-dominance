@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { waitUntil } from 'base44:runtime';
+import { generateSite } from '../../shared/universalGenerator.ts';
 
 // ============================================================
 // Mass Launch Orchestrator v2 — God Mode Enhanced
@@ -202,7 +203,16 @@ export default async function(req) {
         try {
           await svc.entities.WebsiteQueue.update(site.id, { status: 'generating' });
 
-          // 1) Generate content with services + competitor intel + benchmark
+          // 1) Generate base HTML from the Universal Generator (visual template engine)
+          const baseSite = generateSite({
+            niche: batch.template_key || site.niche || 'generic',
+            brandName: site.keyword || '',
+            city: site.target_city,
+            state: site.target_state,
+            domain: site.domain,
+          });
+
+          // 1b) AI-enhance content with services + competitor intel + benchmark
           const contentPrompt = buildEnhancedContentPrompt(site, batch, services, skipTraceData, benchmarkData, contentAdjustment);
           const llmRes = await base44.integrations.Core.InvokeLLM({
             prompt: contentPrompt,
@@ -227,7 +237,7 @@ export default async function(req) {
           const content = llmRes || {};
           built++;
 
-          // 2) Deploy via Vercel
+          // 2) Deploy via Vercel — use universal generator HTML as the base
           await svc.entities.WebsiteQueue.update(site.id, { status: 'deploying' });
           let deployedUrl = site.domain;
           try {
@@ -237,6 +247,7 @@ export default async function(req) {
               state: site.target_state,
               templateKey: batch.template_key,
               content,
+              baseHtml: baseSite.html,
             });
             deployedUrl = deployRes?.data?.url || deployedUrl;
           } catch (e) { /* deployment may fail if Vercel not configured */ }

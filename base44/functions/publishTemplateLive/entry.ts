@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { secrets, waitUntil } from 'base44:runtime';
+import { generateSite } from '../../shared/universalGenerator.ts';
 
 // ============================================================
 // publishTemplateLive — Deploys a Website Launch Engine template
@@ -68,15 +69,15 @@ export default async function (req: Request): Promise<Response> {
 
     let html: string;
     try {
-      const compileRes = await base44.functions.invoke('stockTemplateFactory', {
-        action: 'compile',
-        industryKey,
-        designKey,
-        brand: brand || {},
+      // ── Universal Generator: generate from the template's niche ──
+      const site = generateSite({
+        niche: industryKey || template.niche || 'generic',
+        brandName: appName || template.name || '',
+        city: body.city, state: body.state, phone: body.phone, domain: body.domain,
       });
-      html = compileRes.data?.html || template.content || '';
+      html = site.html || template.content || '';
     } catch {
-      // Fallback to raw template content if compilation fails
+      // Fallback to raw template content if generation fails
       html = template.content || '';
     }
 
