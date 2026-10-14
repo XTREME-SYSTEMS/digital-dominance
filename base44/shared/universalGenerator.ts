@@ -97,7 +97,7 @@ export function generateSite(opts: GenerateSiteOptions): GeneratedSite {
     title: brandName
       ? `${brandName}${locStr ? ` — ${locStr}` : ""}`
       : `${niche.replace(/_/g, " ")}${locStr ? ` — ${locStr}` : ""}`,
-    description: `Professional ${niche.replace(/_/g, " ")} services${locStr ? ` in ${locStr}` : ""}. Licensed, insured, and ready to help.`,
+    description: `Explore ${niche.replace(/_/g, " ")} services${locStr ? ` in ${locStr}` : ""}, compare options, and request details directly from providers.`,
     keywords: [niche.replace(/_/g, " "), opts.city, opts.state].filter(Boolean),
     og_title: brandName || `${niche.replace(/_/g, " ")} Services`,
   };
