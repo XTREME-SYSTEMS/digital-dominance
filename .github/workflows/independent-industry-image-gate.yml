@@ -13,5 +13,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Require independent semantic evidence for every homepage category image
-        run: node scripts/independent-image-evidence-gate.mjs
+      - name: Audit both homepage and site-builder industry images
+        run: |
+          set +e
+          node scripts/independent-image-evidence-gate.mjs
+          catalog_status=$?
+          node scripts/independent-homepage-image-gate.mjs
+          homepage_status=$?
+          if [ "$catalog_status" -ne 0 ] || [ "$homepage_status" -ne 0 ]; then
+            exit 1
+          fi

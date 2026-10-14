@@ -1,0 +1,5 @@
+{
+  "schema": "digital-dominance.homepage-image-independent-approval.v1",
+  "policy": "No builder self-certification. Independent visual evidence bound to SHA-256 and approved category id is required before public release.",
+  "approvals": []
+}
