@@ -110,7 +110,7 @@ export default async function (req: Request): Promise<Response> {
         fetch('https://api.vercel.com/v9/projects/' + encodeURIComponent(previewProjectId) + scope,
           { headers: authHeaders }),
         fetch('https://api.vercel.com/v6/deployments' + scope +
-          '&projectId=' + encodeURIComponent(previewProjectId) + '&limit=10',
+          '&projectId=' + encodeURIComponent(previewProjectId) + '&limit=10&target=production',
           { headers: authHeaders }),
       ]);
       if (!projectRes.ok || !historyRes.ok) {
