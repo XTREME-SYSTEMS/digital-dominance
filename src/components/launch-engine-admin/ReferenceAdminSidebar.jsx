@@ -20,15 +20,6 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/master-plan" className={`wle-side-nav${isCore(["/admin/master-plan"]) ? " active" : ""}`}>
           <Target aria-hidden="true" />Master Plan & Strategy
         </Link>
-        <Link to="/admin/national-strategy" className={`wle-side-nav${isCore(["/admin/national-strategy"]) ? " active" : ""}`}>
-          <Globe aria-hidden="true" />National Strategy Plan
-        </Link>
-        <Link to="/admin/strategic-commander" className={`wle-side-nav${isCore(["/admin/strategic-commander"]) ? " active" : ""}`}>
-          <Brain aria-hidden="true" />Strategic Commander
-        </Link>
-        <Link to="/admin/system-capabilities" className={`wle-side-nav${isCore(["/admin/system-capabilities"]) ? " active" : ""}`}>
-          <Cpu aria-hidden="true" />System Capabilities & Audit
-        </Link>
       </nav>
 
       {/* ── CORE: Template & Catalog ──────────────────────────── */}
@@ -79,12 +70,6 @@ export default function ReferenceAdminSidebar() {
         </Link>
         <Link to="/admin/background-ops" className={`wle-side-nav${isCore(["/admin/background-ops"]) ? " active" : ""}`}>
           <Bot aria-hidden="true" />Background Operations
-        </Link>
-        <Link to="/admin/bulk-video" className={`wle-side-nav${isCore(["/admin/bulk-video"]) ? " active" : ""}`}>
-          <Radio aria-hidden="true" />Bulk Video Generator
-        </Link>
-        <Link to="/admin/social-media" className={`wle-side-nav${isCore(["/admin/social-media"]) ? " active" : ""}`}>
-          <Sparkles aria-hidden="true" />Automated Social Media
         </Link>
       </nav>
 
