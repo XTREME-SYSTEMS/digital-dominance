@@ -67,10 +67,11 @@ function normalizeIntelligence(entry, expectedTenant) {
   const id = clean(p.prompt_id || p.id);
   const name = clean(p.title || p.name);
   const version = clean(p.version);
-  const content = clean(p.prompt_text || p.promptText);
+  const content = typeof p.prompt_text === "string" ? p.prompt_text :
+    (typeof p.promptText === "string" ? p.promptText : "");
   const approval = upper(p.approval_status || p.import_status || "");
   const tenantId = clean(p.tenant_id || entry.tenant_id);
-  if (!id || !name || !versionOk(version) || !content) return null;
+  if (!id || !name || !versionOk(version) || !content.trim()) return null;
   if (DENY_STATUS.has(approval) || approval !== "APPROVED") return null;
   if (expectedTenant && tenantId !== expectedTenant) return null;
   if (!/^([A-Z]+[-_][A-Z0-9._-]+)$/.test(id)) return null;
@@ -102,6 +103,14 @@ export function buildPromptCatalog({builtins = [], intelligence = [], tenantId =
     }
   }
   return [...selected.values()];
+}
+
+function compareVersion(a, b) {
+  const x = a.split(".").map(Number), y = b.split(".").map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (x[i] !== y[i]) return x[i] - y[i];
+  }
+  return 0;
 }
 
 function phaseEligible(prompt, phase) {
@@ -157,7 +166,10 @@ export function routeSituationalPrompts(context = {}, catalog = [], options = {}
       promptText: p.promptText,
     });
   }
-  selected.sort((a,b) => b.score - a.score || a.id.localeCompare(b.id) || a.version.localeCompare(b.version));
+  // Prefer the latest eligible approved version of the SAME prompt ID.
+  selected.sort((a,b) => a.id === b.id
+    ? compareVersion(b.version, a.version)
+    : b.score - a.score || a.id.localeCompare(b.id));
   const deduped = []; const ids = new Set();
   for (const s of selected) {
     if (ids.has(s.id)) continue;
@@ -174,7 +186,7 @@ export function routeSituationalPrompts(context = {}, catalog = [], options = {}
 
 /** Compiles bounded instructions. Task/source data remains clearly labeled untrusted context. */
 export function compileSituationalContext({task, sourceContext, selected, kernel = "", maxCharacters = 18000} = {}) {
-  const prompts = list(selected).length ? selected : [];
+  const prompts = Array.isArray(selected) ? selected : [];
   const cap = Math.max(1000, Math.min(50000, Number(maxCharacters) || 18000));
   const approved = prompts.filter(p => p && p.promptText && !p.requiresApproval);
   const header = clean(kernel) + "\n\nTASK (user-authorized objective):\n" + clean(task).slice(0,3000);
