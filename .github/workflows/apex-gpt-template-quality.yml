@@ -6,6 +6,8 @@ on:
     paths:
       - 'base44/functions/gptTemplateIngestor/**'
       - 'src/pages/admin/GptTemplateSync.jsx'
+      - 'src/pages/admin/UniversalTemplateStudio.jsx'
+      - 'src/components/universal-template/GptTemplateIntake.jsx'
       - 'scripts/gpt-template-ingestor-regression.mjs'
       - '.github/workflows/apex-gpt-template-quality.yml'
 
