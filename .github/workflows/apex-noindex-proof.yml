@@ -14,6 +14,7 @@ on:
       - 'scripts/mass-launch-pause-regression.mjs'
       - 'scripts/verify-apex-canary-live.mjs'
       - 'scripts/compile-synthetic-preview.mjs'
+      - 'scripts/verify-factory-preview-live.mjs'
       - 'factory/fixtures/**'
       - 'package.json'
       - '.github/workflows/apex-noindex-proof.yml'
