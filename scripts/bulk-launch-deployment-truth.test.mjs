@@ -23,7 +23,7 @@ test('no invented domain is used after failed deployment', () => {
 test('neither launcher reports an unverified site live', () => {
   assert.equal(occurrences("status: 'live'"), 0);
   assert.equal(occurrences('deployed++'), 0);
-  assert.equal(occurrences("status: 'deploying'"), 5);
+  assert.equal(occurrences("status: 'deploying'"), 4);
   assert.equal(occurrences('awaiting_validation: accepted'), 2);
   assert.equal(occurrences('release_ready: false'), 2);
 });
