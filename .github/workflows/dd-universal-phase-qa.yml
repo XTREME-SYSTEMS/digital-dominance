@@ -41,6 +41,8 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Run actual Universal Generator and independent QA
         run: npm run test:universal-phase
+      - name: Audit all 37 workflow definitions without activating them
+        run: npm run audit:universal-workflows > universal-workflow-source-audit.json
       - name: Build Vite frontend without releasing
         run: npm run build
       - name: Verify sandbox route and fail-closed operational invariants
@@ -51,7 +53,7 @@ jobs:
           grep -q 'generator-sandbox' src/App.jsx
           grep -q 'noindex,nofollow' base44/shared/universalPhaseRuntime.js
           grep -q 'release_ready: false' base44/shared/universalPhaseQa.js
-          if grep -E 'schedule:|cron:' .github/workflows/dd-universal-phase-qa.yml; then
+          if sed -n '/^on:/,/^permissions:/p' .github/workflows/dd-universal-phase-qa.yml | grep -Eq '^  schedule:|^    cron:'; then
             echo "Unexpected schedule/cron detected: fail closed"
             exit 1
           fi
