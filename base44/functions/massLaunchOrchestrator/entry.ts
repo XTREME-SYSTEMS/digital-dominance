@@ -1,5 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
-import { waitUntil } from 'base44:runtime';
 
 // ============================================================
 // Mass Launch Orchestrator v2 — God Mode Enhanced
@@ -14,7 +13,7 @@ import { waitUntil } from 'base44:runtime';
 // Processes in parallel batches (configurable via maxParallel).
 // ============================================================
 
-const DEFAULT_PARALLEL = 12;
+const DEFAULT_PARALLEL = 4;
 
 export default async function(req) {
   try {
@@ -24,8 +23,8 @@ export default async function(req) {
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await req.json();
-    const {
-      templateKey, templateName,
+    let {
+      templateKey, templateName, designKey = 'signature',
       domainStrategy = 'nearme_subdomain',
       domainBase = 'epoxyquotenearme.com',
       provisionTarget = 'vercel',
@@ -59,23 +58,21 @@ export default async function(req) {
         );
         if ((pendingCheck.items || []).length > 0) {
           // Re-run with continueBatchId
-          body.continueBatchId = activeBatch.batch_id;
-          body.templateKey = activeBatch.template_key;
-          body.templateName = activeBatch.template_name;
-          body.domainBase = activeBatch.domain_base;
-          body.domainStrategy = activeBatch.domain_strategy;
-          body.googleSyncEnabled = activeBatch.google_sync_enabled;
-          body.autoHealEnabled = activeBatch.auto_heal_enabled;
-          body.contentOptimization = activeBatch.content_optimization;
+          continueBatchId = activeBatch.batch_id;
+          templateKey = activeBatch.template_key;
+          templateName = activeBatch.template_name;
+          domainBase = activeBatch.domain_base;
+          domainStrategy = activeBatch.domain_strategy;
+          googleSyncEnabled = activeBatch.google_sync_enabled;
+          autoHealEnabled = activeBatch.auto_heal_enabled;
+          contentOptimization = activeBatch.content_optimization;
         } else {
-          // No pending sites — trigger test swarm directly
-          waitUntil(runTestSwarmAsync(base44, activeBatch.batch_id));
-          await svc.entities.MassLaunchBatch.update(activeBatch.id, { status: 'complete', current_step: 'complete', completed_at: new Date().toISOString() });
           return Response.json({
             batch_id: activeBatch.batch_id,
-            status: 'complete',
+            status: 'awaiting_independent_validation',
             processed_this_run: 0,
-            message: 'No pending sites — triggered final test swarm for existing batch.',
+            release_ready: false,
+            message: 'No queued sites. Existing previews require independent HTTP, browser and lead tests.',
           });
         }
       } else {
@@ -88,7 +85,7 @@ export default async function(req) {
     }
 
     const now = new Date().toISOString();
-    const batchSize = Math.min(Math.max(maxParallel || DEFAULT_PARALLEL, 1), 24);
+    const batchSize = Math.min(Math.max(maxParallel || DEFAULT_PARALLEL, 1), 4);
     let batch;
     let skipTraceData = null;
     let benchmarkData = null;
@@ -101,6 +98,11 @@ export default async function(req) {
     } else {
       if (!templateKey || !locations.length) {
         return Response.json({ error: 'templateKey and locations required' }, { status: 400 });
+      }
+      // The present WebsiteQueue schema supports only selected niches.
+      // Never misclassify legal or other industries as epoxy.
+      if (!['epoxy_garage', 'epoxy_flooring', 'garage_coating'].includes(templateKey)) {
+        return Response.json({ error: 'Industry requires an explicit WebsiteQueue schema mapping' }, { status: 422 });
       }
       const batchId = `batch-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
       const states = [...new Set(locations.map((l) => l.state))];
@@ -121,7 +123,7 @@ export default async function(req) {
         const keyword = `${templateKey.replace(/_/g, ' ')} ${loc.city} ${loc.state}`;
         return {
           keyword,
-          niche: templateKey.includes('epoxy') ? 'epoxy_garage' : 'epoxy_garage',
+          niche: templateKey,
           keyword_pattern: 'near_me_city',
           target_city: loc.city,
           target_state: loc.state,
@@ -192,7 +194,7 @@ export default async function(req) {
     );
     const toProcess = pending.items || pending;
 
-    let built = 0, deployed = 0, validated = 0, scored = 0, failed = 0;
+    let built = 0, deployed = 0, validated = 0, scored = 0, failed = 0, accepted = 0;
     const newReceiptIds = [];
     const scoreSum = { total: 0, count: 0 };
 
@@ -227,78 +229,43 @@ export default async function(req) {
           const content = llmRes || {};
           built++;
 
-          // 2) Deploy via Vercel
+          // Acceptance from the site-specific Vercel PREVIEW adapter is not LIVE.
           await svc.entities.WebsiteQueue.update(site.id, { status: 'deploying' });
-          let deployedUrl = site.domain;
+          const deployRes = await base44.functions.invoke('vercelDeploy', {
+            mode: 'site_preview', siteId: site.id,
+            city: site.target_city, state: site.target_state,
+            templateKey: batch.template_key, designKey, content,
+          });
+          const proof = deployRes?.data || {};
+          if (proof.success !== true || proof.preview_only !== true ||
+              typeof proof.deployment_id !== 'string' || !proof.deployment_id.startsWith('dpl_') ||
+              typeof proof.url !== 'string' || !/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(proof.url)) {
+            throw new Error('Missing site-specific Vercel preview acceptance receipt');
+          }
+          accepted++;
+          await svc.entities.WebsiteQueue.update(site.id, {
+            status: 'deploying', generated_url: proof.url,
+            notes: (site.notes || '').slice(0, 1500) +
+              ' | PREVIEW_ONLY deployment=' + proof.deployment_id +
+              ' | INDEPENDENT_VALIDATION_PENDING',
+          });
+          // The non-passing receipt preserves exact deployment identity.
           try {
-            const deployRes = await base44.functions.invoke('vercelDeploy', {
-              domain: site.domain,
-              city: site.target_city,
-              state: site.target_state,
-              templateKey: batch.template_key,
-              content,
+            const pendingReceipt = await svc.entities.SiteValidationReceipt.create({
+              canonical_url: proof.url, location_id: site.id,
+              validated_at: new Date().toISOString(),
+              validator_version: 'preview-accepted-1',
+              deployment_id: proof.deployment_id, overall_pass: false,
+              failure_reasons: ['Independent HTTP, visual, tenant and lead validation pending'],
             });
-            deployedUrl = deployRes?.data?.url || deployedUrl;
-          } catch (e) { /* deployment may fail if Vercel not configured */ }
-          deployed++;
-          await svc.entities.WebsiteQueue.update(site.id, {
-            status: 'live',
-            generated_url: deployedUrl.startsWith('http') ? deployedUrl : `https://${deployedUrl}`,
-            deployed_at: new Date().toISOString(),
-            seo_score: content.seo_score || 0,
-            aeo_score: content.aeo_score || 0,
-          });
-
-          // 3) Google sync + sitemap + indexing — fire and forget (async, non-blocking)
-          if (batch.google_sync_enabled) {
-            waitUntil(runGoogleSyncAsync(base44, deployedUrl));
+            newReceiptIds.push(pendingReceipt.id);
+          } catch (receiptError) {
+            console.error('Preview receipt persistence failed:', receiptError.message);
           }
-
-          // 4) Validate
-          const validation = runValidation(deployedUrl, site, content);
-          const receipt = await svc.entities.SiteValidationReceipt.create({
-            canonical_url: `https://${deployedUrl.replace(/^https?:\/\//, '')}`,
-            location_id: site.id,
-            validated_at: new Date().toISOString(),
-            validator_version: '3.0',
-            deployment_id: batch.batch_id,
-            ...validation,
-          });
-          newReceiptIds.push(receipt.id);
-          if (validation.overall_pass) validated++;
-
-          // 5) Google 2026 Programmatic Standard scoring (deterministic)
-          const siteDataForScoring = buildSiteDataForScoring(content, validation, site);
-          let googleStandardScore = null;
-          try {
-            const scoreRes = await base44.functions.invoke('googleProgrammaticStandard', { siteData: siteDataForScoring });
-            googleStandardScore = scoreRes?.data;
-          } catch (e) { console.error('Google standard scoring failed:', e.message); }
-
-          // 6) God Mode optimization for scores < 90 (async)
-          const googleScore = googleStandardScore?.score || computeGoogleScore(content, validation);
-          scoreSum.total += googleScore;
-          scoreSum.count++;
-          scored++;
-
-          if (googleScore < 90) {
-            waitUntil(runGodModeOptimization(base44, site, googleScore, googleStandardScore, batch));
-          }
-
-          // 7) Auto-heal for scores < 70
-          if (batch.auto_heal_enabled && googleScore < 70) {
-            waitUntil(autoHealSite(base44, site, googleScore, content));
-          }
-
-          await svc.entities.WebsiteQueue.update(site.id, {
-            status: 'monitoring',
-            traffic_score: googleScore,
-            assigned_agent: `site-agent-${site.target_city?.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
-            last_audit_at: new Date().toISOString(),
-            notes: (site.notes || '') + ` | google_score: ${googleScore} | standard: ${googleStandardScore?.grade || 'N/A'} | validated: ${validation.overall_pass}`,
-          });
-
-          return { siteId: site.id, url: deployedUrl, score: googleScore, pass: validation.overall_pass };
+          return {
+            siteId: site.id, url: proof.url, deployment_id: proof.deployment_id,
+            preview_accepted: true, release_ready: false, validated: false,
+          };
         } catch (err) {
           failed++;
           await svc.entities.WebsiteQueue.update(site.id, {
@@ -320,41 +287,24 @@ export default async function(req) {
       });
     }
 
-    // ── Finalize ───────────────────────────────────────────────────────────
-    const avgScore = scoreSum.count > 0 ? Math.round(scoreSum.total / scoreSum.count) : 0;
-    const isComplete = toProcess.length > 0; // processed all pending in this run
-
+    // Only an independent validator may promote accepted previews.
     await svc.entities.MassLaunchBatch.update(batch.id, {
       sites_built: (batch.sites_built || 0) + built,
-      sites_deployed: (batch.sites_deployed || 0) + deployed,
-      sites_validated: (batch.sites_validated || 0) + validated,
-      sites_scored: (batch.sites_scored || 0) + scored,
+      sites_deployed: (batch.sites_deployed || 0),
+      sites_validated: (batch.sites_validated || 0),
+      sites_scored: (batch.sites_scored || 0),
       sites_failed: (batch.sites_failed || 0) + failed,
-      average_google_score: avgScore,
-      status: isComplete ? 'validating' : 'complete',
-      current_step: isComplete ? 'swarm_testing' : 'complete',
+      status: 'validating',
+      current_step: 'awaiting_independent_preview_validation',
     });
-
-    // ── Trigger parallel test swarm (async, non-blocking) ─────────────────
-    if (isComplete && body.runTestSwarm !== false) {
-      waitUntil(runTestSwarmAsync(base44, batch.batch_id));
-    }
-
     return Response.json({
-      batch_id: batch.batch_id,
-      total_sites: batch.total_sites,
+      batch_id: batch.batch_id, total_sites: batch.total_sites,
       processed_this_run: toProcess.length,
-      built, deployed, validated, scored, failed,
-      average_google_score: avgScore,
-      skip_trace_run: !!skipTraceData,
-      benchmark_run: !!benchmarkData,
-      services_included: services.length,
-      parallel_batch_size: batchSize,
-      status: isComplete ? 'validating' : 'complete',
-      test_swarm_triggered: isComplete && body.runTestSwarm !== false,
-      message: isComplete
-        ? 'Batch deployed — parallel test swarm running async. All sites launched with skip trace, benchmark enhancement, Google Standard scoring, God Mode optimization, and cloud browser validation.'
-        : 'No pending sites to process.',
+      built, accepted, deployed, validated, scored, failed,
+      release_ready: false, test_swarm_triggered: false,
+      google_sync_confirmed: false,
+      status: 'awaiting_independent_validation',
+      message: 'Accepted previews require independent QA. Zero sites were verified live.',
     });
   } catch (error) {
     console.error('massLaunchOrchestrator error:', error.message);
@@ -384,202 +334,12 @@ ${competitorIntel || 'No competitor data available'}
 BENCHMARK ENHANCEMENT:
 ${benchmarkTips || 'No benchmark data available'}
 
-CONTENT ADJUSTMENT STRATEGY: ${contentAdjustment}
-- unique_local: Each page must contain genuinely unique local data — real landmarks, roads, neighborhoods, area codes, local regulations, climate considerations, and community references for ${site.target_city}, ${site.target_state}. NOT just city name swaps.
-- Google March 2026 update penalizes near-identical scaled content. Each page MUST answer a distinct user query no other page answers.
-
-GOOGLE 2026 REQUIREMENTS:
-1. People-first content with original, useful information (24% of algorithm)
-2. Niche expertise — dedicated pages for every service (14%)
-3. Searcher engagement — CTAs, forms, click-to-call (13%)
-4. Keyword in title tag, ≤60 chars (12%)
-5. Freshness — include "last updated" date (6%)
-6. Trustworthiness — E-E-A-T signals, author info, reviews (5%)
-7. Mobile-first responsive design (4%)
-8. Accurate LocalBusiness/Service structured data
-9. Unique title, meta description, H1 per location
-10. AEO: clear, direct answers for AI search
-11. GEO: cite-worthy, entity clarity, local schema
-12. No keyword stuffing, no doorway pages, no scaled unoriginal content
-
-Return JSON with: title, meta_description, h1, intro, services[{name, description}], faqs[{q, a}], local_content, structured_data, seo_score (0-100), aeo_score (0-100), geo_score (0-100), recommendations[].
-Score honestly — if content would be thin or duplicate, score below 60.`;
+UNPUBLISHED DRAFT CONTENT RULES:
+- This is a noindex preview, not an operating business or confirmed local office.
+- Answer an original buyer question instead of swapping only place names.
+- Do not invent licenses, testimonials, reviews, service coverage, addresses, prices, expert credentials or neighborhood facts.
+- If source evidence is not provided, mark local business facts as requiring verification.
+- Provide practical service explanations and authentic FAQs without claimed rankings.
+Return JSON with title, meta_description, h1, intro, services[{name, description}], faqs[{q, a}], local_content, recommendations[].`;
 }
 
-function buildSiteDataForScoring(content, validation, site) {
-  return {
-    pageCount: (content?.services?.length || 0) + 3,
-    avgWordCount: (content?.intro?.length || 0) + (content?.local_content?.length || 0),
-    hasBlog: true,
-    hasFAQ: (content?.faqs?.length || 0) > 0,
-    hasServicePages: (content?.services?.length || 0) > 0,
-    serviceCount: content?.services?.length || 0,
-    hasLocationPages: !!site?.target_city,
-    hasIndustryContent: true,
-    hasAuthorBio: false,
-    hasEAT: false,
-    hasCTA: true,
-    hasContactForm: validation.estimate_cta_present,
-    hasLiveChat: false,
-    hasClickToCall: true,
-    hasVideoContent: false,
-    hasInteractiveElements: true,
-    titleTagOptimized: !!content?.title,
-    h1Optimized: !!content?.h1,
-    hasMetaDescription: !!content?.meta_description,
-    hasHeaderHierarchy: true,
-    backlinkCount: 0,
-    hasReferringDomains: false,
-    hasAuthorityLinks: false,
-    lastUpdatedDays: 0,
-    hasContentCalendar: true,
-    hasRecentBlog: true,
-    hasSSL: validation.tls_valid,
-    hasReviews: true,
-    hasTestimonials: true,
-    hasPrivacyPolicy: true,
-    hasTerms: true,
-    hasAboutPage: true,
-    isResponsive: validation.mobile_viewport_ok,
-    hasMobileCTA: true,
-    hasAmpVersion: false,
-    hasMobileSpeed: true,
-    referringDomainCount: 0,
-    hasDiverseAnchorText: false,
-    hasContextualLinks: true,
-    loadTimeSeconds: 2,
-    hasOptimizedImages: true,
-    hasMinifiedAssets: true,
-    hasLazyLoading: true,
-    brandMentionCount: 0,
-    hasSocialProfiles: false,
-    hasPressCoverage: false,
-    hasHSTS: false,
-    hasSecurityHeaders: false,
-    internalLinkCount: 10,
-    hasBreadcrumbNav: true,
-    hasRelatedPosts: false,
-    metaDescriptionLength: content?.meta_description?.length || 0,
-    hasOGTags: true,
-    hasTwitterCards: false,
-  };
-}
-
-async function runGodModeOptimization(base44, site, currentScore, googleStandardScore, batch) {
-  try {
-    const res = await base44.functions.invoke('godModeOptimizer', {
-      industry: batch.template_name || batch.template_key,
-      currentScore: googleStandardScore,
-      location: `${site.target_city}, ${site.target_state}`,
-    });
-    // Log the God Mode plan to the site notes
-    if (res?.data) {
-      const svc = base44.asServiceRole;
-      const existing = await svc.entities.WebsiteQueue.get(site.id);
-      await svc.entities.WebsiteQueue.update(site.id, {
-        notes: (existing?.notes || '') + ` | god_mode: ${res.data.projected_score} projected, ${res.data.time_to_first_page}`,
-      }).catch(() => {});
-    }
-  } catch (e) {
-    console.error('God Mode optimization failed:', e.message);
-  }
-}
-
-function runValidation(url, site, content) {
-  const failures = [];
-  const hasUrl = !!url;
-  const hasContent = !!content?.title;
-  const hasStructured = !!content?.structured_data;
-  const hasFaqs = (content?.faqs?.length || 0) > 0;
-  const hasLocal = !!content?.local_content;
-
-  if (!hasUrl) failures.push('No deployment URL');
-  if (!hasContent) failures.push('Missing title/meta content');
-  if (!hasStructured) failures.push('Missing structured data');
-  if (!hasFaqs) failures.push('No FAQs for AEO');
-  if (!hasLocal) failures.push('No local-specific content');
-
-  return {
-    dns_reachable: hasUrl,
-    tls_valid: hasUrl,
-    http_status: hasUrl ? 200 : 0,
-    final_url: url,
-    render_complete: hasContent,
-    correct_city: !!site.target_city,
-    correct_state: !!site.target_state,
-    correct_h1: hasContent,
-    correct_title: hasContent,
-    correct_description: hasContent,
-    correct_canonical: hasUrl,
-    correct_robots: true,
-    correct_og_url: hasUrl,
-    structured_data_valid: hasStructured,
-    correct_business_facts: hasContent,
-    internal_nav_works: true,
-    estimate_cta_present: true,
-    visualizer_accessible: true,
-    mobile_viewport_ok: true,
-    desktop_viewport_ok: true,
-    canonical_conflict: false,
-    sitemap_member: hasUrl,
-    registry_member: hasUrl,
-    overall_pass: failures.length === 0,
-    failure_reasons: failures,
-  };
-}
-
-function computeGoogleScore(content, validation) {
-  const seo = content?.seo_score || 0;
-  const aeo = content?.aeo_score || 0;
-  const geo = content?.geo_score || 0;
-  const validationBonus = validation.overall_pass ? 10 : 0;
-  const failPenalty = (validation.failure_reasons?.length || 0) * 5;
-  return Math.max(0, Math.min(100, Math.round((seo * 0.4 + aeo * 0.3 + geo * 0.3) + validationBonus - failPenalty)));
-}
-
-async function autoHealSite(base44, site, score, content) {
-  try {
-    const svc = base44.asServiceRole;
-    await base44.functions.invoke('autonomousRefactorEngine', {
-      target: site.generated_url || site.domain,
-      score,
-      issues: content?.recommendations || [],
-    }).catch(() => {});
-    await base44.functions.invoke('optimizeSeo', {
-      url: site.generated_url || site.domain,
-      city: site.target_city,
-      state: site.target_state,
-    }).catch(() => {});
-    const newScore = Math.min(100, score + 10);
-    await svc.entities.WebsiteQueue.update(site.id, { traffic_score: newScore }).catch(() => {});
-  } catch {}
-}
-
-// Fire-and-forget Google sync (Search Console, Analytics, sitemap, indexing)
-async function runGoogleSyncAsync(base44, deployedUrl) {
-  try {
-    await Promise.allSettled([
-      base44.functions.invoke('addSearchConsoleProperty', { url: deployedUrl }),
-      base44.functions.invoke('googleAnalytics', { url: deployedUrl }),
-      base44.functions.invoke('generateSitemap', { domain: deployedUrl }),
-      base44.functions.invoke('submitToIndexers', { url: deployedUrl }),
-      base44.functions.invoke('pingIndexNow', { url: deployedUrl }),
-    ]);
-  } catch (e) {
-    console.error('Google sync async failed:', e.message);
-  }
-}
-
-// Fire-and-forget parallel test swarm — tests all deployed sites in the batch
-async function runTestSwarmAsync(base44, batchId) {
-  try {
-    const res = await base44.functions.invoke('parallelTestSwarm', {
-      batch_id: batchId,
-      maxParallel: 6,
-      autoHeal: true,
-    });
-    console.log(`Test swarm completed for ${batchId}:`, res?.data?.summary);
-  } catch (e) {
-    console.error('Test swarm async failed:', e.message);
-  }
-}
