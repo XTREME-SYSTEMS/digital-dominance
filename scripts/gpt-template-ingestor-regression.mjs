@@ -15,6 +15,16 @@ assert.match(adminPage,/pendingReview/,'Admin shows pending drafts');
 assert.match(adminPage,/Legacy Active · Unverified/,'Admin distinguishes old active templates from reviewed');
 assert.match(adminPage,/window\.confirm/,'Batch requires actual operator confirmation');
 assert.doesNotMatch(adminPage,/complete, production-ready HTML page/,'Admin must not falsely advertise completed sites');
+const studio=fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)),'..','src','pages','admin','UniversalTemplateStudio.jsx'),'utf8');
+const intake=fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)),'..','src','components','universal-template','GptTemplateIntake.jsx'),'utf8');
+assert.match(studio,/gpt-intake/,'Universal Template Studio contains GPT source intake route');
+assert.match(studio,/<GptTemplateIntake\s*\/>/,'GPT intake component is mounted');
+assert.match(intake,/TemplateLibrary\.filter/,'GPT intake reads source collection');
+assert.match(intake,/TemplateLibrary\.get/,'Only selected HTML loaded on demand');
+assert.match(intake,/sandbox=""/,'Untrusted GPT HTML is sandboxed without scripts, forms or same-origin privileges');
+assert.match(intake,/referrerPolicy="no-referrer"/);
+assert.doesNotMatch(intake,/entities\.(?:TemplateLibrary|BrandTemplate)\.(?:create|update|delete)/,'Intake cannot mutate libraries or auto-approve');
+
 
 assert.match(source,/constantTimeEquals/);
 assert.match(source,/pending-visual-review/);
@@ -122,4 +132,4 @@ const fails=runtime({role:'admin',failLlm:true});
 const failed=await fails.handle('generate',{niche:'epoxy'});
 assert.equal(failed.body.failed,1);
 assert.equal(fails.calls.create.length,0);
-console.log('PASS GPT TEMPLATE INGESTOR SECURITY AND QUALITY: 14 backend cases + 4 UI truth checks; anonymous/read-only rejected, admin/service token accepted, 24h cooldown, preview-only draft, no fake sync PASS, malformed HTML refused, no real provider access');
+console.log('PASS GPT TEMPLATE INGESTOR SECURITY AND QUALITY: 14 backend cases + 11 UI/bridge assertions; anonymous/read-only rejected, admin/service token accepted, 24h cooldown, preview-only draft, no fake sync PASS, malformed HTML refused, no real provider access');
