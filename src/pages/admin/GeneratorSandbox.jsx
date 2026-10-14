@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, Suspense, lazy } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import UniversalPhaseControl from "@/components/universal/UniversalPhaseControl";
+const UniversalPhaseControl = lazy(() => import("@/components/universal/UniversalPhaseControl"));
 import {
   Sparkles, Bot, Shield, Crown, ChevronDown, ChevronRight,
   Wand2, Network, Activity, Target, Zap, ArrowRight, Loader2,
@@ -96,7 +96,9 @@ export default function GeneratorSandbox() {
         </div>
       </div>
 
-      <UniversalPhaseControl />
+      <Suspense fallback={<div className="rounded-xl border border-slate-200 p-6 text-sm text-slate-600">Loading Universal Phase Sandbox…</div>}>
+        <UniversalPhaseControl />
+      </Suspense>
 
       {/* Pipeline Stages */}
       <div className="space-y-4">
