@@ -323,6 +323,7 @@ const AuthenticatedApp = () => {
         <Route path="autocomplete" element={<AutoComplete />} />
         <Route path="results" element={<AdminResults />} />
         <Route path="agent-builder" element={<AgentBuilder />} />
+        <Route path="generator-sandbox" element={<GeneratorSandbox />} />
         <Route path="vision-studio" element={<VisionStudio />} />
         <Route path="command-center" element={<CommandCenter />} />
         <Route path="agent-master" element={<AgentMaster />} />
