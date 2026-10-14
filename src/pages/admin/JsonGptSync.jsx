@@ -4,6 +4,7 @@ import {
   ArrowRight, ArrowLeft, Send, Loader2, CheckCircle2, AlertCircle,
   Copy, Trash2, Download, RefreshCw, Code2, Radio, Zap,
 } from "lucide-react";
+import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
 
 const ACTIONS = [
   { value: "getConfig", label: "getConfig", desc: "Full sync config JSON for external GPT", dir: "to_gpt" },
@@ -110,92 +111,77 @@ export default function JsonGptSync() {
   const clearHistory = () => setHistory([]);
 
   return (
-    <div className="wle-content">
-      {/* Hero */}
-      <div className="wle-hero">
-        <div>
-          <div className="wle-eyebrow">BI-DIRECTIONAL · JSON SYNC</div>
-          <h1>JSON GPT Sync</h1>
-          <p>Raw JSON payload editor for the bi-directional GPT sync engine. Compose requests, send to GPT, see JSON responses flow back.</p>
-        </div>
-        <div className="wle-hero-badge">◈ SYNC ENGINE</div>
-      </div>
-
-      {/* Stats */}
-      <div className="wle-stats">
-        <div className="wle-stat"><small>Endpoint</small><strong style={{ fontSize: "11px" }}>gptSyncEngine</strong></div>
-        <div className="wle-stat"><small>Actions</small><strong>9</strong></div>
-        <div className="wle-stat"><small>Direction</small><strong>Bi-directional</strong></div>
-        <div className="wle-stat"><small>Status</small><strong style={{ color: "var(--launch-admin-accent-green)" }}>● LIVE</strong></div>
-      </div>
-
+    <AdminSystemPage
+      eyebrow="BI-DIRECTIONAL · JSON SYNC"
+      title="JSON GPT Sync"
+      description="Raw JSON payload editor for the bi-directional GPT sync engine. Compose requests, send to GPT, see JSON responses flow back."
+      badge="◈ SYNC ENGINE"
+      stats={[
+        ["Endpoint", "gptSyncEngine"],
+        ["Actions", "9"],
+        ["Direction", "Bi-directional"],
+        ["Status", "● LIVE"],
+      ]}
+    >
       {/* Bi-directional flow indicator */}
-      <div className="wle-panels">
-        <section className="wle-panel" style={{ gridColumn: "1 / -1" }}>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg border border-[var(--launch-admin-primary)]/20 bg-[var(--launch-admin-primary)]/5 p-3 flex items-center gap-3">
-              <ArrowRight className="h-5 w-5 shrink-0" style={{ color: "var(--launch-admin-primary)" }} />
-              <div>
-                <p className="text-xs font-bold" style={{ color: "var(--launch-admin-primary)" }}>ADMIN → GPT</p>
-                <p className="text-[10px]" style={{ color: "var(--launch-admin-muted)" }}>State changes, snapshots, events sent to GPT</p>
-              </div>
-            </div>
-            <div className="rounded-lg border border-[var(--launch-admin-accent-green)]/20 bg-[var(--launch-admin-accent-green)]/5 p-3 flex items-center gap-3">
-              <ArrowLeft className="h-5 w-5 shrink-0" style={{ color: "var(--launch-admin-accent-green)" }} />
-              <div>
-                <p className="text-xs font-bold" style={{ color: "var(--launch-admin-accent-green)" }}>GPT → ADMIN</p>
-                <p className="text-[10px]" style={{ color: "var(--launch-admin-muted)" }}>Commands, takeovers, tool executions flow back</p>
-              </div>
-            </div>
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="rounded-lg border border-[#126fc8]/20 bg-[#126fc8]/5 p-3 flex items-center gap-3">
+          <ArrowRight className="h-5 w-5 shrink-0 text-[#126fc8]" />
+          <div>
+            <p className="text-xs font-bold text-[#126fc8]">ADMIN → GPT</p>
+            <p className="text-[10px] text-[#5b7288]">State changes, snapshots, events sent to GPT</p>
           </div>
-        </section>
+        </div>
+        <div className="rounded-lg border border-[#22c55e]/20 bg-[#22c55e]/5 p-3 flex items-center gap-3">
+          <ArrowLeft className="h-5 w-5 shrink-0 text-[#22c55e]" />
+          <div>
+            <p className="text-xs font-bold text-[#22c55e]">GPT → ADMIN</p>
+            <p className="text-[10px] text-[#5b7288]">Commands, takeovers, tool executions flow back</p>
+          </div>
+        </div>
       </div>
 
       {/* Action selector */}
-      <div className="wle-panels">
-        <section className="wle-panel" style={{ gridColumn: "1 / -1" }}>
-          <div className="flex items-center gap-2 mb-3">
-            <Zap className="h-4 w-4" style={{ color: "var(--launch-admin-primary)" }} />
-            <h3 className="text-sm font-bold" style={{ color: "var(--launch-admin-heading)" }}>Sync Action</h3>
-          </div>
-          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
-            {ACTIONS.map((a) => (
-              <button
-                key={a.value}
-                onClick={() => handleActionChange(a.value)}
-                className={`px-2 py-2 rounded-lg text-[11px] font-bold font-mono transition ${
-                  action === a.value
-                    ? "text-white shadow-sm"
-                    : "border bg-white text-[var(--launch-admin-muted)] hover:border-[var(--launch-admin-primary)]/40"
-                }`}
-                style={action === a.value ? { background: "var(--launch-admin-primary)", borderColor: "var(--launch-admin-primary)" } : { borderColor: "var(--launch-admin-border)" }}
-              >
-                {a.label}
-              </button>
-            ))}
-          </div>
-          <p className="text-xs mt-2" style={{ color: "var(--launch-admin-muted)" }}>
-            <span className="font-mono" style={{ color: "var(--launch-admin-primary)" }}>{action}</span> — {currentAction?.desc}
-          </p>
-        </section>
+      <div className="mb-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Zap className="h-4 w-4 text-[#126fc8]" />
+          <h3 className="text-sm font-bold text-[#06213b]">Sync Action</h3>
+        </div>
+        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
+          {ACTIONS.map((a) => (
+            <button
+              key={a.value}
+              onClick={() => handleActionChange(a.value)}
+              className={`px-2 py-2 rounded-lg text-[11px] font-bold font-mono transition ${
+                action === a.value
+                  ? "bg-[#126fc8] text-white border border-[#126fc8] shadow-sm"
+                  : "border border-[#dce6f1] bg-white text-[#5b7288] hover:border-[#126fc8]/40"
+              }`}
+            >
+              {a.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs mt-2 text-[#5b7288]">
+          <span className="font-mono text-[#126fc8]">{action}</span> — {currentAction?.desc}
+        </p>
       </div>
 
       {/* JSON Editor + Response */}
-      <div className="wle-panels">
+      <div className="grid lg:grid-cols-2 gap-4 mb-4">
         {/* Request editor */}
-        <section className="wle-panel">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: "var(--launch-admin-border)", background: "var(--launch-admin-canvas)" }}>
+        <div className="rounded-lg border border-[#dce6f1] bg-white overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#dce6f1] bg-[#f4f8fd]">
             <div className="flex items-center gap-2">
-              <ArrowRight className="h-3.5 w-3.5" style={{ color: "var(--launch-admin-primary)" }} />
-              <span className="text-xs font-bold" style={{ color: "var(--launch-admin-heading)" }}>REQUEST JSON</span>
-              <span className="text-[10px] font-mono" style={{ color: "var(--launch-admin-muted)" }}>action: {action}</span>
+              <ArrowRight className="h-3.5 w-3.5 text-[#126fc8]" />
+              <span className="text-xs font-bold text-[#06213b]">REQUEST JSON</span>
+              <span className="text-[10px] font-mono text-[#5b7288]">action: {action}</span>
             </div>
             <button
               onClick={() => copy(jsonInput, "request")}
-              className="flex items-center gap-1 text-[10px] transition"
-              style={{ color: "var(--launch-admin-muted)" }}
+              className="flex items-center gap-1 text-[10px] text-[#5b7288] hover:text-[#126fc8] transition"
             >
-              {copiedField === "request" ? <CheckCircle2 className="h-3 w-3" style={{ color: "var(--launch-admin-accent-green)" }} /> : <Copy className="h-3 w-3" />}
+              {copiedField === "request" ? <CheckCircle2 className="h-3 w-3 text-[#22c55e]" /> : <Copy className="h-3 w-3" />}
               {copiedField === "request" ? "Copied" : "Copy"}
             </button>
           </div>
@@ -207,42 +193,39 @@ export default function JsonGptSync() {
             style={{ background: "#0d1525", color: "#22c55e", border: "none" }}
             placeholder="Enter JSON payload..."
           />
-          <div className="flex items-center justify-between px-4 py-3 border-t" style={{ borderColor: "var(--launch-admin-border)", background: "var(--launch-admin-canvas)" }}>
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#dce6f1] bg-[#f4f8fd]">
             <button
               onClick={() => setJsonInput(JSON.stringify(TEMPLATES[action], null, 2))}
-              className="flex items-center gap-1.5 text-[11px] transition"
-              style={{ color: "var(--launch-admin-muted)" }}
+              className="flex items-center gap-1.5 text-[11px] text-[#5b7288] hover:text-[#126fc8] transition"
             >
               <RefreshCw className="h-3 w-3" /> Reset template
             </button>
             <button
               onClick={send}
               disabled={loading}
-              className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50 transition shadow-sm"
-              style={{ background: "var(--launch-admin-primary)" }}
+              className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white bg-[#126fc8] hover:bg-[#0d58a8] disabled:opacity-50 transition shadow-sm"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               Send to GPT
             </button>
           </div>
-        </section>
+        </div>
 
         {/* Response viewer */}
-        <section className="wle-panel">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: "var(--launch-admin-border)", background: "var(--launch-admin-canvas)" }}>
+        <div className="rounded-lg border border-[#dce6f1] bg-white overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#dce6f1] bg-[#f4f8fd]">
             <div className="flex items-center gap-2">
-              <ArrowLeft className="h-3.5 w-3.5" style={{ color: "var(--launch-admin-accent-green)" }} />
-              <span className="text-xs font-bold" style={{ color: "var(--launch-admin-heading)" }}>RESPONSE JSON</span>
-              {response && <span className="text-[10px] font-bold" style={{ color: "var(--launch-admin-accent-green)" }}>● OK</span>}
+              <ArrowLeft className="h-3.5 w-3.5 text-[#22c55e]" />
+              <span className="text-xs font-bold text-[#06213b]">RESPONSE JSON</span>
+              {response && <span className="text-[10px] font-bold text-[#22c55e]">● OK</span>}
               {error && <span className="text-[10px] font-bold text-red-500">● ERROR</span>}
             </div>
             {response && (
               <button
                 onClick={() => copy(response, "response")}
-                className="flex items-center gap-1 text-[10px] transition"
-                style={{ color: "var(--launch-admin-muted)" }}
+                className="flex items-center gap-1 text-[10px] text-[#5b7288] hover:text-[#126fc8] transition"
               >
-                {copiedField === "response" ? <CheckCircle2 className="h-3 w-3" style={{ color: "var(--launch-admin-accent-green)" }} /> : <Copy className="h-3 w-3" />}
+                {copiedField === "response" ? <CheckCircle2 className="h-3 w-3 text-[#22c55e]" /> : <Copy className="h-3 w-3" />}
                 {copiedField === "response" ? "Copied" : "Copy"}
               </button>
             )}
@@ -250,7 +233,7 @@ export default function JsonGptSync() {
           <div className="min-h-[300px] max-h-[500px] overflow-auto p-4" style={{ background: "#0d1525" }}>
             {loading ? (
               <div className="flex items-center justify-center h-[280px]">
-                <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--launch-admin-primary)" }} />
+                <Loader2 className="h-6 w-6 animate-spin text-[#126fc8]" />
               </div>
             ) : error ? (
               <div className="flex items-start gap-2 text-red-400 text-xs">
@@ -258,107 +241,101 @@ export default function JsonGptSync() {
                 <pre className="font-mono whitespace-pre-wrap break-words">{error}</pre>
               </div>
             ) : response ? (
-              <pre className="font-mono text-xs whitespace-pre-wrap break-words leading-relaxed" style={{ color: "#6cc6ff" }}>
+              <pre className="font-mono text-xs whitespace-pre-wrap break-words leading-relaxed text-[#6cc6ff]">
                 {JSON.stringify(response, null, 2)}
               </pre>
             ) : (
-              <div className="flex flex-col items-center justify-center h-[280px]" style={{ color: "rgba(255,255,255,0.2)" }}>
+              <div className="flex flex-col items-center justify-center h-[280px] text-white/20">
                 <Code2 className="h-8 w-8 mb-2" />
                 <p className="text-xs">Response will appear here</p>
               </div>
             )}
           </div>
-        </section>
+        </div>
       </div>
 
       {/* Exchange history */}
-      <div className="wle-panels">
-        <section className="wle-panel" style={{ gridColumn: "1 / -1" }}>
-          <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "var(--launch-admin-border)" }}>
-            <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--launch-admin-heading)" }}>
-              <Radio className="h-4 w-4" style={{ color: "var(--launch-admin-primary)" }} /> Exchange History
-              <span className="text-xs" style={{ color: "var(--launch-admin-muted)" }}>({history.length})</span>
-            </h3>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={downloadHistory}
-                disabled={history.length === 0}
-                className="flex items-center gap-1 text-[11px] transition disabled:opacity-30"
-                style={{ color: "var(--launch-admin-muted)" }}
-              >
-                <Download className="h-3 w-3" /> Export
-              </button>
-              <button
-                onClick={clearHistory}
-                disabled={history.length === 0}
-                className="flex items-center gap-1 text-[11px] transition disabled:opacity-30 hover:text-red-500"
-                style={{ color: "var(--launch-admin-muted)" }}
-              >
-                <Trash2 className="h-3 w-3" /> Clear
-              </button>
-            </div>
+      <div className="rounded-lg border border-[#dce6f1] bg-white overflow-hidden mb-4">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#dce6f1]">
+          <h3 className="text-sm font-bold flex items-center gap-2 text-[#06213b]">
+            <Radio className="h-4 w-4 text-[#126fc8]" /> Exchange History
+            <span className="text-xs text-[#5b7288]">({history.length})</span>
+          </h3>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={downloadHistory}
+              disabled={history.length === 0}
+              className="flex items-center gap-1 text-[11px] text-[#5b7288] hover:text-[#126fc8] transition disabled:opacity-30"
+            >
+              <Download className="h-3 w-3" /> Export
+            </button>
+            <button
+              onClick={clearHistory}
+              disabled={history.length === 0}
+              className="flex items-center gap-1 text-[11px] text-[#5b7288] hover:text-red-500 transition disabled:opacity-30"
+            >
+              <Trash2 className="h-3 w-3" /> Clear
+            </button>
           </div>
-          <div className="max-h-[400px] overflow-y-auto">
-            {history.length === 0 ? (
-              <div className="text-center py-8 text-sm" style={{ color: "var(--launch-admin-muted)" }}>
-                No exchanges yet. Send a JSON payload to GPT.
-              </div>
-            ) : (
-              history.map((h) => (
-                <div key={h.id} className="border-b px-4 py-3" style={{ borderColor: "var(--launch-admin-border)" }}>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className={`h-2 w-2 rounded-full ${h.success ? "" : "bg-red-500"}`} style={h.success ? { background: "var(--launch-admin-accent-green)" } : {}} />
-                    <span className="text-xs font-mono font-bold" style={{ color: "var(--launch-admin-heading)" }}>{h.action}</span>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{
-                      background: h.direction === "to_gpt" ? "rgba(18,111,200,0.1)" : h.direction === "from_gpt" ? "rgba(34,197,94,0.1)" : "rgba(0,0,0,0.05)",
-                      color: h.direction === "to_gpt" ? "var(--launch-admin-primary)" : h.direction === "from_gpt" ? "var(--launch-admin-accent-green)" : "var(--launch-admin-muted)"
-                    }}>{h.direction}</span>
-                    <span className="text-[10px]" style={{ color: "var(--launch-admin-muted)" }}>{new Date(h.timestamp).toLocaleTimeString()}</span>
+        </div>
+        <div className="max-h-[400px] overflow-y-auto">
+          {history.length === 0 ? (
+            <div className="text-center py-8 text-sm text-[#5b7288]">
+              No exchanges yet. Send a JSON payload to GPT.
+            </div>
+          ) : (
+            history.map((h) => (
+              <div key={h.id} className="border-b border-[#dce6f1] px-4 py-3">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className={`h-2 w-2 rounded-full ${h.success ? "bg-[#22c55e]" : "bg-red-500"}`} />
+                  <span className="text-xs font-mono font-bold text-[#06213b]">{h.action}</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{
+                    background: h.direction === "to_gpt" ? "rgba(18,111,200,0.1)" : h.direction === "from_gpt" ? "rgba(34,197,94,0.1)" : "rgba(0,0,0,0.05)",
+                    color: h.direction === "to_gpt" ? "#126fc8" : h.direction === "from_gpt" ? "#22c55e" : "#5b7288"
+                  }}>{h.direction}</span>
+                  <span className="text-[10px] text-[#5b7288]">{new Date(h.timestamp).toLocaleTimeString()}</span>
+                </div>
+                <div className="grid lg:grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <p className="text-[9px] font-bold uppercase mb-1 text-[#5b7288]">Request</p>
+                    <pre className="text-[10px] font-mono whitespace-pre-wrap break-words max-h-24 overflow-auto text-[#126fc8]">
+                      {JSON.stringify(h.request, null, 1)}
+                    </pre>
                   </div>
-                  <div className="grid lg:grid-cols-2 gap-2 mt-2">
-                    <div>
-                      <p className="text-[9px] font-bold uppercase mb-1" style={{ color: "var(--launch-admin-muted)" }}>Request</p>
-                      <pre className="text-[10px] font-mono whitespace-pre-wrap break-words max-h-24 overflow-auto" style={{ color: "var(--launch-admin-primary)" }}>
-                        {JSON.stringify(h.request, null, 1)}
-                      </pre>
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-bold uppercase mb-1" style={{ color: "var(--launch-admin-muted)" }}>{h.success ? "Response" : "Error"}</p>
-                      <pre className="text-[10px] font-mono whitespace-pre-wrap break-words max-h-24 overflow-auto" style={{ color: h.success ? "var(--launch-admin-accent-green)" : "#ef4444" }}>
-                        {h.success ? JSON.stringify(h.response, null, 1) : h.error}
-                      </pre>
-                    </div>
+                  <div>
+                    <p className="text-[9px] font-bold uppercase mb-1 text-[#5b7288]">{h.success ? "Response" : "Error"}</p>
+                    <pre className="text-[10px] font-mono whitespace-pre-wrap break-words max-h-24 overflow-auto" style={{ color: h.success ? "#22c55e" : "#ef4444" }}>
+                      {h.success ? JSON.stringify(h.response, null, 1) : h.error}
+                    </pre>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </section>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* External GPT connection info */}
-      <div className="wle-panels">
-        <section className="wle-panel" style={{ gridColumn: "1 / -1" }}>
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle2 className="h-4 w-4" style={{ color: "var(--launch-admin-accent-green)" }} />
-            <h3 className="text-sm font-bold" style={{ color: "var(--launch-admin-heading)" }}>External GPT Connection</h3>
+      <div className="rounded-lg border border-[#dce6f1] bg-[#f4f8fd] p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <CheckCircle2 className="h-4 w-4 text-[#22c55e]" />
+          <h3 className="text-sm font-bold text-[#06213b]">External GPT Connection</h3>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3 text-xs">
+          <div className="rounded-lg border border-[#dce6f1] bg-white p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1 text-[#5b7288]">Endpoint</p>
+            <code className="font-mono break-all text-[11px] text-[#22c55e]">
+              https://unlimitedwebsites.base44.app/functions/gptSyncEngine
+            </code>
           </div>
-          <div className="grid sm:grid-cols-2 gap-3 text-xs">
-            <div className="rounded-lg border p-3" style={{ borderColor: "var(--launch-admin-border)", background: "var(--launch-admin-canvas)" }}>
-              <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: "var(--launch-admin-muted)" }}>Endpoint</p>
-              <code className="font-mono break-all text-[11px]" style={{ color: "var(--launch-admin-accent-green)" }}>
-                https://unlimitedwebsites.base44.app/functions/gptSyncEngine
-              </code>
-            </div>
-            <div className="rounded-lg border p-3" style={{ borderColor: "var(--launch-admin-border)", background: "var(--launch-admin-canvas)" }}>
-              <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: "var(--launch-admin-muted)" }}>Auth Header</p>
-              <code className="font-mono break-all text-[11px]" style={{ color: "var(--launch-admin-accent-green)" }}>
-                Authorization: Bearer &lt;GPT_SYNC_API_KEY&gt;
-              </code>
-            </div>
+          <div className="rounded-lg border border-[#dce6f1] bg-white p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1 text-[#5b7288]">Auth Header</p>
+            <code className="font-mono break-all text-[11px] text-[#22c55e]">
+              Authorization: Bearer &lt;GPT_SYNC_API_KEY&gt;
+            </code>
           </div>
-        </section>
+        </div>
       </div>
-    </div>
+    </AdminSystemPage>
   );
 }
