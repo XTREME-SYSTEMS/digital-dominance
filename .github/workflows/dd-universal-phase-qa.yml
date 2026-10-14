@@ -6,6 +6,7 @@ on:
       - "base44/shared/universalGenerator.ts"
       - "base44/shared/universalPhaseRuntime.js"
       - "base44/shared/universalPhaseQa.js"
+      - "base44/shared/godModeForesightSandbox.js"
       - "scripts/universal-*.mjs"
       - "src/components/universal/**"
       - "src/pages/admin/GeneratorSandbox.jsx"
@@ -43,6 +44,13 @@ jobs:
         run: npm run test:universal-phase
       - name: Audit all 37 workflow definitions without activating them
         run: npm run audit:universal-workflows > universal-workflow-source-audit.json
+      - name: Store workflow inventory evidence (7 day retention)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dd-universal-workflow-source-audit
+          path: universal-workflow-source-audit.json
+          retention-days: 7
+          if-no-files-found: error
       - name: Build Vite frontend without releasing
         run: npm run build
       - name: Verify sandbox route and fail-closed operational invariants
