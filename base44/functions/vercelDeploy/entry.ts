@@ -97,13 +97,47 @@ export default async function (req: Request): Promise<Response> {
       } catch (error) {
         return Response.json({ error: String(error.message || error) }, { status: 400 });
       }
-      const previewProject = secrets.get('VERCEL_SITE_PREVIEW_PROJECT_NAME') || projectName;
+      // A new Vercel project's FIRST deployment may be forced to production.
+      // Use only the already verified Digital Dominance project and team.
+      // Project/team IDs are non-secret stable provider resource identifiers.
+      const previewProjectId = secrets.get('VERCEL_SITE_PREVIEW_PROJECT_ID') ||
+        'prj_mgySytKyeK5i9DwnQDRGHVjyenrz';
+      const previewTeamId = secrets.get('VERCEL_TEAM_ID') ||
+        'team_aFdds8lsbHMwe2ip4aQdbQ3d';
+      const scope = '?teamId=' + encodeURIComponent(previewTeamId);
+      const authHeaders = { Authorization: 'Bearer ' + token };
+      const [projectRes, historyRes] = await Promise.all([
+        fetch('https://api.vercel.com/v9/projects/' + encodeURIComponent(previewProjectId) + scope,
+          { headers: authHeaders }),
+        fetch('https://api.vercel.com/v6/deployments' + scope +
+          '&projectId=' + encodeURIComponent(previewProjectId) + '&limit=10',
+          { headers: authHeaders }),
+      ]);
+      if (!projectRes.ok || !historyRes.ok) {
+        return Response.json({ success: false, release_ready: false,
+          error: 'Preview project could not be verified in the approved Vercel team' },
+          { status: 503 });
+      }
+      const previewProject = await projectRes.json();
+      const history = await historyRes.json();
+      if (previewProject?.id !== previewProjectId ||
+          !Array.isArray(history.deployments) ||
+          !history.deployments.some((item: any) =>
+            item.target === 'production' && item.readyState === 'READY')) {
+        return Response.json({ success: false, release_ready: false,
+          error: 'Existing READY production baseline required to prevent first-deploy auto-promotion' },
+          { status: 409 });
+      }
       const files = [
         { file: 'index.html', data: compiled.html },
         { file: 'robots.txt', data: 'User-agent: *\nDisallow: /\n' },
         {
           file: 'vercel.json',
           data: JSON.stringify({
+            framework: null,
+            buildCommand: 'echo static-preview-ready',
+            installCommand: '',
+            outputDirectory: '.',
             headers: [{
               source: '/(.*)',
               headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }],
@@ -111,14 +145,18 @@ export default async function (req: Request): Promise<Response> {
           }),
         },
       ];
-      const deployRes = await fetch('https://api.vercel.com/v13/deployments', {
+      const deployRes = await fetch('https://api.vercel.com/v13/deployments' + scope, {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: previewProject,
+          name: previewProject.name,
+          project: previewProjectId,
           files,
-          projectSettings: { framework: null, buildCommand: null, outputDirectory: '.' },
-          // Deliberately OMIT target: Vercel defaults to preview, not production.
+          projectSettings: {
+            framework: null, buildCommand: 'echo static-preview-ready',
+            installCommand: '', outputDirectory: '.',
+          },
+          // Existing project and omitted target ensure isolated PREVIEW.
           meta: {
             dd_site_id: compiled.manifest.site_id,
             dd_template_key: compiled.manifest.template_key,
@@ -136,6 +174,11 @@ export default async function (req: Request): Promise<Response> {
         }, { status: 502 });
       }
       const deployment = await deployRes.json();
+      if (deployment.target === 'production') {
+        return Response.json({ success: false, release_ready: false,
+          error: 'Vercel unexpectedly classified an isolated preview as production' },
+          { status: 409 });
+      }
       const host = typeof deployment.url === 'string' ? deployment.url : '';
       if (typeof deployment.id !== 'string' || !deployment.id.startsWith('dpl_') ||
           !/^[a-z0-9-]+\.vercel\.app$/i.test(host)) {
