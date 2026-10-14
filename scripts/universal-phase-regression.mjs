@@ -9,6 +9,7 @@ import {
   PHASE_GROUPS, PHASE_STEPS, createMissionPlan, executeSyntheticMission, phaseSummary
 } from "../base44/shared/universalPhaseRuntime.js";
 import { validateSandboxArtifact } from "../base44/shared/universalPhaseQa.js";
+import { runSyntheticForesight, FORESIGHT_STRATEGIES } from "../base44/shared/godModeForesightSandbox.js";
 
 const SOURCE_SHA = (() => {
   const configured = process.env.DD_SOURCE_SHA;
@@ -64,6 +65,14 @@ if (proc.status !== 0) throw new Error("INDEPENDENT_QA_PROCESS_FAILED: " + proc.
 const independent = JSON.parse(readFileSync(receipt, "utf8"));
 check(independent.status === "PASS" && independent.qa_agent_id === "independent-universal-qa-v1", "separate process QA");
 check(independent.html_sha256 === createHash("sha256").update(report.sandbox_html).digest("hex"), "hash-verified artifact");
+const foresight = runSyntheticForesight({seed:20261013,draws:1000,months:12,synthetic:true});
+check(FORESIGHT_STRATEGIES.length === 10 && foresight.strategies.length === 10, "ten GOD MODE strategy variants");
+check(foresight.strategies.every(x => x.draws === 1000 && x.months === 12), "1000 repeatable scenarios per strategy");
+check(foresight.pricing_evidence === "NONE" && foresight.buyer_evidence === "NONE", "never fabricate buyer evidence");
+check(foresight.decision === "HOLD_NOT_DEPLOYABLE" && !foresight.publish, "hypothetical ROI cannot authorize release");
+check(JSON.stringify(runSyntheticForesight({seed:20261013})) === JSON.stringify(foresight), "seeded foresight reproducible");
+assert.throws(() => runSyntheticForesight({synthetic:false}),/SYNTHETIC_ONLY/); checks++;
+assert.throws(() => runSyntheticForesight({draws:100}),/SYNTHETIC_ONLY/); checks++;
 console.log(JSON.stringify({
   status:"PASS",checks,source_sha:SOURCE_SHA,
   stages:PHASE_STEPS.length,executed_stages:report.executed_step_count,
