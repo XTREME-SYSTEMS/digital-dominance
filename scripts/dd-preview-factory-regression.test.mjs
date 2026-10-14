@@ -17,6 +17,7 @@ test('site compiler binds location, template, original design and NOINDEX withou
   const { html, manifest } = compileSitePreview(compilerInput);
   assert.match(html, /name="robots" content="noindex/);
   assert.match(html, /data-dd-site-id="synthetic-001"/);
+  assert.match(html, /rel="icon"/);
   assert.match(html, /Pompano Beach/);
   assert.match(html, /Surface assessment/);
   assert.match(html, /Lead submissions are not connected/);
