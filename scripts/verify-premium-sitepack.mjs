@@ -32,7 +32,7 @@ const catalog=fs.readFileSync(path.join(ROOT,'public','premium','collection','ca
 const pack={
  pack_id:'APEX-COMPOSER-FAKE-001',version:'universal-sitepack-v1',
  source:{repository:'XTREME-SYSTEMS/digital-dominance',template_id:'vanta-motors',catalog_manifest_sha256:sha(catalog)},
- brand:{name:'VANTA DEMO BRAND',contact_phone:'PENDING_VERIFIED_PHONE',legal_business_name:'PENDING_VERIFIED_LEGAL_NAME'},
+ brand:{name:'VANTA & CONCEPT STUDIO',contact_phone:'PENDING_VERIFIED_PHONE',legal_business_name:'PENDING_VERIFIED_LEGAL_NAME'},
  industry:{slug:'automotive',services:['PENDING_VERIFIED_FIRST_PARTY_SERVICE_CATALOG']},
  design:{visual_approval:false,master_family:'Cinematic industrial'},
  locations:[{city:'Test City',region:'ZZ',country:'US',verified_service_area:false}],
@@ -56,7 +56,7 @@ try{
  const destination=path.join(ROOT,'factory','.sitepack-preview-output',pack.pack_id.toLowerCase());
  assert.equal(fs.existsSync(path.join(destination,'index.html')),true);
  const preview=fs.readFileSync(path.join(destination,'index.html'),'utf8');
- assert.match(preview,/VANTA DEMO BRAND/);
+ assert.match(preview,/VANTA &amp; CONCEPT STUDIO/);
  assert.match(preview,/<meta name="robots" content="noindex,nofollow,noarchive">/);
  for(const [name,mutator] of [
   ['bulk',p=>({...p,selection:{...p.selection,requested_quantity:10}})],
