@@ -46,6 +46,8 @@ for(const shot of proof.screenshots){
 assert.equal(expected.size,0,'A premium master is missing a screenshot');
 assert.ok(gallery.includes('href="SCREENSHOT_PROOF.json"'),'Evidence link missing');
 assert.ok(gallery.includes('REAL PAGE CAPTURE'),'Screenshot provenance badge missing');
+assert.ok(gallery.includes('aspect-ratio:16/10'),'Screenshot card must use source-accurate 1440:900 framing');
+assert.ok(gallery.includes('object-fit:contain;object-position:center'),'No screenshot headlines may be cropped by cover');
 for(const id of ['monolith','argent','atelier']){
  assert.ok(gallery.includes('href="../templates/'+id+'/index.html"'),'Original V2 premium source lost: '+id);
 }
