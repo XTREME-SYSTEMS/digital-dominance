@@ -1,0 +1,59 @@
+name: Independent Homepage Browser QA
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [feature/god-mode-independent-quality-gates-20261014]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: Production build
+        run: npm run build
+      - name: Resolve Chrome
+        shell: bash
+        run: |
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "Chrome is unavailable; independent browser QA cannot pass" >&2
+            exit 1
+          fi
+          echo "CHROME_BIN=$CHROME" >> "$GITHUB_ENV"
+      - name: Launch isolated Vite preview
+        shell: bash
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4175 > /tmp/dd-preview.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:4175/ -o /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/dd-preview.log
+          exit 1
+      - name: Independent desktop tablet mobile and wizard QA
+        env:
+          QA_BASE_URL: http://127.0.0.1:4175/
+          QA_OUT: audit-evidence/homepage-ci
+        run: node scripts/independent-homepage-browser-qa.cjs
+      - name: Preserve QA receipts and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-chrome-qa
+          path: audit-evidence/homepage-ci/
+          if-no-files-found: warn
