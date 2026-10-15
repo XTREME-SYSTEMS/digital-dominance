@@ -41,13 +41,13 @@ Build output: `public/premium/libraries/` (ignored generated files). Browse `/pr
 3. Use a brand token JSON with typography/color definitions. Verify contrast and lock imagery before any client deliverables.
 4. Filter the **61 website types** and download a versioned SitePack recipe with **pending approval**. Link to an already validated Monolith/Argent/Atelier master when provided. A recipe is **not** itself a working 61st premium template.
 5. Use the email drafts as visual building blocks, never as live communications. Integrate existing Xtreme Communications only with scoped approvals and real customer consent.
-6. Expand the 32 source families by adding versioned records and renderer plugins. Source registry entries discovered on JARVIS require individual ingestion, rights checks and quality tests.
+6. Expand the 32 source families by adding versioned records and renderer plugins. Source registry entries discovered on JARVIS require individual authenticated ingestion, rights checks and quality tests.
 
 ### Local source references (reuse; do not replace)
 
-- `C:\_Strategic_Minds_AI_OS\16_UNIVERSAL SYSTEMS\01_CANONICAL_SOURCE\UNIVERSAL_MASTER_FACTORY_PACKET\UNIVERSAL_MASTER_FACTORY_BASE44_v1` (30 registry families, 486 declared entries)
-- `C:\_Strategic_Minds_AI_OS\16_UNIVERSAL SYSTEMS\13_VISUAL_TEMPLATE_ENGINE\DIGITAL_DOMINANCE_VISUAL_FACTORY_V3` (10 V3 art-directed archetypes)
-- `C:\_Strategic_Minds_AI_OS\14_FINISHED_SYSTEMS\00_MASTER_ASSET_REGISTRY\MASTER_ASSET_REGISTRY.json` (many ZIP donor records, mostly unverified)
+- `JARVIS:UNIVERSAL_MASTER_FACTORY` (30 registry families, 486 declared entries)
+- `JARVIS:VISUAL_FACTORY_V3` (10 V3 art-directed archetypes)
+- `JARVIS:MASTER_ASSET_REGISTRY` (many ZIP donor records, mostly unverified)
 - `XTREME-SYSTEMS/digital-dominance` existing TemplateLibrary and premium branch, source of the preview and sitepack compiler.
 
 ### Future ingestion adapter contract (NOT YET IMPLEMENTED)
