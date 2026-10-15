@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/compile-premium-sitepack.mjs --example && node scripts/write-premium-build-provenance.mjs && vite build",
+    "build": "node scripts/build-premium-20.mjs && node scripts/compile-premium-sitepack.mjs --example && node scripts/build-premium-business-brands.mjs && node scripts/write-premium-build-provenance.mjs && vite build",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
