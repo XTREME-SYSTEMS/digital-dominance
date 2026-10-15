@@ -86,5 +86,9 @@ jobs:
         with:
           name: premium-design-to-product-handoffs-119
           path: factory/.pending-premium-handoffs/
+          # This intentionally hidden, gitignored sandbox directory contains
+          # ONLY synthetic design packets. Artifact v4 hides dotfolders unless
+          # enabled; without this it reports no files despite generation PASS.
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
