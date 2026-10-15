@@ -11,6 +11,7 @@ on:
       - 'scripts/premium-promotion-policy.mjs'
       - 'scripts/promote-premium-catalog.mjs'
       - 'scripts/export-premium-handoff.mjs'
+      - 'scripts/compile-premium-handoff-matrix.mjs'
       - 'scripts/test-premium-handoff.mjs'
       - 'scripts/test-premium-base44-mapping.mjs'
       - 'scripts/premium-base44-template-mapping.mjs'
@@ -65,4 +66,25 @@ jobs:
           name: premium-image-byte-evidence
           path: factory/.premium-evidence-output/premium-photo-hashes.json
           if-no-files-found: warn
+          retention-days: 30
+
+  seven-product-handoff-matrix:
+    name: verified-draft-handoff-matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build 17 premium master HTML documents
+        run: node scripts/build-premium-20.mjs
+      - name: Export 17 x 7 draft-only versioned product handoffs
+        run: node scripts/compile-premium-handoff-matrix.mjs
+      - name: Preserve exact SHA-bound handoff packets
+        uses: actions/upload-artifact@v4
+        with:
+          name: premium-design-to-product-handoffs-119
+          path: factory/.pending-premium-handoffs/
+          if-no-files-found: error
           retention-days: 30
