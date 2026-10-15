@@ -26,6 +26,18 @@ export const BASE44_API_ORIGIN = resolveBase44ApiOrigin(
   typeof window !== "undefined" ? window.location.hostname : ""
 );
 export const BASE44_CANONICAL_APP_ID = "6a77f4491f0bf92de9a3ed8b";
+export const BASE44_REGISTERED_ADMIN_URL = "https://unlimitedwebsites.net/admin";
+
+/**
+ * Google OAuth callbacks cannot be assumed to trust temporary external
+ * deployment hostnames. Keep hosted-domain validation enabled. For unregistered
+ * external preview origins, direct Google users to the existing registered
+ * admin domain. Do not pass tokens or OAuth state through the URL.
+ */
+export function requiresRegisteredGoogleOrigin(hostname = "") {
+  return Boolean(resolveBase44ApiOrigin(hostname));
+}
+
 const configuredAppId = import.meta.env?.VITE_BASE44_APP_ID;
 export const BASE44_APP_ID =
   typeof configuredAppId === "string" && /^[a-f0-9]{24}$/i.test(configuredAppId)
