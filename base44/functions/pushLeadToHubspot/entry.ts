@@ -70,6 +70,14 @@ export default async function (req: Request): Promise<Response> {
     });
     const deal = await dealRes.json();
 
+    // Persist CRM identity immediately so downstream revenue sync has a stable join.
+    const crmIdentity: Record<string, string> = {};
+    if (contactId) crmIdentity.hubspot_contact_id = String(contactId);
+    if (dealRes.ok && deal?.id) crmIdentity.hubspot_deal_id = String(deal.id);
+    if (Object.keys(crmIdentity).length) {
+      await base44.asServiceRole.entities.Lead.update(lead.id, crmIdentity);
+    }
+
     // 3. Create a note with before/after images and lead details
     if (contactId) {
       const beforePhoto = (lead.photos || [])[0] || "";

@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { uploadFile } from "@/lib/gateway";
 import { useSettings } from "@/lib/useSettings";
 import { calcEstimate, calcLeadScore, money } from "@/lib/pricing";
-import { trackEvent, getDeviceType } from "@/lib/tracking";
+import { trackEvent, getDeviceType, linkLeadAttribution } from "@/lib/tracking";
 import { captureAttribution } from "@/lib/estimatorStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -166,6 +166,7 @@ export default function Funnel() {
     
     const est = calcEstimate(settings, { ...data, square_footage: sqft, desired_system: data.desired_system || "flake" });
     const score = calcLeadScore(settings, data);
+    const attribution = captureAttribution();
     const lead = await base44.entities.Lead.create({
       first_name: data.first_name,
       last_name: data.last_name,
@@ -197,10 +198,10 @@ export default function Funnel() {
       notes: data.flake_color
         ? `Selected color: ${data.flake_color}${data.flake_color_name ? ` (${data.flake_color_name})` : ""}`
         : "",
-      ...captureAttribution()
+      ...attribution
     });
     setLeadId(lead.id);
-    await trackEvent("lead_created", { lead_id: lead.id });
+    await linkLeadAttribution(lead.id, { source: "main_funnel" });
     // Push to HubSpot CRM immediately (does not block the funnel).
     base44.functions.invoke("pushLeadToHubspot", { lead_id: lead.id }).catch(() => {});
     // Sync to Google Sheets (auto-creates the sheet on first call, does not block the funnel).
