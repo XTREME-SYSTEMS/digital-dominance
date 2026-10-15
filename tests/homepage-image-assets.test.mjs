@@ -25,7 +25,7 @@ test('stock generator produces 200 preview-only concepts with locally hosted cat
   assert.equal(items.length,200);
   assert.equal(STOCK_INDUSTRIES.length,20);
   for (const item of items) {
-    assert.match(item.preview_image_url,/^\/images\/(industries|home-industries)\/[a-z0-9_-]+\.png$/);
+    assert.match(item.preview_image_url,/^\/images\/(industries|home-industries)\/[a-z0-9_-]+\.jpg$/);
     assert.ok(item.content.includes(item.preview_image_url),'missing compiled photo '+item.name);
     assert.ok(item.content.includes('noindex,nofollow'));
     assert.equal(item.preview_only,true);
@@ -43,11 +43,11 @@ test('homepage card, gallery filters and floating hero mockups contain local ima
   const hero=text('src/components/launch-engine/cinematicHero.css');
   const showcase=text('src/components/launch-engine/TemplatesShowcase.jsx');
   for (const url of [
-    '/images/home-industries/real_estate.png',
-    '/images/industries/roof_repair.png',
-    '/images/industries/landscaping.png',
-    '/images/industries/personal_injury.png',
-    '/images/home-industries/med_spa.png',
+    '/images/home-industries/real_estate.jpg',
+    '/images/industries/roof_repair.jpg',
+    '/images/industries/landscaping.jpg',
+    '/images/industries/personal_injury.jpg',
+    '/images/home-industries/med_spa.jpg',
   ]) assert.ok(hero.includes(url)||showcase.includes(url),'missing local photo '+url);
   assert.doesNotMatch(hero,/images\.unsplash\.com|media\.base44\.com/);
   assert.doesNotMatch(showcase,/images\.unsplash\.com|media\.base44\.com/);

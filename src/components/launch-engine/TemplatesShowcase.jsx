@@ -7,14 +7,14 @@ import SafeImage from '@/components/ui/SafeImage';
 
 // Preserve the industry-image filters added on main while restoring premium full-page previews.
 const CATEGORIES = [
-  { id: 'all', label: 'All Styles', image: '/images/home-industries/real_estate.png' },
-  { id: 'contractor', label: 'Contractor', niches: ['epoxy','roofing','hvac','plumbing','electrical','remodeling','landscaping','garage'], image: '/images/industries/roof_repair.png' },
-  { id: 'health', label: 'Health & Wellness', niches: ['med_spa','dental','chiropractic','medical','wellness'], image: '/images/home-industries/med_spa.png' },
-  { id: 'legal', label: 'Legal', niches: ['legal','attorney','law'], image: '/images/industries/personal_injury.png' },
-  { id: 'professional', label: 'Professional', niches: ['insurance','mortgage','accounting','consulting','financial'], image: '/images/home-industries/insurance.png' },
-  { id: 'realestate', label: 'Real Estate', niches: ['real_estate','property','realtor'], image: '/images/home-industries/real_estate.png' },
-  { id: 'home', label: 'Home Services', niches: ['cleaning','pest_control','moving','painting'], image: '/images/home-industries/cleaning_services.png' },
-  { id: 'automotive', label: 'Automotive', niches: ['auto_detailing','auto_repair','towing'], image: '/images/home-industries/auto_detailing.png' },
+  { id: 'all', label: 'All Styles', image: '/images/home-industries/real_estate.jpg' },
+  { id: 'contractor', label: 'Contractor', niches: ['epoxy','roofing','hvac','plumbing','electrical','remodeling','landscaping','garage'], image: '/images/industries/roof_repair.jpg' },
+  { id: 'health', label: 'Health & Wellness', niches: ['med_spa','dental','chiropractic','medical','wellness'], image: '/images/home-industries/med_spa.jpg' },
+  { id: 'legal', label: 'Legal', niches: ['legal','attorney','law'], image: '/images/industries/personal_injury.jpg' },
+  { id: 'professional', label: 'Professional', niches: ['insurance','mortgage','accounting','consulting','financial'], image: '/images/home-industries/insurance.jpg' },
+  { id: 'realestate', label: 'Real Estate', niches: ['real_estate','property','realtor'], image: '/images/home-industries/real_estate.jpg' },
+  { id: 'home', label: 'Home Services', niches: ['cleaning','pest_control','moving','painting'], image: '/images/home-industries/cleaning_services.jpg' },
+  { id: 'automotive', label: 'Automotive', niches: ['auto_detailing','auto_repair','towing'], image: '/images/home-industries/auto_detailing.jpg' },
 ];
 
 const normalize = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
