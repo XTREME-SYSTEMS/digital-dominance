@@ -1,0 +1,52 @@
+{
+  "version": "2026-10-15-pilot1",
+  "source": "Xtreme Polishing Systems public location pages",
+  "verification": "public website listing; operating status and phone ownership must be rechecked before release",
+  "stores": [
+    {
+      "id": "pompano-beach-fl",
+      "city": "Pompano Beach",
+      "state": "FL",
+      "address": "2200 NW 32nd St, Suite 300, Pompano Beach, FL",
+      "phone": "9545161721",
+      "displayPhone": "(954) 516-1721",
+      "source": "https://xtremepolishingsystems.com/pages/pompano-beach"
+    },
+    {
+      "id": "miami-fl",
+      "city": "Miami",
+      "state": "FL",
+      "address": "2830 NW 79th Ave, Miami, FL",
+      "phone": "7865898609",
+      "displayPhone": "(786) 589-8609",
+      "source": "https://xtremepolishingsystems.com/pages/miami"
+    },
+    {
+      "id": "tampa-fl",
+      "city": "Tampa",
+      "state": "FL",
+      "address": "6302 Benjamin Rd, Suite 411, Tampa, FL",
+      "phone": "8133226259",
+      "displayPhone": "(813) 322-6259",
+      "source": "https://xtremepolishingsystems.com/pages/tampa"
+    },
+    {
+      "id": "fort-myers-fl",
+      "city": "Fort Myers",
+      "state": "FL",
+      "address": "10231 Metro Pkwy, Suite 105, Fort Myers, FL",
+      "phone": "2395108287",
+      "displayPhone": "(239) 510-8287",
+      "source": "https://xtremepolishingsystems.com/pages/ft-myers-fl"
+    },
+    {
+      "id": "naples-fl",
+      "city": "Naples",
+      "state": "FL",
+      "address": "3888 Mannix Dr, Naples, FL",
+      "phone": "2393196222",
+      "displayPhone": "(239) 319-6222",
+      "source": "https://xtremepolishingsystems.com/pages/naples-fl"
+    }
+  ]
+}
