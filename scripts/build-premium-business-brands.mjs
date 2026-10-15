@@ -66,15 +66,15 @@ const replace=(str,a,b,name)=>{
  return str.replace(a,b);
 };
 for(const b of configs){
- const dest=path.join(dest,b.id,'index.html');
- let html=fs.readFileSync(dest,'utf8');
+ const pageFile=path.join(dest,b.id,'index.html');
+ let html=fs.readFileSync(pageFile,'utf8');
  const original='<a href="#top" class="site-brand">'+escape(b.name)+'</a>';
  const updated='<a href="#top" class="site-brand" aria-label="'+escape(b.name)+' home"><img class="site-logo" src="../assets/brands/'+b.id+'-logo.svg" width="295" height="56" alt="'+escape(b.name)+' concept logo"></a>';
  html=replace(html,original,updated,b.id+'-header');
  html=replace(html,'</head>','<link rel="icon" type="image/svg+xml" href="../assets/brands/'+b.id+'-mark.svg"></head>',b.id+'-favicon');
  html=replace(html,'</style>','.site-brand{display:inline-flex;align-items:center;min-width:0}.site-logo{display:block;width:min(295px,43vw);height:56px;max-width:100%;object-fit:contain;object-position:left center}@media(max-width:700px){.site-logo{height:42px;width:min(235px,54vw)}}\n</style>',b.id+'-css');
  html=replace(html,'<a href="../index.html">Browse every master ↗</a>','<a href="../index.html">Browse every master ↗</a><a href="../brands/index.html">View brand identity ↗</a>',b.id+'-brandfooter');
- fs.writeFileSync(dest,html);
+ fs.writeFileSync(pageFile,html);
 }
 const galleryFile=path.join(dest,'index.html');
 let gallery=fs.readFileSync(galleryFile,'utf8');
