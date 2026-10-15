@@ -6,6 +6,9 @@ import {fileURLToPath} from 'node:url';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const DEST=path.join(ROOT,'public','premium','collection');
 const configs=JSON.parse(fs.readFileSync(path.join(ROOT,'data','premium-collection-20.json'),'utf8'));
+const journeys=JSON.parse(fs.readFileSync(path.join(ROOT,"data","premium-experience-journeys.json"),"utf8"));
+if(journeys.schema!=="apex.premium.industry-experience.v1"||Object.keys(journeys.patterns||{}).length!==17)throw Error("PREMIUM_JOURNEYS_NOT_17");
+const EXPERIENCES=journeys.patterns;
 const digest=s=>createHash('sha256').update(s).digest('hex');
 const E=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const photo=(s,key='photo',w=1800)=>{
@@ -59,8 +62,16 @@ const visuals={
  dental:{css:`.t-dental .hero{display:grid;grid-template-columns:.85fr 1.15fr;align-items:center;gap:5vw;padding:50px 6vw 110px;min-height:720px}.t-dental .hero .copy{padding:25px 0}.t-dental .hero h1{font-family:Georgia,serif;font-size:clamp(60px,6.5vw,122px);font-weight:400;line-height:1.03}.t-dental .hero .hero-photo{height:650px;border-radius:200px 18px 200px 18px;box-shadow:15px 18px 0 #c9e4df}.t-dental .hero .hero-photo img{filter:saturate(.7)}.t-dental .service-note{margin-top:35px;border-left:3px solid var(--acc);padding:9px 18px;font-size:13px;color:#45676a}.t-dental .site-footer{background:#d9eee9}@media(max-width:850px){.t-dental .hero{grid-template-columns:1fr;padding:55px 25px 80px}.t-dental .hero h1{font-size:70px}.t-dental .hero .hero-photo{height:460px}}`,html:s=>`<section class="hero"><div class="copy">${k(s)}<h1>${E(s.head)}</h1><p>${E(s.sub)}</p>${cta(s)}<div class="service-note">A quiet experience with room for every question.</div></div><div class="hero-photo">${img(s)}</div></section>`}
 };
 
+function experienceSection(s){
+ const ex=EXPERIENCES[s.id];
+ if(!ex||!Array.isArray(ex.pillars)||ex.pillars.length!==3)throw Error("MISSING_INDUSTRY_JOURNEY:"+s.id);
+ const cards=ex.pillars.map(pair=>`<span><strong>${E(pair[0])}</strong>${E(pair[1])}</span>`).join("");
+ return `<div><span class="eyebrow">${E(ex.eyebrow)}</span><h2>${E(ex.heading)}</h2><p>${E(ex.body)}</p><div class="stats-line">${cards}</div></div>`;
+}
 function interactive(s){
- const safe=E(s.industry),intro=`<h3>Explore ${safe} in this preview</h3><p>This is an interactive design demonstration. It does not collect real enquiries, send messages, process purchases or provide professional advice.</p>`;
+ const ex=EXPERIENCES[s.id];
+ if(!ex)throw Error("MISSING_INDUSTRY_INTERACTION:"+s.id);
+ const intro=`<h3>${E(ex.prompt)}</h3><p>${E(ex.helper)}</p>`;
  const controls={
  selector:`${intro}<div class="field"><label for="service-option">Explore a service</label><select id="service-option"><option value="01">Discovery and consultation</option><option value="02">Design and specification</option><option value="03">Maintenance and support</option></select></div><button type="button" data-demo="selector">Explore this selection ↗</button>`,
  filter:`${intro}<div class="chip-row" role="group" aria-label="Explore project studies"><button type="button" data-filter="residential" aria-pressed="true">Residential</button><button type="button" data-filter="commercial" aria-pressed="false">Commercial</button><button type="button" data-filter="concept" aria-pressed="false">Concept</button></div><div class="demo-feedback" role="status" id="demo-result">Residential visual studies selected.</div>`,
@@ -97,7 +108,7 @@ function page(s){
 <div class="feature-rail"><span>01 / ${E(s.industry)}</span><span>ART DIRECTED MASTER COMPOSITION</span><span>03 / RESPONSIVE DESIGN</span><span>FICTIONAL DEMONSTRATION</span></div>
 <section id="story" class="section"><div class="section-head"><div>${k(s)}<h2>${E(s.feature)}</h2></div><span class="number">02 / THE DISTINCTIVE IDEA</span></div><div class="story"><div class="picture">${img(s,'photo2')}</div><div class="story-copy"><span class="number">DESIGN CONCEPT / 001</span><h2>Every detail, <em>considered.</em></h2><p>${E(s.featureCopy)}</p><p>Each real-world version must be completed with authentic photography, accurate business information, original service content and verified operational connections.</p><div class="split-text"><span>01 / MASTER COMPOSITION</span><b>${E(s.family)}</b></div><div class="split-text"><span>02 / PRIMARY INTENT</span><b>${E(s.cta)}</b></div><a href="#experience" class="btn btn-ghost">Explore the experience ↗</a></div></div></section>
 <section id="proof" class="proof-strip" aria-labelledby="proof-heading"><div class="proof-inner"><div class="proof-heading"><div><span class="eyebrow">03 / THE PROOF PROTOCOL</span><h2 id="proof-heading">Beauty deserves<br><em>substance.</em></h2></div><p>A real ${E(s.industry)} website needs verifiable first-party facts, accessible interactions, distinctive media and reliable customer pathways. This premium concept is a design system, not an operating business.</p></div><div class="proof-steps"><div class="proof-step"><strong>01 / DISCOVER</strong><h3>Understand the customer.</h3><p>Research real buyers, serviceability and questions they need answered before committing.</p></div><div class="proof-step"><strong>02 / DESIGN</strong><h3>Create original evidence.</h3><p>Use approved imagery, authentic offers, correct brand facts and a differentiated conversion path.</p></div><div class="proof-step"><strong>03 / VERIFY</strong><h3>Test every interaction.</h3><p>Check responsive breakpoints, accessibility, forms, analytics, security and independent release receipts.</p></div></div></div></section>
-<section id="experience" class="experience"><div class="experience-inner"><div><span class="eyebrow">04 / FUNCTIONAL DESIGN PREVIEW</span><h2>Make the next step <em>effortless.</em></h2><p>A polished digital experience must do more than look good. Try this template-specific interaction. It works locally and performs no external actions.</p><div class="stats-line"><span><strong>REAL UI</strong>Functional local state</span><span><strong>NOINDEX</strong>Draft-only previews</span><span><strong>NO DATA</strong>No customer capture</span></div></div>${interactive(s)}</div></section>
+<section id="experience" class="experience"><div class="experience-inner">${experienceSection(s)}${interactive(s)}</div></section>
 </main><footer id="contact" class="site-footer"><div class="site-footer-inner">${k(s)}<h2>YOUR NEXT CHAPTER<br>STARTS WITH DESIGN.</h2><a class="btn" href="#top">Return to the beginning ↗</a><div class="footer-bottom"><strong>${E(s.name)}</strong><span>© 2026 STRATEGIC MINDS AI / ORIGINAL TEMPLATE STUDY</span><span>FICTIONAL DESIGN · NOT A REAL BUSINESS</span><a href="../index.html">Browse every master ↗</a></div></div></footer><script>${script}</script></body></html>`;
  return body;
 }
