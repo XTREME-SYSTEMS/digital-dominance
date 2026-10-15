@@ -13,20 +13,24 @@ const INDUSTRY_FALLBACKS = {
   default: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
 };
 
+// UTF-8 safe base64 encoder — btoa() throws on non-Latin1 chars (em dashes, arrows, etc.)
+const safeBtoa = (str) =>
+  btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))));
+
 // NEEDS_IMAGE_REVIEW placeholder — shown when failClosed and image fails.
 // This prevents the homepage from silently showing wrong industry imagery.
 const NEEDS_REVIEW_PLACEHOLDER =
   "data:image/svg+xml;base64," +
-  btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="700" height="500" viewBox="0 0 700 500">
+  safeBtoa(`<svg xmlns="http://www.w3.org/2000/svg" width="700" height="500" viewBox="0 0 700 500">
   <rect width="700" height="500" fill="#0a1220"/>
   <text x="350" y="240" font-family="sans-serif" font-size="22" font-weight="bold" fill="#ff6b6b" text-anchor="middle">NEEDS IMAGE REVIEW</text>
-  <text x="350" y="275" font-family="sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">Category image failed — do not substitute</text>
+  <text x="350" y="275" font-family="sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">Category image failed - do not substitute</text>
   </svg>`);
 
 // Generic gradient placeholder (data URI) — the ultimate fallback that never fails.
 const GRADIENT_PLACEHOLDER =
   "data:image/svg+xml;base64," +
-  btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  safeBtoa(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
   <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
   <stop offset="0" stop-color="#126fc8"/><stop offset="1" stop-color="#0d9488"/>
   </linearGradient></defs>
