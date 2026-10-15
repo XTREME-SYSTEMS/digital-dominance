@@ -59,7 +59,7 @@ export function auditHomepageAssetIntegrity() {
         ? bytes.subarray(0,4).toString() === 'RIFF' && bytes.subarray(8,12).toString() === 'WEBP'
         : bytes[0] === 0xff && bytes[1] === 0xd8);
     if (!headerOkay || bytes.length < 1024) {
-      issues.push({ category: item.id, issue: 'INVALID_IMAGE_BYTES', url });
+      issues.push({ category: item.id, issue: 'INVALID_IMAGE_BYTES', url, actual_header_hex: bytes.subarray(0,12).toString('hex'), bytes: bytes.length });
       continue;
     }
     if (sha256(bytes) !== item.image_sha256) {
