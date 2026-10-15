@@ -1,0 +1,36 @@
+name: APEX GPT Template Quality Gates
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'base44/functions/gptTemplateIngestor/**'
+      - 'src/pages/admin/GptTemplateSync.jsx'
+      - 'src/pages/admin/UniversalTemplateStudio.jsx'
+      - 'src/components/universal-template/GptTemplateIntake.jsx'
+      - 'scripts/gpt-template-ingestor-regression.mjs'
+      - '.github/workflows/apex-gpt-template-quality.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apex-gpt-template-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  auth-draft-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install lockfile dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Test actual Base44 handler in zero-provider sandbox
+        run: node scripts/gpt-template-ingestor-regression.mjs
+      - name: Build original site without production changes
+        run: npm run build
