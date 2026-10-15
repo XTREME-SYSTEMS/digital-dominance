@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   BASE44_API_ORIGIN, BASE44_APP_ID, BASE44_CANONICAL_APP_ID,
-  resolveBase44ApiOrigin,
+  resolveBase44ApiOrigin, requiresRegisteredGoogleOrigin, BASE44_REGISTERED_ADMIN_URL,
 } from "../src/lib/base44-backend.js";
 
 let checks = 0;
@@ -39,6 +39,15 @@ check(admin.includes('user.role !== "admin"'), "admin role enforcement preserved
 check(routes.includes("const AdminSignInRedirect ="), "protected screen preserved through authentication");
 check(routes.includes("encodeURIComponent(destination)"), "returnTo is URL-encoded");
 check(admin.includes("Admin access restricted"), "non-admin receives actionable access message");
+check(requiresRegisteredGoogleOrigin("digital-dominance-4chof01xl-strategic-minds-advisory.vercel.app"), "temporary Vercel preview cannot issue unregistered Google callback");
+check(requiresRegisteredGoogleOrigin("localhost"), "local frontend cannot use production Google callback");
+check(!requiresRegisteredGoogleOrigin("unlimitedwebsites.net"), "registered apex keeps native Google sign-in");
+check(!requiresRegisteredGoogleOrigin("www.unlimitedwebsites.net"), "registered www keeps native Google sign-in");
+check(!requiresRegisteredGoogleOrigin("digital-dominance-v-1.base44.app"), "native Base44 domain retains provider login");
+check(BASE44_REGISTERED_ADMIN_URL === "https://unlimitedwebsites.net/admin", "fallback is known registered admin, no dynamic credential in redirect");
+check(login.includes("Google sign-in: open registered admin") && login.includes("href={BASE44_REGISTERED_ADMIN_URL}"), "external preview offers safe real admin link");
+check(login.includes("needsRegisteredGoogleOrigin") && login.includes("window.location.assign(BASE44_REGISTERED_ADMIN_URL)"), "preview must never trigger unapproved OAuth callback");
+check(login.includes("does not sign") && login.includes("into this preview"), "external login fallback does not misrepresent active preview session");
 check(!admin.includes('return <Navigate to="/portal/dashboard"'), "never silently misroute unauthorized admin");
 console.log(JSON.stringify({status:"PASS",checks,provider:"Base44",preview_backend:"https://base44.app",
   production_backend:"same-origin existing proxy",admin_auth_bypass:false,
