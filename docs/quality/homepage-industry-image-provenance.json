@@ -1,30 +1,180 @@
 {
-  "schema_version": 1,
-  "scope": "Homepage industry category image provenance — Digital Dominance",
-  "description": "Deterministic provenance record for the 20 homepage industry category images. Each entry records the source, license, and intended semantic category. This file does NOT constitute semantic approval — that requires independent visual review recorded in approved-homepage-image-evidence.json.",
-  "generated_at": "2026-10-15T00:00:00.000Z",
-  "git_sha": "3076f87704bc7b3c8bed313128d27fd8fe1b8be9",
-  "registry_source": "src/data/homeIndustryImages.js",
-  "entries": [
-    { "category_id": "legal", "category_label": "Legal", "image_url": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Legal attorney office with law books and professional consultation setting" },
-    { "category_id": "real_estate", "category_label": "Real Estate", "image_url": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Modern real estate home with for sale sign and professional realtor" },
-    { "category_id": "epoxy", "category_label": "Epoxy Flooring", "image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/c3960f3b6_generated_image.png", "source": "base44_ai_generated", "license": "Base44 AI Generated — owned by app", "intended_subject": "Professional epoxy garage floor with glossy metallic finish" },
-    { "category_id": "roofing", "category_label": "Roofing", "image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/bfb095775_generated_image.png", "source": "base44_ai_generated", "license": "Base44 AI Generated — owned by app", "intended_subject": "Professional roofer installing shingles on a residential roof" },
-    { "category_id": "hvac", "category_label": "HVAC", "image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/74289ef54_generated_image.png", "source": "base44_ai_generated", "license": "Base44 AI Generated — owned by app", "intended_subject": "HVAC technician servicing air conditioning unit" },
-    { "category_id": "plumbing", "category_label": "Plumbing", "image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/f02fc3854_generated_image.png", "source": "base44_ai_generated", "license": "Base44 AI Generated — owned by app", "intended_subject": "Licensed plumber repairing pipes under sink" },
-    { "category_id": "electrical", "category_label": "Electrical", "image_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/60117973e_generated_image.png", "source": "base44_ai_generated", "license": "Base44 AI Generated — owned by app", "intended_subject": "Licensed electrician working on electrical panel" },
-    { "category_id": "med_spa", "category_label": "Med Spa", "image_url": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Luxury med spa treatment room with aesthetic equipment" },
-    { "category_id": "dental", "category_label": "Dental", "image_url": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Modern dental office with dental chair and equipment" },
-    { "category_id": "chiropractic", "category_label": "Chiropractic", "image_url": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Chiropractor performing spinal adjustment on patient" },
-    { "category_id": "remodeling", "category_label": "Remodeling", "image_url": "https://images.unsplash.com/photo-1503387762-592deb58ef3e?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Home remodeling construction with kitchen renovation in progress" },
-    { "category_id": "landscaping", "category_label": "Landscaping", "image_url": "https://images.unsplash.com/photo-1558904541-efa843a96f01?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Professional landscaping with stone patio and garden design" },
-    { "category_id": "solar", "category_label": "Solar", "image_url": "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Solar panels installed on residential roof" },
-    { "category_id": "pest_control", "category_label": "Pest Control", "image_url": "https://images.unsplash.com/photo-1581094271901-4d0e8e6f3a91?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Pest control technician spraying treatment around home exterior" },
-    { "category_id": "moving", "category_label": "Moving", "image_url": "https://images.unsplash.com/photo-1600519104149-8e1e3a3a3a3a?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Professional movers loading furniture into moving truck" },
-    { "category_id": "auto_detailing", "category_label": "Auto Detailing", "image_url": "https://images.unsplash.com/photo-1492144534155-93156a5f2de7?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Auto detailing professional polishing car in service bay" },
-    { "category_id": "restaurants", "category_label": "Restaurants", "image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Restaurant interior with elegant dining setup" },
-    { "category_id": "insurance", "category_label": "Insurance", "image_url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3a?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Insurance agent reviewing policy documents with client" },
-    { "category_id": "mortgage", "category_label": "Mortgage", "image_url": "https://images.unsplash.com/photo-1554224155-6726b6814e3d?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Mortgage professional reviewing home loan documents" },
-    { "category_id": "cleaning", "category_label": "Cleaning Services", "image_url": "https://images.unsplash.com/photo-1581578731548-c64695cccae9?w=700&h=500&fit=crop&q=85", "source": "unsplash", "license": "Unsplash License — free to use under Unsplash terms", "intended_subject": "Professional cleaning service team cleaning home interior" }
-  ]
+  "schema": "digital-dominance.homepage-image-provenance.v1",
+  "status": "CANDIDATES_NOT_RELEASE_APPROVED",
+  "items": [
+    {
+      "category_id": "legal",
+      "image_url": "/images/industries/personal_injury.png",
+      "image_sha256": "658e05b0b9cee0be3de6124a648075f4437d4c16e1af3983007b0de1ae5caca4",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/14edfc94f_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "real_estate",
+      "image_url": "/images/home-industries/real_estate.png",
+      "image_sha256": "79d8c9c8489e2bffedbc46d40629a9138401a9c4ad9a043ae888b2c132056058",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/e6aa23e34_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "epoxy",
+      "image_url": "/images/industries/epoxy_garage.png",
+      "image_sha256": "048eb8f2f7fce4210d7f86e506e45162975578b5ef2fd2f6ff782d9d75be2866",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/090c0dbb8_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "roofing",
+      "image_url": "/images/industries/roof_repair.png",
+      "image_sha256": "1065669c66dd89f367f25d46176260b176634e0f3fa13e343c9108ec9a8e8255",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/c04efeee7_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "hvac",
+      "image_url": "/images/industries/ac_repair.png",
+      "image_sha256": "e622adbec35be2cfe9a8a129258480a5e7e32aceb614a4bdfd0581928c2a72a1",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/2d921b8d0_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "plumbing",
+      "image_url": "/images/industries/emergency_plumbing.png",
+      "image_sha256": "8b5414fb4cb62695ae8d99c7a86460e263fcab9f63637174a1830f6e43b9a592",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/7796eb844_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "electrical",
+      "image_url": "/images/industries/electrician.png",
+      "image_sha256": "4fbf56afb8f850ee5738e152d4b5e8a595aec8be69c50658143c5eb06d351ecf",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ea9d7a219_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "med_spa",
+      "image_url": "/images/home-industries/med_spa.png",
+      "image_sha256": "0112d024001106934d793d9d6f73e85904a64aa5b9397f30fca74d61359c5f6c",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/5ef289bef_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "dental",
+      "image_url": "/images/industries/emergency_dentist.png",
+      "image_sha256": "6c83407ca07bc82078b58593d1f66f6f3d75ca71cfcba32b6bd7eb159fe04ee0",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/91d9ca217_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "chiropractic",
+      "image_url": "/images/home-industries/chiropractic.png",
+      "image_sha256": "c2725f006e1cd16be06036ca2c3b0602500aaf26206ae61a03bcd820c772d07b",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/e3d3c1306_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "remodeling",
+      "image_url": "/images/home-industries/remodeling.png",
+      "image_sha256": "f9ae6feeb19c88495503e0546a2c7ad12bb2da569604fc8b1a7f63c3eba4146a",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/bd651939c_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "landscaping",
+      "image_url": "/images/industries/landscaping.png",
+      "image_sha256": "4cd24df5d737360cd09031bd2bdd194e57a3f3658ee6eb87d40738c9aae24ffc",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a073d321e_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "solar",
+      "image_url": "/images/industries/solar_install.png",
+      "image_sha256": "a67b15286f1a5e1f3e639edbe38f5f1800ebac3e2d44206b2c66090aedcd7a57",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a14dfd9c8_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "pest_control",
+      "image_url": "/images/industries/pest_control.png",
+      "image_sha256": "7f856be55c036d73160b898e6b744e10cd7705f611456cc07250742cdd22789a",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/62099cc37_generated_image.png",
+      "license": "Existing user Base44 generated asset; entitlement subject to Base44 terms",
+      "source_type": "base44_owned_generated_asset",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "moving",
+      "image_url": "/images/home-industries/moving.png",
+      "image_sha256": "4307e46dbee5cfc16b54e9fe23de24e5fe8efee3eababbc960f46a8c16acbac2",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a2d49e89b_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "auto_detailing",
+      "image_url": "/images/home-industries/auto_detailing.png",
+      "image_sha256": "b9e56f9434bfea71477b5b5905eec8e9c41baba6f9103d7a32dadc79265545a8",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/6bee96b87_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "restaurants",
+      "image_url": "/images/home-industries/restaurants.png",
+      "image_sha256": "2227946c03b27569d83cc05659ad2d81688100dddb021e5a505c0c829c289021",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/6a26270b8_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "insurance",
+      "image_url": "/images/home-industries/insurance.png",
+      "image_sha256": "c7273c19b551a15a22891439dc650d6c58eb14fb49fc0dd7551fd4945aa16e19",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ce38bc06e_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "mortgage",
+      "image_url": "/images/home-industries/mortgage.png",
+      "image_sha256": "60dab21fbe0468029e5cdbf3b37c78e0ca1eff25559897c1e45529397af21ef7",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/23df705e2_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "category_id": "cleaning",
+      "image_url": "/images/home-industries/cleaning_services.png",
+      "image_sha256": "d0df492f625e56894e287769cf01e7775000a462538016133f98bdb877a0d851",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/c2936f808_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "semantic_status": "PENDING_INDEPENDENT_REVIEW"
+    }
+  ],
+  "source_git_ref": "d542216b199c0a9d29ed50fa5f9771c921faf7b3",
+  "assets_restored_git_sha": "e7905466b99dcaddf584ac96fc487a70464e6c3d",
+  "not_release_approval": true,
+  "limitation": "Asset hashes and URLs do not prove semantic category relevance or commercial license. Independent approval remains pending."
 }
