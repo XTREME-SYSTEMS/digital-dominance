@@ -211,3 +211,17 @@
   .wle-stage { height: 300px; }
   .wle-artboard { --wle-art-scale: .405; }
 }
+
+/* Keep both public navigation and protected admin entry reachable at 390px.
+   Move the existing admin access control into the open mobile menu; do not
+   shrink the approved branding into illegibility or hide the navigation. */
+.wle-home-admin-mobile { display: none; }
+@media (max-width: 600px) {
+  .wle-home-admin-desktop { display: none; }
+  .wle-home-admin-mobile { display: block; margin-top: 12px; }
+  .wle-home-admin-mobile > div > button { min-height: 44px; width: 100%; justify-content: center; }
+  .wle-home-nav-in { width: 100%; max-width: 100%; min-width: 0; }
+  .wle-home-logo { min-width: 0; flex-shrink: 1; }
+  .wle-home-logo-wordmark { min-width: 0; }
+  .wle-home-phone, .wle-mobile-nav-toggle { flex-shrink: 0; }
+}
