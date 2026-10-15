@@ -8,6 +8,7 @@ import { base44 } from '@/api/base44Client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import StockTemplateLibrary from '@/components/template-studio/StockTemplateLibrary';
 import { STOCK_QUERY } from '@/components/template-studio/useStockTemplates';
+import { hasRuntimeBase44AppId } from '@/lib/base44Binding';
 import StockStudioEditor from '@/components/template-studio/StockStudioEditor';
 import BenchmarkLibrary from '@/components/template-studio/BenchmarkLibrary';
 export default function StockStudio() {
@@ -27,7 +28,7 @@ export default function StockStudio() {
   return {...rec,id:"source-"+ind.key+"-"+key,
     source_version:STOCK_VERSION,catalog_source:"canonical_public_stock_compiler",preview_only:true};
  },[location.search]);
- const initial=useQuery({queryKey:['selected-stock-template',state?.selectedStockTemplateId],enabled:!!state?.selectedStockTemplateId,queryFn:()=>base44.entities.TemplateLibrary.get(state.selectedStockTemplateId)});
+ const initial=useQuery({queryKey:['selected-stock-template',state?.selectedStockTemplateId],enabled:hasRuntimeBase44AppId && !!state?.selectedStockTemplateId,queryFn:()=>base44.entities.TemplateLibrary.get(state.selectedStockTemplateId)});
  const active=selected||(!dismissed?(state?.selectedStockTemplateSnapshot||routeStock||initial.data):null);
  const draftPlan=state?.draftLaunchPlan?.template_id===state?.selectedStockTemplateId
    ? state.draftLaunchPlan : null;
@@ -44,6 +45,7 @@ export default function StockStudio() {
       catalog_source:"canonical_public_stock_compiler",preview_only:true});
     return;
   }
+  if (!hasRuntimeBase44AppId) return;
   const query={...STOCK_QUERY,niche:active.niche,sort_order:{$gt:active.sort_order}};
   let page=await base44.entities.TemplateLibrary.filter(query,{sort:'sort_order',limit:1});
   if(!page.items.length)page=await base44.entities.TemplateLibrary.filter({...STOCK_QUERY,niche:active.niche},{sort:'sort_order',limit:1});
