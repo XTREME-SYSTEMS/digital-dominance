@@ -17,7 +17,8 @@
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.48';
 import { patchCore } from '../../shared/aiGateway.ts';
-import { searchPromptLibrary } from '../../shared/engineeringPromptLibrary.ts';
+import { ENGINEERING_PROMPTS } from '../../shared/engineeringPromptLibrary.ts';
+import { buildPromptCatalog, routeSituationalPrompts } from '../../shared/situationalPromptRouter.mjs';
 
 // ── Deterministic intent patterns ─────────────────────────────────────────
 const INTENT_PATTERNS: Record<string, string[]> = {
@@ -335,8 +336,25 @@ function detectGaps(capabilityMap: any, intents: string[], systemTypes: string[]
   return gaps;
 }
 
+// Reuse the existing reviewed AgentIntelligence storage without creating a new registry.
+// Only records explicitly APPROVED, owner-scoped, enabled and tagged prompt_registry
+// are eligible. Any registry access failure falls back to built-ins, never to all records.
+async function loadPromptCatalog(svc: any, actorId: string) {
+  let intelligence: any[] = [];
+  try {
+    const records = await svc.entities.AgentIntelligence.filter(
+      { owner_id: actorId, active: true, category: 'custom' }, '-created_date', 200,
+    );
+    intelligence = (records || []).filter((r: any) =>
+      r.owner_id === actorId && Array.isArray(r.tags) && r.tags.includes('prompt_registry'));
+  } catch {
+    console.warn('[metaAgent] Reviewed external prompt registry unavailable; built-ins only.');
+  }
+  return buildPromptCatalog({ builtins: ENGINEERING_PROMPTS, intelligence, tenantId: actorId });
+}
+
 // ── Generate work packets from analysis ──────────────────────────────────
-function generateWorkPackets(sessionId: string, intents: string[], systemTypes: string[], matchedAssets: any[], gaps: any[], matchedPrompts: any[]) {
+function generateWorkPackets(sessionId: string, goal: string, intents: string[], systemTypes: string[], matchedAssets: any[], gaps: any[], promptCatalog: any[]) {
   const packets: any[] = [];
   let order = 0;
 
@@ -362,6 +380,20 @@ function generateWorkPackets(sessionId: string, intents: string[], systemTypes: 
       objective: 'Design and execute migration from current platform to target infrastructure',
       risk: 'PROTECTED',
       executor: 'SUPABASE',
+    },
+    ARCHITECTURE: {
+      title: 'Design Architecture & Interfaces',
+      phase: 'BUILD',
+      objective: 'Design a source-grounded, testable architecture before implementation',
+      risk: 'DRAFT',
+      executor: 'BASE44',
+    },
+    BUILD: {
+      title: 'Build and Verify in a Development Branch',
+      phase: 'BUILD',
+      objective: 'Implement approved capabilities on a nonproduction branch with tests',
+      risk: 'BRANCH_WRITE',
+      executor: 'BASE44',
     },
     COMPLETE: {
       title: 'Complete Missing Features',
@@ -481,22 +513,17 @@ function generateWorkPackets(sessionId: string, intents: string[], systemTypes: 
                        template.risk === 'BRANCH_WRITE' ? ['read', 'analyze', 'generate', 'write_branch'] :
                        ['read', 'analyze', 'plan'],
       forbidden_actions: template.risk === 'PROTECTED' ? ['execute', 'deploy', 'modify_secrets', 'delete'] : [],
-      recommended_prompts: matchedPrompts
-        .filter(p => {
-          if (intent === 'AUDIT' && (p.id === 'PROMPT-001' || p.id === 'PROMPT-004' || p.id === 'PROMPT-005')) return true;
-          if (intent === 'COMPLETE' && (p.id === 'PROMPT-002' || p.id === 'PROMPT-050')) return true;
-          if (intent === 'REPAIR' || intent === 'HEAL') return p.id === 'PROMPT-003' || p.id === 'PROMPT-032';
-          if (intent === 'HARDEN') return p.id === 'PROMPT-034' || p.id === 'PROMPT-023';
-          if (intent === 'MIGRATE') return p.id === 'PROMPT-011' || p.id === 'PROMPT-012' || p.id === 'PROMPT-013' || p.id === 'PROMPT-019';
-          if (intent === 'TEST' || intent === 'VALIDATE') return p.id === 'PROMPT-005' || p.id === 'PROMPT-049';
-          if (intent === 'DOCUMENT') return p.id === 'PROMPT-047' || p.id === 'PROMPT-048';
-          if (intent === 'OPTIMIZE') return p.id === 'PROMPT-033' || p.id === 'PROMPT-043';
-          if (intent === 'ARCHITECTURE') return p.id === 'PROMPT-008' || p.id === 'PROMPT-046';
-          if (intent === 'RELEASE_PREP') return p.id === 'PROMPT-050' || p.id === 'PROMPT-017';
-          return false;
-        })
-        .slice(0, 5)
-        .map(p => ({ name: p.name, reason: p.reason })),
+      // Each packet routes the actual goal against its own phase and role.
+      // Schema compatibility: recommended_prompts supports only name and reason.
+      // Immutable ID/version is persisted in name rather than discarded.
+      recommended_prompts: routeSituationalPrompts({
+        goal: goal + ' ' + template.objective,
+        intents: [intent], systemTypes, phase: template.phase, agentRole: template.executor,
+      }, promptCatalog, { maxPrompts: 5, minScore: 40 }).selected.map(p => ({
+        name: p.id + '@' + p.version + ' | ' + p.name,
+        reason: p.reason + '; source=' + p.source + '; risk=' + p.riskClass +
+          '; approval_required=' + String(p.requiresApproval),
+      })),
       recommended_tools: [template.executor],
       recommended_executor: template.executor,
       fallback_executor: 'HUMAN',
@@ -600,8 +627,13 @@ export default async function (req: Request): Promise<Response> {
         // Search Arsenal
         const matchedAssets = await searchArsenal(svc, goal, intents, systemTypes);
 
-        // Search Engineering Prompt Library
-        const matchedPrompts = searchPromptLibrary(goal, intents, systemTypes);
+        // Existing prompt library + approved owner-scoped extensions.
+        const promptCatalog = await loadPromptCatalog(svc, user.id);
+        const matchedPrompts = routeSituationalPrompts({ goal, intents, systemTypes }, promptCatalog,
+          { maxPrompts: 5, minScore: 40 }).selected.map(p => ({
+            id: p.id, name: p.name, category: p.category, risk_class: p.riskClass,
+            relevance: Math.min(100, p.score), reason: p.reason, version: p.version,
+          }));
 
         // Build capability map
         const capabilityMap = buildCapabilityMap(matchedAssets, intents, systemTypes);
@@ -610,7 +642,7 @@ export default async function (req: Request): Promise<Response> {
         const gaps = detectGaps(capabilityMap, intents, systemTypes);
 
         // Generate work packets
-        const packets = generateWorkPackets(sessionId, intents, systemTypes, matchedAssets, gaps, matchedPrompts);
+        const packets = generateWorkPackets(sessionId, goal, intents, systemTypes, matchedAssets, gaps, promptCatalog);
 
         // Create WorkPacket records
         const packetIds: string[] = [];
@@ -801,8 +833,8 @@ export default async function (req: Request): Promise<Response> {
             const allAssets = [...matchedAssets, ...focusedAssets].filter((a, i, arr) => arr.findIndex(b => b.item_id === a.item_id) === i);
             const capMap = buildCapabilityMap(allAssets, allIntents, systemTypes);
             const gaps = detectGaps(capMap, allIntents, systemTypes);
-            const focusedPrompts = searchPromptLibrary(focusedGoal, allIntents, systemTypes);
-            const newPackets = generateWorkPackets(body.session_id, focusedIntents, systemTypes, allAssets, gaps, focusedPrompts);
+            const promptCatalog = await loadPromptCatalog(svc, user.id);
+            const newPackets = generateWorkPackets(body.session_id, focusedGoal, focusedIntents, systemTypes, allAssets, gaps, promptCatalog);
 
             for (const pkt of newPackets) {
               const existing = await svc.entities.WorkPacket.filter({ packet_id: pkt.packet_id }, '-created_date', 1);
