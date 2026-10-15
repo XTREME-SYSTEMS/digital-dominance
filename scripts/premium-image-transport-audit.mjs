@@ -10,6 +10,12 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=JSON.parse(fs.readFileSync(path.join(root,'docs/quality/premium-hero-image-evidence-20261014.json'),'utf8'));
 const configs=JSON.parse(fs.readFileSync(path.join(root,'data/premium-collection-20.json'),'utf8'));
+const pinned=JSON.parse(fs.readFileSync(path.join(root,'docs/quality/premium-hero-asset-digests-20261015.json'),'utf8'));
+assert.equal(pinned.schema,'apex.premium.pinned-image-transport-receipts.v1');
+assert.equal(pinned.semantic_visual_approval,'PENDING');
+assert.equal(pinned.production_release_allowed,false);
+assert.equal(pinned.records.length,5);
+assert.equal(new Set(pinned.records.map(x=>x.master+'|'+x.field)).size,5);
 assert.equal(source.schema_version,'apex.premium.hero-image-review.v1');
 assert.equal(source.image_change_count,5);
 assert.equal(source.sources.length,5);
@@ -49,6 +55,12 @@ for(const entry of source.sources){
   sample.bytes=data.length;
   if(data.length<10000||data.length>12000000)throw Error('IMAGE_BYTES_SIZE_INVALID');
   sample.asset_sha256=digest(data);
+  // Cross-check against the independent CI artifact captured on 2026-10-15.
+  const approvedTransport=pinned.records.find(x=>
+    x.master===entry.master && x.field===entry.field && x.pexels_id===entry.pexels_id);
+  if(!approvedTransport || approvedTransport.source_url!==entry.source_url ||
+     approvedTransport.asset_sha256!==sample.asset_sha256 || approvedTransport.bytes!==data.length)
+    throw Error('PINNED_IMAGE_DIGEST_OR_SOURCE_DRIFT');
   sample.transport='PASS';
  } catch(e) {
   sample.transport='FAIL';
