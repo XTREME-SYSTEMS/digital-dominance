@@ -1,0 +1,269 @@
+{
+  "schema": "smai.premium.browser-screenshot-evidence.v1",
+  "created_at": "2026-10-15T01:17:53.080Z",
+  "preview_origin": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app",
+  "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4",
+  "source_type": "REAL_CHROME_SCREENSHOT_NOT_STOCK_PHOTOGRAPH",
+  "device": "JARVIS-COMMAND/headless-Chrome",
+  "desktop_qa_passes": 17,
+  "mobile_qa_passes": 17,
+  "production_release": false,
+  "guardian_visual_approval": "PENDING",
+  "screenshots": [
+    {
+      "id": "arcus-architecture",
+      "filename": "arcus-architecture-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/arcus-architecture/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "320d7dbd961d79d263c818677d6d7d27b171d836f8e2742fffe664b221a5dc8e",
+      "bytes": 92076,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "aster-escapes",
+      "filename": "aster-escapes-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/aster-escapes/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "69c310625c50183cf891b47c7f035d35efb984b522b13b569c9ec94fba306a2b",
+      "bytes": 119798,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "aurora-dental",
+      "filename": "aurora-dental-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/aurora-dental/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "3c772a52fa4e289be6f293ab9f2cb1c0ad98a1df52154d02e74c567733d3e7bf",
+      "bytes": 71341,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "eclipse-time",
+      "filename": "eclipse-time-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/eclipse-time/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "276e36e497e5ae71592153eb20d22db6f8f4c75852b18e56c25bad6f4dfa9db8",
+      "bytes": 52343,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "flow-home",
+      "filename": "flow-home-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/flow-home/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "9365e353a6a7c33cd8445fd0515f2e3d42fdcb61b243af79e4a6b66a2526d42a",
+      "bytes": 77668,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "forge-roofing",
+      "filename": "forge-roofing-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/forge-roofing/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "c47de6382c63ff75598df547dab3e5dd318a25ba4a75c757c92640cb17475ba0",
+      "bytes": 123795,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "halcyon-estates",
+      "filename": "halcyon-estates-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/halcyon-estates/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "707e3dd7df2debbe7d6ca0804b981a0bd5472b57ef6acb2c84b46dd063872785",
+      "bytes": 118722,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "heritage-homes",
+      "filename": "heritage-homes-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/heritage-homes/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "6158a74d518cf81c0aefd69d5266b55a5c311c6c2dc210704fc9a1f4873b8b21",
+      "bytes": 73644,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "lumen-solar",
+      "filename": "lumen-solar-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/lumen-solar/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "1794bfeef166cf4c75b6d7d3679f6519f3243a44d922f7d8ddbf63dac0949313",
+      "bytes": 71163,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "nexus-cloud",
+      "filename": "nexus-cloud-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/nexus-cloud/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "3038e065dae81c9159f37e74d9b9dba9f426e9f506f82373fc59b193333b20b5",
+      "bytes": 62348,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "nova-performance",
+      "filename": "nova-performance-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/nova-performance/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "e3cc0ac3d5a7c14bb3a967cf253f83081e8ddd2dc2ec0657228921e82981d945",
+      "bytes": 104604,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "phase-electric",
+      "filename": "phase-electric-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/phase-electric/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "8dc8ff7ad1e64bb2397ea726d6e2af44c55aff9a29c2c52503d61a649cd3cf73",
+      "bytes": 56881,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "remedy-restore",
+      "filename": "remedy-restore-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/remedy-restore/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "ce5d6af0aec1ea1106121b1be798bd60f45febeef2e12f7f159ffc2ce67cd931",
+      "bytes": 133540,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "sync-creative",
+      "filename": "sync-creative-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/sync-creative/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "a19a73e65da7469ae547b31c84cfc8719adb3adde83e5e08db711e07e3b09532",
+      "bytes": 60266,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "vanta-motors",
+      "filename": "vanta-motors-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/vanta-motors/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "7ade0e380c722146a8c219091e50e865477ccbbe4c025b12f21c0e282d8cbace",
+      "bytes": 58590,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "vault-private",
+      "filename": "vault-private-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/vault-private/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "ac7c0e34fcd96caa3f37ed1d34fe393dc1981a997c60c58984651bdaa547194f",
+      "bytes": 68952,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    },
+    {
+      "id": "veil-wellness",
+      "filename": "veil-wellness-desktop.jpg",
+      "preview_url": "https://digital-dominance-lpru3gcgp-strategic-minds-advisory.vercel.app/premium/collection/veil-wellness/index.html",
+      "page_http_status": 200,
+      "meta_robots_noindex": true,
+      "local_capture_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sha256": "2561a2af97f59402b16665fad90dea65dd63a9d378a2034568afabd2d2e67403",
+      "bytes": 58573,
+      "independently_approved_visual": false,
+      "source_commit_sha": "7311c9f12ad1c2581033462fcb203c35ee0b91b4"
+    }
+  ]
+}

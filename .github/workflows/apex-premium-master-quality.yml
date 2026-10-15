@@ -2,10 +2,13 @@ name: APEX Premium Master Quality
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feature/apex-premium-visual-foundry-v3-20261014]
     paths:
       - 'scripts/build-premium-20.mjs'
       - 'scripts/verify-premium-20.mjs'
+      - 'scripts/verify-premium-chrome-thumbnails.mjs'
+      - 'public/premium/collection/screenshots/**'
+      - 'public/premium/collection/SCREENSHOT_PROOF.json'
       - 'scripts/compile-premium-sitepack.mjs'
       - 'scripts/verify-premium-sitepack.mjs'
       - 'scripts/verify-premium-composer.mjs'
@@ -47,6 +50,8 @@ jobs:
         run: node scripts/verify-premium-composer.mjs
       - name: Build the unmodified app shell and premium previews
         run: npm run build
+      - name: Verify real Chrome thumbnails, source identity and capture SHA-256
+        run: node scripts/verify-premium-chrome-thumbnails.mjs
       - name: Validate generated source identity against exact catalog bytes
         run: |
           node --input-type=module -e '
