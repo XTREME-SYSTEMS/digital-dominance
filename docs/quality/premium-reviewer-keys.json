@@ -1,0 +1,7 @@
+{
+  "schema": "apex.premium.authorized-independent-reviewers.v1",
+  "keys": [],
+  "policy": "Reviewer keys may be provisioned only by separately authorized admin approval; the generator cannot issue or register its own reviewer key. Empty keys means ZERO promoted designs.",
+  "source_repo": "XTREME-SYSTEMS/digital-dominance",
+  "production_release_allowed": false
+}

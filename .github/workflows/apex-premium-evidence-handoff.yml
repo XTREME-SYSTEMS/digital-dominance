@@ -1,0 +1,94 @@
+name: APEX Premium Evidence and Approved Handoff
+
+on:
+  pull_request:
+    branches:
+      - feature/apex-premium-visual-foundry-v3-20261014
+    paths:
+      - 'scripts/premium-image-transport-audit.mjs'
+      - 'package.json'
+      - '.gitignore'
+      - 'scripts/premium-promotion-policy.mjs'
+      - 'scripts/promote-premium-catalog.mjs'
+      - 'scripts/export-premium-handoff.mjs'
+      - 'scripts/compile-premium-handoff-matrix.mjs'
+      - 'scripts/test-premium-handoff.mjs'
+      - 'scripts/test-premium-base44-mapping.mjs'
+      - 'scripts/premium-base44-template-mapping.mjs'
+      - 'docs/quality/premium-hero-image-evidence-20261014.json'
+      - 'docs/quality/premium-reviewer-keys.json'
+      - 'docs/quality/premium-signed-approvals.json'
+      - 'docs/quality/premium-hero-asset-digests-20261015.json'
+      - 'data/premium-collection-20.json'
+      - '.github/workflows/apex-premium-evidence-handoff.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  approve-only-from-independent-proof:
+    name: proof-first-catalog
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile candidate masters from actual V2-derived source
+        run: |
+          node scripts/build-premium-20.mjs
+          node scripts/build-premium-business-brands.mjs
+      - name: Run source and cryptographic approval regression
+        run: node scripts/test-premium-handoff.mjs
+      - name: Enforce exact Base44 TemplateLibrary schema before any admin import
+        run: node scripts/test-premium-base44-mapping.mjs
+      - name: Generate approved-only, noindex visual catalog
+        run: node scripts/promote-premium-catalog.mjs
+      - name: Verify all unapproved designs are excluded
+        run: node scripts/export-premium-handoff.mjs --list
+  image-transport-evidence:
+    name: immutable-image-byte-checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify the five replacement image bytes from Pexels
+        run: node scripts/premium-image-transport-audit.mjs
+      - name: Preserve exact response hash evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: premium-image-byte-evidence
+          path: factory/.premium-evidence-output/premium-photo-hashes.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  seven-product-handoff-matrix:
+    name: verified-draft-handoff-matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build 17 premium master HTML documents
+        run: node scripts/build-premium-20.mjs
+      - name: Export 17 x 7 draft-only versioned product handoffs
+        run: node scripts/compile-premium-handoff-matrix.mjs
+      - name: Preserve exact SHA-bound handoff packets
+        uses: actions/upload-artifact@v4
+        with:
+          name: premium-design-to-product-handoffs-119
+          path: factory/.pending-premium-handoffs/
+          # This intentionally hidden, gitignored sandbox directory contains
+          # ONLY synthetic design packets. Artifact v4 hides dotfolders unless
+          # enabled; without this it reports no files despite generation PASS.
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

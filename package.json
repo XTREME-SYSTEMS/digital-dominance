@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build-premium-20.mjs && node scripts/compile-premium-sitepack.mjs --example && node scripts/build-premium-business-brands.mjs && node scripts/write-premium-build-provenance.mjs && vite build",
+    "build": "node scripts/build-premium-20.mjs && node scripts/compile-premium-sitepack.mjs --example && node scripts/build-premium-business-brands.mjs && node scripts/promote-premium-catalog.mjs && node scripts/write-premium-build-provenance.mjs && vite build",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
@@ -16,7 +16,8 @@
     "preview": "vite preview",
     "test:premium-20": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/verify-premium-20.mjs",
     "test:premium-sitepack": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/verify-premium-sitepack.mjs",
-    "test:premium-business-brands": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/verify-premium-business-brands.mjs"
+    "test:premium-business-brands": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/verify-premium-business-brands.mjs",
+    "test:premium-approved-handoff": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/test-premium-handoff.mjs && node scripts/promote-premium-catalog.mjs && node scripts/test-premium-base44-mapping.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.53",
