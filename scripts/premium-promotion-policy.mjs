@@ -40,7 +40,7 @@ export function canonicalApproval(record) {
  };
  return JSON.stringify(payload);
 }
-export function validateApproval(master,approval,reviewer,sourceSha=SOURCE_SHA) {
+export function validateApproval(master,approval,reviewer,sourceSha=SOURCE_SHA,pinnedImageEvidence=[]) {
  const deny=reason=>({accepted:false,reason});
  if(!master||!approval)return deny('INDEPENDENT_REVIEW_MISSING');
  if(!reviewer||reviewer.key_id!==approval.reviewer_key_id||reviewer.status!=='ACTIVE')
@@ -77,6 +77,15 @@ export function validateApproval(master,approval,reviewer,sourceSha=SOURCE_SHA) 
     return deny('IMAGE_RIGHTS_REVIEW_MISSING');
   if(!safeUrl(item.source_url,item.photo_id.startsWith('pexels-')?'www.pexels.com':'unsplash.com'))
     return deny('IMAGE_PROVENANCE_SOURCE_NOT_VERIFIED');
+  // Independent reviewer testimony cannot substitute for the actual CDN
+  // bytes. Pin both image roles to a separate CI-fetched evidence artifact.
+  const pinned=pinnedImageEvidence.find(p=>
+    p.master===master.id && p.field===item.field &&
+    (p.photo_id || 'pexels-'+String(p.pexels_id))===item.photo_id);
+  if(!pinned || pinned.asset_sha256!==item.asset_sha256 ||
+     pinned.source_url!==item.source_url ||
+     !Number.isSafeInteger(pinned.bytes) || pinned.bytes<10000)
+    return deny('INDEPENDENT_CDN_BYTE_EVIDENCE_MISSING_OR_DRIFTED');
  }
  if(seen.size!==2)return deny('MISSING_IMAGE_ROLE');
  const signature=String(approval.signature||'');
@@ -90,7 +99,7 @@ export function validateApproval(master,approval,reviewer,sourceSha=SOURCE_SHA) 
  return {accepted:true,reason:'INDEPENDENTLY_SIGNED_PREVIEW_REUSE_ONLY',
          reviewer:approval.reviewer_id,source_sha:sourceSha,master_id:master.id};
 }
-export function approvedCatalog({configs,ledger,keys}) {
+export function approvedCatalog({configs,ledger,keys,pinnedImageEvidence=[]}) {
  assert.equal(ledger.schema,'apex.premium.signed-design-approvals.v1');
  assert.equal(keys.schema,'apex.premium.authorized-independent-reviewers.v1');
  assert.equal(ledger.production_release_allowed,false);
@@ -106,7 +115,7 @@ export function approvedCatalog({configs,ledger,keys}) {
   const records=approvals.filter(x=>x.master_id===master.id);
   const record=records.length===1?records[0]:null;
   const key=registered.find(x=>x.key_id===record?.reviewer_key_id);
-  const outcome=validateApproval(master,record,key);
+  const outcome=validateApproval(master,record,key,SOURCE_SHA,pinnedImageEvidence);
   if(records.length>1)outcome.reason='DUPLICATE_APPROVAL_RECEIPTS';
   decisions.push({master_id:master.id,industry:master.industry,layout:master.layout,
     status:outcome.accepted?'APPROVED_PREVIEW_REUSE':'PENDING_INDEPENDENT_APPROVAL',
