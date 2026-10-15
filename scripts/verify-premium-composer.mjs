@@ -23,6 +23,14 @@ for(const s of [
 ])assert.ok(wizard.includes(s),'Missing essential release/safety declaration: '+s);
 for(const id of ['monolith','argent','atelier'])assert.match(wizard,new RegExp("id:'"+id+"'"));
 assert.ok(wizard.includes('launch-composer'));
+const chromeProof=JSON.parse(fs.readFileSync(new URL('../public/premium/collection/SCREENSHOT_PROOF.json',import.meta.url),'utf8'));
+assert.equal(chromeProof.screenshots.length,17);
+assert.equal(chromeProof.guardian_visual_approval,'PENDING');
+assert.ok(wizard.includes("photo:'../collection/screenshots/'+t.id+'-desktop.jpg'"),'Composer must show audited website screenshots, not unrelated stock photography');
+assert.ok(wizard.includes('role="group" aria-label="Premium master designs"'),'Native button group must remain keyboard accessible');
+assert.ok(wizard.includes("b.setAttribute('aria-pressed',String(selected?.id===t.id))"),'Master choice must use native button press semantics');
+assert.ok(wizard.includes("for(const b of list.querySelectorAll('.master-option'))"),'Choosing a master must update in place without destroying the focused button');
+assert.doesNotMatch(wizard,/role="listbox"|aria-selected|photoSources|images\.unsplash\.com/,'No invalid listbox semantics or mismatched stock-photo master thumbnails');
 assert.ok(wizard.includes('source-identity.json'), 'Composer must load source identity from current deployment');
 assert.match(wizard, /PREVIEW_BUILD_IDENTITY_MISMATCH/, 'Stale or mismatched catalog manifests must fail');
 assert.match(wizard, /UNBOUND_NO_VERIFIED_SOURCE/, 'Unbound checkout must be labeled honestly');
