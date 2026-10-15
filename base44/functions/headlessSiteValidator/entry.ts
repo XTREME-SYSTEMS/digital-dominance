@@ -92,27 +92,37 @@ export default async function(req) {
       },
     };
 
+    // FAIL-CLOSED: null/untested checks are NOT passing.
+    // HTTP liveness alone cannot promote a site to 'passed'.
+    // Any unverified check = BLOCKED (not 'partial', not 'passed').
     const allPassed = Object.values(checks).every(c => c.passed === true);
     const anyFailed = Object.values(checks).some(c => c.passed === false);
-    const overall = anyFailed ? 'failed' : allPassed ? 'passed' : 'partial';
+    const anyUnverified = Object.values(checks).some(c => c.passed === null || c.passed === undefined);
     const unverifiedChecks = Object.entries(checks)
-      .filter(([, check]) => check.passed === null)
+      .filter(([, check]) => check.passed === null || check.passed === undefined)
       .map(([name]) => name);
+
+    // Overall status: 'passed' ONLY if every check is true. Otherwise BLOCKED.
+    const overall = allPassed ? 'passed' : 'blocked';
+    const release_eligible = allPassed && !anyFailed && !anyUnverified;
 
     const report = {
       url,
       site_id,
       validated_at: new Date().toISOString(),
       overall_status: overall,
+      release_eligible,
       checks,
       browser_used: Boolean(browserResult?.checks),
       unverified_checks: unverifiedChecks,
-      verified_coverage: `${Object.values(checks).filter(check => check.passed === true).length}/${Object.keys(checks).length}`, 
+      verified_coverage: `${Object.values(checks).filter(check => check.passed === true).length}/${Object.keys(checks).length}`,
       summary: overall === 'passed'
         ? 'Every declared browser and HTTP check passed with evidence'
-        : overall === 'failed'
-        ? 'Site validation failed — one or more checks did not pass'
-        : 'Partial validation — some checks could not be completed',
+        : anyFailed
+        ? 'Site validation FAILED — one or more checks returned false. NOT RELEASED.'
+        : anyUnverified
+        ? `Site validation BLOCKED — ${unverifiedChecks.length} check(s) unverified: ${unverifiedChecks.join(', ')}. HTTP liveness alone cannot establish page correctness. NOT RELEASED.`
+        : 'Site validation incomplete — NOT RELEASED.',
     };
 
     // Save validation receipt if site_id provided

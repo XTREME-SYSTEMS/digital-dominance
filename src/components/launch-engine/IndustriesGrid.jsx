@@ -2,43 +2,26 @@ import React, { useMemo } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import SafeImage from '@/components/ui/SafeImage';
+import { HOMEPAGE_INDUSTRY_IMAGES } from '@/data/homeIndustryImages';
 
-// Approved 20-industry visual directory. These are browse categories, not claims of live templates.
-const CATEGORIES = [
-  ['Legal', 'legal', 'photo-1589829545856-d10d557cf95f'],
-  ['Real Estate', 'real_estate', 'photo-1600596542815-ffad4c1539a9'],
-  ['Epoxy Flooring', 'epoxy', 'photo-1600607687920-4e2a09cf159d'],
-  ['Roofing', 'roofing', 'photo-1600566753190-17f0baa2a6c3'],
-  ['HVAC', 'hvac', 'photo-1581092160562-40aa08e78837'],
-  ['Plumbing', 'plumbing', 'photo-1621905251189-08b45d6a269e'],
-  ['Electrical', 'electrical', 'photo-1504307651254-35680f356dfd'],
-  ['Med Spa', 'med_spa', 'photo-1540555700478-4be289fbecef'],
-  ['Dental', 'dental', 'photo-1606811971618-4486d14f3f99'],
-  ['Chiropractic', 'chiropractic', 'photo-1576091160550-2173dba999ef'],
-  ['Remodeling', 'remodeling', 'photo-1600607687939-ce8a6c25118c'],
-  ['Landscaping', 'landscaping', 'photo-1416879595882-3373a0480b5b'],
-  ['Solar', 'solar', 'photo-1508514177221-188b1cf16e9d'],
-  ['Pest Control', 'pest_control', 'photo-1581578731548-c64695cccae9'],
-  ['Moving', 'moving', 'photo-1600585154340-be6161a56a0c'],
-  ['Auto Detailing', 'auto_detailing', 'photo-1492144534655-ae79c964c9d7'],
-  ['Restaurants', 'restaurants', 'photo-1517248135467-4c7edcad34c4'],
-  ['Insurance', 'insurance', 'photo-1573497019940-1c28c88b4f3a'],
-  ['Mortgage', 'mortgage', 'photo-1568605114967-8130f3a36994'],
-  ['Cleaning Services', 'cleaning', 'photo-1581578731548-c64695cccae9'],
-];
+// Canonical 20-industry visual directory sourced from the versioned registry.
+// These are browse categories, not claims of live templates.
+// Image URLs come from homeIndustryImages.js — the single source of truth.
+// SafeImage must NOT substitute unrelated fallbacks for these categories.
 
 const normalize = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 export default function IndustriesGrid({ onSelect, workspace = false }) {
   const { items: stockIndustries, error } = useStockTemplates({ is_default: true }, 20);
 
-  const industries = useMemo(() => CATEGORIES.map(([label, niche, imageId]) => {
-    const stock = stockIndustries.find(item => normalize(item.niche) === normalize(niche) || normalize(item.niche) === normalize(label));
+  const industries = useMemo(() => HOMEPAGE_INDUSTRY_IMAGES.map((cat) => {
+    const stock = stockIndustries.find(item => normalize(item.niche) === normalize(cat.niche) || normalize(item.niche) === normalize(cat.label));
     return {
-      id: stock?.id || niche,
-      label,
-      niche: stock?.niche || niche,
-      image: stock?.preview_image_url || `https://images.unsplash.com/${imageId}?w=700&h=500&fit=crop&q=85`,
+      id: stock?.id || cat.id,
+      label: cat.label,
+      niche: stock?.niche || cat.niche,
+      image: cat.image_url,
+      alt_text: cat.alt_text,
       verifiedTemplate: Boolean(stock?.id),
     };
   }), [stockIndustries]);
@@ -66,7 +49,7 @@ export default function IndustriesGrid({ onSelect, workspace = false }) {
               aria-label={`Explore ${ind.label} website designs`}
               className="group relative aspect-[5/3] min-h-[120px] overflow-hidden rounded-xl border border-slate-200 bg-[#061932] text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#20b8ff] hover:shadow-[0_12px_24px_rgba(3,80,160,.20)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3dc7ff]"
             >
-              <SafeImage src={ind.image} alt={`${ind.label} industry concept photography`} niche={ind.niche} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              <SafeImage src={ind.image} alt={ind.alt_text || `${ind.label} industry concept photography`} niche={ind.niche} failClosed className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
               <span className="absolute inset-0 bg-gradient-to-t from-[#00152a]/95 via-[#001c38]/10 to-transparent" aria-hidden="true" />
               <span className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-3 text-white">
                 <span className="text-[15px] font-extrabold leading-tight md:text-[17px]">{ind.label}</span>
