@@ -13,6 +13,16 @@ const INDUSTRY_FALLBACKS = {
   default: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
 };
 
+// NEEDS_IMAGE_REVIEW placeholder — shown when failClosed and image fails.
+// This prevents the homepage from silently showing wrong industry imagery.
+const NEEDS_REVIEW_PLACEHOLDER =
+  "data:image/svg+xml;base64," +
+  btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="700" height="500" viewBox="0 0 700 500">
+  <rect width="700" height="500" fill="#0a1220"/>
+  <text x="350" y="240" font-family="sans-serif" font-size="22" font-weight="bold" fill="#ff6b6b" text-anchor="middle">NEEDS IMAGE REVIEW</text>
+  <text x="350" y="275" font-family="sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">Category image failed — do not substitute</text>
+  </svg>`);
+
 // Generic gradient placeholder (data URI) — the ultimate fallback that never fails.
 const GRADIENT_PLACEHOLDER =
   "data:image/svg+xml;base64," +
@@ -28,8 +38,13 @@ const GRADIENT_PLACEHOLDER =
  * SafeImage — guarantees an image always renders successfully.
  * Tries: original URL → industry fallback → generic fallback → gradient placeholder.
  * Uses the platform Image component for Wix Media URLs (server-side resize/WebP).
+ *
+ * CRITICAL: When `failClosed` is true (used by the homepage IndustriesGrid),
+ * no industry/generic fallback is applied. A broken image shows a
+ * NEEDS_IMAGE_REVIEW placeholder instead of an unrelated category photo.
+ * This prevents the homepage from silently showing wrong industry imagery.
  */
-export default function SafeImage({ src, alt = "", category = "default", className = "", fittingType = "fill", ...props }) {
+export default function SafeImage({ src, alt = "", category = "default", className = "", fittingType = "fill", failClosed = false, ...props }) {
   const [currentSrc, setCurrentSrc] = useState(src);
   const [fallbackStage, setFallbackStage] = useState(0); // 0=original, 1=industry, 2=generic, 3=gradient
 
@@ -42,6 +57,13 @@ export default function SafeImage({ src, alt = "", category = "default", classNa
   const genericFallback = INDUSTRY_FALLBACKS.default;
 
   const handleError = () => {
+    // FAIL-CLOSED: when failClosed is true (homepage), do NOT substitute
+    // an unrelated industry image. Show NEEDS_IMAGE_REVIEW instead.
+    if (failClosed) {
+      setFallbackStage(3);
+      setCurrentSrc(NEEDS_REVIEW_PLACEHOLDER);
+      return;
+    }
     if (fallbackStage === 0) {
       setFallbackStage(1);
       setCurrentSrc(industryFallback);

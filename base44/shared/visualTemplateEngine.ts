@@ -75,6 +75,12 @@ const IMG = {
   elec_rewire: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/f8d1f7b0e_generated_image.png",
   // Generic fallbacks
   generic_hero: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80",
+  pest_hero: "https://images.unsplash.com/photo-1581094271901-4d0e8e6f3a91?w=1600&q=80",
+  fire_hero: "https://images.unsplash.com/photo-1600585154340-be6161a1a817?w=1600&q=80",
+  garage_door_hero: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80",
+  landscaping_hero: "https://images.unsplash.com/photo-1558904541-efa843a96f01?w=1600&q=80",
+  solar_hero: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1600&q=80",
+  remodeling_hero: "https://images.unsplash.com/photo-1503387762-592deb58ef3e?w=1600&q=80",
   avatar1: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80",
   avatar2: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
   avatar3: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
@@ -278,7 +284,7 @@ const NICHES: Record<string, NicheProfile> = {
     primary: "#14532d",
     primaryDark: "#052e16",
     accent: "#22c55e",
-    bgImage: IMG.generic_hero,
+    bgImage: IMG.pest_hero,
     serviceName: "Pest Control",
     services: [
       { title: "General Pest Control", desc: "Ants, roaches, spiders, and silverfish — eliminated and kept out with quarterly service.", img: IMG.gallery1 },
@@ -308,7 +314,7 @@ const NICHES: Record<string, NicheProfile> = {
     primary: "#14532d",
     primaryDark: "#052e16",
     accent: "#84cc16",
-    bgImage: IMG.gallery1,
+    bgImage: IMG.landscaping_hero,
     serviceName: "Landscaping Services",
     services: [
       { title: "Landscape Design", desc: "3D-rendered design plans tailored to your property, style, and budget.", img: IMG.gallery1 },
@@ -368,7 +374,7 @@ const NICHES: Record<string, NicheProfile> = {
     primary: "#7f1d1d",
     primaryDark: "#450a0a",
     accent: "#ef4444",
-    bgImage: IMG.generic_hero,
+    bgImage: IMG.fire_hero,
     serviceName: "Fire Damage Restoration",
     services: [
       { title: "Soot & Smoke Cleanup", desc: "Dry cleaning and chemical sponging for walls, ceilings, and all contents.", img: IMG.gallery1 },
@@ -398,7 +404,7 @@ const NICHES: Record<string, NicheProfile> = {
     primary: "#334155",
     primaryDark: "#1e293b",
     accent: "#3b82f6",
-    bgImage: IMG.generic_hero,
+    bgImage: IMG.garage_door_hero,
     serviceName: "Garage Door Services",
     services: [
       { title: "Spring Replacement", desc: "Torsion and extension spring repair — same-day, every day. Most common fix.", img: IMG.gallery1 },
@@ -488,7 +494,7 @@ const NICHES: Record<string, NicheProfile> = {
     primary: "#78350f",
     primaryDark: "#451a03",
     accent: "#f59e0b",
-    bgImage: IMG.gallery2,
+    bgImage: IMG.remodeling_hero,
     serviceName: "Home Remodeling",
     services: [
       { title: "Kitchen Remodeling", desc: "Custom cabinets, stone countertops, smart appliances, and beautiful finishes.", img: IMG.gallery2 },
@@ -548,7 +554,7 @@ const NICHES: Record<string, NicheProfile> = {
     primary: "#134e4a",
     primaryDark: "#042f2e",
     accent: "#14b8a6",
-    bgImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80",
+    bgImage: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1600&q=80",
     serviceName: "Dental Services",
     services: [
       { title: "General Dentistry", desc: "Cleanings, exams, fillings, and preventive care for patients of all ages.", img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80" },
@@ -578,7 +584,7 @@ const NICHES: Record<string, NicheProfile> = {
     primary: "#134e4a",
     primaryDark: "#042f2e",
     accent: "#2dd4bf",
-    bgImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80",
+    bgImage: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=80",
     serviceName: "Chiropractic Services",
     services: [
       { title: "Spinal Adjustment", desc: "Gentle, precise corrections for neck, back, and joint pain.", img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80" },
@@ -608,7 +614,7 @@ const NICHES: Record<string, NicheProfile> = {
     primary: "#1e3a5f",
     primaryDark: "#0f1e3a",
     accent: "#f59e0b",
-    bgImage: IMG.gallery1,
+    bgImage: IMG.solar_hero,
     serviceName: "Solar Installation",
     services: [
       { title: "Solar Panel Installation", desc: "Premium panels with 25-year performance warranty and expert installation.", img: IMG.gallery1 },
@@ -849,7 +855,7 @@ const NICHES: Record<string, NicheProfile> = {
     primary: "#1e293b",
     primaryDark: "#0f172a",
     accent: "#f59e0b",
-    bgImage: "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=1600&q=80",
+    bgImage: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=1600&q=80",
     serviceName: "Ecommerce Store",
     services: [
       { title: "Product Pages That Sell", desc: "Zoom, video, reviews, and trust badges out of the box. Built to convert browsers into buyers.", img: "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=800&q=80" },
@@ -1031,12 +1037,12 @@ function stars(n: number): string {
   return "★★★★★".substring(0, n) + "☆☆☆☆☆".substring(0, 5 - n);
 }
 
-export function generateTemplateHtml(niche: string, brandName?: string): string {
+export function generateTemplateHtml(niche: string, brandName?: string, layoutOverride?: 1 | 2 | 3): string {
   const c = getConfig(niche);
   const brand = brandName || c.serviceName;
 
   // Use layout variants for unique visual styles per niche
-  const layoutVariant = getLayoutForNiche(niche);
+  const layoutVariant = layoutOverride ?? getLayoutForNiche(niche);
   return generateLayoutVariantHtml(c as any, brand, layoutVariant);
 }
 

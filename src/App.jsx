@@ -1,8 +1,9 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { Rocket } from 'lucide-react';
+import { useEffect } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -140,6 +141,9 @@ import BackgroundOperations from '@/pages/admin/BackgroundOperations';
 import MultiTemplateLauncher from '@/pages/admin/MultiTemplateLauncher';
 import GptTemplateSync from '@/pages/admin/GptTemplateSync';
 import JsonGptSync from '@/pages/admin/JsonGptSync';
+import ImageValidationDashboard from '@/pages/admin/ImageValidationDashboard';
+import GeneratorRegistry from '@/pages/admin/GeneratorRegistry';
+import OneClickFactory from '@/pages/admin/OneClickFactory';
 import GoogleHappiness from '@/pages/admin/GoogleHappiness';
 import GoogleBatchSubmission from '@/pages/admin/GoogleBatchSubmission';
 import GodModeSimulationLab from '@/pages/admin/GodModeSimulationLab';
@@ -404,6 +408,9 @@ const AuthenticatedApp = () => {
         <Route path="multi-launch" element={<MultiTemplateLauncher />} />
         <Route path="gpt-template-sync" element={<GptTemplateSync />} />
       <Route path="json-gpt-sync" element={<JsonGptSync />} />
+      <Route path="image-validator" element={<ImageValidationDashboard />} />
+      <Route path="generator-registry" element={<GeneratorRegistry />} />
+      <Route path="one-click-factory" element={<OneClickFactory />} />
         <Route path="google-happiness" element={<GoogleHappiness />} />
         <Route path="google-batch" element={<GoogleBatchSubmission />} />
         <Route path="god-mode-lab" element={<GodModeSimulationLab />} />

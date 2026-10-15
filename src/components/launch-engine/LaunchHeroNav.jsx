@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, Phone, Rocket, X } from 'lucide-react';
+import AdminAccessDropdown from '@/components/launch-engine/AdminAccessDropdown';
 
 const links = [
   ['Industries', '#industries'],
@@ -31,6 +32,8 @@ export default function LaunchHeroNav() {
         <a className="wle-home-phone" href="tel:+17722090266" aria-label="Call Digital Dominance at 772 209 0266">
           <Phone aria-hidden="true" /><span>(772) 209-0266</span>
         </a>
+
+        <AdminAccessDropdown />
 
         <button type="button" className="wle-mobile-nav-toggle" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen} aria-controls="wle-mobile-nav" onClick={() => setMenuOpen(value => !value)}>
           {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
