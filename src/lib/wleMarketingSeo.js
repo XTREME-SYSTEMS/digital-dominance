@@ -12,6 +12,10 @@ export const WLE_MARKETING_ROUTES = Object.freeze({
     title: 'Website Launch Engine | Unlimited Websites',
     description: 'Explore the Website Launch Engine, browse premium industry website concepts and prepare a review-gated launch plan.',
   },
+  '/pricing': {
+    title: 'Website Launch Pricing | Unlimited Websites',
+    description: 'Explore website launch options and request details about premium website design, templates and ongoing support.',
+  },
   '/templates': {
     title: 'Premium Website Templates | Unlimited Websites',
     description: 'Browse 200 compiled website concepts across 20 industries and 10 distinct design approaches. Examples are previews, not published business sites.',
