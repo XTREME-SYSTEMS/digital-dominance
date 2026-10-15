@@ -2,6 +2,15 @@ import base44 from "@base44/vite-plugin"
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { execFileSync } from "node:child_process";
+import { BASE44_CANONICAL_APP_ID } from "./src/lib/base44-backend.js";
+
+// The Vite Base44 plugin needs this PUBLIC identity during bundling.
+// Vercel's existing project lacks VITE_BASE44_APP_ID; do not inject a secret,
+// impersonate a user, or enable a new backend proxy.
+if (!process.env.VITE_BASE44_APP_ID) {
+  process.env.VITE_BASE44_APP_ID = BASE44_CANONICAL_APP_ID;
+}
+
 
 function sourceIdentity() {
   const fromPlatform = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GITHUB_SHA;
