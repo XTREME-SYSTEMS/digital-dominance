@@ -54,13 +54,13 @@
 .wle-float-head { font-size: 22px; font-weight: 950; line-height: 1.02; letter-spacing: -.046em; margin-top: 30px; text-shadow: 0 1px 5px #0009; }
 .wle-float-button { display: inline-block; background: rgb(var(--launch-home-blue)); border-radius: 2px; padding: 6px 9px; margin-top: 15px; font-size: 8px; font-weight: 750; }
 .wle-float-estate { width: 263px; height: 250px; left: 16px; top: 146px; z-index: 2; transform: perspective(800px) rotateY(9deg) rotateZ(-7deg); }
-.wle-photo-estate { background-image: url("https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=850&q=80"); }
+.wle-photo-estate { background-image: url("/images/home-industries/real_estate.png"); }
 .wle-float-landscape { width: 267px; height: 245px; left: 227px; top: 20px; z-index: 3; transform: perspective(800px) rotateY(-8deg) rotateZ(-5deg); }
-.wle-photo-landscape { background-image: url("https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=850&q=80"); }
+.wle-photo-landscape { background-image: url("/images/industries/landscaping.png"); }
 .wle-float-legal { width: 263px; height: 256px; left: 515px; top: 58px; z-index: 3; transform: perspective(850px) rotateY(-9deg) rotateZ(4deg); }
-.wle-photo-legal { background-image: url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=850&q=80"); }
+.wle-photo-legal { background-image: url("/images/industries/personal_injury.png"); }
 .wle-float-spa { width: 195px; height: 286px; left: 655px; top: 183px; z-index: 2; transform: perspective(850px) rotateY(-17deg) rotateZ(6deg); }
-.wle-photo-spa { background-image: url("https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=650&q=80"); background-position: 60% center; }
+.wle-photo-spa { background-image: url("/images/home-industries/med_spa.png"); background-position: 60% center; }
 .wle-float-spa .wle-float-head { font-size: 20px; }
 .wle-laptop { position: absolute; left: 135px; top: 238px; width: 647px; height: 355px; z-index: 6; transform: perspective(1300px) rotateX(2deg) rotateY(-6deg) rotateZ(2deg); filter: drop-shadow(0 18px 25px #000b); }
 .wle-laptop-lid { height: 326px; border: 9px solid #081a32; background: #03152e; border-radius: 15px 15px 5px 5px; box-shadow: 0 0 0 2px #72c7ff,0 0 17px 6px #048fff7a,inset 0 0 11px #60b8ff; }
@@ -69,7 +69,7 @@
 .wle-site-navbar strong { font-size: 12px; letter-spacing: -.02em; }
 .wle-site-navbar > span { padding: 9px 10px; border-radius: 2px; background: #0877ea; color: rgb(var(--launch-home-paper)); font-weight: 800; font-size: 8px; }
 .wle-site-links { color: rgb(var(--launch-home-muted)); font-size: 8px; font-weight: 700; }
-.wle-roof-photo { height: 217px; background-image: url("https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1100&q=88"); background-size: cover; background-position: 56% center; }
+.wle-roof-photo { height: 217px; background-image: url("/images/industries/roof_repair.png"); background-size: cover; background-position: 56% center; }
 .wle-roof-shade { height: 100%; padding: 31px 38px; background: linear-gradient(90deg,#001832e9,#031b32b0 42%,#001b3233 85%); color: rgb(var(--launch-home-paper)); }
 .wle-roof-shade small { font-size: 9px; letter-spacing: .19em; color: #5ac9ff; }
 .wle-roof-shade h2 { font-size: 33px; font-weight: 950; letter-spacing: -.044em; line-height: 1.02; margin: 13px 0 5px; color: rgb(var(--launch-home-paper)); }
