@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/build-premium-20.mjs'
+      - 'scripts/build-premium-business-brands.mjs'
+      - 'scripts/verify-premium-business-brands.mjs'
       - 'scripts/verify-premium-20.mjs'
       - 'scripts/compile-premium-sitepack.mjs'
       - 'scripts/verify-premium-sitepack.mjs'
@@ -47,6 +49,8 @@ jobs:
         run: node scripts/verify-premium-composer.mjs
       - name: Build the unmodified app shell and premium previews
         run: npm run build
+      - name: Verify 20 live-grade SVG business logos and gallery navigation after final build
+        run: node scripts/verify-premium-business-brands.mjs
       - name: Validate generated source identity against exact catalog bytes
         run: |
           node --input-type=module -e '
