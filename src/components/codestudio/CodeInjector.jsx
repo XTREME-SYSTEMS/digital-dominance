@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { hasRuntimeBase44AppId } from "@/lib/base44Binding";
 
 // Injects active CodeBlocks into the DOM based on their scope and the current route.
 // CSS → <style> in <head>, JS → <script> in <body>, HTML → rendered div, meta → <head>.
@@ -11,6 +12,7 @@ export default function CodeInjector() {
   const injectedRef = useRef([]);
 
   useEffect(() => {
+    if (!hasRuntimeBase44AppId) return;
     base44.entities.CodeBlock.filter({ active: true }, "-created_date", 200)
       .then(setBlocks)
       .catch(() => {});
