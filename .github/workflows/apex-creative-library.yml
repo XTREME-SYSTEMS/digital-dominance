@@ -2,7 +2,7 @@ name: APEX Universal Creative Library Validation
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feature/apex-premium-visual-foundry-v3-20261014]
     paths:
       - 'data/apex-universal-creative-library.json'
       - 'studio/apex-universal-library.html'
