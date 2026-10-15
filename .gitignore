@@ -33,3 +33,6 @@ base44/.app.jsonc
 
 # Local-only imported operator SitePacks, never public or committed
 factory/.sitepack-preview-output/
+
+# Deterministic universal creative library build outputs
+public/premium/libraries/
