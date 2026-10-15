@@ -1,0 +1,57 @@
+name: Independent Template Gallery Browser QA
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gallery-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install existing dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build source-compiled gallery
+        run: npm run build
+      - name: Resolve browser
+        shell: bash
+        run: |
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "Chrome unavailable, independent gallery validation BLOCKED" >&2
+            exit 1
+          fi
+          echo "CHROME_BIN=$CHROME" >> "$GITHUB_ENV"
+      - name: Start isolated preview
+        shell: bash
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4178 > /tmp/dd-preview-4178.log 2>&1 &
+          for n in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:4178/templates -o /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/dd-preview-4178.log
+          exit 1
+      - name: Independently verify previews, catalog and selection route
+        env:
+          QA_BASE_URL: http://127.0.0.1:4178/
+          QA_OUT: audit-evidence/template-gallery-ci
+        run: node scripts/independent-template-gallery-qa.cjs
+      - name: Preserve Chrome proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: template-gallery-browser-proof
+          path: audit-evidence/template-gallery-ci/
+          if-no-files-found: warn

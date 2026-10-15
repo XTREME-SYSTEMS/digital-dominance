@@ -13,6 +13,7 @@ import { LOGO_URL } from '@/components/Logo';
 import Home from '@/pages/Home';
 import HomeNew from '@/pages/HomeNew';
 import LaunchEngine from '@/pages/LaunchEngine';
+import TemplateConceptPreview from '@/pages/TemplateConceptPreview';
 import TemplatesGallery from '@/pages/TemplatesGallery';
 import Pricing from '@/pages/Pricing';
 import Tech from '@/pages/Tech';
@@ -244,6 +245,7 @@ const AuthenticatedApp = () => {
       <Route path="/oauth/consent" element={<OAuthConsent />} />
       <Route path="/" element={<LaunchEngine />} />
       <Route path="/templates" element={<TemplatesGallery />} />
+      <Route path="/preview-template/:slug" element={<TemplateConceptPreview />} />
       <Route path="/launch-engine" element={<LaunchEngine />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/tech" element={<Tech />} />

@@ -9,6 +9,7 @@ import StudioMediaActions from '@/components/template-studio/StudioMediaActions'
 import GoogleReadinessPanel from '@/components/template-studio/GoogleReadinessPanel';
 
 export default function StockStudioEditor({ template, onBack, onNext }) {
+  const localPreview = Boolean(template.is_local_preview);
   const queryClient = useQueryClient();
   const [brand, setBrand] = useState(null);
   const [assets, setAssets] = useState({});
@@ -28,7 +29,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   const manifest = template.sections?.find(s => s.section_type === 'manifest')?.config;
   const compiled = useQuery({
     queryKey: ['stock-variation', template.id, brand?.accent, assets],
-    enabled: !!brand || !!assets.logoUrl || !!assets.videoUrl,
+    enabled: !localPreview && (!!brand || !!assets.logoUrl || !!assets.videoUrl),
     queryFn: async () => {
       const res = await base44.functions.invoke('stockTemplateFactory', {
         action: 'compile',
@@ -41,7 +42,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   });
 
   const download = async () => {
-    const html = compiled.data?.html || (await base44.entities.TemplateLibrary.get(template.id)).content;
+    const html = compiled.data?.html || (localPreview ? template.content : (await base44.entities.TemplateLibrary.get(template.id)).content);
     const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
     const link = document.createElement('a');
     link.href = url;
@@ -51,6 +52,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   };
 
   const handlePublishLive = async () => {
+    if (localPreview) { setPublishError('This design is preview-only. It cannot be published until authenticated provisioning and release approval are verified.'); return; }
     const slug = (template.slug || template.niche || 'site').toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 40);
     setPublishing(true);
     setPublishError(null);
@@ -79,7 +81,8 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
       </div>
 
       <BrandGenerator selected={brand} onSelect={setBrand} />
-      <StudioMediaActions industry={template.niche} onAssets={setAssets} />
+      {!localPreview && <StudioMediaActions industry={template.niche} onAssets={setAssets} />}
+      {localPreview && <p role="status" className="rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm text-sky-900">This complete website concept is compiled locally from your existing Stock Factory. You can change its brand color and download its HTML. Publishing, paid media and lead collection remain disabled until verified.</p>}
 
       <div className="flex flex-wrap gap-2">
         <Button variant={mode === 'desktop' ? 'default' : 'outline'} onClick={() => setMode('desktop')}>Desktop</Button>
@@ -88,12 +91,12 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
         <Button variant="outline" onClick={download} disabled={compiled.isFetching}>Download preview HTML</Button>
         <Button
           onClick={handlePublishLive}
-          disabled={publishing}
+          disabled={publishing || localPreview}
           className="ml-auto"
           style={{ background: 'linear-gradient(135deg, #126fc8, #0d9488)', color: '#fff' }}
         >
           {publishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
-          {publishing ? 'Publishing live...' : 'Publish Live to Web'}
+          {localPreview ? 'Preview only: publishing gated' : publishing ? 'Publishing live...' : 'Publish Live to Web'}
         </Button>
       </div>
 
@@ -119,12 +122,12 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
       {compiled.error && <p role="alert" className="text-sm text-destructive">{compiled.error.message}</p>}
 
       <div className={mode === 'mobile' ? 'mx-auto h-[650px] w-full max-w-[390px] overflow-hidden rounded-xl border border-border' : 'h-[650px] overflow-hidden rounded-xl border border-border'}>
-        <StockTemplatePreview template={template} overrideHtml={compiled.data?.html} />
+        <StockTemplatePreview template={template} overrideHtml={compiled.data?.html} brand={brand} />
       </div>
 
-      <p className="text-sm text-muted-foreground">Click "Publish Live to Web" to deploy this template with your brand customization to a live Vercel URL. Google Search Console, sitemap, and indexer submission happen automatically.</p>
+      <p className="text-sm text-muted-foreground">{localPreview ? 'Preview-only website source. Download the concept, validate business details and receive approval before using any live launch adapter.' : 'Live publishing is a protected action: verify the deployment target, backend, security gates and operator approval before any release.'}</p>
 
-      <GoogleReadinessPanel key={template.id} template={template} />
+      {!localPreview && <GoogleReadinessPanel key={template.id} template={template} />}
     </div>
   );
 }

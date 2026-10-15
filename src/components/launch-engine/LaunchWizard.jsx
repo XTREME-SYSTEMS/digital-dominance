@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Rocket, MapPin, Check, ChevronRight, Eye } from "lucide-react";
+import { X, Rocket, Check, ChevronRight, Eye } from "lucide-react";
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import BrandGenerator from "@/components/launch-engine/BrandGenerator";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
@@ -30,6 +30,11 @@ export default function LaunchWizard({ initial, onClose }) {
   const canAdvance = step === 0 ? !!selection.industry : step === 1 ? !!selection.template : step === 3 ? selection.count > 0 : true;
 
   const launch = () => {
+    if (!selection.template) return;
+    if (selection.template.is_local_preview) {
+      navigate('/preview-template/' + encodeURIComponent(selection.template.slug));
+      return;
+    }
     navigate('/admin/template-studio', { state: { selectedStockTemplateId:selection.template.id } });
   };
 

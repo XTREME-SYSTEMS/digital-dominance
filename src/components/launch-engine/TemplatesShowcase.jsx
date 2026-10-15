@@ -25,23 +25,22 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
   const [preview, setPreview] = useState(null);
   const [category, setCategory] = useState('all');
   // Latest main's is_default guard keeps this homepage an intentionally curated selection.
-  const { items, isLoading, error } = useStockTemplates({ is_default: true }, 20);
+  const { items, isLoading, error, source } = useStockTemplates({}, 200);
 
   const featured = useMemo(() => {
     const selected = CATEGORIES.find(item => item.id === category) || CATEGORIES[0];
     const filtered = items.filter(template => matchesCategory(template, selected));
     if (category !== 'all') return filtered.slice(0, 6);
-    const seen = new Set();
-    const unique = [];
-    for (const template of filtered) {
-      const niche = normalize(template.niche || template.name);
-      if (!seen.has(niche)) {
-        seen.add(niche);
-        unique.push(template);
-      }
-      if (unique.length === 6) break;
-    }
-    return unique;
+    const featuredDesigns = [
+      ['epoxy', 'immersive'], ['legal', 'signature'],
+      ['med_spa', 'editorial'], ['real_estate', 'portfolio'],
+      ['roofing', 'bento'], ['auto_detailing', 'directory'],
+    ];
+    const curated = featuredDesigns.map(([niche, design]) => filtered.find(template =>
+      normalize(template.niche) === normalize(niche) &&
+      template.sections?.some(section => section.config?.design_key === design)
+    )).filter(Boolean);
+    return curated.length >= 4 ? curated : filtered.slice(0, 6);
   }, [items, category]);
 
   return (
@@ -73,6 +72,7 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
           ))}
         </div>
 
+        {source === 'original_compiler_previews' && <p role="status" className="mb-4 text-sm text-[#b5eaff]">200 full-page design concepts available from the original template compiler. Preview-only: website releases require approval.</p>}
         {isLoading && <p role="status" className="mb-4 text-sm text-[#b5eaff]">Loading template previews…</p>}
         {error && <p role="alert" className="mb-5 rounded-xl border border-amber-400/30 bg-amber-500/10 p-4 text-sm text-amber-100">Template previews are temporarily unavailable. Open the full catalog to try again.</p>}
 
@@ -84,9 +84,13 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
                 <span aria-hidden="true" className="text-[#66ceff]">● ● ●</span><span>{template.niche || 'Website'}</span>
               </div>
               <div className="relative aspect-[16/10] overflow-hidden bg-[#15375e]">
-                <SafeImage src={template.preview_image_url} alt={`${template.name} website template preview`}
-                  category={category === 'all' ? 'default' : category}
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]" />
+                {template.is_local_preview && template.content
+                  ? <iframe title={template.name + ' original website design'} srcDoc={template.content}
+                      sandbox="" tabIndex={-1} aria-hidden="true" loading="lazy"
+                      className="pointer-events-none absolute inset-0 h-full w-full border-0" />
+                  : <SafeImage src={template.preview_image_url} alt={`${template.name} website template preview`}
+                      category={category === 'all' ? 'default' : category}
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]" />}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#001024]/75 via-transparent to-transparent" aria-hidden="true" />
                 <span className="absolute bottom-4 right-4 flex items-center gap-2 rounded-lg border border-white/70 bg-[#0479ec]/90 px-3 py-2 text-xs font-bold text-white">
                   View Full Preview <ExternalLink className="h-3.5 w-3.5" />

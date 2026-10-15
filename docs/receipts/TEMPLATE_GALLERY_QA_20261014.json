@@ -1,0 +1,67 @@
+{
+  "schema": "digital-dominance.template-gallery-qa.v1",
+  "status": "PASS",
+  "base": "http://127.0.0.1:4178/",
+  "results": [
+    {
+      "view": "desktop",
+      "page": "/",
+      "pass": true,
+      "initial": {
+        "cards": 6,
+        "sourceMessage": true,
+        "validHtml": true,
+        "imageReferences": true,
+        "overflow": 0
+      },
+      "modal": {
+        "exists": true,
+        "htmlLength": 12411,
+        "choose": true
+      },
+      "wizardOpened": true
+    },
+    {
+      "view": "mobile",
+      "page": "/",
+      "pass": true,
+      "initial": {
+        "cards": 6,
+        "sourceMessage": true,
+        "validHtml": true,
+        "imageReferences": true,
+        "overflow": 0
+      },
+      "modal": {
+        "exists": true,
+        "htmlLength": 12411,
+        "choose": true
+      },
+      "wizardOpened": true
+    },
+    {
+      "page": "/templates",
+      "pass": true,
+      "first": {
+        "cards": 20,
+        "total": true,
+        "loadMore": true
+      },
+      "expanded": 40
+    },
+    {
+      "page": "/admin/template-studio",
+      "pass": true,
+      "studio": {
+        "iframes": 1,
+        "publishGated": true,
+        "download": true
+      }
+    }
+  ],
+  "exceptions": [],
+  "notes": [
+    "Preview-only local compiler concepts, not live clients",
+    "Backend integration and semantic image rights still require separate approval"
+  ]
+}
