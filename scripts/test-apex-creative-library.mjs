@@ -26,7 +26,7 @@ async function testCreativeLibrary(){
  assert.equal(manifest.artifacts.length,307);
  const uniquePaths=new Set(),uniqueHashes=new Set();
  for(const a of manifest.artifacts){
-   assert.match(a.path,/^(logos|social|brands|emails|website-recipes|storyboards|motion|sections)\/|^(index\.html|catalog\.json)$/);
+   assert.match(a.path,/^(logos|social|brands|emails|website-recipes|storyboards|motion|sections|calendars|kits|growth)\/|^(index\.html|catalog\.json)$/);
    assert.ok(!a.path.includes('..'));
    const bytes=fs.readFileSync(path.join(out,a.path));
    assert.equal(sha(bytes),a.sha256,'Hash drift for '+a.path);
