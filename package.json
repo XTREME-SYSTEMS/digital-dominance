@@ -16,7 +16,8 @@
     "preview": "vite preview",
     "test:universal-phase": "node scripts/universal-phase-regression.mjs",
     "audit:universal-workflows": "node scripts/universal-workflow-audit.mjs",
-    "test:public-stock-catalog": "node scripts/public-stock-catalog-regression.mjs"
+    "test:public-stock-catalog": "node scripts/public-stock-catalog-regression.mjs",
+    "test:safe-image": "node scripts/safe-image-utf8-regression.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.54",
