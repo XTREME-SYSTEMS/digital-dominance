@@ -4,11 +4,13 @@ import { X, Rocket, MapPin, Check, ChevronRight, Eye } from "lucide-react";
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import BrandGenerator from "@/components/launch-engine/BrandGenerator";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
+import { createDraftLaunchPlan } from '@/components/launch-engine/launchPlan';
 
 export default function LaunchWizard({ initial, onClose }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [brand, setBrand] = useState(null);
+  const [launchError, setLaunchError] = useState('');
   const [selection, setSelection] = useState({
     industry: initial?.industry || initial?.template?.niche || "",
     template: initial?.template || null,
@@ -30,7 +32,14 @@ export default function LaunchWizard({ initial, onClose }) {
   const canAdvance = step === 0 ? !!selection.industry : step === 1 ? !!selection.template : step === 3 ? selection.count > 0 : true;
 
   const launch = () => {
-    navigate('/admin/template-studio', { state: { selectedStockTemplateId:selection.template.id } });
+    try {
+      const draftLaunchPlan = createDraftLaunchPlan(selection);
+      navigate('/admin/template-studio', {
+        state: { selectedStockTemplateId: draftLaunchPlan.template_id, draftLaunchPlan },
+      });
+    } catch (error) {
+      setLaunchError(error instanceof Error ? error.message : 'Unable to prepare launch request.');
+    }
   };
 
   return (
@@ -153,9 +162,10 @@ export default function LaunchWizard({ initial, onClose }) {
                 <Row label="Industry" value={selection.industry} />
                 <Row label="Template" value={selection.template?.name} />
                 <Row label="Location Sites" value={`${selection.count} sites`} />
-                <Row label="Markets" value={selection.locations || "Nationwide"} />
+                <Row label="Proposed markets" value={selection.locations || "Not selected (market research required)"} />
               </div>
-              <p className="text-xs text-gray-400 text-center">Open this exact template in the studio for brand assets and a publication-readiness review.</p>
+              <p className="text-xs text-gray-500 text-center">Your quantity and proposed markets will be carried into a Studio review draft. No sites will be generated or published by this step.</p>
+              {launchError && <p role="alert" className="text-sm text-red-700">{launchError}</p>}
             </div>
           )}
         </div>

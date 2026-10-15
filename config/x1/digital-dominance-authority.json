@@ -1,0 +1,86 @@
+{
+  "schema_version": "x1.universal-generator.authority.v1",
+  "project_id": "digital-dominance",
+  "name": "Digital Dominance",
+  "project_type": "premium-website-and-business-factory",
+  "engine": {
+    "compiler": "x1-universal-generator",
+    "command": "god-mode-commander",
+    "research": "god-mode-lead-asset-foresight",
+    "coordinator": "existing-x1-control-plane",
+    "worker": "x1-swarm-preview-1",
+    "validator": "independent-guardian",
+    "policy": "one-authoritative-queue-worker-scheduler-no-duplicates"
+  },
+  "generator_catalog": {
+    "documented_families": 35,
+    "documented_operations_per_family": 20,
+    "documented_types": 700,
+    "documented_industry_use_cases": 4000,
+    "note": "Catalog taxonomy and ideas, not verified running apps"
+  },
+  "source": {
+    "repository": "XTREME-SYSTEMS/digital-dominance",
+    "reference_branch": "main",
+    "review_branch": "feature/dd-launch-wizard-build-20261014",
+    "review_branch_start_sha": "9517c07d2bf6f45838eb8f0fce64a89f973b0c94",
+    "visual_template_entry": "src/pages/LaunchEngine.jsx",
+    "source_role": "operator-requested-build-repository-donor-for-canonical-WLE"
+  },
+  "visual": {
+    "reference": "approved Website Launch Engine premium public homepage image supplied 2026-10-10",
+    "reference_sha256": "c6bf260cb88d330bbbc4ea6167d9a61719c299abc8ab1099d07a458d7bcfe0fb",
+    "target_parity": 0.99,
+    "preserve_existing_homepage": true,
+    "desktop_viewport": "1440x900",
+    "mobile_viewport": "390x844"
+  },
+  "execution": {
+    "mode": "development-branch-preview-only",
+    "max_unapproved_new_model_spend_usd": 0,
+    "per_job_timeout_seconds": 900,
+    "max_repair_attempts": 3,
+    "max_parallel_writers_per_target": 1,
+    "generation_limit_before_proof": 1,
+    "required_execution_receipt": true,
+    "required_independent_qa_receipt": true,
+    "provider_verified_spend_cap_required": true,
+    "production_release_requires_separate_approval": true,
+    "forbidden_actions": [
+      "merge-protected-branch",
+      "production-release",
+      "production-db-or-rls-write",
+      "change-secrets-or-credentials",
+      "change-permissions",
+      "dns-or-domain-purchase",
+      "spend-without-verified-cap",
+      "customer-email-or-sms",
+      "public-social-publishing"
+    ]
+  },
+  "product_flow": [
+    "industry",
+    "full-page-approved-template",
+    "site-quantity",
+    "market-research",
+    "approve-exact-markets",
+    "generate-noindex-preview",
+    "independent-qa",
+    "proof-dashboard",
+    "release-approval",
+    "measure-revenue"
+  ],
+  "contacts": {
+    "brand_owner": "Strategic Minds AI",
+    "phone": "+17722090266",
+    "business_location": "Florida, United States"
+  },
+  "integrations": {
+    "github": "code, nonproduction branches and PRs",
+    "vercel": "site previews and APIs",
+    "supabase": "existing tenant-scoped queue, authorization, leases and receipts",
+    "railway": "existing X1 worker",
+    "base44": "existing transitional donor; not authoritative execution",
+    "guardian": "independent validator"
+  }
+}
