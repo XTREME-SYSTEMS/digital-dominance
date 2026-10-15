@@ -1,0 +1,55 @@
+name: Premium Master Concept Browser QA
+
+on:
+  push:
+    branches:
+      - feature/premium-master-concepts-20261015
+  pull_request:
+    paths:
+      - 'public/premium*.html'
+      - 'public/premium-assets/**'
+      - 'scripts/premium-*.cjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  premium-concept-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Resolve system Chrome
+        shell: bash
+        run: |
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "BLOCKED: no Chrome available for independent browser tests" >&2
+            exit 1
+          fi
+          echo "CHROME_BIN=$CHROME" >> "$GITHUB_ENV"
+      - name: Serve immutable preview files only
+        shell: bash
+        run: |
+          PORT=4189 node scripts/premium-local-preview-server.cjs > /tmp/premium-master-server.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:4189/premium-lab.html -o /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/premium-master-server.log
+          exit 1
+      - name: Independent desktop tablet mobile and interaction QA
+        env:
+          PREMIUM_QA_URL: http://127.0.0.1:4189
+        run: node scripts/premium-master-preview-qa.cjs
+      - name: Preserve browser screenshots and proof receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: premium-master-chrome-evidence
+          path: scripts/receipts/
+          if-no-files-found: warn
