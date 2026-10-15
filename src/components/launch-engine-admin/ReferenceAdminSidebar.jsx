@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target, Code2 } from "lucide-react";
+import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target, Code2, Download } from "lucide-react";
 
 export default function ReferenceAdminSidebar() {
   const { pathname } = useLocation();
@@ -102,6 +102,9 @@ export default function ReferenceAdminSidebar() {
         </Link>
         <Link to="/admin/visual-library" className={`wle-side-nav${isCore(["/admin/visual-library"]) ? " active" : ""}`}>
           <Layers aria-hidden="true" />Visual Render Library
+        </Link>
+        <Link to="/admin/data-export" className={`wle-side-nav${isCore(["/admin/data-export"]) ? " active" : ""}`}>
+          <Download aria-hidden="true" />Data Export Center
         </Link>
       </nav>
 
