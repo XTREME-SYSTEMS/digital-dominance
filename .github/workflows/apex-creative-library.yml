@@ -1,0 +1,37 @@
+name: APEX Universal Creative Library Validation
+
+on:
+  pull_request:
+    branches: [main, feature/apex-premium-visual-foundry-v3-20261014]
+    paths:
+      - 'data/apex-universal-creative-library.json'
+      - 'studio/apex-universal-library.html'
+      - 'scripts/build-apex-creative-library.mjs'
+      - 'scripts/test-apex-creative-library.mjs'
+      - 'package.json'
+      - 'vercel.json'
+      - '.github/workflows/apex-creative-library.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apex-library-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  library-assets-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install exact dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Generate and verify all library assets
+        run: npm run test:creative-library
+      - name: Build Digital Dominance without redesigning the original site
+        run: npm run build
