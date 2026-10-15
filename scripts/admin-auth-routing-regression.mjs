@@ -15,6 +15,7 @@ const params = read("src/lib/app-params.js");
 const login = read("src/pages/Login.jsx");
 const routes = read("src/App.jsx");
 const admin = read("src/components/admin/AdminLayout.jsx");
+const vite = read("vite.config.js");
 check(BASE44_CANONICAL_APP_ID === "6a77f4491f0bf92de9a3ed8b", "verified public app identity");
 check(BASE44_APP_ID === BASE44_CANONICAL_APP_ID, "default app identity when no Vite config");
 check(resolveBase44ApiOrigin("digital-dominance-test.vercel.app") === "https://base44.app", "preview SDK uses external backend");
@@ -23,6 +24,7 @@ check(resolveBase44ApiOrigin("unlimitedwebsites.net") === "", "production apex u
 check(resolveBase44ApiOrigin("digital-dominance-3.base44.app") === "", "native Base44 app keeps same-origin backend");
 check(resolveBase44ApiOrigin("unlimitedwebsites.net.attacker.example") === "https://base44.app", "untrusted host cannot hijack backend");
 check(BASE44_API_ORIGIN === "https://base44.app", "offline Node defaults to external backend");
+check(vite.includes("process.env.VITE_BASE44_APP_ID = BASE44_CANONICAL_APP_ID"), "bundler has the canonical public app ID");
 check(client.includes("serverUrl: BASE44_API_ORIGIN"), "SDK uses verified backend");
 check(!client.includes("serverUrl: ''"), "SDK must not silently use missing Vercel same-origin backend");
 check(params.includes("appId: BASE44_APP_ID"), "app ID cannot be overridden by untrusted query/storage");
