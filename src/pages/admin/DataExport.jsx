@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Database, Download, Loader2, CheckCircle2, XCircle, FileJson, FileSpreadsheet, RefreshCw, AlertCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import JSZip from 'jszip';
 
 const ENTITY_NAMES = [
   'ABTest','AdminProfile','AgentAction','AgentAssignment','AgentDepartment','AgentExecutionLog',
@@ -72,13 +71,16 @@ export default function DataExport() {
   const [format, setFormat] = useState('json');
   const [search, setSearch] = useState('');
 
+  const [countError, setCountError] = useState('');
+
   const fetchCounts = async () => {
     setLoadingCounts(true);
+    setCountError('');
     try {
       const res = await base44.functions.invoke('dataExport', { mode: 'counts', entities: ENTITY_NAMES });
-      setCounts(res.data.counts || {});
+      setCounts(res.data?.counts || {});
     } catch (e) {
-      setExportLog(prev => [{ type: 'error', msg: 'Failed to load counts: ' + e.message }]);
+      setCountError(e?.message || String(e));
     }
     setLoadingCounts(false);
   };
@@ -124,13 +126,14 @@ export default function DataExport() {
         entities: toExport,
         maxRecords: 50000
       });
-      const data = res.data.data || {};
-      const errors = res.data.errors || {};
+      const data = res.data?.data || {};
+      const errors = res.data?.errors || {};
       const entityCount = Object.keys(data).length;
       const recordCount = Object.values(data).reduce((a, r) => a + (r?.length || 0), 0);
 
       setProgress('Packaging ' + recordCount + ' records from ' + entityCount + ' entities...');
 
+      const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
       const manifest = { exported_at: new Date().toISOString(), format, entities: {} };
       let totalExported = 0;
@@ -166,27 +169,39 @@ export default function DataExport() {
     setExporting(false);
   };
 
-  // Styles
-  const canvas = { background: 'var(--launch-admin-canvas, #f4f8fd)', minHeight: '100vh', padding: '32px' };
-  const cardStyle = { background: 'var(--launch-admin-surface, #fff)', border: '1px solid var(--launch-admin-border, #dce6f1)', borderRadius: '13px', padding: '20px' };
+  // Styles — hardcoded fallbacks ensure visibility even if CSS variables aren't set
+  const canvas = { background: '#f4f8fd', minHeight: '100vh', padding: '32px' };
+  const cardStyle = { background: '#ffffff', border: '1px solid #dce6f1', borderRadius: '13px', padding: '20px' };
   const btn = { borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', border: '1px solid var(--launch-admin-border, #dce6f1)', background: 'var(--launch-admin-surface, #fff)', color: 'var(--launch-admin-text, #112940)', display: 'inline-flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s' };
   const btnPrimary = { ...btn, background: 'var(--launch-admin-primary, #126fc8)', color: '#fff', borderColor: 'var(--launch-admin-primary, #126fc8)' };
   const btnDisabled = { ...btn, opacity: 0.5, cursor: 'not-allowed' };
 
   return (
-    <div style={canvas}>
+    <div className="wle-content" style={canvas}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-        <Database style={{ width: 28, height: 28, color: 'var(--launch-admin-primary, #126fc8)' }} />
+        <Database style={{ width: 28, height: 28, color: '#126fc8' }} />
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: '800', color: 'var(--launch-admin-heading, #06213b)', margin: 0, letterSpacing: '-0.03em' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#06213b', margin: 0, letterSpacing: '-0.03em' }}>
             Data Export Center
           </h1>
-          <p style={{ fontSize: '15px', color: 'var(--launch-admin-muted, #5b7288)', margin: '4px 0 0' }}>
+          <p style={{ fontSize: '15px', color: '#5b7288', margin: '4px 0 0' }}>
             Download all entity records as a ZIP archive for external system integration
           </p>
         </div>
       </div>
+
+      {/* Error banner */}
+      {countError && (
+        <div style={{ ...cardStyle, marginBottom: '24px', borderColor: '#fecaca', background: '#fef2f2' }}>
+          <p style={{ margin: 0, fontSize: '14px', color: '#dc2626', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={16} /> Failed to load counts: {countError}
+          </p>
+          <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#991b1b' }}>
+            You can still select entities by name and export. Counts will show as "—" until the connection is restored.
+          </p>
+        </div>
+      )}
 
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
