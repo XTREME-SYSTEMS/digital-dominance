@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { SEO_ROUTES, DEFAULT_SEO, buildJsonLd, SITE_URL, BUSINESS, applySeoSettings } from "@/lib/seoConfig";
 import { base44 } from "@/api/base44Client";
+import { hasRuntimeBase44AppId } from "@/lib/base44Binding";
+import { isGeneratedVercelPreview } from "@/lib/previewHost";
+import { WLE_MARKETING_ROUTES, isWleMarketingRoute, wleMarketingCanonical } from "@/lib/wleMarketingSeo";
+import { LOGO_URL } from "@/components/Logo";
 import { trackEvent } from "@/lib/tracking";
 
 // Module-level caches so we fetch once per session.
@@ -120,6 +124,12 @@ export default function RouteSeo() {
   const [settings, setSettings] = useState(null);
 
   useEffect(() => {
+    if (!hasRuntimeBase44AppId) {
+      // Static, real route metadata remains available on an unbound preview.
+      setOverrides({});
+      setSettings(null);
+      return;
+    }
     loadOverrides().then(setOverrides);
     loadSettings().then(setSettings);
   }, []);
@@ -128,7 +138,8 @@ export default function RouteSeo() {
     if (!overrides) return;
     applySeoSettings(settings);
     const path = location.pathname;
-    let cfg = SEO_ROUTES[path];
+    const marketing = isWleMarketingRoute(path);
+    let cfg = marketing ? WLE_MARKETING_ROUTES[path] : SEO_ROUTES[path];
     if (!cfg) {
       const dynKey = Object.keys(SEO_ROUTES).find(
         (k) => k.includes(":") && path.startsWith(k.split(":")[0])
@@ -136,20 +147,24 @@ export default function RouteSeo() {
       cfg = dynKey ? SEO_ROUTES[dynKey] : DEFAULT_SEO;
     }
 
-    const ov = overrides[path];
+    const ov = marketing ? null : overrides[path];
     const title = (ov && ov.title) || cfg.title || DEFAULT_SEO.title;
     const desc = (ov && ov.description) || cfg.description || DEFAULT_SEO.description;
-    const image = cfg.image || DEFAULT_SEO.image;
+    const image = marketing ? LOGO_URL : (cfg.image || DEFAULT_SEO.image);
     const faq = (ov && ov.faq && ov.faq.length) ? ov.faq : cfg.faq;
     const merged = { ...cfg, title, description: desc, faq };
 
-    const url = SITE_URL + path;
+    const url = marketing
+      ? wleMarketingCanonical(path, import.meta.env.VITE_WLE_CANONICAL_SITE_URL)
+      : SITE_URL + path;
     document.title = title;
     const runtimeNotFound = document.documentElement.dataset.pageNotFound === "true";
-    const noIndex = shouldNoIndex(path) || runtimeNotFound;
+    // Vercel generated deployment URLs must never enter the search index.
+    const ephemeralPreview = isGeneratedVercelPreview(window.location.hostname);
+    const noIndex = shouldNoIndex(path) || runtimeNotFound || ephemeralPreview;
     setMeta("name", "description", desc);
     setMeta("name", "robots", noIndex ? "noindex, nofollow" : "index, follow");
-    if (runtimeNotFound) removeCanonical();
+    if (runtimeNotFound || ephemeralPreview || !url) removeCanonical();
     else setCanonical(url);
 
     // Google Search Console verification tag (injected from AppSettings)
@@ -158,10 +173,11 @@ export default function RouteSeo() {
     }
 
     setMeta("property", "og:type", cfg.service ? "article" : "website");
-    setMeta("property", "og:site_name", settings?.seo?.site_name || BUSINESS.name);
+    setMeta("property", "og:site_name", marketing ? "Website Launch Engine" : (settings?.seo?.site_name || BUSINESS.name));
     setMeta("property", "og:title", title);
     setMeta("property", "og:description", desc);
-    setMeta("property", "og:url", url);
+    if (url) setMeta("property", "og:url", url);
+    else document.head.querySelector('meta[property="og:url"]')?.remove();
     setMeta("property", "og:image", image);
 
     setMeta("name", "twitter:card", "summary_large_image");
@@ -170,7 +186,9 @@ export default function RouteSeo() {
     setMeta("name", "twitter:image", image);
 
     clearJsonLd();
-    if (!noIndex) {
+    // Never inject unverified Epoxy business ratings, reviews or local office
+    // schema onto the distinct Website Launch Engine storefront.
+    if (!noIndex && !marketing) {
       const blocks = buildJsonLd(path, merged);
       blocks.forEach((obj) => {
         const s = document.createElement("script");

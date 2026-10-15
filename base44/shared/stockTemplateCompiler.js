@@ -1,7 +1,7 @@
 import { stockTemplateStyles } from './stockTemplateStyles.js';
 import { STOCK_GUIDANCE } from './stockIndustryGuidance.js';
 export const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const imageUrl = url => /^https:\/\/media\.base44\.com\//.test(url || '') ? escapeHtml(url) : '';
+const imageUrl = url => /^(https:\/\/media\.base44\.com\/|\/images\/(industries|home-industries)\/[a-z0-9_-]+\.(png|jpg|jpeg|webp)$)/i.test(url || '') ? escapeHtml(url) : '';
 export function compileStockTemplate(industry, design, brand = {}) {
  const e=escapeHtml;
  const title = brand.name || `${industry.label} Studio`;
