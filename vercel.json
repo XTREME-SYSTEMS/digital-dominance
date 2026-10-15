@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/templates",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/preview-template/:slug",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/launch-engine",
+      "destination": "/index.html"
+    }
+  ]
+}
