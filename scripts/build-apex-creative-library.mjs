@@ -113,6 +113,18 @@ async function buildLibrary(){
   const dup=artifacts.reduce((m,a)=>m.set(a.sha256,(m.get(a.sha256)||0)+1),new Map());
   const duplicated=Array.from(dup.values()).reduce((n,x)=>n+(x>1?x:0),0);
   if(duplicated)throw Error('DUPLICATE_OUTPUT_HASHES:'+duplicated);
-  console.log('PASS CREATIVE LIBRARY '+JSON.stringify({mode:verify?'VERIFY':'BUILD',...counts,artifacts:artifacts.length,manifest_sha256:sha(mText),unapproved:true,generated_folder:'public/premium/libraries'}));
+  // Produce a reproducible offline distribution package. The archive includes
+  // only generated synthetic design assets and their immutable hash manifest.
+  const JSZip=(await import('jszip')).default;
+  const archive=new JSZip();
+  const fixedDate=new Date('1980-01-01T00:00:00.000Z');
+  for(const a of artifacts)archive.file(a.path,fs.readFileSync(path.join(out,a.path)),{date:fixedDate,createFolders:false,binary:true});
+  archive.file('manifest.json',mText,{date:fixedDate,createFolders:false});
+  const zipped=await archive.generateAsync({type:'nodebuffer',compression:'DEFLATE',compressionOptions:{level:8},platform:'UNIX'});
+  const packagePath=path.join(out,'APEX_CREATIVE_LIBRARY_V1.zip');
+  if(verify){
+    if(!fs.existsSync(packagePath)||sha(fs.readFileSync(packagePath))!==sha(zipped))throw Error('ZIP_ARCHIVE_DRIFT');
+  }else fs.writeFileSync(packagePath,zipped);
+  console.log('PASS CREATIVE LIBRARY '+JSON.stringify({mode:verify?'VERIFY':'BUILD',...counts,artifacts:artifacts.length,manifest_sha256:sha(mText),archive_sha256:sha(zipped),archive_bytes:zipped.length,archive_entries:artifacts.length+1,unapproved:true,generated_folder:'public/premium/libraries'}));
 }
 await buildLibrary();
