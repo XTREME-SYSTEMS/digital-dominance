@@ -11,7 +11,11 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const configs=JSON.parse(fs.readFileSync(path.join(root,'data/premium-collection-20.json'),'utf8'));
 const ledger=JSON.parse(fs.readFileSync(path.join(root,'docs/quality/premium-signed-approvals.json'),'utf8'));
 const keys=JSON.parse(fs.readFileSync(path.join(root,'docs/quality/premium-reviewer-keys.json'),'utf8'));
-const registry=approvedCatalog({configs,ledger,keys});
+const pinned=JSON.parse(fs.readFileSync(path.join(root,'docs/quality/premium-hero-asset-digests-20261015.json'),'utf8'));
+assert.equal(pinned.schema,'apex.premium.pinned-image-transport-receipts.v1');
+assert.equal(pinned.independent_guardian_pass,false);
+assert.equal(pinned.production_release_allowed,false);
+const registry=approvedCatalog({configs,ledger,keys,pinnedImageEvidence:pinned.records});
 const args=process.argv.slice(2);
 function arg(name,def=null){const i=args.indexOf('--'+name);return i<0?def:args[i+1]}
 if(args.includes('--list')){
