@@ -1,0 +1,62 @@
+name: Independent Homepage Browser Image QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/components/launch-engine/**'
+      - 'src/data/homeIndustryImages.js'
+      - 'src/components/template-studio/**'
+      - 'public/images/**'
+      - 'scripts/independent-homepage-browser-qa.cjs'
+      - '.github/workflows/independent-homepage-browser-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build exact PR source
+        run: npm run build
+      - name: Discover Chrome or fail closed
+        shell: bash
+        run: |
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then echo "BLOCKED: Chrome not available"; exit 1; fi
+          echo "CHROME_BIN=$CHROME" >> "$GITHUB_ENV"
+      - name: Start isolated frontend
+        shell: bash
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4175 > /tmp/dd-browser-qa.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:4175/ -o /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/dd-browser-qa.log
+          exit 1
+      - name: Independently render images and wizard at all viewports
+        env:
+          QA_BASE_URL: http://127.0.0.1:4175/
+          QA_OUT: audit-evidence/homepage-ci
+        run: node scripts/independent-homepage-browser-qa.cjs
+      - name: Preserve browser receipts and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dd-homepage-images-and-hero-screenshots
+          path: audit-evidence/homepage-ci/
+          if-no-files-found: warn
+          retention-days: 7
