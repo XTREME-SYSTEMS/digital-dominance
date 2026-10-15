@@ -17,6 +17,7 @@ on:
       - 'docs/quality/premium-hero-image-evidence-20261014.json'
       - 'docs/quality/premium-reviewer-keys.json'
       - 'docs/quality/premium-signed-approvals.json'
+      - 'docs/quality/premium-hero-asset-digests-20261015.json'
       - 'data/premium-collection-20.json'
       - '.github/workflows/apex-premium-evidence-handoff.yml'
   workflow_dispatch:
