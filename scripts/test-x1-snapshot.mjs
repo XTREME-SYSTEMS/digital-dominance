@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import { audit } from './audit-x1-snapshot.mjs';
+const s={queue_statuses:[{status:'COMPLETED',n:54},{status:'BLOCKED',n:17},{status:'DEAD_LETTER',n:20}],latest_heartbeat:{observed_at:'2026-10-15T02:09:13Z',health:{mode:'SENSOR_ONLY',lease_requested:false}},latest_execution:{task_id:'probe',agent_id:'x1-swarm-preview-1',lease_id:'lease',receipt_id:'receipt',state:'COMPLETED'},error_groups:[{status:'DEAD_LETTER',last_error_code:'CONTROL_PLANE_AUTHORIZATION_FAILED',n:16}]};
+const r=audit(s);
+assert.equal(r.queue.unresolved,37);
+assert.equal(r.sensor_only,true);
+assert.equal(r.historical_execution_receipt_verified,true);
+assert.equal(r.auto_requeue_permitted,false);
+assert.equal(r.next_gate,'PROVE_ACTIVE_WORKER_LEASE_AND_RECEIPT');
+assert.equal(audit({}).historical_execution_receipt_verified,false);
+console.log('PASS 6 assertions');
