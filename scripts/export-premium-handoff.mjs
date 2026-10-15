@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {approvedCatalog,DESTINATIONS,hash,SOURCE_SHA,SOURCE_REPO} from './premium-promotion-policy.mjs';
+import {buildTemplateLibraryDraft,validateDraftAgainstTemplateLibrarySchema} from './premium-base44-template-mapping.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const configs=JSON.parse(fs.readFileSync(path.join(root,'data/premium-collection-20.json'),'utf8'));
 const ledger=JSON.parse(fs.readFileSync(path.join(root,'docs/quality/premium-signed-approvals.json'),'utf8'));
@@ -43,6 +44,12 @@ const approvedForReuse=approved.status==='APPROVED_PREVIEW_REUSE';
 const moduleContract=DESTINATIONS[target_kind];
 const sha=hash(html);
 const idempotency=hash([SOURCE_REPO,SOURCE_SHA,id,target_kind,brand].join('|'));
+const fieldMapping=approvedForReuse?buildTemplateLibraryDraft({
+ master,brand,target_kind,html,source_sha:SOURCE_SHA,
+ source_repo:SOURCE_REPO,idempotency_key:idempotency,
+ independent_reviewer:approved.reviewer
+}):null;
+if(fieldMapping)validateDraftAgainstTemplateLibrarySchema(fieldMapping);
 const handoff={
  schema:'apex.premium.universal-handoff.v1',
  packet_id:'APEX-'+idempotency.slice(0,20).toUpperCase(),
@@ -81,21 +88,17 @@ const handoff={
  },
  transport:{
   existing_base44_app_id:'6a77f4491f0bf92de9a3ed8b',
-  existing_bridge:'xtremeUniversalGeneratorBridge',
+  existing_bridge:'TemplateManager.jsx uses base44.entities.TemplateLibrary.create (requires admin); NOT INVOKED',
   entity_type:'TemplateLibrary',
   permission_needed:'authenticated_admin_plus_signed_independent_review',
   api_write_performed:false,
-  import_authorized:approvedForReuse,
-  import_mode:approvedForReuse?'PENDING_REVIEW_ONLY':'BLOCKED_PENDING_INDEPENDENT_APPROVAL',
+  // Signed visual reuse is not permission to modify a customer account.
+  // A separate authenticated/admin-authorized import is still required.
+  import_authorized:false,
+  design_reuse_eligible:approvedForReuse,
+  import_mode:approvedForReuse?'INDEPENDENTLY_REVIEWED__ADMIN_IMPORT_NOT_AUTHORIZED':'BLOCKED_PENDING_INDEPENDENT_APPROVAL',
   idempotency_key:idempotency,
-  field_mapping:approvedForReuse?{
-   name:brand+' · '+master.industry+' · '+target_kind,
-   niche:master.id,
-   category:'premium_candidate',
-   tags:['apex-premium','synthetic','noindex','independently-reviewed','pending-admin-import'],
-   status:'draft',is_active:false,is_default:false,
-   source_template_id:id,source_git_sha:SOURCE_SHA,html_source_sha256:sha
-  }:null
+  field_mapping:fieldMapping
  },
  receipt:{
   dry_run:true,
@@ -107,6 +110,8 @@ const handoff={
 };
 assert.equal(handoff.provisioning.publish_live,false);
 assert.equal(handoff.transport.api_write_performed,false);
+assert.equal(handoff.transport.import_authorized,false);
+assert.equal(handoff.transport.field_mapping===null,!approvedForReuse);
 const out=path.join(root,'factory','.pending-premium-handoffs');
 fs.mkdirSync(out,{recursive:true});
 const name=id+'-'+target_kind+'-'+idempotency.slice(0,12)+'.json';
