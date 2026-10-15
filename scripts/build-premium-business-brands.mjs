@@ -66,7 +66,7 @@ const replace=(str,a,b,name)=>{
  return str.replace(a,b);
 };
 for(const b of configs){
- const dest=path.join(DEST,b.id,'index.html');
+ const dest=path.join(dest,b.id,'index.html');
  let html=fs.readFileSync(dest,'utf8');
  const original='<a href="#top" class="site-brand">'+escape(b.name)+'</a>';
  const updated='<a href="#top" class="site-brand" aria-label="'+escape(b.name)+' home"><img class="site-logo" src="../assets/brands/'+b.id+'-logo.svg" width="295" height="56" alt="'+escape(b.name)+' concept logo"></a>';
@@ -76,7 +76,7 @@ for(const b of configs){
  html=replace(html,'<a href="../index.html">Browse every master ↗</a>','<a href="../index.html">Browse every master ↗</a><a href="../brands/index.html">View brand identity ↗</a>',b.id+'-brandfooter');
  fs.writeFileSync(dest,html);
 }
-const galleryFile=path.join(DEST,'index.html');
+const galleryFile=path.join(dest,'index.html');
 let gallery=fs.readFileSync(galleryFile,'utf8');
 gallery=replace(gallery,'<span class="studio-actions">','<span class="studio-actions"><a href="brands/index.html">20 BRAND LOGOS ↗</a> &nbsp; ', 'gallery-header');
 gallery=replace(gallery,'<a class="compose-cta" href="../launch-composer/index.html">CHOOSE A MASTER · BUILD A REVIEW PACKET ↗</a>','<a class="compose-cta" href="brands/index.html">BROWSE ALL 20 LOGOS ↗</a> <a class="compose-cta" href="../launch-composer/index.html">CHOOSE A MASTER · BUILD A REVIEW PACKET ↗</a>','gallery-cta');
@@ -98,12 +98,12 @@ const brandRows=data.map((b,i)=>{
 }).join('\n');
 const css=':root{background:#0b1019;color:#f5f0e8;font-family:Inter,system-ui,Arial,sans-serif}*{box-sizing:border-box}body{margin:0}a{color:inherit;text-decoration:none}header{padding:26px 5%;display:flex;gap:20px;justify-content:space-between;border-bottom:1px solid #354253;flex-wrap:wrap}header a{color:#e5c69b}.hero{padding:80px 5% 60px;background:radial-gradient(circle at 85% 0,#293a50,transparent 45%)}.eyebrow{color:#c4a679;letter-spacing:.15em;font-size:11px;font-weight:800}.hero h1{font-family:Georgia,serif;font-weight:400;letter-spacing:-.06em;font-size:clamp(48px,7vw,98px);line-height:1.02;max-width:1000px;margin:20px 0}.hero p{font-size:18px;line-height:1.7;max-width:800px;color:#aeb8c8}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:35px 5% 80px}.brand{border:1px solid #354151;background:#111b27;min-width:0}.art{min-height:210px;background:radial-gradient(ellipse at top right,#39485a99,transparent 60%),#15202f;display:flex;align-items:center;padding:28px}.art img{width:100%;height:auto;max-height:105px;object-fit:contain}.info{padding:24px}.info small{letter-spacing:.09em;color:#d1ae83;text-transform:uppercase}.info h2{font-size:24px;letter-spacing:-.03em;margin:15px 0 24px}.actions{display:flex;flex-wrap:wrap;gap:10px}.actions a{border:1px solid #566279;padding:11px 13px;font-weight:750;font-size:11px}.actions .open{color:#142030;background:#e5c69b;border-color:#e5c69b}footer{border-top:1px solid #334156;padding:25px 5%;font-size:12px;color:#9caec5}@media(max-width:1060px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:660px){.grid{grid-template-columns:1fr}.hero{padding:55px 5%}.art{min-height:170px}}';
 const brandHTML='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>20 Business Brands & Logos | Strategic Minds AI</title><style>'+css+'</style></head><body><header><strong>STRATEGIC MINDS AI / BRAND FOUNDRY</strong><a href="../index.html">← ALL 20 BUSINESS WEBSITES</a></header><section class="hero"><span class="eyebrow">20 original, editable SVG brand concepts</span><h1>A logo for every<br>business experience.</h1><p>Browse twenty fictional brand identities, open their complete website previews, or download each SVG wordmark and icon. These are design concepts, not trademark-clearance certificates or operating businesses.</p></section><main class="grid">'+brandRows+'</main><footer>PREVIEW ONLY · NOINDEX · CHECK ALL NAMES AND TRADEMARKS BEFORE COMMERCIAL RELEASE</footer></body></html>';
-const brandDir=path.join(DEST,'brands');fs.mkdirSync(brandDir,{recursive:true});
+const brandDir=path.join(dest,'brands');fs.mkdirSync(brandDir,{recursive:true});
 fs.writeFileSync(path.join(brandDir,'index.html'),brandHTML);
-const manifestPath=path.join(DEST,'catalog-manifest.json');
+const manifestPath=path.join(dest,'catalog-manifest.json');
 const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
 for(const row of manifest.new_masters){
- const html=fs.readFileSync(path.join(DEST,row.id,'index.html'),'utf8');
+ const html=fs.readFileSync(path.join(dest,row.id,'index.html'),'utf8');
  row.sha256=sha(html);row.bytes=Buffer.byteLength(html);
  row.brand_logo='assets/brands/'+row.id+'-logo.svg';
  row.brand_mark='assets/brands/'+row.id+'-mark.svg';
