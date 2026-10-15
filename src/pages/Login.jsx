@@ -8,6 +8,7 @@ import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
+import { BASE44_REGISTERED_ADMIN_URL, requiresRegisteredGoogleOrigin } from "@/lib/base44-backend";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ export default function Login() {
   // Post-login destination (e.g. the MCP OAuth consent page sends users here
   // with returnTo so the grant flow can resume). Same-origin paths only.
   const returnTo = safeReturnTo();
+  const needsRegisteredGoogleOrigin = requiresRegisteredGoogleOrigin(window.location.hostname);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,13 +28,20 @@ export default function Login() {
       await base44.auth.loginViaEmailPassword(email, password);
       window.location.href = returnTo;
     } catch (err) {
-      setError(err.message || "Invalid email or password");
+      const message = String(err?.message || "Invalid email or password");
+      setError(/(?:callback )?domain is not valid/i.test(message)
+        ? "Base44 rejected this temporary preview domain. Use the registered admin domain for Google sign-in, or an existing email/password account on this preview."
+        : message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogle = () => {
+    if (needsRegisteredGoogleOrigin) {
+      window.location.assign(BASE44_REGISTERED_ADMIN_URL);
+      return;
+    }
     if (returnTo && returnTo !== "/") {
       sessionStorage.setItem("postOAuthRedirect", returnTo);
     }
@@ -56,14 +65,32 @@ export default function Login() {
         </>
       }
     >
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-medium mb-6"
-        onClick={handleGoogle}
-      >
-        <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
-      </Button>
+      {needsRegisteredGoogleOrigin ? (
+        <div className="mb-6 space-y-3">
+          <a
+            href={BASE44_REGISTERED_ADMIN_URL}
+            className="flex w-full h-12 items-center justify-center rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+          >
+            <GoogleIcon className="w-5 h-5 mr-2" />
+            Google sign-in: open registered admin
+          </a>
+          <p role="note" className="text-xs leading-relaxed text-muted-foreground">
+            This temporary preview is not a registered Google sign-in return domain.
+            The link opens the existing Digital Dominance admin; it does not sign
+            you into this preview. If your admin account has an email password,
+            you can use the form below to access the preview.
+          </p>
+        </div>
+      ) : (
+        <Button
+          variant="outline"
+          className="w-full h-12 text-sm font-medium mb-6"
+          onClick={handleGoogle}
+        >
+          <GoogleIcon className="w-5 h-5 mr-2" />
+          Continue with Google
+        </Button>
+      )}
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
