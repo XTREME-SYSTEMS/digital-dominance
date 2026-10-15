@@ -214,21 +214,8 @@ import CodeInjector from '@/components/codestudio/CodeInjector';
 
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
   const location = useLocation();
-
-  // Redirect to login when the app requires auth, but only via useEffect
-  // (not during render) and only if we're not already on an auth route.
-  // Returning null here would block the login page itself from rendering,
-  // causing a white-screen redirect loop.
-  useEffect(() => {
-    if (authError?.type === 'auth_required') {
-      const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/oauth/consent'];
-      if (!authRoutes.includes(location.pathname)) {
-        navigateToLogin();
-      }
-    }
-  }, [authError, location.pathname, navigateToLogin]);
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
