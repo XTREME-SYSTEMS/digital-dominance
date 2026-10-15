@@ -1,19 +1,24 @@
 import { STOCK_INDUSTRIES, STOCK_VERSION } from '../../../base44/shared/stockIndustries.js';
 import { STOCK_DESIGNS } from '../../../base44/shared/stockDesigns.js';
 import { stockTemplateRecord } from '../../../base44/shared/stockTemplateCompiler.js';
+import { getHomepageImage } from '../../data/homeIndustryImages.js';
 
 let cache;
 export function compiledLocalStockCatalog() {
   if (!cache) {
-    cache = STOCK_INDUSTRIES.flatMap(industry =>
-      STOCK_DESIGNS.map((design, index) => ({
-        ...stockTemplateRecord(industry, design, index, STOCK_VERSION),
+    cache = STOCK_INDUSTRIES.flatMap(industry => {
+      const reference = getHomepageImage(industry.key);
+      if (!reference?.image_url?.startsWith('/images/'))
+        throw new Error('Missing local image for stock industry: ' + industry.key);
+      const previewIndustry = { ...industry, image: reference.image_url };
+      return STOCK_DESIGNS.map((design, index) => ({
+        ...stockTemplateRecord(previewIndustry, design, index, STOCK_VERSION),
         id: 'source-' + industry.key + '-' + design.key,
         preview_only: true,
         catalog_source: 'canonical_public_stock_compiler',
         source_version: STOCK_VERSION,
-      }))
-    );
+      }));
+    });
   }
   return cache;
 }
