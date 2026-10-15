@@ -2376,5 +2376,1205 @@
     "images_rights_validation_required": true,
     "verified_facts_required": true,
     "independent_qa_required": true
-  }
+  },
+  "growth_systems": [
+    {
+      "id": "paid_ads-search-headline-library",
+      "family": "paid_ads",
+      "name": "Search Headline Library",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable search headline library system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "format",
+        "headline_options",
+        "claim_evidence",
+        "audience",
+        "budget_approval"
+      ],
+      "sequence": 1
+    },
+    {
+      "id": "paid_ads-meta-feed-ad",
+      "family": "paid_ads",
+      "name": "Meta Feed Ad",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable meta feed ad system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "format",
+        "headline_options",
+        "claim_evidence",
+        "audience",
+        "budget_approval"
+      ],
+      "sequence": 2
+    },
+    {
+      "id": "paid_ads-video-hook-hook-matrix",
+      "family": "paid_ads",
+      "name": "Video Hook & Hook Matrix",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable video hook & hook matrix system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "format",
+        "headline_options",
+        "claim_evidence",
+        "audience",
+        "budget_approval"
+      ],
+      "sequence": 3
+    },
+    {
+      "id": "paid_ads-display-responsive-set",
+      "family": "paid_ads",
+      "name": "Display Responsive Set",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable display responsive set system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "format",
+        "headline_options",
+        "claim_evidence",
+        "audience",
+        "budget_approval"
+      ],
+      "sequence": 4
+    },
+    {
+      "id": "paid_ads-retargeting-creative",
+      "family": "paid_ads",
+      "name": "Retargeting Creative",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable retargeting creative system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "format",
+        "headline_options",
+        "claim_evidence",
+        "audience",
+        "budget_approval"
+      ],
+      "sequence": 5
+    },
+    {
+      "id": "paid_ads-local-service-call-ad",
+      "family": "paid_ads",
+      "name": "Local Service Call Ad",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable local service call ad system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "format",
+        "headline_options",
+        "claim_evidence",
+        "audience",
+        "budget_approval"
+      ],
+      "sequence": 6
+    },
+    {
+      "id": "funnels-instant-quote",
+      "family": "funnels",
+      "name": "Instant Quote",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable instant quote system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 1
+    },
+    {
+      "id": "funnels-booking-consultation",
+      "family": "funnels",
+      "name": "Booking Consultation",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable booking consultation system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 2
+    },
+    {
+      "id": "funnels-local-service-estimate",
+      "family": "funnels",
+      "name": "Local Service Estimate",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable local service estimate system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 3
+    },
+    {
+      "id": "funnels-ecommerce-product-launch",
+      "family": "funnels",
+      "name": "Ecommerce Product Launch",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable ecommerce product launch system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 4
+    },
+    {
+      "id": "funnels-real-estate-inquiry",
+      "family": "funnels",
+      "name": "Real Estate Inquiry",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable real estate inquiry system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 5
+    },
+    {
+      "id": "funnels-legal-consultation-intake",
+      "family": "funnels",
+      "name": "Legal Consultation Intake",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable legal consultation intake system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 6
+    },
+    {
+      "id": "funnels-webinar-registration",
+      "family": "funnels",
+      "name": "Webinar Registration",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable webinar registration system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 7
+    },
+    {
+      "id": "funnels-lead-magnet-download",
+      "family": "funnels",
+      "name": "Lead Magnet Download",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable lead magnet download system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 8
+    },
+    {
+      "id": "funnels-b2b-discovery",
+      "family": "funnels",
+      "name": "B2B Discovery",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable b2b discovery system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 9
+    },
+    {
+      "id": "funnels-membership-waitlist",
+      "family": "funnels",
+      "name": "Membership Waitlist",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable membership waitlist system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "intent",
+        "sections",
+        "CTA",
+        "form_consent",
+        "crm_adapter",
+        "measurement_events"
+      ],
+      "sequence": 10
+    },
+    {
+      "id": "app_screens-saas-dashboard",
+      "family": "app_screens",
+      "name": "SaaS Dashboard",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable saas dashboard system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 1
+    },
+    {
+      "id": "app_screens-ai-chat-copilot",
+      "family": "app_screens",
+      "name": "AI Chat Copilot",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable ai chat copilot system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 2
+    },
+    {
+      "id": "app_screens-tenant-onboarding",
+      "family": "app_screens",
+      "name": "Tenant Onboarding",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable tenant onboarding system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 3
+    },
+    {
+      "id": "app_screens-analytics-reporting",
+      "family": "app_screens",
+      "name": "Analytics Reporting",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable analytics reporting system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 4
+    },
+    {
+      "id": "app_screens-client-portal",
+      "family": "app_screens",
+      "name": "Client Portal",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable client portal system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 5
+    },
+    {
+      "id": "app_screens-marketplace-listings",
+      "family": "app_screens",
+      "name": "Marketplace Listings",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable marketplace listings system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 6
+    },
+    {
+      "id": "app_screens-booking-calendar",
+      "family": "app_screens",
+      "name": "Booking Calendar",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable booking calendar system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 7
+    },
+    {
+      "id": "app_screens-ecommerce-cart",
+      "family": "app_screens",
+      "name": "Ecommerce Cart",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable ecommerce cart system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 8
+    },
+    {
+      "id": "app_screens-project-kanban",
+      "family": "app_screens",
+      "name": "Project Kanban",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable project kanban system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 9
+    },
+    {
+      "id": "app_screens-crm-deal-pipeline",
+      "family": "app_screens",
+      "name": "CRM Deal Pipeline",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable crm deal pipeline system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 10
+    },
+    {
+      "id": "app_screens-field-service-dispatch",
+      "family": "app_screens",
+      "name": "Field Service Dispatch",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable field service dispatch system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 11
+    },
+    {
+      "id": "app_screens-account-settings",
+      "family": "app_screens",
+      "name": "Account Settings",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable account settings system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "screens",
+        "role_rules",
+        "empty_loading_error_states",
+        "accessibility",
+        "API_contract"
+      ],
+      "sequence": 12
+    },
+    {
+      "id": "sales_enablement-proposal-framework",
+      "family": "sales_enablement",
+      "name": "Proposal Framework",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable proposal framework system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 1
+    },
+    {
+      "id": "sales_enablement-capabilities-one-sheet",
+      "family": "sales_enablement",
+      "name": "Capabilities One-Sheet",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable capabilities one-sheet system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 2
+    },
+    {
+      "id": "sales_enablement-pricing-narrative",
+      "family": "sales_enablement",
+      "name": "Pricing Narrative",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable pricing narrative system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 3
+    },
+    {
+      "id": "sales_enablement-case-study-framework",
+      "family": "sales_enablement",
+      "name": "Case Study Framework",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable case study framework system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 4
+    },
+    {
+      "id": "sales_enablement-discovery-call-script",
+      "family": "sales_enablement",
+      "name": "Discovery Call Script",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable discovery call script system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 5
+    },
+    {
+      "id": "sales_enablement-client-onboarding-kit",
+      "family": "sales_enablement",
+      "name": "Client Onboarding Kit",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable client onboarding kit system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 6
+    },
+    {
+      "id": "sales_enablement-product-comparison",
+      "family": "sales_enablement",
+      "name": "Product Comparison",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable product comparison system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 7
+    },
+    {
+      "id": "sales_enablement-partner-referral-kit",
+      "family": "sales_enablement",
+      "name": "Partner Referral Kit",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable partner referral kit system for validated business materials",
+      "required_evidence": [
+        "authorized_business_facts",
+        "verified_brand_identity",
+        "human_or_operator_approval"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 8
+    },
+    {
+      "id": "seo_content-verified-local-service-page",
+      "family": "seo_content",
+      "name": "Verified Local Service Page",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable verified local service page system for validated business materials",
+      "required_evidence": [
+        "verified_first_party_content",
+        "structured_data_fact_check",
+        "helpfulness_review"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 1
+    },
+    {
+      "id": "seo_content-faq-knowledge-module",
+      "family": "seo_content",
+      "name": "FAQ Knowledge Module",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable faq knowledge module system for validated business materials",
+      "required_evidence": [
+        "verified_first_party_content",
+        "structured_data_fact_check",
+        "helpfulness_review"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 2
+    },
+    {
+      "id": "seo_content-case-study-content-contract",
+      "family": "seo_content",
+      "name": "Case Study Content Contract",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable case study content contract system for validated business materials",
+      "required_evidence": [
+        "verified_first_party_content",
+        "structured_data_fact_check",
+        "helpfulness_review"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 3
+    },
+    {
+      "id": "seo_content-how-to-editorial",
+      "family": "seo_content",
+      "name": "How-To Editorial",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable how-to editorial system for validated business materials",
+      "required_evidence": [
+        "verified_first_party_content",
+        "structured_data_fact_check",
+        "helpfulness_review"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 4
+    },
+    {
+      "id": "seo_content-author-expertise-block",
+      "family": "seo_content",
+      "name": "Author Expertise Block",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable author expertise block system for validated business materials",
+      "required_evidence": [
+        "verified_first_party_content",
+        "structured_data_fact_check",
+        "helpfulness_review"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 5
+    },
+    {
+      "id": "seo_content-schema-org-business-facts",
+      "family": "seo_content",
+      "name": "Schema.org Business Facts",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable schema.org business facts system for validated business materials",
+      "required_evidence": [
+        "verified_first_party_content",
+        "structured_data_fact_check",
+        "helpfulness_review"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 6
+    },
+    {
+      "id": "seo_content-product-category-content",
+      "family": "seo_content",
+      "name": "Product Category Content",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable product category content system for validated business materials",
+      "required_evidence": [
+        "verified_first_party_content",
+        "structured_data_fact_check",
+        "helpfulness_review"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 7
+    },
+    {
+      "id": "seo_content-site-technical-seo-audit",
+      "family": "seo_content",
+      "name": "Site Technical SEO Audit",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable site technical seo audit system for validated business materials",
+      "required_evidence": [
+        "verified_first_party_content",
+        "structured_data_fact_check",
+        "helpfulness_review"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 8
+    },
+    {
+      "id": "print_materials-premium-business-card",
+      "family": "print_materials",
+      "name": "Premium Business Card",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable premium business card system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 1
+    },
+    {
+      "id": "print_materials-folded-brochure",
+      "family": "print_materials",
+      "name": "Folded Brochure",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable folded brochure system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 2
+    },
+    {
+      "id": "print_materials-single-page-flyer",
+      "family": "print_materials",
+      "name": "Single Page Flyer",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable single page flyer system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 3
+    },
+    {
+      "id": "print_materials-yard-sign",
+      "family": "print_materials",
+      "name": "Yard Sign",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable yard sign system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 4
+    },
+    {
+      "id": "print_materials-vehicle-wrap",
+      "family": "print_materials",
+      "name": "Vehicle Wrap",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable vehicle wrap system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 5
+    },
+    {
+      "id": "print_materials-trade-show-backdrop",
+      "family": "print_materials",
+      "name": "Trade Show Backdrop",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable trade show backdrop system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 6
+    },
+    {
+      "id": "print_materials-direct-mail-card",
+      "family": "print_materials",
+      "name": "Direct Mail Card",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable direct mail card system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 7
+    },
+    {
+      "id": "print_materials-letterhead",
+      "family": "print_materials",
+      "name": "Letterhead",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable letterhead system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 8
+    },
+    {
+      "id": "print_materials-presentation-folder",
+      "family": "print_materials",
+      "name": "Presentation Folder",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable presentation folder system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 9
+    },
+    {
+      "id": "print_materials-product-hangtag",
+      "family": "print_materials",
+      "name": "Product Hangtag",
+      "artifact_type": "VERSIONED_RECIPE",
+      "editorial_state": "DRAFT_ONLY",
+      "summary": "Reusable product hangtag system for validated business materials",
+      "required_evidence": [
+        "printer_bleed_and_safe_area",
+        "brand_rights",
+        "print_color_profile"
+      ],
+      "delivery": "RECIPE_NO_EXTERNAL_ACTION",
+      "fields": [
+        "brief",
+        "asset_requirements",
+        "content_structure",
+        "proof",
+        "approval"
+      ],
+      "sequence": 10
+    }
+  ]
 }
