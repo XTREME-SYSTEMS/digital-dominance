@@ -2,12 +2,13 @@ name: APEX Premium Master Quality
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feature/apex-premium-visual-foundry-v3-20261014]
     paths:
       - 'scripts/build-premium-20.mjs'
-      - 'scripts/build-premium-business-brands.mjs'
-      - 'scripts/verify-premium-business-brands.mjs'
       - 'scripts/verify-premium-20.mjs'
+      - 'scripts/verify-premium-chrome-thumbnails.mjs'
+      - 'public/premium/collection/screenshots/**'
+      - 'public/premium/collection/SCREENSHOT_PROOF.json'
       - 'scripts/compile-premium-sitepack.mjs'
       - 'scripts/verify-premium-sitepack.mjs'
       - 'scripts/verify-premium-composer.mjs'
@@ -34,8 +35,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
           cache: npm
@@ -49,8 +52,8 @@ jobs:
         run: node scripts/verify-premium-composer.mjs
       - name: Build the unmodified app shell and premium previews
         run: npm run build
-      - name: Verify 20 live-grade SVG business logos and gallery navigation after final build
-        run: node scripts/verify-premium-business-brands.mjs
+      - name: Verify real Chrome thumbnails, source identity and capture SHA-256
+        run: node scripts/verify-premium-chrome-thumbnails.mjs
       - name: Validate generated source identity against exact catalog bytes
         run: |
           node --input-type=module -e '
@@ -75,7 +78,7 @@ jobs:
             console.log("PASS 20 preview-only designs, noindex, zero released customer sites");
           '
       - name: Preserve source QA receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: apex-premium-20-source-manifest
           path: public/premium/collection/catalog-manifest.json
