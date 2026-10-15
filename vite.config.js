@@ -36,7 +36,11 @@ export default defineConfig({
       legacySDKImports: process.env.BASE44_LEGACY_SDK_IMPORTS === 'true',
       hmrNotifier: true,
       navigationNotifier: true,
-      analyticsTracker: true,
+      // The plugin's production tracker POSTs to a relative /api/app-logs
+      // URL. Only enable it when the native Base44 proxy is provisioned;
+      // external Vercel previews don't have that endpoint (HTTP 404).
+      // SDK analytics/identity use the explicitly configured Base44 API.
+      analyticsTracker: Boolean(process.env.VITE_BASE44_APP_BASE_URL),
       visualEditAgent: true
     }),
     react(),
