@@ -33,3 +33,7 @@ base44/.app.jsonc
 
 # Local-only imported operator SitePacks, never public or committed
 factory/.sitepack-preview-output/
+
+# Branch-local, nonpublic image-byte evidence and proposed SitePack handoffs
+factory/.premium-evidence-output/
+factory/.pending-premium-handoffs/
