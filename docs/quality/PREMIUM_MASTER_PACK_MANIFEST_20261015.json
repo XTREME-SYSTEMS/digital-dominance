@@ -1,0 +1,87 @@
+{
+  "schema": "digital-dominance.premium-master-pack.v1",
+  "status": "AWAITING_OPERATOR_VISUAL_APPROVAL",
+  "default_branch_modified": false,
+  "production_published": false,
+  "source_repo": "XTREME-SYSTEMS/digital-dominance",
+  "feature_branch": "feature/premium-master-concepts-20261015",
+  "three_packs": [
+    {
+      "id": "A",
+      "brand": "NORTHLINE",
+      "creative_direction": "VERDICT NOIR",
+      "industry": "personal injury",
+      "route": "/premium-legal.html",
+      "colors": [
+        "#13191a",
+        "#eeeae0",
+        "#df6849"
+      ],
+      "sections": [
+        "problem first hero",
+        "first steps",
+        "editorial legal context",
+        "practice areas",
+        "interactive consultation demo"
+      ],
+      "workflow": "incident -> guidance -> secure intake after production approvals",
+      "interactive_feature": "privacy-safe incident selection"
+    },
+    {
+      "id": "B",
+      "brand": "MONOLITH",
+      "creative_direction": "INDUSTRIAL ATELIER",
+      "industry": "epoxy and specialty floors",
+      "route": "/premium-epoxy.html",
+      "colors": [
+        "#131817",
+        "#d6f270",
+        "#f3f1e9"
+      ],
+      "sections": [
+        "material hero",
+        "technical narrative",
+        "finish selector",
+        "architectural photo",
+        "application method",
+        "area scope calculator"
+      ],
+      "workflow": "finish selection -> dimensions -> verified estimate provider after approvals",
+      "interactive_feature": "finish selector and dimensions-to-area math"
+    },
+    {
+      "id": "C",
+      "brand": "FORME",
+      "creative_direction": "EDITORIAL CALM",
+      "industry": "medical spa",
+      "route": "/premium-spa.html",
+      "colors": [
+        "#faf8f1",
+        "#21372f",
+        "#d4dccc"
+      ],
+      "sections": [
+        "editorial treatment hero",
+        "philosophy",
+        "treatments",
+        "venue image",
+        "care pathway",
+        "booking preview"
+      ],
+      "workflow": "interest -> qualified information -> secure booking after approvals",
+      "interactive_feature": "interest selection without data submission"
+    }
+  ],
+  "quality_gates": {
+    "technical_build": "PENDING_HOSTED_RUN",
+    "responsive": "PENDING_HOSTED_RUN",
+    "operator_visual_selection": "REQUIRED",
+    "independent_validator": "REQUIRED",
+    "image_semantic_rights": "REQUIRED",
+    "reference_parity": "UNMEASURED",
+    "backend": "NOT_CONNECTED",
+    "release": "BLOCKED"
+  },
+  "operator_selection_required": true,
+  "disclaimer": "Images and provider names are illustrative, no credentials / results / live services / customer data collection."
+}
