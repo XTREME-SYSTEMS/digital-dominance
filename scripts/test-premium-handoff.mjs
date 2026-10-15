@@ -11,10 +11,12 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const configs=JSON.parse(fs.readFileSync(path.join(root,'data/premium-collection-20.json'),'utf8'));
 const approved=JSON.parse(fs.readFileSync(path.join(root,'docs/quality/premium-signed-approvals.json'),'utf8'));
 const keys=JSON.parse(fs.readFileSync(path.join(root,'docs/quality/premium-reviewer-keys.json'),'utf8'));
+const pinned=JSON.parse(fs.readFileSync(path.join(root,'docs/quality/premium-hero-asset-digests-20261015.json'),'utf8'));
+assert.equal(pinned.records.length,5);
 assert.equal(configs.length,17);
 assert.equal(keys.keys.length,0,'Do not auto-register a generator reviewer');
 assert.equal(approved.approved.length,0,'Do not silently approve candidates');
-const current=approvedCatalog({configs,ledger:approved,keys});
+const current=approvedCatalog({configs,ledger:approved,keys,pinnedImageEvidence:pinned.records});
 assert.equal(current.approved_count,0,'Unsigned reviews must never promote any master');
 assert.equal(current.pending_count,17);
 const master=configs.find(x=>x.id==='forge-roofing');
@@ -32,19 +34,19 @@ const receipt={
  desktop_screenshot_sha256:'a'.repeat(64),mobile_screenshot_sha256:'b'.repeat(64),
  visual_score:0.97,review_outcome:'PASS',scope:'REUSABLE_PREVIEW_ONLY',
  images:[
-  {field:'photo',photo_id:'pexels-33404248',asset_sha256:'c'.repeat(64),semantic_score:0.99,
+  {field:'photo',photo_id:'pexels-33404248',asset_sha256:'10ff01c4cbca459e97994324c1d81bd3b05ea776b25411dbaebf3d2216e776c9',semantic_score:0.99,
    source_url:'https://www.pexels.com/photo/professional-roofer-installing-shingles-on-new-roof-33404248/',
    rights_review:'PASSED_NO_ENDORSEMENT_OR_LIKENESS_CLAIM'},
-  {field:'photo2',photo_id:'pexels-38028508',asset_sha256:'d'.repeat(64),semantic_score:0.99,
+  {field:'photo2',photo_id:'pexels-38028508',asset_sha256:'6648852c3b1de57f73ed87d148a0336d4995fe157a64333ffac1958ea4792a42',semantic_score:0.99,
    source_url:'https://www.pexels.com/photo/roofer-installing-shingles-on-a-sunny-day-38028508/',
    rights_review:'PASSED_NO_ENDORSEMENT_OR_LIKENESS_CLAIM'},
  ]
 };
 const signing=record=>({...record,signature:sign(null,Buffer.from(canonicalApproval(record)),kp.privateKey).toString('base64')});
 const signed=signing(receipt);
-const verdict=validateApproval(master,signed,reviewer);
+const verdict=validateApproval(master,signed,reviewer,SOURCE_SHA,pinned.records);
 assert.equal(verdict.accepted,true,verdict.reason);
-const mockCatalog=approvedCatalog({configs,ledger:{...approved,approved:[signed]},keys:{...keys,keys:[reviewer]}});
+const mockCatalog=approvedCatalog({configs,ledger:{...approved,approved:[signed]},keys:{...keys,keys:[reviewer]},pinnedImageEvidence:pinned.records});
 assert.equal(mockCatalog.approved_count,1);
 assert.equal(mockCatalog.pending_count,16);
 assert.equal(mockCatalog.production_release_allowed,false);
@@ -61,10 +63,13 @@ const denied=[
  ['forged-source-url',{...signed,images:signed.images.map((x,i)=>i===0?{...x,source_url:'https://untrusted.example.com/photo/'}:x)}]
 ];
 for(const [name,item] of denied){
- assert.equal(validateApproval(master,item,reviewer).accepted,false,name+' must fail closed');
+ assert.equal(validateApproval(master,item,reviewer,SOURCE_SHA,pinned.records).accepted,false,name+' must fail closed');
 }
-assert.equal(validateApproval(master,signed,null).accepted,false,'Unregistered reviewer is not accepted');
-const dup=approvedCatalog({configs,ledger:{...approved,approved:[signed,signed]},keys:{...keys,keys:[reviewer]}});
+assert.equal(validateApproval(master,signed,null,SOURCE_SHA,pinned.records).accepted,false,'Unregistered reviewer is not accepted');
+assert.equal(validateApproval(master,signed,reviewer).accepted,false,'Signed review without independently fetched image bytes fails');
+const staleBytes=pinned.records.map(x=>({...x,asset_sha256:'f'.repeat(64)}));
+assert.equal(validateApproval(master,signed,reviewer,SOURCE_SHA,staleBytes).accepted,false,'Tampered CDN byte hashes fail closed');
+const dup=approvedCatalog({configs,ledger:{...approved,approved:[signed,signed]},keys:{...keys,keys:[reviewer]},pinnedImageEvidence:pinned.records});
 assert.equal(dup.approved_count,0,'Duplicated receipt cannot promote');
 const kinds=Object.keys(DESTINATIONS);
 assert.ok(kinds.length>=7);
@@ -86,7 +91,7 @@ assert.notEqual(invalid.status,0,'Unsupported product kind must fail');
 console.log('PASS INDEPENDENT PREMIUM SIGNOFF '+JSON.stringify({
  real_world_approved:current.approved_count,
  mock_cryptographic_positive:true,
- negative_cases:denied.length+3,
+ negative_cases:denied.length+5,
  supported_target_kinds:kinds,
  transport:'OFFLINE_DRAFT_ONLY',base44_writes:0,production_release:false
 }));
