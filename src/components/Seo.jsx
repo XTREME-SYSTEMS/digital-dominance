@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { SEO_ROUTES, DEFAULT_SEO, buildJsonLd, SITE_URL, BUSINESS, applySeoSettings } from "@/lib/seoConfig";
 import { base44 } from "@/api/base44Client";
 import { hasRuntimeBase44AppId } from "@/lib/base44Binding";
+import { isGeneratedVercelPreview } from "@/lib/previewHost";
 import { trackEvent } from "@/lib/tracking";
 
 // Module-level caches so we fetch once per session.
@@ -154,7 +155,7 @@ export default function RouteSeo() {
     document.title = title;
     const runtimeNotFound = document.documentElement.dataset.pageNotFound === "true";
     // Vercel generated deployment URLs must never enter the search index.
-    const ephemeralPreview = /-[a-z0-9]{8,}-[^.]+\\.vercel\\.app$/i.test(window.location.hostname);
+    const ephemeralPreview = isGeneratedVercelPreview(window.location.hostname);
     const noIndex = shouldNoIndex(path) || runtimeNotFound || ephemeralPreview;
     setMeta("name", "description", desc);
     setMeta("name", "robots", noIndex ? "noindex, nofollow" : "index, follow");
