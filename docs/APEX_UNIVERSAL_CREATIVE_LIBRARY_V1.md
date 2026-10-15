@@ -17,6 +17,9 @@ One source-aware catalog for a complete professional creative workflow: **resear
 | Brand token systems | Full JSON color and typography exports | 12 JSON | Draft only |
 | Email layouts | Accessible preview-only HTML, no sends | 10 HTML | Draft only |
 | Website type blueprints | SitePack recipe JSON | 61 JSON | Not 61 finished premium master designs |
+| Coordinated brand kits | Logo geometry + versioned palette + media references | 12 JSON | Draft, trademark review required |
+| 30-day social campaign calendars | Platform/creative mapping, draft captions and approvals | 8 JSON | Draft only; no schedule/publish action |
+| Growth/marketing systems | Ads, funnels, app screens, sales, SEO, print | 54 JSON | Spec recipes; no customer sends or spend |
 | Video storyboards | Nonfunctional content recipes | 8 JSON | Needs media generation / QA |
 | Motion patterns | Reduced-motion-aware pattern specs | 8 JSON | No rendered animation claimed |
 | Website section recipes | Structural descriptions | 24 JSON | Not implemented components |
@@ -32,16 +35,17 @@ npm run test:creative-library
 npm run build
 ```
 
-Build output: `public/premium/libraries/` (ignored generated files). Browse `/premium/libraries/index.html` on the connected Digital Dominance Vercel branch preview. The existing `vercel.json` applies **noindex, nofollow, noarchive** HTTP headers to the full `/premium/(.*)` route.
+Build output: `public/premium/libraries/` (ignored generated files). It contains **307 hashed creative asset files**, an immutable hash manifest, and a reproducible **308-entry ZIP archive** (307 exports + manifest) at `APEX_CREATIVE_LIBRARY_V1.zip`. Browse `/premium/libraries/index.html` on the connected Digital Dominance Vercel branch preview. The existing `vercel.json` applies **noindex, nofollow, noarchive** HTTP headers to the full `/premium/(.*)` route.
 
 ### Use
 
-1. Open the logo library, select one of the **12 mark geometries** and download its three versions. The studio can change the brand name/accent on the downloaded SVG; these are fictional design concepts, not cleared registered trademarks.
-2. Open social graphics, select one of **8 art directions** and **9 platform examples**, preview/edit its headline and download actual SVG creative. Validate current platform placement/safe areas before any posting.
+1. Open the logo library, select one of the **12 mark geometries**, download its three versions and its **coordinated brand-kit manifest**. The studio can change the brand name/accent on the downloaded SVG; these are fictional design concepts, not cleared registered trademarks.
+2. Open social graphics, select one of **8 art directions** and **9 platform examples**, preview/edit its headline, download actual SVG artwork and its **30-day draft content calendar**. The calendar intentionally has no publish times, platform tokens or live send receipts. Validate current platform placement/safe areas before any posting.
 3. Use a brand token JSON with typography/color definitions. Verify contrast and lock imagery before any client deliverables.
 4. Filter the **61 website types** and download a versioned SitePack recipe with **pending approval**. Link to an already validated Monolith/Argent/Atelier master when provided. A recipe is **not** itself a working 61st premium template.
-5. Use the email drafts as visual building blocks, never as live communications. Integrate existing Xtreme Communications only with scoped approvals and real customer consent.
-6. Expand the 32 source families by adding versioned records and renderer plugins. Source registry entries discovered on JARVIS require individual authenticated ingestion, rights checks and quality tests.
+5. Browse the **54 growth-system recipes** and export ad, funnel, SaaS app, proposal, SEO or print specifications. These definitions do not represent completed operational integrations.
+6. Use the email drafts as visual building blocks, never as live communications. Integrate existing Xtreme Communications only with scoped approvals and real customer consent.
+7. Expand the 32 source families by adding versioned records and renderer plugins. Source registry entries discovered on JARVIS require individual authenticated ingestion, rights checks and quality tests.
 
 ### Local source references (reuse; do not replace)
 
