@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
+import { hasRuntimeBase44AppId } from '@/lib/base44Binding';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 
 const AuthContext = createContext();
@@ -31,6 +32,18 @@ export const AuthProvider = ({ children }) => {
         window.location.href = pending;
         return;
       }
+    }
+    // Public preview: never invoke app-specific APIs against /api/apps/null.
+    // This does NOT grant access to auth-protected routes or persist data.
+    if (!hasRuntimeBase44AppId) {
+      setAuthError(null);
+      setAppPublicSettings(null);
+      setUser(null);
+      setIsAuthenticated(false);
+      setIsLoadingPublicSettings(false);
+      setIsLoadingAuth(false);
+      setAuthChecked(true);
+      return;
     }
     try {
       setIsLoadingPublicSettings(true);
