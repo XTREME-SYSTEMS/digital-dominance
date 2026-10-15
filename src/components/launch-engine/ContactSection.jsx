@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Phone, Mail, Building2, ArrowRight } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { hasRuntimeBase44AppId } from "@/lib/base44Binding";
 
 const INDUSTRY_OPTIONS = [
   "Legal", "Real Estate", "Epoxy Flooring", "Roofing", "HVAC", "Plumbing",
@@ -21,7 +22,9 @@ export default function ContactSection() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      // Save to CRM (Lead entity) for automated follow-up
+      // Never send visitor details to /api/apps/null or an unverified tenant.
+      if (!hasRuntimeBase44AppId) throw new Error("CRM_NOT_CONNECTED");
+      // Persist only after a verified app binding exists.
       await base44.entities.Lead.create({
         form_type: "contact",
         name: form.name,
@@ -105,10 +108,10 @@ export default function ContactSection() {
               className="rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/60 outline-none focus:border-[#00a2ff]"
             />
             <button type="submit" disabled={submitting} className="sm:col-span-2 rounded-xl bg-[#00a2ff] py-3.5 text-sm font-bold text-white hover:bg-[#0090e0] disabled:opacity-50 flex items-center justify-center gap-2">
-              {submitting ? "Submitting..." : <>Submit to AI CRM <ArrowRight className="h-4 w-4" /></>}
+              {submitting ? "Preparing..." : <>{hasRuntimeBase44AppId ? "Submit to AI CRM" : "Prepare Email Inquiry"} <ArrowRight className="h-4 w-4" /></>}
             </button>
             <p className="sm:col-span-2 text-xs text-white/40 text-center">
-              We use your details to respond to your inquiry. No automatic marketing messages are sent by this form.
+              {hasRuntimeBase44AppId ? "We use your details to respond to your inquiry. No automatic marketing messages are sent by this form." : "The CRM is not connected on this preview. Submitting opens your email app to let you review and send the inquiry yourself."}
             </p>
           </form>
         )}
