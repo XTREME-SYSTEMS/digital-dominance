@@ -1,0 +1,2451 @@
+diff --git a/src/components/admin/CwvWidget.jsx b/src/components/admin/CwvWidget.jsx
+index d760d6c..b2cb6de 100644
+--- a/src/components/admin/CwvWidget.jsx
++++ b/src/components/admin/CwvWidget.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Gauge, Loader2, CheckCircle2, AlertTriangle, RefreshCw } from "lucide-react";
++import { Gauge, Loader2, AlertTriangle, RefreshCw } from "lucide-react";
+ import { Button } from "@/components/ui/button";
+ 
+ // Core Web Vitals widget ΓÇö fetches live metrics from Google PageSpeed Insights
+diff --git a/src/components/admin/GoogleSetupWizard.jsx b/src/components/admin/GoogleSetupWizard.jsx
+index 59299b0..380a4af 100644
+--- a/src/components/admin/GoogleSetupWizard.jsx
++++ b/src/components/admin/GoogleSetupWizard.jsx
+@@ -1,6 +1,6 @@
+ import React, { useEffect, useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { CheckCircle2, AlertTriangle, Loader2, ExternalLink, ArrowRight, Globe } from "lucide-react";
++import { CheckCircle2, AlertTriangle, Loader2, ArrowRight, Globe } from "lucide-react";
+ import { Button } from "@/components/ui/button";
+ import { Textarea } from "@/components/ui/textarea";
+ 
+diff --git a/src/components/admin/blueprint/AgentsTab.jsx b/src/components/admin/blueprint/AgentsTab.jsx
+index f6aadf7..23363d3 100644
+--- a/src/components/admin/blueprint/AgentsTab.jsx
++++ b/src/components/admin/blueprint/AgentsTab.jsx
+@@ -1,6 +1,6 @@
+ import React, { useEffect, useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Loader2, Bot, Zap, MessageSquare, Activity } from "lucide-react";
++import { Bot, Zap, MessageSquare } from "lucide-react";
+ 
+ const AGENTS = [
+   {
+diff --git a/src/components/admin/blueprint/BuildQueueTab.jsx b/src/components/admin/blueprint/BuildQueueTab.jsx
+index 685f83c..72f5aea 100644
+--- a/src/components/admin/blueprint/BuildQueueTab.jsx
++++ b/src/components/admin/blueprint/BuildQueueTab.jsx
+@@ -1,6 +1,6 @@
+ import React, { useEffect, useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Loader2, ListChecks, Plus, Rocket, Zap, Clock, CheckCircle2, AlertCircle, Bot, ArrowRight } from "lucide-react";
++import { Loader2, ListChecks, Plus, Rocket, Zap, Clock, CheckCircle2, Bot, ArrowRight } from "lucide-react";
+ 
+ const SWARM_BUILD_TASKS = [
+   { title: "Wire Tool Hub toggles to backend functions", desc: "Each toggle in Tool Hub currently persists to DB but doesn't execute. Wire each toggle to its corresponding backend function call.", priority: "high", agent: "swarm_orchestrator", type: "site_health", effort: "Medium" },
+diff --git a/src/components/agent-builder/VisionStep.jsx b/src/components/agent-builder/VisionStep.jsx
+index 6f5aeac..cd47a47 100644
+--- a/src/components/agent-builder/VisionStep.jsx
++++ b/src/components/agent-builder/VisionStep.jsx
+@@ -1,6 +1,5 @@
+ import React, { useState, useEffect } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { invokeLLM } from '@/lib/gateway';
+ import { Sparkles, Loader2, Star, History, Trash2, X } from 'lucide-react';
+ 
+ // ΓöÇΓöÇ 10 Vision Prompts researched from top entrepreneur/wealth-builder topics ΓöÇΓöÇ
+diff --git a/src/components/agent-master/ActionsTab.jsx b/src/components/agent-master/ActionsTab.jsx
+index 09ccff1..5b721b7 100644
+--- a/src/components/agent-master/ActionsTab.jsx
++++ b/src/components/agent-master/ActionsTab.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+-import { Zap, Plus, Trash2, Loader2, Clock, Play, Pause, CheckSquare, Square, Calendar } from "lucide-react";
++import { Zap, Plus, Trash2, Loader2, Clock, Play, Pause, Calendar } from "lucide-react";
+ 
+ const ACTION_CATEGORIES = [
+   { id: "lead_management", label: "Lead Management", icon: "≡ƒæÑ" },
+diff --git a/src/components/agent-master/CommunicationsTab.jsx b/src/components/agent-master/CommunicationsTab.jsx
+index b856b46..f761085 100644
+--- a/src/components/agent-master/CommunicationsTab.jsx
++++ b/src/components/agent-master/CommunicationsTab.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from "react";
+ import { useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+-import { Phone, Mail, MessageSquare, Mic, Save, Loader2, Globe } from "lucide-react";
++import { Phone, Mail, MessageSquare, Mic, Save, Loader2 } from "lucide-react";
+ 
+ export default function CommunicationsTab({ agent }) {
+   const queryClient = useQueryClient();
+diff --git a/src/components/agent-master/IntelligenceTab.jsx b/src/components/agent-master/IntelligenceTab.jsx
+index 3f272c8..c28de38 100644
+--- a/src/components/agent-master/IntelligenceTab.jsx
++++ b/src/components/agent-master/IntelligenceTab.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+-import { Upload, Plus, Trash2, Loader2, Share2, FileText, Search, Brain } from "lucide-react";
++import { Upload, Plus, Trash2, Loader2, FileText, Search, Brain } from "lucide-react";
+ 
+ const INTEL_CATEGORIES = ["market_research","competitor_analysis","industry_trends","customer_insights","product_knowledge","sales_playbook","technical_docs","company_policy","brand_guidelines","seo_strategy","domain_strategy","operational_data","training_material","custom"];
+ 
+diff --git a/src/components/agent-master/PersonalityTab.jsx b/src/components/agent-master/PersonalityTab.jsx
+index af9ff8d..ce13f61 100644
+--- a/src/components/agent-master/PersonalityTab.jsx
++++ b/src/components/agent-master/PersonalityTab.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from "react";
+ import { useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+-import { Save, Loader2, Plus, Trash2, Brain, Sparkles, Copy, X } from "lucide-react";
++import { Save, Loader2, Plus, Brain, Sparkles, X } from "lucide-react";
+ 
+ export default function PersonalityTab({ agent, agents }) {
+   const queryClient = useQueryClient();
+diff --git a/src/components/alpha-prime/ChatMessage.jsx b/src/components/alpha-prime/ChatMessage.jsx
+index 1b8714f..267f462 100644
+--- a/src/components/alpha-prime/ChatMessage.jsx
++++ b/src/components/alpha-prime/ChatMessage.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { RefreshCw, Loader2, Pencil, ArrowRight, Check, X } from "lucide-react";
++import { RefreshCw, Loader2, Pencil, Check, X } from "lucide-react";
+ 
+ /**
+  * ChatMessage ΓÇö renders a single message in the Alpha Prime chat drawer.
+diff --git a/src/components/app/ContractorShell.jsx b/src/components/app/ContractorShell.jsx
+index cd194b9..69bdd60 100644
+--- a/src/components/app/ContractorShell.jsx
++++ b/src/components/app/ContractorShell.jsx
+@@ -1,8 +1,8 @@
+ import React, { useState } from "react";
+ import { useNavigate, Link, useLocation } from "react-router-dom";
+ import {
+-  ArrowLeft, Menu, X, Home, Crosshair, Zap, Film, Award,
+-  Star, FileText, Gift, LogOut, Phone, ChevronRight,
++  ArrowLeft, Menu, X, Home, Crosshair, Zap, Film,
++  Star, FileText, Gift, LogOut, Phone,
+ } from "lucide-react";
+ import { LOGO_URL } from "@/components/Logo";
+ 
+diff --git a/src/components/app/TrustProducts.jsx b/src/components/app/TrustProducts.jsx
+index f082b24..a3c9cec 100644
+--- a/src/components/app/TrustProducts.jsx
++++ b/src/components/app/TrustProducts.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+-import { ExternalLink, Layers, Wrench, Droplet, Palette, Package } from "lucide-react";
+-import { FLOOR_SYSTEM_DATA, COLOR_DATA } from "@/lib/colorData";
++import { ExternalLink, Layers, Wrench, Droplet, Package } from "lucide-react";
++import { FLOOR_SYSTEM_DATA } from "@/lib/colorData";
+ 
+ const XPS_URL = "https://xtremepolishingsystems.com";
+ 
+diff --git a/src/components/assistant/PhotoUploader.jsx b/src/components/assistant/PhotoUploader.jsx
+index 5db99cf..c53069e 100644
+--- a/src/components/assistant/PhotoUploader.jsx
++++ b/src/components/assistant/PhotoUploader.jsx
+@@ -1,6 +1,5 @@
+ import React, { useState } from "react";
+ import { Upload, X, Loader2 } from "lucide-react";
+-import { base44 } from "@/api/base44Client";
+ import { uploadFile } from "@/lib/gateway";
+ 
+ const MAX = 10;
+diff --git a/src/components/autonomous-dominance/ComputerUseAgent.jsx b/src/components/autonomous-dominance/ComputerUseAgent.jsx
+index 221f79b..1b08ec5 100644
+--- a/src/components/autonomous-dominance/ComputerUseAgent.jsx
++++ b/src/components/autonomous-dominance/ComputerUseAgent.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Monitor, Loader2, Play, Square, Cpu, Eye, MousePointer2, Keyboard } from 'lucide-react';
++import { Monitor, Play, Square, Cpu, Eye, MousePointer2, Keyboard } from 'lucide-react';
+ 
+ export default function ComputerUseAgent() {
+   const [active, setActive] = useState(false);
+diff --git a/src/components/autonomous-dominance/DominanceGoalTracker.jsx b/src/components/autonomous-dominance/DominanceGoalTracker.jsx
+index 21759f6..1571b13 100644
+--- a/src/components/autonomous-dominance/DominanceGoalTracker.jsx
++++ b/src/components/autonomous-dominance/DominanceGoalTracker.jsx
+@@ -1,7 +1,7 @@
+-import React, { useState, useEffect } from 'react';
++import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { useQuery, useQueryClient } from '@tanstack/react-query';
+-import { Target, Loader2, TrendingUp, DollarSign, Users, Rocket, Plus, Activity } from 'lucide-react';
++import { Target, Loader2, DollarSign, Users, Rocket, Plus, Activity } from 'lucide-react';
+ 
+ const DEFAULT_GOALS = [
+   { goal_type: 'revenue', title: 'Generate $1M Revenue', target_value: 1000000, unit: 'USD', timeframe: 'yearly', priority: 'critical' },
+diff --git a/src/components/autonomous-dominance/MassIngestionSystem.jsx b/src/components/autonomous-dominance/MassIngestionSystem.jsx
+index aebf202..4cce212 100644
+--- a/src/components/autonomous-dominance/MassIngestionSystem.jsx
++++ b/src/components/autonomous-dominance/MassIngestionSystem.jsx
+@@ -1,4 +1,4 @@
+-import React, { useState, useCallback } from 'react';
++import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { useQuery, useQueryClient } from '@tanstack/react-query';
+ import { FileCode2, Layers, BarChart3 } from 'lucide-react';
+diff --git a/src/components/autonomous-refactor/RefactorStats.jsx b/src/components/autonomous-refactor/RefactorStats.jsx
+index c031a1a..d38dc07 100644
+--- a/src/components/autonomous-refactor/RefactorStats.jsx
++++ b/src/components/autonomous-refactor/RefactorStats.jsx
+@@ -1,7 +1,7 @@
+ import React from 'react';
+ import { useQuery } from '@tanstack/react-query';
+ import { base44 } from '@/api/base44Client';
+-import { Loader2, AlertCircle, CheckCircle2, Clock, Zap, FileCode, TrendingUp } from 'lucide-react';
++import { AlertCircle, CheckCircle2, Clock, Zap, FileCode, TrendingUp } from 'lucide-react';
+ 
+ export default function RefactorStats() {
+   const { data: stats, isLoading } = useQuery({
+diff --git a/src/components/codestudio/BuilderChat.jsx b/src/components/codestudio/BuilderChat.jsx
+index 67b6df1..90a0d9b 100644
+--- a/src/components/codestudio/BuilderChat.jsx
++++ b/src/components/codestudio/BuilderChat.jsx
+@@ -1,6 +1,5 @@
+ import React, { useState, useEffect, useRef } from "react";
+ import { invokeLLM } from "@/lib/gateway";
+-import { base44 } from "@/api/base44Client";
+ import ReactMarkdown from "react-markdown";
+ import { Bot, Send, Loader2, Zap } from "lucide-react";
+ 
+diff --git a/src/components/codestudio/BuilderEditor.jsx b/src/components/codestudio/BuilderEditor.jsx
+index f87aee2..7841b40 100644
+--- a/src/components/codestudio/BuilderEditor.jsx
++++ b/src/components/codestudio/BuilderEditor.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+-import { FileText, Code2, Plus, Eye } from "lucide-react";
++import { FileText, Code2, Eye } from "lucide-react";
+ import PageBuilder from "./PageBuilder";
+ import CodeBlockManager from "./CodeBlockManager";
+ import DynamicPageRenderer from "./DynamicPageRenderer";
+diff --git a/src/components/codestudio/BuilderToolbar.jsx b/src/components/codestudio/BuilderToolbar.jsx
+index d921449..3593a0c 100644
+--- a/src/components/codestudio/BuilderToolbar.jsx
++++ b/src/components/codestudio/BuilderToolbar.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useRef } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Code2, Eye, Columns2, GitBranch, Rocket, Upload, Loader2, CheckCircle2, AlertCircle, ChevronDown, Terminal } from "lucide-react";
++import { Code2, Eye, Columns2, GitBranch, Rocket, Upload, Loader2, CheckCircle2, AlertCircle, ChevronDown } from "lucide-react";
+ 
+ export default function BuilderToolbar({ view, onViewChange, onUpload, autoSync, onToggleAutoSync }) {
+   const [deploying, setDeploying] = useState(false);
+diff --git a/src/components/codestudio/DynamicPageRenderer.jsx b/src/components/codestudio/DynamicPageRenderer.jsx
+index a9f21cc..380732d 100644
+--- a/src/components/codestudio/DynamicPageRenderer.jsx
++++ b/src/components/codestudio/DynamicPageRenderer.jsx
+@@ -1,7 +1,7 @@
+ import React from "react";
+ import ReactMarkdown from "react-markdown";
+ import { Image } from "@/components/ui/image";
+-import { Phone, Star, ArrowRight } from "lucide-react";
++import { Star, ArrowRight } from "lucide-react";
+ 
+ function HeroSection({ title, subtitle, bg_image, cta_text, cta_link }) {
+   return (
+diff --git a/src/components/codestudio/SectionEditor.jsx b/src/components/codestudio/SectionEditor.jsx
+index 70ed919..876a1ab 100644
+--- a/src/components/codestudio/SectionEditor.jsx
++++ b/src/components/codestudio/SectionEditor.jsx
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import { Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
++import { Trash2, ChevronUp, ChevronDown } from "lucide-react";
+ 
+ const SECTION_TYPES = [
+   { type: "hero", label: "Hero Banner", fields: [
+diff --git a/src/components/command-center/AgentActivity.jsx b/src/components/command-center/AgentActivity.jsx
+index 45e9f20..4d76cf4 100644
+--- a/src/components/command-center/AgentActivity.jsx
++++ b/src/components/command-center/AgentActivity.jsx
+@@ -1,5 +1,5 @@
+ import React from 'react';
+-import { Bot, Rocket, Shield, User, Activity as ActivityIcon, Clock } from 'lucide-react';
++import { Bot, Rocket, Shield, User, Activity as ActivityIcon } from 'lucide-react';
+ 
+ const TYPE_ICONS = {
+   agent_action: Bot,
+diff --git a/src/components/command-center/QuickActions.jsx b/src/components/command-center/QuickActions.jsx
+index 0e449ad..768a262 100644
+--- a/src/components/command-center/QuickActions.jsx
++++ b/src/components/command-center/QuickActions.jsx
+@@ -1,5 +1,5 @@
+ import React from 'react';
+-import { Zap, Bot, Rocket, Shield, Radar, TrendingUp, Wand2, Crown, Brain, Network } from 'lucide-react';
++import { Zap, Bot, Rocket, Shield, Radar, TrendingUp, Wand2, Brain, Network } from 'lucide-react';
+ 
+ const ACTIONS = [
+   { id: 'vision', label: 'Vision Studio', desc: 'AI vision ΓåÆ strategies', icon: Wand2, path: '/admin/vision-studio', color: 'amber' },
+diff --git a/src/components/command-center/SystemHealth.jsx b/src/components/command-center/SystemHealth.jsx
+index 54a1cdd..7ef9c11 100644
+--- a/src/components/command-center/SystemHealth.jsx
++++ b/src/components/command-center/SystemHealth.jsx
+@@ -1,5 +1,5 @@
+ import React from 'react';
+-import { Activity, Shield, CheckCircle2, AlertTriangle, XCircle, Cpu, Bot, Zap, TrendingUp } from 'lucide-react';
++import { Activity, Shield, Cpu, Bot, Zap, TrendingUp } from 'lucide-react';
+ 
+ const HEALTH_COLORS = {
+   EXCELLENT: 'text-green-600 bg-green-50 border-green-300',
+diff --git a/src/components/contents/CategoryManager.jsx b/src/components/contents/CategoryManager.jsx
+index 995e796..de58c2a 100644
+--- a/src/components/contents/CategoryManager.jsx
++++ b/src/components/contents/CategoryManager.jsx
+@@ -2,7 +2,7 @@ import React, { useState } from "react";
+ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+ import {
+   Plus, Trash2, Pencil, GripVertical, X, Check, RefreshCw,
+-  FolderTree, LayoutGrid, Sparkles, Shield, Layers, Boxes, Package, Zap,
++  FolderTree, Sparkles, Shield, Layers, Boxes, Package, Zap,
+   Globe, Crown, Wand2, Bot, Network, Gauge, Rocket, Wrench, Brain, Building2,
+   Cpu, Compass, Eye, EyeOff, Workflow, BookOpen, Users, KanbanSquare, Mail,
+   Star, Radar, MapPin, MessageSquare, Smartphone, PhoneCall, Share2,
+diff --git a/src/components/contractor/ContractorLeads.jsx b/src/components/contractor/ContractorLeads.jsx
+index 7660c11..e8fefbe 100644
+--- a/src/components/contractor/ContractorLeads.jsx
++++ b/src/components/contractor/ContractorLeads.jsx
+@@ -1,6 +1,6 @@
+ import React, { useEffect, useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Loader2, ChevronRight, Phone, Mail } from "lucide-react";
++import { Loader2, Phone, Mail } from "lucide-react";
+ 
+ const COLUMNS = [
+   { key: "NEW ESTIMATE", label: "New", color: "border-blue-500" },
+diff --git a/src/components/contractor/ContractorMore.jsx b/src/components/contractor/ContractorMore.jsx
+index 39fa989..1b9b205 100644
+--- a/src/components/contractor/ContractorMore.jsx
++++ b/src/components/contractor/ContractorMore.jsx
+@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
+ import {
+   ScanLine, LayoutDashboard, Phone, Wand2, Image as ImageIcon,
+   Layers, ClipboardList, Globe, Calendar, Palette, DollarSign,
+-  FileText, Users, Star, BarChart3, Megaphone, Settings, Zap,
++  FileText, Users, Star, Megaphone, Settings, Zap,
+   Send, MapPin, Shield, Bell, Download, Eye, ArrowRight, Home as HomeIcon,
+   Briefcase, MessageSquare
+ } from "lucide-react";
+diff --git a/src/components/contractor/ContractorProjects.jsx b/src/components/contractor/ContractorProjects.jsx
+index 44d4d39..a7752f2 100644
+--- a/src/components/contractor/ContractorProjects.jsx
++++ b/src/components/contractor/ContractorProjects.jsx
+@@ -1,6 +1,6 @@
+ import React, { useEffect, useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Loader2, Calendar, MapPin, Users, CheckCircle2, Clock } from "lucide-react";
++import { Loader2, Calendar, MapPin, CheckCircle2, Clock } from "lucide-react";
+ import { Image } from "@/components/ui/image";
+ 
+ const STATUS_LABELS = {
+diff --git a/src/components/contractor/ContractorVisualizer.jsx b/src/components/contractor/ContractorVisualizer.jsx
+index 8b3b545..143084f 100644
+--- a/src/components/contractor/ContractorVisualizer.jsx
++++ b/src/components/contractor/ContractorVisualizer.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useMemo, useRef } from "react";
+-import { X, Camera, ChevronRight, Check, Send, Mail, MessageSquare, User, Phone, Ruler, AlertCircle } from "lucide-react";
++import { X, Camera, Check, Mail, MessageSquare, User, Phone, Ruler, AlertCircle } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { useSettings } from "@/lib/useSettings";
+ import { calcEstimate, money } from "@/lib/pricing";
+diff --git a/src/components/digital-dominance/AlumniOutreachSystem.jsx b/src/components/digital-dominance/AlumniOutreachSystem.jsx
+index fa33551..5f743fc 100644
+--- a/src/components/digital-dominance/AlumniOutreachSystem.jsx
++++ b/src/components/digital-dominance/AlumniOutreachSystem.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { useQuery, useQueryClient } from '@tanstack/react-query';
+-import { Users, Loader2, MessageSquare, Send, Mail, Phone, GraduationCap } from 'lucide-react';
++import { Users, Loader2, MessageSquare, Send, Mail, GraduationCap } from 'lucide-react';
+ 
+ const MESSAGE_TEMPLATES = [
+   { id: 'reunion', name: 'Reunion Invite', channel: 'sms', body: 'Hi {first_name}! Polished Concrete University is hosting our annual alumni reunion. As a graduate, you\'re invited! Date: {date}. Location: {location}. RSVP: {link}' },
+diff --git a/src/components/digital-dominance/CompetitorIntelligence.jsx b/src/components/digital-dominance/CompetitorIntelligence.jsx
+index 93d9398..0373b1b 100644
+--- a/src/components/digital-dominance/CompetitorIntelligence.jsx
++++ b/src/components/digital-dominance/CompetitorIntelligence.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { useQuery } from '@tanstack/react-query';
+-import { Radar, DollarSign, Loader2, TrendingUp, Globe, Target } from 'lucide-react';
++import { Radar, DollarSign, Globe, Target } from 'lucide-react';
+ 
+ export default function CompetitorIntelligence() {
+   const [scanning, setScanning] = useState(false);
+diff --git a/src/components/digital-dominance/MetricDashboard.jsx b/src/components/digital-dominance/MetricDashboard.jsx
+index b0f3adb..b5bbb66 100644
+--- a/src/components/digital-dominance/MetricDashboard.jsx
++++ b/src/components/digital-dominance/MetricDashboard.jsx
+@@ -1,7 +1,7 @@
+ import React from 'react';
+ import { useQuery } from '@tanstack/react-query';
+ import { base44 } from '@/api/base44Client';
+-import { BarChart3, Users, Radar, DollarSign, Globe, Activity, TrendingUp, MessageSquare, Rocket } from 'lucide-react';
++import { BarChart3, Users, Radar, Globe, Activity, TrendingUp, MessageSquare, Rocket } from 'lucide-react';
+ 
+ const METRICS = [
+   { key: 'leads', label: 'Total Leads', entity: 'Lead', icon: Users, color: 'amber' },
+diff --git a/src/components/digital-dominance/NationalCampaignManager.jsx b/src/components/digital-dominance/NationalCampaignManager.jsx
+index f6be447..daba778 100644
+--- a/src/components/digital-dominance/NationalCampaignManager.jsx
++++ b/src/components/digital-dominance/NationalCampaignManager.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Rocket, Loader2, Crown, GraduationCap, Building2, Zap, Youtube, Share2, Image, Video, Hash, CheckCircle2 } from 'lucide-react';
++import { Rocket, Loader2, Crown, GraduationCap, Building2, Zap, Youtube, Share2, CheckCircle2 } from 'lucide-react';
+ 
+ const BRANDS = [
+   { id: 'xtreme_polishing', name: 'Xtreme Polishing Systems', icon: Crown, color: 'amber', desc: 'Full-service epoxy & concrete polishing' },
+diff --git a/src/components/digital-dominance/NationalContractorScraper.jsx b/src/components/digital-dominance/NationalContractorScraper.jsx
+index 319180a..78e7143 100644
+--- a/src/components/digital-dominance/NationalContractorScraper.jsx
++++ b/src/components/digital-dominance/NationalContractorScraper.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { useQuery } from '@tanstack/react-query';
+-import { Radar, Loader2, Play, Pause, Building2, Home, Landmark, Factory, MapPin } from 'lucide-react';
++import { Radar, Loader2, Building2, Home, Landmark, Factory, MapPin } from 'lucide-react';
+ 
+ const CONTRACTOR_TYPES = [
+   { id: 'residential', label: 'Residential Contractors', icon: Home, desc: 'Home garage floors, basements, patios' },
+diff --git a/src/components/digital-dominance/WebsiteTemplateGallery.jsx b/src/components/digital-dominance/WebsiteTemplateGallery.jsx
+index 7be9eae..aa19eb8 100644
+--- a/src/components/digital-dominance/WebsiteTemplateGallery.jsx
++++ b/src/components/digital-dominance/WebsiteTemplateGallery.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { useQuery } from '@tanstack/react-query';
+-import { Layout, Rocket, Loader2, Eye, Sparkles, Globe } from 'lucide-react';
++import { Layout, Loader2, Sparkles, Globe } from 'lucide-react';
+ 
+ const TEMPLATE_TYPES = [
+   { id: 'funnel', label: 'Lead Funnel', desc: 'Multi-step conversion funnel' },
+diff --git a/src/components/domain-rush/BusinessNameGenerator.jsx b/src/components/domain-rush/BusinessNameGenerator.jsx
+index cc555fe..abdc30d 100644
+--- a/src/components/domain-rush/BusinessNameGenerator.jsx
++++ b/src/components/domain-rush/BusinessNameGenerator.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Loader2, Building2, CheckCircle2, XCircle, Search, Sparkles, Globe, ShieldCheck } from "lucide-react";
++import { Loader2, Building2, CheckCircle2, XCircle, Sparkles, Globe, ShieldCheck } from "lucide-react";
+ 
+ const TLDS = [
+   { value: "com", label: ".com" },
+diff --git a/src/components/domain-rush/ContentGenerator.jsx b/src/components/domain-rush/ContentGenerator.jsx
+index dd7728f..1921a2f 100644
+--- a/src/components/domain-rush/ContentGenerator.jsx
++++ b/src/components/domain-rush/ContentGenerator.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Loader2, Play, FileText, Code, HelpCircle, Link2, Bot, Sparkles, Copy, Check } from "lucide-react";
++import { Loader2, FileText, Code, HelpCircle, Link2, Bot, Sparkles, Copy, Check } from "lucide-react";
+ 
+ export default function ContentGenerator({ selectedNiche }) {
+   const [keyword, setKeyword] = useState(selectedNiche?.keyword || "epoxy garage floor");
+diff --git a/src/components/domain-rush/DomainResultCard.jsx b/src/components/domain-rush/DomainResultCard.jsx
+index 75e36e2..f0373e8 100644
+--- a/src/components/domain-rush/DomainResultCard.jsx
++++ b/src/components/domain-rush/DomainResultCard.jsx
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import { CheckCircle2, XCircle, AlertCircle, Star, Plus } from "lucide-react";
++import { CheckCircle2, XCircle, AlertCircle, Plus } from "lucide-react";
+ 
+ // Real domain result card ΓÇö shows actual availability + deterministic score breakdown
+ export default function DomainResultCard({ result, onQueue, queued }) {
+diff --git a/src/components/domain-rush/DominanceCommand.jsx b/src/components/domain-rush/DominanceCommand.jsx
+index dc0c641..b27a9f6 100644
+--- a/src/components/domain-rush/DominanceCommand.jsx
++++ b/src/components/domain-rush/DominanceCommand.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState, useEffect, useCallback } from "react";
+ import {
+-  Crown, Zap, Rocket, Loader2, CheckCircle2, XCircle, Play,
+-  Globe, FileText, Users, Search, Shield, Brain, Bot, TrendingUp,
++  Crown, Zap, Rocket, Loader2, CheckCircle2, XCircle,
++  Globe, FileText, Users, Search, Shield, Brain, Bot,
+   Sparkles, AlertCircle, Clock, Award, RefreshCw
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+diff --git a/src/components/domain-rush/DominanceGenerator.jsx b/src/components/domain-rush/DominanceGenerator.jsx
+index 903a0e1..9f41460 100644
+--- a/src/components/domain-rush/DominanceGenerator.jsx
++++ b/src/components/domain-rush/DominanceGenerator.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Loader2, Play, Crown, TrendingUp, Clock, Bot } from "lucide-react";
++import { Loader2, Crown, TrendingUp, Clock, Bot } from "lucide-react";
+ 
+ export default function DominanceGenerator({ selectedNiche }) {
+   const [keyword, setKeyword] = useState(selectedNiche?.keyword || "epoxy garage floor");
+diff --git a/src/components/domain-rush/WorkflowOrchestrator.jsx b/src/components/domain-rush/WorkflowOrchestrator.jsx
+index 2c6569e..06d82ac 100644
+--- a/src/components/domain-rush/WorkflowOrchestrator.jsx
++++ b/src/components/domain-rush/WorkflowOrchestrator.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { Loader2, Workflow, CheckCircle2, ArrowRight, RefreshCw, Zap, Server, Search, FileText, Network, Bot, Shield, Play } from "lucide-react";
++import { Workflow, CheckCircle2, ArrowRight, RefreshCw, Zap, Server, Search, FileText, Network, Bot, Shield, Play } from "lucide-react";
+ 
+ const WORKFLOW_STEPS = [
+   { id: 1, label: "Niche Selection", icon: Search, desc: "Choose a need/emergency-driven niche from the universal registry", component: "NicheRegistry" },
+diff --git a/src/components/dominance-sandbox/BrandingTab.jsx b/src/components/dominance-sandbox/BrandingTab.jsx
+index a49ea3f..25a0163 100644
+--- a/src/components/dominance-sandbox/BrandingTab.jsx
++++ b/src/components/dominance-sandbox/BrandingTab.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { Sparkles, Globe, CheckCircle2, Loader2, User, Image as ImageIcon, RefreshCw } from "lucide-react";
++import { Sparkles, Globe, CheckCircle2, Loader2, User, Image as ImageIcon } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { invokeLLM, generateImage } from "@/lib/gateway";
+ import { useSandbox } from "./SandboxContext";
+diff --git a/src/components/dominance-sandbox/LaunchTab.jsx b/src/components/dominance-sandbox/LaunchTab.jsx
+index 5da0331..9d247a1 100644
+--- a/src/components/dominance-sandbox/LaunchTab.jsx
++++ b/src/components/dominance-sandbox/LaunchTab.jsx
+@@ -1,4 +1,4 @@
+-import React, { useState, useEffect } from "react";
++import React, { useState } from "react";
+ import { Rocket, Loader2, CheckCircle2, XCircle, ExternalLink, ShieldCheck, Globe, FileText, Search } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { useSandbox } from "./SandboxContext";
+diff --git a/src/components/eden-skye/EdenSkyeMemory.jsx b/src/components/eden-skye/EdenSkyeMemory.jsx
+index bc424e9..1621a2a 100644
+--- a/src/components/eden-skye/EdenSkyeMemory.jsx
++++ b/src/components/eden-skye/EdenSkyeMemory.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useEffect, useCallback } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Brain, CheckCircle2, Phone, MessageSquare, Mail, Clock } from 'lucide-react';
++import { Brain, CheckCircle2, Phone, MessageSquare, Mail } from 'lucide-react';
+ 
+ const CHANNEL_ICONS = { voice: Phone, sms: MessageSquare, email: Mail, mms: MessageSquare, whatsapp: MessageSquare };
+ const SENTIMENT_COLORS = {
+diff --git a/src/components/estimator/PhotoStep.jsx b/src/components/estimator/PhotoStep.jsx
+index 566b5fb..3bd56d2 100644
+--- a/src/components/estimator/PhotoStep.jsx
++++ b/src/components/estimator/PhotoStep.jsx
+@@ -1,6 +1,5 @@
+ import React, { useState } from "react";
+ import StepShell, { PrimaryButton } from "./StepShell";
+-import { base44 } from "@/api/base44Client";
+ import { uploadFile } from "@/lib/gateway";
+ import { Camera, Loader2, X } from "lucide-react";
+ 
+diff --git a/src/components/funnel/FlakeColorChart.jsx b/src/components/funnel/FlakeColorChart.jsx
+index be55be9..8ab990f 100644
+--- a/src/components/funnel/FlakeColorChart.jsx
++++ b/src/components/funnel/FlakeColorChart.jsx
+@@ -1,4 +1,4 @@
+-import React, { useState } from "react";
++import React from "react";
+ import { Image } from "@/components/ui/image";
+ 
+ const COLORS = [
+diff --git a/src/components/funnel/PhotoUpload.jsx b/src/components/funnel/PhotoUpload.jsx
+index 587b909..98a5ccd 100644
+--- a/src/components/funnel/PhotoUpload.jsx
++++ b/src/components/funnel/PhotoUpload.jsx
+@@ -1,5 +1,4 @@
+ import React, { useState } from "react";
+-import { base44 } from "@/api/base44Client";
+ import { uploadFile } from "@/lib/gateway";
+ import { Camera, Loader2, X } from "lucide-react";
+ 
+diff --git a/src/components/google-workspace-os/OrgChart.jsx b/src/components/google-workspace-os/OrgChart.jsx
+index 376ad7c..af57505 100644
+--- a/src/components/google-workspace-os/OrgChart.jsx
++++ b/src/components/google-workspace-os/OrgChart.jsx
+@@ -1,5 +1,5 @@
+ import React from 'react';
+-import { Users, Loader2, Crown, Cpu, Calendar, Briefcase, Megaphone, Code, ClipboardList, ShieldCheck, Lock, UserCircle } from 'lucide-react';
++import { Users, Loader2, Crown, Cpu, Calendar, Briefcase, Megaphone, Code, ClipboardList, ShieldCheck, Lock } from 'lucide-react';
+ 
+ const AGENT_ICONS = {
+   'Eden Skye ΓÇö CEO': Crown,
+diff --git a/src/components/gpt-pipeline/DominanceSelector.jsx b/src/components/gpt-pipeline/DominanceSelector.jsx
+index f9778ac..a078ae6 100644
+--- a/src/components/gpt-pipeline/DominanceSelector.jsx
++++ b/src/components/gpt-pipeline/DominanceSelector.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+ import { Link } from "react-router-dom";
+-import { Globe, MapPin, ChevronRight, Check } from "lucide-react";
++import { Globe, ChevronRight, Check } from "lucide-react";
+ 
+ const US_STATES = [
+   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
+diff --git a/src/components/gpt-pipeline/PipelineChat.jsx b/src/components/gpt-pipeline/PipelineChat.jsx
+index 6d48631..b252e16 100644
+--- a/src/components/gpt-pipeline/PipelineChat.jsx
++++ b/src/components/gpt-pipeline/PipelineChat.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useRef, useEffect, useCallback } from "react";
+-import { Send, Loader2, Crown, Trash2, ChevronRight } from "lucide-react";
++import { Send, Loader2, Crown, Trash2 } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { useAuth } from "@/lib/AuthContext";
+ 
+diff --git a/src/components/gpt-pipeline/PipelineRunner.jsx b/src/components/gpt-pipeline/PipelineRunner.jsx
+index 59de6c1..3dad188 100644
+--- a/src/components/gpt-pipeline/PipelineRunner.jsx
++++ b/src/components/gpt-pipeline/PipelineRunner.jsx
+@@ -1,9 +1,9 @@
+ import React, { useState, useRef, useEffect, useCallback } from "react";
+-import { Send, Loader2, Rocket, Trash2, CheckCircle2, Circle, Loader, ExternalLink } from "lucide-react";
++import { Send, Loader2, Rocket, Trash2, CheckCircle2, Circle, Loader } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { useAuth } from "@/lib/AuthContext";
+ import SandboxPreview from "./SandboxPreview";
+-import { PIPELINE_STAGES, FUNCTION_STAGE_MAP, CHECKLIST_ITEMS } from "@/lib/pipelineStages";
++import { PIPELINE_STAGES, CHECKLIST_ITEMS } from "@/lib/pipelineStages";
+ 
+ const AGENT_ID = "gpt_sync_pipeline";
+ const MAX_HISTORY = 40;
+diff --git a/src/components/hero-enhancer/HeroMockupIngestor.jsx b/src/components/hero-enhancer/HeroMockupIngestor.jsx
+index 804d63a..1a5a8a0 100644
+--- a/src/components/hero-enhancer/HeroMockupIngestor.jsx
++++ b/src/components/hero-enhancer/HeroMockupIngestor.jsx
+@@ -2,7 +2,7 @@ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { Button } from '@/components/ui/button';
+ import { Textarea } from '@/components/ui/textarea';
+-import { Sparkles, Eye, CheckCircle2, AlertCircle, Loader2, FileCode } from 'lucide-react';
++import { Sparkles, CheckCircle2, AlertCircle, Loader2, FileCode } from 'lucide-react';
+ 
+ export default function HeroMockupIngestor({ onEnhanced }) {
+   const [mockup, setMockup] = useState('');
+diff --git a/src/components/home/EliteSection.jsx b/src/components/home/EliteSection.jsx
+index d8c6355..b081bf4 100644
+--- a/src/components/home/EliteSection.jsx
++++ b/src/components/home/EliteSection.jsx
+@@ -2,8 +2,8 @@ import React from "react";
+ import { Link, useNavigate } from "react-router-dom";
+ import {
+   Download, ClipboardList, MessageSquare, Calendar, Heart,
+-  Sparkles, ArrowRight, CheckCircle2, Gift, Trophy, Shield,
+-  Bell, Star, FileText, Users, Cloud, Eye, Award,
++  Sparkles, CheckCircle2, Gift, Trophy, Shield,
++  Bell, FileText, Users, Cloud, Eye, Award,
+ } from "lucide-react";
+ import { LOGO_URL, XTREME_AI_ICON_URL } from "@/components/Logo";
+ import { Image } from "@/components/ui/image";
+diff --git a/src/components/home/FooterLocations.jsx b/src/components/home/FooterLocations.jsx
+index 5ed685f..64964ae 100644
+--- a/src/components/home/FooterLocations.jsx
++++ b/src/components/home/FooterLocations.jsx
+@@ -6,7 +6,6 @@ import {
+   XPS_CANADA_LOCATIONS,
+   XPS_INTERNATIONAL_LOCATIONS,
+   XPS_COMING_SOON_LOCATIONS,
+-  REGION_MAP,
+   getRegion,
+ } from "@/lib/xpsLocations";
+ import { locationPath } from "@/lib/seoConfig";
+diff --git a/src/components/home/MarketingSection.jsx b/src/components/home/MarketingSection.jsx
+index 041c808..fd8f595 100644
+--- a/src/components/home/MarketingSection.jsx
++++ b/src/components/home/MarketingSection.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useEffect } from "react";
+-import { Droplets, ShieldCheck, Flame, Clock, Sparkles, Award, MapPin, Store, Star } from "lucide-react";
++import { Droplets, ShieldCheck, Flame, Clock, Sparkles, MapPin, Store, Star } from "lucide-react";
+ 
+ const highlights = [
+   { icon: MapPin, label: "70+ locations" },
+diff --git a/src/components/home/MobileSection.jsx b/src/components/home/MobileSection.jsx
+index 704e4bf..33e763e 100644
+--- a/src/components/home/MobileSection.jsx
++++ b/src/components/home/MobileSection.jsx
+@@ -6,7 +6,6 @@ import {
+ } from "lucide-react";
+ import { LOGO_URL } from "@/components/Logo";
+ import { Image } from "@/components/ui/image";
+-import { GALLERY_IMAGES } from "@/lib/galleryImages";
+ import InstallAppButton from "@/components/home/InstallAppButton";
+ 
+ const VISUALIZER_STEPS = [
+diff --git a/src/components/home/Nav.jsx b/src/components/home/Nav.jsx
+index 9d63ee3..953dc3c 100644
+--- a/src/components/home/Nav.jsx
++++ b/src/components/home/Nav.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useEffect, useRef } from "react";
+ import { Link } from "react-router-dom";
+-import { Menu, X, Phone, Smartphone, Palette, ArrowRight } from "lucide-react";
++import { Menu, X, Phone, Smartphone, Palette } from "lucide-react";
+ import Logo from "@/components/Logo";
+ import InstallAppButton from "@/components/home/InstallAppButton";
+ import { trackEvent } from "@/lib/tracking";
+diff --git a/src/components/home/WhoWeAre.jsx b/src/components/home/WhoWeAre.jsx
+index 68977b9..e29e14e 100644
+--- a/src/components/home/WhoWeAre.jsx
++++ b/src/components/home/WhoWeAre.jsx
+@@ -1,6 +1,5 @@
+ import React from "react";
+-import { Link } from "react-router-dom";
+-import { Phone, Mail, Calendar, MapPin, GraduationCap, Building2, Award } from "lucide-react";
++import { MapPin, GraduationCap, Building2, Award } from "lucide-react";
+ import { Image } from "@/components/ui/image";
+ 
+ const TRAINING_IMG = "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/8bb317033_IMG_8152-min_c55bf5c4-40e1-4893-b5c7-699a395f36c6.jpg";
+diff --git a/src/components/image-ingestion/ChatGPTPanel.jsx b/src/components/image-ingestion/ChatGPTPanel.jsx
+index 8c9f6a3..6726a8b 100644
+--- a/src/components/image-ingestion/ChatGPTPanel.jsx
++++ b/src/components/image-ingestion/ChatGPTPanel.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from 'react';
+-import { Sparkles, Loader2, ImageIcon, Wand2 } from 'lucide-react';
++import { Sparkles, Loader2, Wand2 } from 'lucide-react';
+ import { base44 } from '@/api/base44Client';
+ 
+ const PRESETS = [
+diff --git a/src/components/image-ingestion/FunnelDeploy.jsx b/src/components/image-ingestion/FunnelDeploy.jsx
+index 5c29b51..4da607d 100644
+--- a/src/components/image-ingestion/FunnelDeploy.jsx
++++ b/src/components/image-ingestion/FunnelDeploy.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from 'react';
+-import { Rocket, Loader2, MapPin, Shuffle, Check, TrendingUp } from 'lucide-react';
++import { Rocket, Loader2, MapPin, Check, TrendingUp } from 'lucide-react';
+ import { base44 } from '@/api/base44Client';
+ 
+ const US_CITIES = [
+diff --git a/src/components/launch-engine/ContactSection.jsx b/src/components/launch-engine/ContactSection.jsx
+index 6b8dbe9..caefc1c 100644
+--- a/src/components/launch-engine/ContactSection.jsx
++++ b/src/components/launch-engine/ContactSection.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { Phone, Mail, Building2, ArrowRight } from "lucide-react";
++import { Phone, Mail, ArrowRight } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ 
+ const INDUSTRY_OPTIONS = [
+diff --git a/src/components/launch-engine/LaunchWizard.jsx b/src/components/launch-engine/LaunchWizard.jsx
+index c024546..8d95202 100644
+--- a/src/components/launch-engine/LaunchWizard.jsx
++++ b/src/components/launch-engine/LaunchWizard.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+ import { useNavigate } from "react-router-dom";
+-import { X, Rocket, MapPin, Check, ChevronRight, Eye } from "lucide-react";
++import { X, Rocket, Check, ChevronRight, Eye } from "lucide-react";
+ import WebsitePreview from "@/components/launch-engine/WebsitePreview";
+ import BrandGenerator from "@/components/launch-engine/BrandGenerator";
+ import useStockTemplates from '@/components/template-studio/useStockTemplates';
+diff --git a/src/components/lead-scraper/LeadsTable.jsx b/src/components/lead-scraper/LeadsTable.jsx
+index c197afe..063b2c2 100644
+--- a/src/components/lead-scraper/LeadsTable.jsx
++++ b/src/components/lead-scraper/LeadsTable.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+-import { Mail, Phone, MessageCircle, Building2, ExternalLink, RefreshCw, Send, Sparkles, ChevronDown, ChevronRight } from "lucide-react";
++import { Mail, Phone, MessageCircle, Building2, RefreshCw, Send, Sparkles, ChevronDown, ChevronRight } from "lucide-react";
+ 
+ export default function LeadsTable({ onSelectionChange }) {
+   const queryClient = useQueryClient();
+diff --git a/src/components/marketplace/ListingCard.jsx b/src/components/marketplace/ListingCard.jsx
+index 2f0403d..e2d3572 100644
+--- a/src/components/marketplace/ListingCard.jsx
++++ b/src/components/marketplace/ListingCard.jsx
+@@ -1,6 +1,6 @@
+ import React from "react";
+ import { Link } from "react-router-dom";
+-import { TrendingUp, Users, DollarSign, Search, MapPin, ArrowRight } from "lucide-react";
++import { Users, DollarSign, Search, MapPin, ArrowRight } from "lucide-react";
+ 
+ const NICHE_LABELS = {
+   epoxy_garage: "Epoxy Garage",
+diff --git a/src/components/master-pipeline/ForensicAudit.jsx b/src/components/master-pipeline/ForensicAudit.jsx
+index f463266..0286684 100644
+--- a/src/components/master-pipeline/ForensicAudit.jsx
++++ b/src/components/master-pipeline/ForensicAudit.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { ChevronDown, ChevronRight, Database, Cpu, Workflow, Bot, Plug, Layers } from "lucide-react";
++import { ChevronDown, ChevronRight, Database, Cpu, Workflow, Bot, Plug } from "lucide-react";
+ 
+ // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+ // FORENSIC AUDIT DATA ΓÇö cataloged from AdminLayout, entities, functions, workflows, agents, connectors
+diff --git a/src/components/master-pipeline/PipelineStepV2.jsx b/src/components/master-pipeline/PipelineStepV2.jsx
+index 8b1ea1e..12dc5ac 100644
+--- a/src/components/master-pipeline/PipelineStepV2.jsx
++++ b/src/components/master-pipeline/PipelineStepV2.jsx
+@@ -1,6 +1,6 @@
+ import React from "react";
+ import { Link } from "react-router-dom";
+-import { Check, Lock, ChevronRight, Lightbulb, ExternalLink } from "lucide-react";
++import { Check, Lock, Lightbulb, ExternalLink } from "lucide-react";
+ 
+ export default function PipelineStep({ step, intelligence, state, onAction, isActive, isComplete, isLocked, stepNum }) {
+   if (isLocked) {
+diff --git a/src/components/meta-agent/WorkPacketList.jsx b/src/components/meta-agent/WorkPacketList.jsx
+index 357a14d..abc76bd 100644
+--- a/src/components/meta-agent/WorkPacketList.jsx
++++ b/src/components/meta-agent/WorkPacketList.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { ChevronDown, ChevronRight, Shield, Cpu, ArrowRight, Check, Lock } from "lucide-react";
++import { ChevronDown, ChevronRight, Lock } from "lucide-react";
+ 
+ const RISK_COLORS = {
+   READ: "bg-stone-50 text-stone-500 border-stone-200",
+diff --git a/src/components/multi-launch/TemplatePreviewCard.jsx b/src/components/multi-launch/TemplatePreviewCard.jsx
+index 8f3701e..24deb19 100644
+--- a/src/components/multi-launch/TemplatePreviewCard.jsx
++++ b/src/components/multi-launch/TemplatePreviewCard.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { CheckCircle2, Eye, ExternalLink } from "lucide-react";
++import { CheckCircle2, Eye } from "lucide-react";
+ import SafeImage from "@/components/ui/SafeImage";
+ import StockPreviewDialog from "@/components/template-studio/StockPreviewDialog";
+ 
+diff --git a/src/components/opportunity-intelligence/CalendarWidget.jsx b/src/components/opportunity-intelligence/CalendarWidget.jsx
+index 5ad0daa..308f7e7 100644
+--- a/src/components/opportunity-intelligence/CalendarWidget.jsx
++++ b/src/components/opportunity-intelligence/CalendarWidget.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useEffect, useCallback } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Calendar, RefreshCw, Loader2, Video, MapPin, Clock, Users } from 'lucide-react';
++import { Calendar, RefreshCw, Loader2, Video, MapPin, Clock } from 'lucide-react';
+ 
+ const SYNC_EMAILS = [
+   'info@strategicmindsai.com',
+diff --git a/src/components/opportunity-intelligence/SaveButton.jsx b/src/components/opportunity-intelligence/SaveButton.jsx
+index ea358b1..a10dddd 100644
+--- a/src/components/opportunity-intelligence/SaveButton.jsx
++++ b/src/components/opportunity-intelligence/SaveButton.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useCallback } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Bookmark, CheckCircle2, Loader2, Trash2, X } from 'lucide-react';
++import { Bookmark, CheckCircle2, Loader2 } from 'lucide-react';
+ 
+ export default function SaveButton({ finding, scannerKey, scannerLabel }) {
+   const [saving, setSaving] = useState(false);
+diff --git a/src/components/opportunity-intelligence/SavedOpportunities.jsx b/src/components/opportunity-intelligence/SavedOpportunities.jsx
+index 5ffd58d..45f08ae 100644
+--- a/src/components/opportunity-intelligence/SavedOpportunities.jsx
++++ b/src/components/opportunity-intelligence/SavedOpportunities.jsx
+@@ -1,4 +1,4 @@
+-import React, { useState, useCallback } from 'react';
++import React, { useState } from 'react';
+ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+ import { base44 } from '@/api/base44Client';
+ import { Bookmark, Trash2, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+diff --git a/src/components/predictive-scoring/OutcomeSimulator.jsx b/src/components/predictive-scoring/OutcomeSimulator.jsx
+index 85281f6..460f25d 100644
+--- a/src/components/predictive-scoring/OutcomeSimulator.jsx
++++ b/src/components/predictive-scoring/OutcomeSimulator.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useCallback } from "react";
+-import { Dices, Loader2, AlertCircle, TrendingUp, DollarSign, Target, Award, Zap, ArrowUp, ArrowDown, Activity } from "lucide-react";
++import { Dices, Loader2, AlertCircle, TrendingUp, DollarSign, Target, Award, Zap, ArrowUp, Activity } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ 
+ export default function OutcomeSimulator({ onResult }) {
+diff --git a/src/components/predictive-scoring/VariableTracker.jsx b/src/components/predictive-scoring/VariableTracker.jsx
+index b662a91..b425bba 100644
+--- a/src/components/predictive-scoring/VariableTracker.jsx
++++ b/src/components/predictive-scoring/VariableTracker.jsx
+@@ -1,9 +1,9 @@
+-import React, { useState, useEffect, useCallback } from "react";
++import React, { useState, useEffect } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+   CheckSquare, Square, SlidersHorizontal, CloudRain, Save, History,
+-  TrendingUp, TrendingDown, Minus, Loader2, Award, Activity
++  TrendingUp, TrendingDown, Minus, Loader2
+ } from "lucide-react";
+ 
+ const CONTROL_VARIABLES = [
+diff --git a/src/components/prompt-testing/PromptTestCard.jsx b/src/components/prompt-testing/PromptTestCard.jsx
+index 92149e7..73f193b 100644
+--- a/src/components/prompt-testing/PromptTestCard.jsx
++++ b/src/components/prompt-testing/PromptTestCard.jsx
+@@ -1,6 +1,6 @@
+ import React from "react";
+ import {
+-  Sparkles, Loader2, Star, ThumbsUp, ThumbsDown, Eye, RefreshCw, CheckCircle2,
++  Sparkles, Loader2, Star, ThumbsUp, ThumbsDown, RefreshCw, CheckCircle2,
+ } from "lucide-react";
+ import { Image } from "@/components/ui/image";
+ 
+diff --git a/src/components/provider-vault/BatchUpload.jsx b/src/components/provider-vault/BatchUpload.jsx
+index 243f759..0557f44 100644
+--- a/src/components/provider-vault/BatchUpload.jsx
++++ b/src/components/provider-vault/BatchUpload.jsx
+@@ -2,8 +2,8 @@ import React, { useState, useRef, useCallback } from "react";
+ import { useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  UploadCloud, FileText, Check, X, RefreshCw, AlertCircle,
+-  Sparkles, ChevronDown, ChevronRight, Pencil, Trash2,
++  UploadCloud, Check, X, RefreshCw, AlertCircle,
++  Sparkles, ChevronDown, ChevronRight, Trash2,
+ } from "lucide-react";
+ 
+ // Keyword-based categorization (no AI credits needed)
+diff --git a/src/components/rebrand-studio/BulkPublishPanel.jsx b/src/components/rebrand-studio/BulkPublishPanel.jsx
+index 9c29ffd..53639a8 100644
+--- a/src/components/rebrand-studio/BulkPublishPanel.jsx
++++ b/src/components/rebrand-studio/BulkPublishPanel.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from "react";
+ import { useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+-import { Rocket, Globe, Loader2, CheckCircle2, AlertCircle, Copy } from "lucide-react";
++import { Rocket, Globe, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+ 
+ const PUBLISHED_URL = "https://epoxyquotenearme.com";
+ const slugify = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+diff --git a/src/components/seo-sim/LandingPagePreview.jsx b/src/components/seo-sim/LandingPagePreview.jsx
+index b109ce4..e169072 100644
+--- a/src/components/seo-sim/LandingPagePreview.jsx
++++ b/src/components/seo-sim/LandingPagePreview.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { Edit3, Eye, ExternalLink, Menu } from "lucide-react";
++import { Edit3, Eye, ExternalLink } from "lucide-react";
+ 
+ // Editable landing page preview ΓÇö shows a live "webpage" with nav header,
+ // editable title/header/subheader/body, and a toggle to switch between edit and preview mode.
+diff --git a/src/components/seo/EpoxyContractorTemplate.jsx b/src/components/seo/EpoxyContractorTemplate.jsx
+index e09f0c3..cdf6557 100644
+--- a/src/components/seo/EpoxyContractorTemplate.jsx
++++ b/src/components/seo/EpoxyContractorTemplate.jsx
+@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
+ import { Link } from "react-router-dom";
+ import { useSettings } from "@/lib/useSettings";
+ import { trackEvent } from "@/lib/tracking";
+-import { Phone, Clock, MapPin, ChevronRight, ArrowRight, Calculator, BadgeCheck, ShieldCheck } from "lucide-react";
++import { Clock, MapPin, ChevronRight, ArrowRight, Calculator, BadgeCheck, ShieldCheck } from "lucide-react";
+ import { motion } from "framer-motion";
+ import Nav from "@/components/home/Nav";
+ import ConsultationForm from "@/components/home/ConsultationForm";
+diff --git a/src/components/simulation/ArchetypeCard.jsx b/src/components/simulation/ArchetypeCard.jsx
+index e8b2796..d659a01 100644
+--- a/src/components/simulation/ArchetypeCard.jsx
++++ b/src/components/simulation/ArchetypeCard.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { ChevronDown, Brain, FolderOpen, Play, Users, DollarSign, Zap, Heart, Target } from "lucide-react";
++import { ChevronDown, Brain, FolderOpen, Play, Users, DollarSign, Zap, Target } from "lucide-react";
+ 
+ export default function ArchetypeCard({ archetype, onSimulate, onCreateFolder, index }) {
+   const [expanded, setExpanded] = useState(false);
+diff --git a/src/components/simulation/VisitorCard.jsx b/src/components/simulation/VisitorCard.jsx
+index 5c030e3..c15ed95 100644
+--- a/src/components/simulation/VisitorCard.jsx
++++ b/src/components/simulation/VisitorCard.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { Play, Eye, TrendingUp, User } from "lucide-react";
++import { Play, Eye, User } from "lucide-react";
+ 
+ export default function VisitorCard({ visitor, onSimulate, index }) {
+   const [expanded, setExpanded] = useState(false);
+diff --git a/src/components/site-builder/BrandingStudio.jsx b/src/components/site-builder/BrandingStudio.jsx
+index 06bae6f..5c425f9 100644
+--- a/src/components/site-builder/BrandingStudio.jsx
++++ b/src/components/site-builder/BrandingStudio.jsx
+@@ -1,6 +1,5 @@
+ import React, { useState } from "react";
+ import { ACCENT_PRESETS } from "@/data/topIndustries";
+-import { base44 } from "@/api/base44Client";
+ import { generateImage } from "@/lib/gateway";
+ import { ArrowRight, ArrowLeft, Palette, Image as ImageIcon, Loader2, Sparkles, Check } from "lucide-react";
+ 
+diff --git a/src/components/site-builder/ContentStudio.jsx b/src/components/site-builder/ContentStudio.jsx
+index d3b2fb2..641821e 100644
+--- a/src/components/site-builder/ContentStudio.jsx
++++ b/src/components/site-builder/ContentStudio.jsx
+@@ -1,5 +1,4 @@
+ import React, { useState } from "react";
+-import { base44 } from "@/api/base44Client";
+ import { invokeLLM } from "@/lib/gateway";
+ import { ArrowRight, ArrowLeft, FileText, Loader2, Sparkles, Check, Copy } from "lucide-react";
+ 
+diff --git a/src/components/site-builder/PipelineLauncher.jsx b/src/components/site-builder/PipelineLauncher.jsx
+index 4f1cd54..208b42d 100644
+--- a/src/components/site-builder/PipelineLauncher.jsx
++++ b/src/components/site-builder/PipelineLauncher.jsx
+@@ -2,7 +2,7 @@ import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+ import {
+   ArrowLeft, Rocket, Loader2, Check, X, Crown, Globe, TrendingUp, Share2,
+-  Radar, Search, Sparkles, Layout, Zap, Network, Shield, FileText,
++  Radar, Search, Sparkles, Layout, Zap, Network,
+   Bot, AlertCircle
+ } from "lucide-react";
+ 
+diff --git a/src/components/smai/SmaiFooter.jsx b/src/components/smai/SmaiFooter.jsx
+index 5e5a1bc..9e21b94 100644
+--- a/src/components/smai/SmaiFooter.jsx
++++ b/src/components/smai/SmaiFooter.jsx
+@@ -1,6 +1,6 @@
+ import React from "react";
+ import { Link } from "react-router-dom";
+-import { Brain, Mail, Phone, MapPin, Linkedin, Twitter } from "lucide-react";
++import { Mail, Phone, MapPin, Linkedin, Twitter } from "lucide-react";
+ 
+ export default function SmaiFooter() {
+   return (
+diff --git a/src/components/smai/SmaiNav.jsx b/src/components/smai/SmaiNav.jsx
+index 0943b5c..106ef6f 100644
+--- a/src/components/smai/SmaiNav.jsx
++++ b/src/components/smai/SmaiNav.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+ import { Link, useLocation } from "react-router-dom";
+-import { Menu, X, Brain } from "lucide-react";
++import { Menu, X } from "lucide-react";
+ 
+ const LINKS = [
+   { to: "/smai", label: "Home" },
+diff --git a/src/components/targeting/LocationTargetingSystem.jsx b/src/components/targeting/LocationTargetingSystem.jsx
+index 6dbb7f6..74cb3be 100644
+--- a/src/components/targeting/LocationTargetingSystem.jsx
++++ b/src/components/targeting/LocationTargetingSystem.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useMemo } from "react";
+-import { MapPin, Building2, Search, X, Plus, Check } from "lucide-react";
+-import { US_STATES, US_COUNTIES, slugify } from "@/lib/usCounties";
++import { MapPin, Building2, Search, X, Plus } from "lucide-react";
++import { US_STATES, US_COUNTIES } from "@/lib/usCounties";
+ import { US_CITIES } from "@/lib/usCities";
+ 
+ /**
+diff --git a/src/components/universal-template/BrandConfigPanel.jsx b/src/components/universal-template/BrandConfigPanel.jsx
+index 8820e25..e3d27a5 100644
+--- a/src/components/universal-template/BrandConfigPanel.jsx
++++ b/src/components/universal-template/BrandConfigPanel.jsx
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import { BRAND_LIST, NICHE_OPTIONS } from "@/lib/universal-template/brandPresets.js";
++import { BRAND_LIST } from "@/lib/universal-template/brandPresets.js";
+ 
+ export default function BrandConfigPanel({ config, onChange, brandId, onBrandChange }) {
+   const update = (field, value) => onChange({ ...config, [field]: value });
+diff --git a/src/components/vision-cortex-v2/FindTheMoneyGenerator.jsx b/src/components/vision-cortex-v2/FindTheMoneyGenerator.jsx
+index e673930..baed744 100644
+--- a/src/components/vision-cortex-v2/FindTheMoneyGenerator.jsx
++++ b/src/components/vision-cortex-v2/FindTheMoneyGenerator.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { DollarSign, Loader2, Sparkles, TrendingUp, Target } from 'lucide-react';
++import { DollarSign, Loader2, TrendingUp, Target } from 'lucide-react';
+ 
+ export default function FindTheMoneyGenerator({ vision }) {
+   const [loading, setLoading] = useState(false);
+diff --git a/src/components/vision-cortex-v2/GitHubScanner.jsx b/src/components/vision-cortex-v2/GitHubScanner.jsx
+index 26a9b62..fc0921b 100644
+--- a/src/components/vision-cortex-v2/GitHubScanner.jsx
++++ b/src/components/vision-cortex-v2/GitHubScanner.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Github, Loader2, Sparkles, Code2, CheckCircle2 } from 'lucide-react';
++import { Github, Loader2, Code2 } from 'lucide-react';
+ 
+ export default function GitHubScanner({ vision }) {
+   const [loading, setLoading] = useState(null);
+diff --git a/src/components/vision-cortex-v2/InternationalEnhancer.jsx b/src/components/vision-cortex-v2/InternationalEnhancer.jsx
+index 08f079c..7f2e147 100644
+--- a/src/components/vision-cortex-v2/InternationalEnhancer.jsx
++++ b/src/components/vision-cortex-v2/InternationalEnhancer.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Globe, Loader2, Sparkles, Languages } from 'lucide-react';
++import { Globe, Loader2, Languages } from 'lucide-react';
+ 
+ const COUNTRIES = [
+   'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France',
+diff --git a/src/components/vision-cortex-v2/LogoGenerator.jsx b/src/components/vision-cortex-v2/LogoGenerator.jsx
+index 69f7999..0683af3 100644
+--- a/src/components/vision-cortex-v2/LogoGenerator.jsx
++++ b/src/components/vision-cortex-v2/LogoGenerator.jsx
+@@ -2,7 +2,7 @@ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { invokeLLM } from '@/lib/gateway';
+ import { Image } from '@/components/ui/image';
+-import { Palette, Loader2, CheckCircle2, Download, RefreshCw, Sparkles } from 'lucide-react';
++import { Palette, Loader2, CheckCircle2, Download, Sparkles } from 'lucide-react';
+ 
+ export default function LogoGenerator({ vision, approvedLogo, setApprovedLogo }) {
+   const [loading, setLoading] = useState(false);
+diff --git a/src/components/vision-cortex-v2/TemplateLibrary.jsx b/src/components/vision-cortex-v2/TemplateLibrary.jsx
+index b579c16..6454096 100644
+--- a/src/components/vision-cortex-v2/TemplateLibrary.jsx
++++ b/src/components/vision-cortex-v2/TemplateLibrary.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Layout, Loader2, Sparkles, Wand2, RefreshCw } from 'lucide-react';
++import { Layout, Loader2, Wand2 } from 'lucide-react';
+ 
+ export default function TemplateLibrary({ vision }) {
+   const [loading, setLoading] = useState(null);
+diff --git a/src/components/vision-cortex-v2/TopSitesScanner.jsx b/src/components/vision-cortex-v2/TopSitesScanner.jsx
+index ac0f782..875810d 100644
+--- a/src/components/vision-cortex-v2/TopSitesScanner.jsx
++++ b/src/components/vision-cortex-v2/TopSitesScanner.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Radar, Loader2, Sparkles, Globe, Trophy } from 'lucide-react';
++import { Radar, Loader2, Globe, Trophy } from 'lucide-react';
+ 
+ export default function TopSitesScanner({ vision }) {
+   const [loading, setLoading] = useState(null);
+diff --git a/src/components/vision-cortex-v2/VideoGenerator.jsx b/src/components/vision-cortex-v2/VideoGenerator.jsx
+index 303a6ad..6134fe5 100644
+--- a/src/components/vision-cortex-v2/VideoGenerator.jsx
++++ b/src/components/vision-cortex-v2/VideoGenerator.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { invokeLLM } from '@/lib/gateway';
+-import { Video, Loader2, Sparkles, TrendingUp, Play, Youtube } from 'lucide-react';
++import { Video, Loader2, Sparkles, TrendingUp, Youtube } from 'lucide-react';
+ 
+ export default function VideoGenerator({ vision }) {
+   const [loading, setLoading] = useState(null);
+diff --git a/src/components/vision-cortex/SandboxGrid.jsx b/src/components/vision-cortex/SandboxGrid.jsx
+index 6130118..ca0737c 100644
+--- a/src/components/vision-cortex/SandboxGrid.jsx
++++ b/src/components/vision-cortex/SandboxGrid.jsx
+@@ -2,7 +2,7 @@ import React from 'react';
+ import {
+   Code, Palette, Megaphone, Database, ShieldCheck,
+   Github, Cloud, Server, Cpu, Clock, FileText, Brain,
+-  CheckCircle2, AlertCircle, Loader2,
++  CheckCircle2,
+ } from 'lucide-react';
+ 
+ export const SANDBOXES = [
+diff --git a/src/components/vision-cortex/VisionToShip.jsx b/src/components/vision-cortex/VisionToShip.jsx
+index bb18f67..5b896f0 100644
+--- a/src/components/vision-cortex/VisionToShip.jsx
++++ b/src/components/vision-cortex/VisionToShip.jsx
+@@ -2,7 +2,7 @@ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import {
+   Rocket, Loader2, AlertCircle, CheckCircle2, Eye, Compass,
+-  Code2, Cloud, Sparkles, ArrowRight, ExternalLink, RotateCcw, Wand2, RefreshCw,
++  Code2, Cloud, ExternalLink, RotateCcw, Wand2, RefreshCw,
+ } from 'lucide-react';
+ 
+ // Vision ΓåÆ Ship pipeline: takes a vision statement and runs it through
+diff --git a/src/components/visual-editor/VisualPageEditor.jsx b/src/components/visual-editor/VisualPageEditor.jsx
+index 0f7a6ac..2400652 100644
+--- a/src/components/visual-editor/VisualPageEditor.jsx
++++ b/src/components/visual-editor/VisualPageEditor.jsx
+@@ -5,7 +5,7 @@ import {
+   Loader2, Plus, Save, Eye, FileText, Trash2, ChevronUp, ChevronDown,
+   Layers, X, Settings, Monitor, Smartphone,
+ } from "lucide-react";
+-import DynamicPageRenderer, { RENDERERS } from "@/components/codestudio/DynamicPageRenderer";
++import { RENDERERS } from "@/components/codestudio/DynamicPageRenderer";
+ import SectionEditor, { SECTION_TYPES } from "@/components/codestudio/SectionEditor";
+ 
+ const genId = () => Math.random().toString(36).slice(2, 9);
+diff --git a/src/components/visualizer/PhotoUpload.jsx b/src/components/visualizer/PhotoUpload.jsx
+index c73c51e..b05cb61 100644
+--- a/src/components/visualizer/PhotoUpload.jsx
++++ b/src/components/visualizer/PhotoUpload.jsx
+@@ -1,5 +1,4 @@
+ import React, { useRef, useState } from "react";
+-import { base44 } from "@/api/base44Client";
+ import { uploadFile } from "@/lib/gateway";
+ import { Upload, Loader2, Trash2 } from "lucide-react";
+ import { Image } from "@/components/ui/image";
+diff --git a/src/components/website-preview/PreviewHero.jsx b/src/components/website-preview/PreviewHero.jsx
+index d665b02..e9db6aa 100644
+--- a/src/components/website-preview/PreviewHero.jsx
++++ b/src/components/website-preview/PreviewHero.jsx
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import { Phone, Star, MapPin, Clock, Shield, Award, ThumbsUp } from "lucide-react";
++import { Phone, Star, MapPin, Shield, Award, ThumbsUp } from "lucide-react";
+ 
+ export default function PreviewHero({ c, LogoIcon, industry, heroLayout }) {
+   return (
+diff --git a/src/components/website-preview/PreviewServices.jsx b/src/components/website-preview/PreviewServices.jsx
+index cf63595..a97025d 100644
+--- a/src/components/website-preview/PreviewServices.jsx
++++ b/src/components/website-preview/PreviewServices.jsx
+@@ -1,5 +1,5 @@
+ import React from "react";
+-import { Check, ArrowRight } from "lucide-react";
++import { Check } from "lucide-react";
+ 
+ export default function PreviewServices({ c }) {
+   return (
+diff --git a/src/components/xps-funnel/SystemShowcase.jsx b/src/components/xps-funnel/SystemShowcase.jsx
+index 3f96da2..0d6478d 100644
+--- a/src/components/xps-funnel/SystemShowcase.jsx
++++ b/src/components/xps-funnel/SystemShowcase.jsx
+@@ -1,6 +1,4 @@
+ import React from "react";
+-import { Link } from "react-router-dom";
+-import { ArrowRight } from "lucide-react";
+ 
+ const SYSTEMS = [
+   {
+diff --git a/src/components/xtreme-comms/AgentsTab.jsx b/src/components/xtreme-comms/AgentsTab.jsx
+index d130736..43dedd8 100644
+--- a/src/components/xtreme-comms/AgentsTab.jsx
++++ b/src/components/xtreme-comms/AgentsTab.jsx
+@@ -1,4 +1,4 @@
+-import React, { useState, useEffect } from "react";
++import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { Bot, Plus, Pencil, Trash2, Save, X, RefreshCw, Star } from "lucide-react";
+diff --git a/src/components/xtreme-comms/TestLabTab.jsx b/src/components/xtreme-comms/TestLabTab.jsx
+index e081990..ce94db2 100644
+--- a/src/components/xtreme-comms/TestLabTab.jsx
++++ b/src/components/xtreme-comms/TestLabTab.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState, useEffect, useCallback } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+-import { FlaskConical, Send, RefreshCw, AlertCircle, CheckCircle2, Plus, Repeat, PhoneCall, MessageSquare, Smartphone, MessageCircle } from "lucide-react";
++import { FlaskConical, Send, RefreshCw, AlertCircle, CheckCircle2, Repeat, PhoneCall, MessageSquare, Smartphone, MessageCircle } from "lucide-react";
+ 
+ const CHANNELS = [
+   { id: "sms", label: "SMS", icon: Smartphone, action: "sendSms" },
+diff --git a/src/pages/Download.jsx b/src/pages/Download.jsx
+index 33fc64f..9d5e2c0 100644
+--- a/src/pages/Download.jsx
++++ b/src/pages/Download.jsx
+@@ -1,11 +1,10 @@
+ import React, { useState } from "react";
+-import { useSearchParams, Link } from "react-router-dom";
++import { useSearchParams } from "react-router-dom";
+ import { base44 } from "@/api/base44Client";
+-import { LOGO_URL, XTREME_AI_ICON_URL } from "@/components/Logo";
++import { XTREME_AI_ICON_URL } from "@/components/Logo";
+ import { Image } from "@/components/ui/image";
+ import AppShell from "@/components/app/AppShell";
+-import {
+-  Shield, CreditCard, CheckCircle2, ArrowRight, Lock, Gift,
++import { CreditCard, CheckCircle2, ArrowRight, Lock, Gift,
+   Heart, ClipboardList, MessageSquare, Calendar, Sparkles, Gift as GiftIcon,
+ } from "lucide-react";
+ 
+diff --git a/src/pages/DynamicPageView.jsx b/src/pages/DynamicPageView.jsx
+index 4483f33..51275d8 100644
+--- a/src/pages/DynamicPageView.jsx
++++ b/src/pages/DynamicPageView.jsx
+@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
+ import { base44 } from "@/api/base44Client";
+ import DynamicPageRenderer from "@/components/codestudio/DynamicPageRenderer";
+ import { Loader2, FileQuestion } from "lucide-react";
+-import Logo from "@/components/Logo";
+ 
+ export default function DynamicPageView() {
+   const { slug } = useParams();
+diff --git a/src/pages/Portal.jsx b/src/pages/Portal.jsx
+index cbb1db3..9c32294 100644
+--- a/src/pages/Portal.jsx
++++ b/src/pages/Portal.jsx
+@@ -1,6 +1,6 @@
+ import React, { useEffect } from "react";
+ import { Link, useNavigate } from "react-router-dom";
+-import { Lock, ArrowRight, ArrowLeft, Rocket, Phone } from "lucide-react";
++import { Lock, ArrowRight, ArrowLeft, Rocket } from "lucide-react";
+ import { useAuth } from "@/lib/AuthContext";
+ 
+ export default function Portal() {
+diff --git a/src/pages/ToolHub.jsx b/src/pages/ToolHub.jsx
+index 96286dd..79a7d2e 100644
+--- a/src/pages/ToolHub.jsx
++++ b/src/pages/ToolHub.jsx
+@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
+ import { TOOL_CATEGORIES, ALL_TOOLS } from "@/lib/toolCatalog";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+-import { ArrowLeft, Search, CheckCircle2, Circle, Factory, Smartphone, Rocket, ChevronRight } from "lucide-react";
++import { Search, CheckCircle2, Circle, Factory, Smartphone, Rocket, ChevronRight } from "lucide-react";
+ import BackButton from "@/components/BackButton";
+ import Logo from "@/components/Logo";
+ 
+diff --git a/src/pages/admin/AgentMaster.jsx b/src/pages/admin/AgentMaster.jsx
+index 2d81418..f33221a 100644
+--- a/src/pages/admin/AgentMaster.jsx
++++ b/src/pages/admin/AgentMaster.jsx
+@@ -2,9 +2,9 @@ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Brain, Settings, Database, Upload, Zap, Phone, Mail,
+-  Calendar, Globe, Key, Copy, Plus, Loader2, Users,
+-  Bot, Sparkles, ChevronRight, Activity
++  Brain, Database, Upload, Zap, Phone,
++  Calendar, Globe, Key, Copy, Loader2, Users,
++  Bot, Sparkles
+ } from "lucide-react";
+ import PersonalityTab from "@/components/agent-master/PersonalityTab";
+ import MemoryTab from "@/components/agent-master/MemoryTab";
+diff --git a/src/pages/admin/AlphaPrime.jsx b/src/pages/admin/AlphaPrime.jsx
+index 81fd5ab..1507244 100644
+--- a/src/pages/admin/AlphaPrime.jsx
++++ b/src/pages/admin/AlphaPrime.jsx
+@@ -3,8 +3,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+   Crown, Activity, AlertTriangle, CheckCircle2, XCircle, Clock,
+-  TrendingUp, Users, Globe, Bot, Target, Calendar, Zap, RefreshCw,
+-  Loader2, ThumbsUp, X, MessageSquare, Brain, Shield, Rocket, DollarSign,
++  TrendingUp, Users, Globe, Bot, Target, Zap, RefreshCw,
++  Loader2, X, MessageSquare, Brain, Shield, Rocket, DollarSign,
+   ArrowRight, Bell, Eye, Sparkles, EyeOff
+ } from "lucide-react";
+ import RecommendationCard from "@/components/alpha-prime/RecommendationCard";
+diff --git a/src/pages/admin/AnalyticsDashboard.jsx b/src/pages/admin/AnalyticsDashboard.jsx
+index 283a0ff..e39ba7b 100644
+--- a/src/pages/admin/AnalyticsDashboard.jsx
++++ b/src/pages/admin/AnalyticsDashboard.jsx
+@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { Activity, Users, Eye, MousePointerClick, TrendingUp, Loader2, Globe } from "lucide-react";
+ import {
+-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar,
++  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+ } from "recharts";
+ 
+ const DATE_RANGES = [
+diff --git a/src/pages/admin/AutonomousCompany.jsx b/src/pages/admin/AutonomousCompany.jsx
+index d25899c..6ca4e7d 100644
+--- a/src/pages/admin/AutonomousCompany.jsx
++++ b/src/pages/admin/AutonomousCompany.jsx
+@@ -2,7 +2,7 @@ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { Button } from '@/components/ui/button';
+ import { Input } from '@/components/ui/input';
+-import { Rocket, Activity, Database, FileCode, Shield, Brain, Eye, Zap } from 'lucide-react';
++import { Rocket, Activity, Database, FileCode, Brain, Eye, Zap } from 'lucide-react';
+ 
+ const SECTIONS = [
+   { id: 'overview', label: 'Overview', icon: Activity },
+diff --git a/src/pages/admin/AutonomousDominance.jsx b/src/pages/admin/AutonomousDominance.jsx
+index e521cbd..824a886 100644
+--- a/src/pages/admin/AutonomousDominance.jsx
++++ b/src/pages/admin/AutonomousDominance.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from 'react';
+-import { Crown, Zap, Upload, Radar, Wand2, Target, Shield, Monitor, Rocket, ChevronDown, ChevronUp, Activity, Database } from 'lucide-react';
++import { Crown, Upload, Radar, Wand2, Target, Shield, Monitor, Rocket, ChevronDown, ChevronUp } from 'lucide-react';
+ import MassIngestionSystem from '@/components/autonomous-dominance/MassIngestionSystem';
+ import TopSitesBenchmark from '@/components/autonomous-dominance/TopSitesBenchmark';
+ import RebrandGenerator from '@/components/autonomous-dominance/RebrandGenerator';
+diff --git a/src/pages/admin/AutonomousWorkflows.jsx b/src/pages/admin/AutonomousWorkflows.jsx
+index 91936f8..05c1ea9 100644
+--- a/src/pages/admin/AutonomousWorkflows.jsx
++++ b/src/pages/admin/AutonomousWorkflows.jsx
+@@ -1,11 +1,8 @@
+ import React, { useState } from "react";
+ import { Link } from "react-router-dom";
+-import {
+-  Zap, TrendingUp, DollarSign, Bot, Mail, PhoneCall, Star,
++import { TrendingUp, DollarSign, Bot, Star,
+   Globe, Target, Rocket, Clock, ArrowRight, Network, Sparkles,
+-  Users, Search, Share2, FileText, MessageSquare, CheckCircle2,
+-  AlertCircle, Calendar, ChevronRight, Workflow, Crown, Radar,
+-  Brain, Activity, Wrench
++  Users, Share2, MessageSquare, CheckCircle2, ChevronRight, Workflow, Activity
+ } from "lucide-react";
+ 
+ // ============================================================
+diff --git a/src/pages/admin/BackgroundOperations.jsx b/src/pages/admin/BackgroundOperations.jsx
+index 2d0dcb7..4d44248 100644
+--- a/src/pages/admin/BackgroundOperations.jsx
++++ b/src/pages/admin/BackgroundOperations.jsx
+@@ -1,8 +1,7 @@
+ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import {
+-  Bot, Clock, Loader2, CheckCircle2, AlertCircle, Zap, RefreshCw,
+-  Globe, FileText, Workflow, Layers, Activity, Cpu,
++  Bot, Clock, Loader2, CheckCircle2, AlertCircle, Zap, FileText, Workflow, Layers, Activity, Cpu,
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+diff --git a/src/pages/admin/BenchmarkReverseEngineer.jsx b/src/pages/admin/BenchmarkReverseEngineer.jsx
+index b94c8cd..d2608b3 100644
+--- a/src/pages/admin/BenchmarkReverseEngineer.jsx
++++ b/src/pages/admin/BenchmarkReverseEngineer.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { Diamond, Loader2, CheckCircle2, AlertCircle, Search, ChevronDown, ChevronRight, Eye, ShieldCheck } from "lucide-react";
++import { Diamond, Loader2, CheckCircle2, AlertCircle, ChevronDown, ChevronRight, Eye, ShieldCheck } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+ import { TOP_20_INDUSTRIES } from "@/data/topIndustries";
+diff --git a/src/pages/admin/BrandComplianceGuardian.jsx b/src/pages/admin/BrandComplianceGuardian.jsx
+index 114cd4f..6872d73 100644
+--- a/src/pages/admin/BrandComplianceGuardian.jsx
++++ b/src/pages/admin/BrandComplianceGuardian.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useEffect, useRef } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Shield, RefreshCw, Zap, Eye, EyeOff, CheckCircle2, AlertTriangle, Loader2, Sparkles, Trash2 } from "lucide-react";
++import { Shield, RefreshCw, Zap, Eye, EyeOff, CheckCircle2, AlertTriangle, Loader2, Sparkles } from "lucide-react";
+ import ReactMarkdown from "react-markdown";
+ 
+ export default function BrandComplianceGuardian() {
+diff --git a/src/pages/admin/BuilderLibrary.jsx b/src/pages/admin/BuilderLibrary.jsx
+index c526f88..d9462d3 100644
+--- a/src/pages/admin/BuilderLibrary.jsx
++++ b/src/pages/admin/BuilderLibrary.jsx
+@@ -1,11 +1,11 @@
+ import React, { useState, useEffect, useMemo } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
++import { Card, CardContent } from "@/components/ui/card";
+ import { Badge } from "@/components/ui/badge";
+ import { Button } from "@/components/ui/button";
+ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+ import { Progress } from "@/components/ui/progress";
+-import { Compass, Database, Layout, Bot, Workflow, Shield, Rocket, Sparkles, RefreshCw, CheckCircle2, AlertCircle, Clock, Zap, Cpu, Users, FileCode, GitBranch, Package, Eye, Activity, ArrowRight } from "lucide-react";
++import { Compass, Database, Layout, Bot, Workflow, Shield, Rocket, Sparkles, RefreshCw, CheckCircle2, AlertCircle, Clock, Zap, Cpu, Users, FileCode, GitBranch, Package, Eye, ArrowRight } from "lucide-react";
+ 
+ const PHASE_META = {
+   foundation: { label: "Foundation", icon: Compass, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" },
+diff --git a/src/pages/admin/BulkLaunchBuilder.jsx b/src/pages/admin/BulkLaunchBuilder.jsx
+index dacaea3..06f4c2c 100644
+--- a/src/pages/admin/BulkLaunchBuilder.jsx
++++ b/src/pages/admin/BulkLaunchBuilder.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useEffect } from "react";
+-import { Rocket, Loader2, Zap, Target, Layers, Gauge, Save, Check, AlertCircle, Radar, Crosshair } from "lucide-react";
++import { Rocket, Loader2, Zap, Target, Layers, Gauge, Check, AlertCircle, Radar, Crosshair } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { TOP_20_INDUSTRIES } from "@/data/topIndustries";
+ import LocationTargetingSystem from "@/components/targeting/LocationTargetingSystem";
+diff --git a/src/pages/admin/Capabilities.jsx b/src/pages/admin/Capabilities.jsx
+index 96a40b1..30a5a2c 100644
+--- a/src/pages/admin/Capabilities.jsx
++++ b/src/pages/admin/Capabilities.jsx
+@@ -1,9 +1,9 @@
+ import React, { useState } from "react";
+ import {
+   CheckCircle2, AlertCircle, XCircle, ChevronDown, ChevronRight,
+-  Globe, Zap, Bot, Shield, Server, Share2, PhoneCall, Database,
+-  Crown, Rocket, Layers, Search, TrendingUp, Cpu, Activity,
+-  Sparkles, Target, Eye, AlertTriangle, ArrowRight,
++  Globe, Zap, Bot, Shield, Server, Share2,
++  Crown, Rocket, Layers, Search, Cpu, Activity,
++  Sparkles, Target, AlertTriangle, ArrowRight,
+ } from "lucide-react";
+ 
+ const CAPABILITIES = [
+diff --git a/src/pages/admin/ClientPackages.jsx b/src/pages/admin/ClientPackages.jsx
+index 2a6aa3a..d7c4d12 100644
+--- a/src/pages/admin/ClientPackages.jsx
++++ b/src/pages/admin/ClientPackages.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { useQuery, useQueryClient } from '@tanstack/react-query';
+-import { Package, Plus, Save, X, Lock, Unlock, Eye } from 'lucide-react';
++import { Package, Plus, Save, X, Lock, Unlock } from 'lucide-react';
+ 
+ const AVAILABLE_PAGES = [
+   { route: '/portal', label: 'Portal Home' },
+diff --git a/src/pages/admin/CommandCenter.jsx b/src/pages/admin/CommandCenter.jsx
+index 1153f9a..ac8e67b 100644
+--- a/src/pages/admin/CommandCenter.jsx
++++ b/src/pages/admin/CommandCenter.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useEffect, useCallback } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { RefreshCw, Loader2, AlertCircle, Crown, Activity, Zap, CheckCircle2, XCircle, Wrench, Shield } from 'lucide-react';
++import { RefreshCw, Loader2, AlertCircle, Crown, Zap, CheckCircle2, Wrench, Shield } from 'lucide-react';
+ import SystemHealth from '@/components/command-center/SystemHealth';
+ import AgentActivity from '@/components/command-center/AgentActivity';
+ import ConnectionStatus from '@/components/command-center/ConnectionStatus';
+diff --git a/src/pages/admin/Contents.jsx b/src/pages/admin/Contents.jsx
+index 47d19ab..c910c27 100644
+--- a/src/pages/admin/Contents.jsx
++++ b/src/pages/admin/Contents.jsx
+@@ -6,16 +6,10 @@ import { base44 } from "@/api/base44Client";
+ import {
+   Plus, Trash2, Pencil, GripVertical, X, Check,
+   RefreshCw, Search, LayoutGrid, ArrowRight, Eye, EyeOff,
+-  Sparkles, Shield, Layers, Boxes, Package, Zap, Globe, Crown, Wand2,
+-  Bot, Network, Gauge, Rocket, Wrench, Brain, Building2, Cpu, Compass,
+-  Workflow, BookOpen, Users, KanbanSquare, Mail, Star,
+-  Radar, MapPin, MessageSquare, Smartphone, PhoneCall, Share2, BarChart3,
+-  Activity, KeyRound, Factory, Layout, ListOrdered, Code2, TrendingUp,
+-  Heart, ScrollText, Database, Target, Settings, UserCircle, Menu,
+-  Grid3x3, FolderTree, Bookmark, Flag, Tag, Hash, Server, CreditCard,
++  Sparkles, FolderTree, Server, CreditCard,
+   CheckCircle2, FolderPlus, SlidersHorizontal,
+ } from "lucide-react";
+-import CategoryManager, { ICON_MAP, COLOR_OPTIONS } from "@/components/contents/CategoryManager";
++import CategoryManager, { ICON_MAP } from "@/components/contents/CategoryManager";
+ 
+ const ALL_ICONS = {
+   ...ICON_MAP,
+diff --git a/src/pages/admin/ContractorSimulation.jsx b/src/pages/admin/ContractorSimulation.jsx
+index 7d17424..a3a29bc 100644
+--- a/src/pages/admin/ContractorSimulation.jsx
++++ b/src/pages/admin/ContractorSimulation.jsx
+@@ -1,12 +1,12 @@
+ import React, { useState } from "react";
+ import { useNavigate } from "react-router-dom";
+-import { Brain, RefreshCw, Users, UserCircle, FileQuestion, FolderSync, Sparkles, Play, CheckCircle2, AlertCircle } from "lucide-react";
++import { Brain, RefreshCw, Users, UserCircle, FileQuestion, FolderSync, Sparkles, AlertCircle } from "lucide-react";
+ import { LOGO_URL } from "@/components/Logo";
+ import { base44 } from "@/api/base44Client";
+ import { CONTRACTOR_ARCHETYPES } from "@/data/contractorArchetypes";
+ import { SIMULATED_VISITORS } from "@/data/simulatedVisitors";
+ import { ADMIN_PROFILES } from "@/data/adminProfiles";
+-import { QUESTIONNAIRE_CATEGORIES, calculateScore } from "@/data/simulationQuestionnaire";
++import { QUESTIONNAIRE_CATEGORIES } from "@/data/simulationQuestionnaire";
+ import ArchetypeCard from "@/components/simulation/ArchetypeCard";
+ import VisitorCard from "@/components/simulation/VisitorCard";
+ import AdminProfileCard from "@/components/simulation/AdminProfileCard";
+diff --git a/src/pages/admin/Dashboard.jsx b/src/pages/admin/Dashboard.jsx
+index f565219..08b440a 100644
+--- a/src/pages/admin/Dashboard.jsx
++++ b/src/pages/admin/Dashboard.jsx
+@@ -3,13 +3,11 @@ import { useQuery } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import { Link } from "react-router-dom";
+ import {
+-  Bell, Calendar, Phone, Home, FileText, Trophy, DollarSign, Percent, Zap,
++  Bell, Zap,
+   Rocket, Crown, Share2, Layout, Globe, ArrowRight, Sparkles, Bot, Users,
+-  KanbanSquare, Mail, Star, Radar, BarChart3, Gauge, Compass, Layers,
+-  Workflow, Network, Factory, MessageSquare, MapPin, Target, Brain, Shield,
+-  KeyRound, Wand2, PhoneCall, Activity, ListOrdered, Database, Code2,
+-  BookOpen, Eye, EyeOff, Boxes, Cpu, FileCode, HelpCircle, DollarSign as Dollar,
+-  Image, CheckCircle, Calculator
++  KanbanSquare, Mail, Star, Radar, BarChart3, Gauge, Compass,
++  Workflow, Network, Factory, MessageSquare, PhoneCall, ListOrdered,
++  BookOpen
+ } from "lucide-react";
+ import { money } from "@/lib/pricing";
+ import { XTREME_AI_ICON_URL } from "@/components/Logo";
+diff --git a/src/pages/admin/DigitalDominance.jsx b/src/pages/admin/DigitalDominance.jsx
+index 0d2de81..2182522 100644
+--- a/src/pages/admin/DigitalDominance.jsx
++++ b/src/pages/admin/DigitalDominance.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from 'react';
+-import { Crown, Zap, Activity, Database, Radar, DollarSign, FileCode2, Layout, Users, Rocket, Gift, BarChart3, ChevronDown, ChevronUp } from 'lucide-react';
++import { Crown, Zap, Database, Radar, DollarSign, Layout, Users, Rocket, Gift, BarChart3, ChevronDown, ChevronUp } from 'lucide-react';
+ import AutonomousSwarmGenerator from '@/components/digital-dominance/AutonomousSwarmGenerator';
+ import DataStrategyPipeline from '@/components/digital-dominance/DataStrategyPipeline';
+ import NationalContractorScraper from '@/components/digital-dominance/NationalContractorScraper';
+diff --git a/src/pages/admin/FaultLineScanner.jsx b/src/pages/admin/FaultLineScanner.jsx
+index af5003a..402bcd8 100644
+--- a/src/pages/admin/FaultLineScanner.jsx
++++ b/src/pages/admin/FaultLineScanner.jsx
+@@ -2,8 +2,8 @@ import React, { useState, useCallback } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import {
+   Search, Zap, Loader2, AlertCircle, Target, Bug, Globe, Shield,
+-  TrendingUp, CheckCircle2, XCircle, DollarSign, Brain, ExternalLink,
+-  Filter, ChevronDown, ChevronRight, Camera, Wrench, AlertTriangle,
++  TrendingUp, CheckCircle2, DollarSign, Brain,
++  Filter, ChevronDown, ChevronRight, Camera, Wrench,
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { Link } from "react-router-dom";
+diff --git a/src/pages/admin/FleetDashboard.jsx b/src/pages/admin/FleetDashboard.jsx
+index 2756a17..465e837 100644
+--- a/src/pages/admin/FleetDashboard.jsx
++++ b/src/pages/admin/FleetDashboard.jsx
+@@ -2,10 +2,9 @@ import React, { useState } from "react";
+ import { useQuery, useMutation } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Globe, Server, Activity, AlertTriangle, CheckCircle2, XCircle,
+-  Clock, Target, Gauge, Zap, ShieldCheck, Rocket, Plus, RefreshCw,
+-  Loader2, ArrowRight, Cpu, Database, Cloud, GitBranch, Eye, EyeOff,
+-  TrendingUp, Layers, Layout, BarChart3, Settings
++  Globe, Server, Activity, AlertTriangle, CheckCircle2, XCircle, Target, Gauge, Zap, ShieldCheck, Rocket, Plus, RefreshCw,
++  Loader2, ArrowRight, Cpu, Database, Eye,
++  TrendingUp, Layers, Layout, BarChart3
+ } from "lucide-react";
+ import SectionCard from "@/components/admin/SectionCard";
+ 
+diff --git a/src/pages/admin/GapFiller.jsx b/src/pages/admin/GapFiller.jsx
+index 54c32b8..151dc11 100644
+--- a/src/pages/admin/GapFiller.jsx
++++ b/src/pages/admin/GapFiller.jsx
+@@ -1,10 +1,10 @@
+-import React, { useState, useEffect } from "react";
++import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Crown, Zap, Layers, Search, Share2, Target, Rocket, Bot, Server,
+-  CheckCircle2, AlertCircle, Play, RefreshCw, Globe, Database, TrendingUp,
+-  Video, PhoneCall, MapPin, Calendar, Link2, Sparkles, ArrowRight, Activity,
++  Crown, Layers, Search, Share2, Target, Rocket, Bot,
++  CheckCircle2, AlertCircle, Play, RefreshCw, Globe, TrendingUp,
++  Video, PhoneCall, MapPin, Calendar, Link2, Sparkles,
+ } from "lucide-react";
+ 
+ const SYSTEMS = [
+diff --git a/src/pages/admin/GeneratorSandbox.jsx b/src/pages/admin/GeneratorSandbox.jsx
+index 0a4074b..d06b800 100644
+--- a/src/pages/admin/GeneratorSandbox.jsx
++++ b/src/pages/admin/GeneratorSandbox.jsx
+@@ -5,8 +5,8 @@ import { base44 } from "@/api/base44Client";
+ import { Button } from "@/components/ui/button";
+ import {
+   Sparkles, Bot, Shield, Crown, ChevronDown, ChevronRight,
+-  Wand2, Network, Activity, Target, Zap, ArrowRight, Loader2,
+-  CheckCircle2, AlertCircle, Brain,
++  Wand2, Network, Activity, Zap, ArrowRight, Loader2,
++  CheckCircle2, AlertCircle,
+ } from "lucide-react";
+ 
+ const STAGES = [
+diff --git a/src/pages/admin/GodModeSimulationLab.jsx b/src/pages/admin/GodModeSimulationLab.jsx
+index 3899766..747c9d2 100644
+--- a/src/pages/admin/GodModeSimulationLab.jsx
++++ b/src/pages/admin/GodModeSimulationLab.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useCallback } from "react";
+-import { Activity, Zap, Loader2, AlertCircle, TrendingUp, Target, Award, Layers, Cpu, CheckCircle2, BarChart3 } from "lucide-react";
++import { Activity, Zap, Loader2, AlertCircle, TrendingUp, Target, Award, Layers, CheckCircle2, BarChart3 } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+diff --git a/src/pages/admin/GoogleBatchSubmission.jsx b/src/pages/admin/GoogleBatchSubmission.jsx
+index 40c39c7..a002f57 100644
+--- a/src/pages/admin/GoogleBatchSubmission.jsx
++++ b/src/pages/admin/GoogleBatchSubmission.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useCallback } from "react";
+-import { Search, Globe, BarChart3, Zap, CheckCircle2, XCircle, AlertCircle, Loader2, FileText, ExternalLink } from "lucide-react";
++import { Search, Globe, BarChart3, Zap, CheckCircle2, XCircle, AlertCircle, Loader2, FileText } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ 
+ export default function GoogleBatchSubmission() {
+diff --git a/src/pages/admin/GoogleWorkspaceOS.jsx b/src/pages/admin/GoogleWorkspaceOS.jsx
+index e0cea57..91f10bf 100644
+--- a/src/pages/admin/GoogleWorkspaceOS.jsx
++++ b/src/pages/admin/GoogleWorkspaceOS.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState, useCallback } from 'react';
+ import { useQuery, useQueryClient } from '@tanstack/react-query';
+ import { base44 } from '@/api/base44Client';
+-import { Loader2, RefreshCw, FolderTree, Users, Calendar, FileText, Zap, CheckCircle2, AlertCircle, Shield, Clock, ChevronRight } from 'lucide-react';
++import { Loader2, Users, FileText, Zap, CheckCircle2, AlertCircle, Shield, Clock, ChevronRight } from 'lucide-react';
+ import OrgChart from '@/components/google-workspace-os/OrgChart';
+ import DriveTree from '@/components/google-workspace-os/DriveTree';
+ import WeeklySchedule from '@/components/google-workspace-os/WeeklySchedule';
+diff --git a/src/pages/admin/GptSyncConsole.jsx b/src/pages/admin/GptSyncConsole.jsx
+index af240d4..da60625 100644
+--- a/src/pages/admin/GptSyncConsole.jsx
++++ b/src/pages/admin/GptSyncConsole.jsx
+@@ -1,4 +1,4 @@
+-import React, { useState, useEffect, useCallback } from "react";
++import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { RefreshCw, Send, Zap, Activity, ArrowRight, ArrowLeft, Radio, Loader2, CheckCircle2, AlertCircle, Code2, Copy, ChevronDown, ChevronUp } from "lucide-react";
+diff --git a/src/pages/admin/GptSyncPipeline.jsx b/src/pages/admin/GptSyncPipeline.jsx
+index 98c8090..5f7f84b 100644
+--- a/src/pages/admin/GptSyncPipeline.jsx
++++ b/src/pages/admin/GptSyncPipeline.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { Sparkles, ChevronDown, Code2, Zap, Layers, Globe, Rocket, Send, Wand2, Phone } from "lucide-react";
++import { Sparkles, ChevronDown, Code2, Zap, Layers, Globe, Rocket, Send, Wand2 } from "lucide-react";
+ import PipelineRunner from "@/components/gpt-pipeline/PipelineRunner";
+ import JsonConfigPanel from "@/components/gpt-pipeline/JsonConfigPanel";
+ import SuperAgentsSection from "@/components/gpt-pipeline/SuperAgentsSection";
+diff --git a/src/pages/admin/GraphConsole.jsx b/src/pages/admin/GraphConsole.jsx
+index 03a1655..bd887f2 100644
+--- a/src/pages/admin/GraphConsole.jsx
++++ b/src/pages/admin/GraphConsole.jsx
+@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import { Button } from "@/components/ui/button";
+ import { Input } from "@/components/ui/input";
+-import { Network, Zap, Search, Sparkles, Trash2, Loader2, CheckCircle2, Users, Globe, Building2, Brain, Target, MapPin, ArrowRight } from "lucide-react";
++import { Network, Zap, Search, Sparkles, Trash2, Loader2, CheckCircle2, Users, Globe, Brain, Target, MapPin, ArrowRight } from "lucide-react";
+ 
+ const NODE_COLORS = {
+   contractor: "#3b82f6",
+diff --git a/src/pages/admin/Intelligence.jsx b/src/pages/admin/Intelligence.jsx
+index 718b85a..ad02ff9 100644
+--- a/src/pages/admin/Intelligence.jsx
++++ b/src/pages/admin/Intelligence.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { useQuery, useQueryClient } from '@tanstack/react-query';
+-import { Radar, Globe, Users, Building2, Landmark, Loader2, Sparkles, DollarSign, TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react';
++import { Radar, Users, Landmark, Loader2, Sparkles, DollarSign, TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react';
+ 
+ const SERVICE_CATEGORIES = [
+   'epoxy_flooring', 'decorative_concrete', 'stained_concrete', 'countertops',
+diff --git a/src/pages/admin/InternalArchitecture.jsx b/src/pages/admin/InternalArchitecture.jsx
+index bfb8ccb..3532d35 100644
+--- a/src/pages/admin/InternalArchitecture.jsx
++++ b/src/pages/admin/InternalArchitecture.jsx
+@@ -1,5 +1,5 @@
+ import React from 'react';
+-import { Database, Workflow, Bot, Globe, Shield, Zap, ArrowRight, Cpu, Cloud, GitBranch, Boxes, Layers } from 'lucide-react';
++import { Database, Workflow, Bot, Globe, Shield, ArrowRight, Cpu, Cloud, Boxes, Layers } from 'lucide-react';
+ 
+ const ARCHITECTURE_LAYERS = [
+   {
+diff --git a/src/pages/admin/LaunchControlCenter.jsx b/src/pages/admin/LaunchControlCenter.jsx
+index f19950e..f54e1d4 100644
+--- a/src/pages/admin/LaunchControlCenter.jsx
++++ b/src/pages/admin/LaunchControlCenter.jsx
+@@ -1,8 +1,8 @@
+ import React, { useState, useEffect, useCallback, useRef } from "react";
+ import {
+-  Rocket, Play, Pause, Zap, Loader2, RefreshCw, CheckCircle2,
++  Rocket, Pause, Loader2, RefreshCw, CheckCircle2,
+   AlertCircle, Globe, MapPin, Infinity as InfinityIcon,
+-  Layers, TrendingUp, Sheet, Database, Target, Sparkles,
++  Layers, TrendingUp, Sheet,
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+diff --git a/src/pages/admin/LaunchStatusDashboard.jsx b/src/pages/admin/LaunchStatusDashboard.jsx
+index 7fc0f58..65e7f53 100644
+--- a/src/pages/admin/LaunchStatusDashboard.jsx
++++ b/src/pages/admin/LaunchStatusDashboard.jsx
+@@ -1,9 +1,8 @@
+ import React, { useState } from "react";
+ import { useQuery } from "@tanstack/react-query";
+ import {
+-  Rocket, Globe, CheckCircle2, AlertCircle, Loader2, Search,
+-  TrendingUp, Zap, ExternalLink, ChevronDown, ChevronRight,
+-  Activity, Target, Award, RefreshCw, MapPin, Clock, BarChart3,
++  Rocket, Globe, CheckCircle2, Loader2, Search, ExternalLink, ChevronDown, ChevronRight,
++  Activity, RefreshCw, MapPin, Clock, BarChart3,
+   Search as SearchIcon, Eye, MousePointerClick,
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+diff --git a/src/pages/admin/LocationPerformance.jsx b/src/pages/admin/LocationPerformance.jsx
+index 63ca985..25ce796 100644
+--- a/src/pages/admin/LocationPerformance.jsx
++++ b/src/pages/admin/LocationPerformance.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState, useMemo } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery } from "@tanstack/react-query";
+-import { MapPin, TrendingUp, Users, MousePointerClick, Trophy, Search, ArrowUpDown } from "lucide-react";
++import { MapPin, TrendingUp, Users, MousePointerClick, Trophy, Search } from "lucide-react";
+ 
+ function toSlug(city) {
+   return (city || "").toLowerCase().replace(/[^a-z0-9]/g, "-");
+diff --git a/src/pages/admin/MassLaunchConsole.jsx b/src/pages/admin/MassLaunchConsole.jsx
+index 169aa25..61bcbda 100644
+--- a/src/pages/admin/MassLaunchConsole.jsx
++++ b/src/pages/admin/MassLaunchConsole.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useMemo } from "react";
+-import { Rocket, MapPin, Globe, Zap, Shield, Brain, Loader2, Check, ChevronDown, Search, Building2 } from "lucide-react";
++import { Rocket, MapPin, Globe, Zap, Shield, Brain, Loader2, Search, Building2 } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { US_STATES, US_COUNTIES, slugify } from "@/lib/usCounties";
+ import { TOP_20_INDUSTRIES } from "@/data/topIndustries";
+diff --git a/src/pages/admin/MasterPipeline.jsx b/src/pages/admin/MasterPipeline.jsx
+index a818cbc..ebcd7ea 100644
+--- a/src/pages/admin/MasterPipeline.jsx
++++ b/src/pages/admin/MasterPipeline.jsx
+@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
+ import {
+   Brain, Search, Radar, Target, Bot, Globe, FileText, Users,
+   MessageSquare, Shield, Rocket, Check, RotateCcw, ChevronLeft,
+-  Loader2, Lightbulb, Zap, TrendingUp, Database, Github, MapPin,
++  Loader2, Zap, TrendingUp, Database, Github, MapPin,
+ } from "lucide-react";
+ import ForensicAudit from "@/components/master-pipeline/ForensicAudit";
+ import PipelineStep from "@/components/master-pipeline/PipelineStepV2";
+diff --git a/src/pages/admin/MasterPlan.jsx b/src/pages/admin/MasterPlan.jsx
+index ee4f2d8..318ee34 100644
+--- a/src/pages/admin/MasterPlan.jsx
++++ b/src/pages/admin/MasterPlan.jsx
+@@ -2,10 +2,10 @@ import React, { useState, useMemo } from "react";
+ import { useQuery } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Rocket, MapPin, Bot, Globe, CheckCircle2, Circle, Clock,
+-  Loader2, Sparkles, Shield, TrendingUp, Target, Zap,
+-  Brain, Eye, Code2, Mail, Phone, Calendar, Star, Cpu,
+-  Network, AlertCircle, ArrowRight, Lightbulb, Search,
++  Rocket, MapPin, Globe, CheckCircle2, Circle, Clock,
++  Loader2, Sparkles, Shield, TrendingUp, Target,
++  Brain, Eye, Code2, Mail, Phone, Star, Cpu,
++  Network, AlertCircle, Search,
+ } from "lucide-react";
+ import USMap from "@/components/master-plan/USMap";
+ 
+diff --git a/src/pages/admin/MetaAgent.jsx b/src/pages/admin/MetaAgent.jsx
+index e1ba6c0..46dc96a 100644
+--- a/src/pages/admin/MetaAgent.jsx
++++ b/src/pages/admin/MetaAgent.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useEffect, useCallback } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Loader2, AlertCircle, RefreshCw, Zap, CheckCircle2, XCircle, ArrowRight } from "lucide-react";
++import { Loader2, AlertCircle, RefreshCw, Zap, CheckCircle2, XCircle } from "lucide-react";
+ 
+ const STATE_COLORS = {
+   UNDISCOVERED: "text-stone-400 bg-stone-100",
+diff --git a/src/pages/admin/MetaArchitecture.jsx b/src/pages/admin/MetaArchitecture.jsx
+index 599708d..ecee113 100644
+--- a/src/pages/admin/MetaArchitecture.jsx
++++ b/src/pages/admin/MetaArchitecture.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import {
+-  Scan, Loader2, AlertCircle, CheckCircle2, Shield, Zap,
++  Scan, Loader2, AlertCircle, CheckCircle2, Shield,
+   TrendingUp, Bot, Grid3x3, ListChecks, FileCode, Sparkles,
+   ChevronRight, ArrowRight,
+ } from 'lucide-react';
+diff --git a/src/pages/admin/MultiTemplateLauncher.jsx b/src/pages/admin/MultiTemplateLauncher.jsx
+index 823e087..3b59af7 100644
+--- a/src/pages/admin/MultiTemplateLauncher.jsx
++++ b/src/pages/admin/MultiTemplateLauncher.jsx
+@@ -2,7 +2,7 @@ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import {
+   Rocket, Loader2, CheckCircle2, AlertCircle, Search, Layers,
+-  ExternalLink, Link2, FileText, Zap, Globe, RefreshCw, Filter,
++  ExternalLink, Link2, Zap,
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { Link } from "react-router-dom";
+diff --git a/src/pages/admin/PackResearch.jsx b/src/pages/admin/PackResearch.jsx
+index 0f84980..febd3d2 100644
+--- a/src/pages/admin/PackResearch.jsx
++++ b/src/pages/admin/PackResearch.jsx
+@@ -1,6 +1,6 @@
+ import React, { useEffect, useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Search, Globe, ShieldCheck, Loader2, AlertTriangle, CheckCircle2, Layers3, ExternalLink } from "lucide-react";
++import { Search, Globe, Loader2, AlertTriangle, CheckCircle2, Layers3 } from "lucide-react";
+ 
+ const PACK_OPTIONS = [
+   ["logo_pack", "Logo Pack"],
+diff --git a/src/pages/admin/PackSync.jsx b/src/pages/admin/PackSync.jsx
+index b29b698..82570db 100644
+--- a/src/pages/admin/PackSync.jsx
++++ b/src/pages/admin/PackSync.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useEffect, useCallback } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Download, RefreshCw, Eye, Trash2, Copy, Check, Loader2, Package, Palette, Type, Globe } from "lucide-react";
++import { RefreshCw, Eye, Trash2, Copy, Check, Loader2, Package, Palette, Type, Globe } from "lucide-react";
+ 
+ export default function PackSync() {
+   const [packs, setPacks] = useState([]);
+diff --git a/src/pages/admin/Platform.jsx b/src/pages/admin/Platform.jsx
+index 568c3c5..692b2e3 100644
+--- a/src/pages/admin/Platform.jsx
++++ b/src/pages/admin/Platform.jsx
+@@ -1,8 +1,8 @@
+ import React from 'react';
+ import { Link } from 'react-router-dom';
+ import {
+-  ArrowRight, Brain, Network, Database, Workflow, Globe, Zap,
+-  Target, Layers, Shield, TrendingUp, Building2, Mail, CheckCircle2,
++  ArrowRight, Brain, Database, Workflow, Globe, Zap,
++  Target, Shield, TrendingUp, Building2, Mail, CheckCircle2,
+   Cpu, Radar, Camera, FileText, Sparkles, MapPin, Search,
+   Gauge, Bot, Factory
+ } from 'lucide-react';
+diff --git a/src/pages/admin/PlaybookLibrary.jsx b/src/pages/admin/PlaybookLibrary.jsx
+index 783aabd..c6ed4fe 100644
+--- a/src/pages/admin/PlaybookLibrary.jsx
++++ b/src/pages/admin/PlaybookLibrary.jsx
+@@ -5,7 +5,7 @@ import { base44 } from "@/api/base44Client";
+ import {
+   BookOpen, Sparkles, Crown, TrendingUp, DollarSign, Bot, Share2, Activity,
+   Brain, Globe, Users, Search, ChevronDown, ChevronRight, Copy, Check,
+-  Zap, ArrowRight, Wand2, Target, Rocket, Layers, MessageSquare, Lightbulb,
++  Zap, ArrowRight, Wand2, Target, Rocket, Layers,
+   Send, Loader2, AlertCircle
+ } from "lucide-react";
+ import { PROMPT_CATEGORIES, STARTER_PROMPTS } from "@/data/playbookPrompts";
+diff --git a/src/pages/admin/PredictiveLeadScoring.jsx b/src/pages/admin/PredictiveLeadScoring.jsx
+index d2bf48c..dde7492 100644
+--- a/src/pages/admin/PredictiveLeadScoring.jsx
++++ b/src/pages/admin/PredictiveLeadScoring.jsx
+@@ -2,7 +2,6 @@ import React, { useState, useCallback } from "react";
+ import { Activity, Zap, Loader2, AlertCircle, Target, Award, Brain, Cpu, TrendingUp, CheckCircle2, BarChart3, Phone, Mail, MapPin, Calendar } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { Link } from "react-router-dom";
+-import { format } from "date-fns";
+ import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+ import OutcomeSimulator from "@/components/predictive-scoring/OutcomeSimulator";
+ import VariableTracker from "@/components/predictive-scoring/VariableTracker";
+diff --git a/src/pages/admin/ProgrammaticTargeting.jsx b/src/pages/admin/ProgrammaticTargeting.jsx
+index 3730ea2..a7003fc 100644
+--- a/src/pages/admin/ProgrammaticTargeting.jsx
++++ b/src/pages/admin/ProgrammaticTargeting.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useEffect } from "react";
+-import { Target, Save, Rocket, Trash2, Edit, Copy, Loader2, Check, Globe, Zap, Brain, Shield } from "lucide-react";
++import { Target, Save, Rocket, Trash2, Edit, Copy, Loader2, Globe, Zap, Brain } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { TOP_20_INDUSTRIES } from "@/data/topIndustries";
+ import LocationTargetingSystem from "@/components/targeting/LocationTargetingSystem";
+diff --git a/src/pages/admin/PromptTestingLab.jsx b/src/pages/admin/PromptTestingLab.jsx
+index c7e1495..eb59a3b 100644
+--- a/src/pages/admin/PromptTestingLab.jsx
++++ b/src/pages/admin/PromptTestingLab.jsx
+@@ -1,8 +1,8 @@
+ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import {
+-  Sparkles, Image as ImageIcon, Loader2, CheckCircle2, XCircle, Star,
+-  Search, Filter, Eye, ThumbsUp, ThumbsDown, RefreshCw, Plus, AlertCircle,
++  Sparkles, Loader2, CheckCircle2, XCircle, Star,
++  Search, RefreshCw, AlertCircle,
+   Bot, Clock, Zap,
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+diff --git a/src/pages/admin/ProviderVault.jsx b/src/pages/admin/ProviderVault.jsx
+index 0ce5f3a..df37e3f 100644
+--- a/src/pages/admin/ProviderVault.jsx
++++ b/src/pages/admin/ProviderVault.jsx
+@@ -2,8 +2,8 @@ import React, { useState, useMemo } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Shield, Database, Globe, Zap, Server, KeyRound, Plus, Trash2,
+-  Eye, EyeOff, Check, RefreshCw, AlertCircle, Lock, Copy,
++  Shield, Database, Globe, Server, KeyRound, Plus, Trash2,
++  Eye, EyeOff, Check, RefreshCw, AlertCircle, Copy,
+   ExternalLink, Cpu, ArrowRight, Sparkles, UploadCloud,
+ } from "lucide-react";
+ import BatchUpload from "@/components/provider-vault/BatchUpload";
+diff --git a/src/pages/admin/PwaAppFactory.jsx b/src/pages/admin/PwaAppFactory.jsx
+index 065cbb1..01ec54e 100644
+--- a/src/pages/admin/PwaAppFactory.jsx
++++ b/src/pages/admin/PwaAppFactory.jsx
+@@ -1,4 +1,4 @@
+-import React, { useState, useEffect, useMemo } from "react";
++import React, { useState, useEffect } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { Smartphone, Save, Loader2, CheckCircle2, AlertCircle, Rocket, Copy, ExternalLink, Globe } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+diff --git a/src/pages/admin/PwaLaunchDashboard.jsx b/src/pages/admin/PwaLaunchDashboard.jsx
+index b3add82..cc6906a 100644
+--- a/src/pages/admin/PwaLaunchDashboard.jsx
++++ b/src/pages/admin/PwaLaunchDashboard.jsx
+@@ -1,8 +1,8 @@
+-import React, { useState, useEffect } from "react";
++import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import {
+   Smartphone, Globe, ExternalLink, Loader2, CheckCircle2, AlertCircle,
+-  Clock, Search, RefreshCw, Settings, Rocket, Activity,
++  Clock, Search, RefreshCw, Settings, Activity,
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+diff --git a/src/pages/admin/Results.jsx b/src/pages/admin/Results.jsx
+index 4795cb5..df190cb 100644
+--- a/src/pages/admin/Results.jsx
++++ b/src/pages/admin/Results.jsx
+@@ -1,4 +1,4 @@
+-import React, { useState, useMemo, useEffect } from 'react';
++import React, { useState, useMemo } from 'react';
+ import {
+   LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
+   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
+diff --git a/src/pages/admin/SeoDominance.jsx b/src/pages/admin/SeoDominance.jsx
+index 16bfdd4..b68e76c 100644
+--- a/src/pages/admin/SeoDominance.jsx
++++ b/src/pages/admin/SeoDominance.jsx
+@@ -1,6 +1,6 @@
+ import React, { useEffect, useState } from "react";
+ import { base44 } from "@/api/base44Client";
+-import { Rocket, RefreshCw, Loader2, CheckCircle2, AlertTriangle, TrendingUp, Target, FileText, Zap, Clock } from "lucide-react";
++import { Rocket, Loader2, CheckCircle2, AlertTriangle, TrendingUp, Target, FileText, Zap, Clock } from "lucide-react";
+ import { Button } from "@/components/ui/button";
+ 
+ export default function SeoDominance() {
+diff --git a/src/pages/admin/SeoFactory.jsx b/src/pages/admin/SeoFactory.jsx
+index 305745a..4b36a0b 100644
+--- a/src/pages/admin/SeoFactory.jsx
++++ b/src/pages/admin/SeoFactory.jsx
+@@ -1,7 +1,7 @@
+ import React, { useEffect, useState } from "react";
+ import { Link } from "react-router-dom";
+ import { base44 } from "@/api/base44Client";
+-import { SEO_ROUTES, SEO_LOCATIONS, locationPath } from "@/lib/seoConfig";
++import { SEO_ROUTES, SEO_LOCATIONS } from "@/lib/seoConfig";
+ import { bustSeoOverrides } from "@/components/Seo";
+ import {
+   Factory, Sparkles, Rocket, RefreshCw, Trash2, ExternalLink,
+diff --git a/src/pages/admin/SeoSimulator.jsx b/src/pages/admin/SeoSimulator.jsx
+index 169e44e..b2ce29a 100644
+--- a/src/pages/admin/SeoSimulator.jsx
++++ b/src/pages/admin/SeoSimulator.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState, useEffect, useCallback, useRef } from "react";
+ import { useQuery } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+-import { Loader2, Save, FolderOpen, Sparkles, Zap } from "lucide-react";
++import { Loader2, Save, Sparkles, Zap } from "lucide-react";
+ import ScoreDashboard from "@/components/seo-sim/ScoreDashboard";
+ import TimelineEstimate from "@/components/seo-sim/TimelineEstimate";
+ import LandingPagePreview from "@/components/seo-sim/LandingPagePreview";
+diff --git a/src/pages/admin/ShadowVisionCortex.jsx b/src/pages/admin/ShadowVisionCortex.jsx
+index edd1f41..a09f1a0 100644
+--- a/src/pages/admin/ShadowVisionCortex.jsx
++++ b/src/pages/admin/ShadowVisionCortex.jsx
+@@ -1,10 +1,10 @@
+ import React, { useState, useRef, useEffect } from "react";
+-import { useQuery, useMutation } from "@tanstack/react-query";
++import { useQuery } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Eye, Send, Loader2, Crown, Activity, Server, AlertTriangle,
+-  CheckCircle2, XCircle, Target, Zap, ShieldCheck, ArrowRight,
+-  Sparkles, Brain, Globe, Cpu
++  Eye, Send, Loader2, Server,
++  CheckCircle2, Target, ShieldCheck,
++  Sparkles, Brain
+ } from "lucide-react";
+ 
+ const VISION_CORTEX_PROMPT = `You are SHADOW VISION CORTEX ΓÇö the conversational command and intelligence interface for the XTREME universal autonomous operating fabric.
+diff --git a/src/pages/admin/SiteBankAutomation.jsx b/src/pages/admin/SiteBankAutomation.jsx
+index d3e086e..6909f34 100644
+--- a/src/pages/admin/SiteBankAutomation.jsx
++++ b/src/pages/admin/SiteBankAutomation.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+-import { Rocket, Link2, Tag, RefreshCw, Zap, Loader2, Globe, MapPin, CheckCircle2, Clock, TrendingUp, Database, Activity } from "lucide-react";
++import { Rocket, Link2, Tag, RefreshCw, Zap, Loader2, Globe, MapPin, CheckCircle2, Clock, Database, Activity } from "lucide-react";
+ 
+ export default function SiteBankAutomation() {
+   const queryClient = useQueryClient();
+diff --git a/src/pages/admin/SiteCommandCenter.jsx b/src/pages/admin/SiteCommandCenter.jsx
+index 835725f..239c0c4 100644
+--- a/src/pages/admin/SiteCommandCenter.jsx
++++ b/src/pages/admin/SiteCommandCenter.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState, useEffect } from "react";
+-import { Rocket, Shield, Brain, Globe, TrendingUp, Loader2, Check, X, ExternalLink, Zap, Activity, MapPin } from "lucide-react";
++import { Rocket, Shield, Brain, Globe, TrendingUp, Loader2, Check, ExternalLink, Zap, MapPin } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ 
+ export default function SiteCommandCenter() {
+diff --git a/src/pages/admin/SiteHealthMonitor.jsx b/src/pages/admin/SiteHealthMonitor.jsx
+index 14bcfad..f27b385 100644
+--- a/src/pages/admin/SiteHealthMonitor.jsx
++++ b/src/pages/admin/SiteHealthMonitor.jsx
+@@ -2,10 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Globe, CheckCircle2, XCircle, AlertTriangle, Clock, Zap, RefreshCw,
+-  ExternalLink, Activity, Shield, Heart, Activity as ActivityIcon,
+-  TrendingUp, Timer, Search, Filter, ChevronDown, ChevronRight,
+-  Wifi, WifiOff, Eye, Wrench, Sparkles
++  Globe, CheckCircle2, AlertTriangle, Clock, Zap, RefreshCw,
++  ExternalLink, Heart, Timer, Search, ChevronDown, ChevronRight, WifiOff, Wrench
+ } from "lucide-react";
+ 
+ const PUBLISHED_URL = "https://epoxyquotenearme.com";
+diff --git a/src/pages/admin/SiteInventory.jsx b/src/pages/admin/SiteInventory.jsx
+index 9f530ec..44d7517 100644
+--- a/src/pages/admin/SiteInventory.jsx
++++ b/src/pages/admin/SiteInventory.jsx
+@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
+ import {
+   Globe, Smartphone, LayoutGrid, Server, Activity, CheckCircle2,
+   AlertCircle, Loader2, Clock, XCircle, Search, RefreshCw,
+-  ExternalLink, Zap, TrendingUp, Shield, MapPin, Eye, Rocket, Building2, ShoppingBag, Code2, Briefcase, HeartPulse, Palette,
++  ExternalLink, TrendingUp, MapPin, Eye, Rocket, Building2, ShoppingBag, Code2, Briefcase, HeartPulse, Palette,
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import { Link } from "react-router-dom";
+diff --git a/src/pages/admin/SkipTraceSystem.jsx b/src/pages/admin/SkipTraceSystem.jsx
+index 629a7f1..5f3d418 100644
+--- a/src/pages/admin/SkipTraceSystem.jsx
++++ b/src/pages/admin/SkipTraceSystem.jsx
+@@ -1,7 +1,7 @@
+-import React, { useEffect, useState } from "react";
++import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+-import { Radar, Loader2, Users, Phone, Mail, Target, TrendingUp, RefreshCw, Search, AlertCircle, CheckCircle2, Clock } from "lucide-react";
++import { Radar, Loader2, Phone, Mail, Target, RefreshCw, Search, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+ import { Button } from "@/components/ui/button";
+ import { Input } from "@/components/ui/input";
+ 
+diff --git a/src/pages/admin/SocialStudio.jsx b/src/pages/admin/SocialStudio.jsx
+index c10646d..afd1340 100644
+--- a/src/pages/admin/SocialStudio.jsx
++++ b/src/pages/admin/SocialStudio.jsx
+@@ -3,8 +3,8 @@ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import {
+   Share2, Sparkles, Image as ImageIcon, Video, FileImage, Send, RefreshCw,
+-  Calendar, Clock, CheckCircle2, AlertCircle, Trash2, Facebook, Zap,
+-  TrendingUp, Hash, Search, Loader2, Megaphone, Rocket,
++  Calendar, Clock, CheckCircle2, AlertCircle, Trash2, Facebook,
++  TrendingUp, Hash, Loader2, Megaphone, Rocket,
+ } from "lucide-react";
+ 
+ const THEME_LABELS = {
+diff --git a/src/pages/admin/SuperAgents.jsx b/src/pages/admin/SuperAgents.jsx
+index 06be4f1..9900731 100644
+--- a/src/pages/admin/SuperAgents.jsx
++++ b/src/pages/admin/SuperAgents.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState, useEffect, useCallback } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { Brain, Zap, Shield, Clock, Activity, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
++import { Brain, Zap, Clock, Activity, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+ 
+ const AGENTS = [
+   { name: 'Eden Skye', role: 'Executive AI Receptionist', icon: '≡ƒÄº', desc: 'Handles all inbound SMS, voice calls, and visitor inquiries via Twilio + HeyGen avatar. Warm Sol-like voice.', schedule: '24/7 Always On', tools: ['Twilio SMS', 'HeyGen Avatar', 'AI Chat', 'CRM'] },
+diff --git a/src/pages/admin/SwarmCommand.jsx b/src/pages/admin/SwarmCommand.jsx
+index a143300..60ce41b 100644
+--- a/src/pages/admin/SwarmCommand.jsx
++++ b/src/pages/admin/SwarmCommand.jsx
+@@ -1,11 +1,10 @@
+-import React, { useState, useEffect } from "react";
++import React, { useState } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import {
+   Bot, Zap, Activity, CheckCircle2, AlertCircle, Clock, RefreshCw, Play,
+-  Brain, Users, TrendingUp, Globe, Share2, Star, Factory, MessageSquare,
+-  ChevronRight, Loader2, Radio, Shield, Wrench, Stethoscope, Search, Sparkles,
+-  Bug, ShieldCheck, FileSearch
++  Brain, Users, TrendingUp, Share2, Star, Factory, MessageSquare,
++  ChevronRight, Loader2, Radio, Shield, Wrench, Stethoscope, Search, Sparkles, FileSearch
+ } from "lucide-react";
+ 
+ const AGENT_META = [
+diff --git a/src/pages/admin/SystemAudit.jsx b/src/pages/admin/SystemAudit.jsx
+index 3bf2539..3f43ca2 100644
+--- a/src/pages/admin/SystemAudit.jsx
++++ b/src/pages/admin/SystemAudit.jsx
+@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
+ import {
+   Shield, Database, Zap, Bot, Workflow, Globe, Key, FileCode, Boxes,
+   Check, X, AlertTriangle, Loader2, Search, ChevronDown, ChevronRight,
+-  Layers, Cpu, Cloud, Lock, ArrowRight, Wrench,
++  Layers, Cpu, Cloud, ArrowRight, Wrench,
+ } from "lucide-react";
+ import {
+   ENTITY_CATEGORIES, FUNCTION_CATEGORIES, AGENTS, WORKFLOWS,
+diff --git a/src/pages/admin/SystemHealth.jsx b/src/pages/admin/SystemHealth.jsx
+index ada24ff..4ac845f 100644
+--- a/src/pages/admin/SystemHealth.jsx
++++ b/src/pages/admin/SystemHealth.jsx
+@@ -3,10 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import { Button } from "@/components/ui/button";
+ import {
+-  Activity, AlertTriangle, CheckCircle2, TrendingUp, Zap, Target,
+-  ArrowRight, Loader2, Gauge, Database, Brain, Network, Bot, Workflow,
+-  Users, Globe, Eye, DollarSign, Lightbulb, ChevronRight, AlertCircle,
+-  Rocket, Wrench
++  Activity, AlertTriangle, CheckCircle2, TrendingUp, Zap, Target, Loader2, Gauge, Database, Brain, Network, Bot, Workflow,
++  Users, Globe, Eye, DollarSign, Lightbulb, ChevronRight, AlertCircle
+ } from "lucide-react";
+ 
+ const SUBSYSTEM_META = {
+diff --git a/src/pages/admin/SystemIndependence.jsx b/src/pages/admin/SystemIndependence.jsx
+index 057e9d9..bd756b9 100644
+--- a/src/pages/admin/SystemIndependence.jsx
++++ b/src/pages/admin/SystemIndependence.jsx
+@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
+ import { base44 } from "@/api/base44Client";
+ import {
+   Shield, Zap, Check, X, Loader2, Mail, Brain, Database, Server,
+-  Globe, AlertTriangle, Rocket, RefreshCw, ExternalLink, Lock,
++  Globe, AlertTriangle, Lock,
+ } from "lucide-react";
+ 
+ const MIGRATIONS = [
+diff --git a/src/pages/admin/SystemInventory.jsx b/src/pages/admin/SystemInventory.jsx
+index eb4ed08..394f189 100644
+--- a/src/pages/admin/SystemInventory.jsx
++++ b/src/pages/admin/SystemInventory.jsx
+@@ -1,6 +1,6 @@
+-import React, { useState, useEffect } from 'react';
++import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { LayoutGrid, AlertTriangle, CheckCircle2, XCircle, Loader2, Zap, ArrowRight, FileText } from 'lucide-react';
++import { LayoutGrid, AlertTriangle, CheckCircle2, XCircle, Loader2, Zap, ArrowRight } from 'lucide-react';
+ 
+ const PAGE_INVENTORY = [
+   { path: '/', name: 'Launch Engine (Home)', category: 'Public', status: 'active', desc: 'Main landing page with hero, industries, templates, results, pricing, portals, contact' },
+diff --git a/src/pages/admin/SystemMap.jsx b/src/pages/admin/SystemMap.jsx
+index 0bc80b5..cbff857 100644
+--- a/src/pages/admin/SystemMap.jsx
++++ b/src/pages/admin/SystemMap.jsx
+@@ -11,7 +11,7 @@ import {
+   Database, Layers, Wrench,
+   Share2, Activity, BarChart3,
+   KeyRound, UserCircle,
+-  Search, ChevronDown, ChevronRight, Boxes, Zap, DollarSign, Clock, ArrowRight
++  Search, ChevronDown, ChevronRight, Boxes, ArrowRight
+ } from "lucide-react";
+ 
+ // ============================================================
+diff --git a/src/pages/admin/ToolManager.jsx b/src/pages/admin/ToolManager.jsx
+index ca7cb0b..aacb961 100644
+--- a/src/pages/admin/ToolManager.jsx
++++ b/src/pages/admin/ToolManager.jsx
+@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
+ import { base44 } from "@/api/base44Client";
+ import {
+   Plus, Trash2, Star, MessageSquare, Gift, Wrench,
+-  ToggleLeft, ToggleRight, ChevronDown, ChevronUp
++  ToggleLeft, ToggleRight
+ } from "lucide-react";
+ 
+ const EDITIONS = [
+diff --git a/src/pages/admin/UniversalDominance.jsx b/src/pages/admin/UniversalDominance.jsx
+index c771084..c778520 100644
+--- a/src/pages/admin/UniversalDominance.jsx
++++ b/src/pages/admin/UniversalDominance.jsx
+@@ -2,9 +2,9 @@ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Crown, Sparkles, Zap, Globe, Bot, Network, Activity, Database,
++  Crown, Zap, Activity,
+   Server, RefreshCw, Play, ArrowRight, CheckCircle2, AlertCircle,
+-  Layers, Rocket, TrendingUp, Film, Share2, Cpu, Brain, Eye,
++  Layers, Rocket, TrendingUp, Share2, Cpu, Brain,
+ } from "lucide-react";
+ 
+ const LAYER_ICONS = {
+diff --git a/src/pages/admin/VisionIntelligence.jsx b/src/pages/admin/VisionIntelligence.jsx
+index 01bd532..1853be5 100644
+--- a/src/pages/admin/VisionIntelligence.jsx
++++ b/src/pages/admin/VisionIntelligence.jsx
+@@ -1,8 +1,6 @@
+ import React, { useState, useCallback } from "react";
+ import {
+-  Radar, Search, Target, Brain, Dices, Loader2, AlertCircle,
+-  TrendingUp, DollarSign, Zap, Award, ArrowUp, Globe, Shield,
+-  CheckCircle2, Sparkles, ChevronDown, ChevronRight, ExternalLink,
++  Radar, Search, Target, Brain, Dices, Loader2, AlertCircle, DollarSign, Award, ChevronDown, ChevronRight, ExternalLink,
+ } from "lucide-react";
+ import { base44 } from "@/api/base44Client";
+ import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+diff --git a/src/pages/admin/VisionStrategy.jsx b/src/pages/admin/VisionStrategy.jsx
+index 2b5802e..77ad962 100644
+--- a/src/pages/admin/VisionStrategy.jsx
++++ b/src/pages/admin/VisionStrategy.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from 'react';
+ import { base44 } from '@/api/base44Client';
+ import { useQuery, useQueryClient } from '@tanstack/react-query';
+-import { Eye, Compass, Building2, Cog, DollarSign, Swords, Tag, Rocket, Cpu, Shield, Target, FileText, Plus, Save, X, Loader2 } from 'lucide-react';
++import { Eye, Building2, Cog, DollarSign, Swords, Tag, Rocket, Cpu, Shield, Target, FileText, Plus, Save, X, Loader2 } from 'lucide-react';
+ 
+ const DOC_TYPES = [
+   { value: 'vision', label: 'Vision', icon: Eye, color: 'border-purple-500 bg-purple-50 text-purple-700' },
+diff --git a/src/pages/admin/VisionStudio.jsx b/src/pages/admin/VisionStudio.jsx
+index 7e83fd0..d40120d 100644
+--- a/src/pages/admin/VisionStudio.jsx
++++ b/src/pages/admin/VisionStudio.jsx
+@@ -1,10 +1,10 @@
+ import React, { useState, useCallback } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { useQuery, useQueryClient } from '@tanstack/react-query';
++import { useQueryClient } from '@tanstack/react-query';
+ import {
+   Sparkles, Eye, Compass, Rocket, CheckCircle2, XCircle, ArrowRight,
+-  Loader2, RefreshCw, AlertCircle, Globe, Building2, MapPin, DollarSign,
+-  Clock, TrendingUp, Zap, Crown, Bot, Network, Shield, Brain,
++  Loader2, RefreshCw, AlertCircle, MapPin, DollarSign,
++  Clock, TrendingUp, Bot,
+   Check, ChevronDown, ChevronUp, Wand2, Target, Lightbulb,
+ } from 'lucide-react';
+ import VisionPrompts from '@/components/vision-studio/VisionPrompts';
+diff --git a/src/pages/admin/VisualEditor.jsx b/src/pages/admin/VisualEditor.jsx
+index c6c2aad..e15e5bf 100644
+--- a/src/pages/admin/VisualEditor.jsx
++++ b/src/pages/admin/VisualEditor.jsx
+@@ -1,5 +1,5 @@
+ import React, { useState } from "react";
+-import { Loader2, Bot, Zap, Eye, PanelLeftClose, ArrowLeft } from "lucide-react";
++import { Zap, Eye, PanelLeftClose, ArrowLeft } from "lucide-react";
+ import { useNavigate } from "react-router-dom";
+ import { useQueryClient } from "@tanstack/react-query";
+ import VisualEditorChat from "@/components/visual-editor/VisualEditorChat";
+diff --git a/src/pages/admin/VisualRenderLibrary.jsx b/src/pages/admin/VisualRenderLibrary.jsx
+index 86dff89..fb9dc49 100644
+--- a/src/pages/admin/VisualRenderLibrary.jsx
++++ b/src/pages/admin/VisualRenderLibrary.jsx
+@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+   Globe, Youtube, Instagram, Smartphone, Monitor, Newspaper,
+-  Video, Sparkles, TrendingUp, ExternalLink, Search, Filter,
+-  Layers, Eye, Star, ArrowUpRight, Loader2,
++  Video, Sparkles, TrendingUp, ExternalLink, Search,
++  Layers, Star, Loader2,
+ } from "lucide-react";
+ import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+ 
+diff --git a/src/pages/admin/WebsiteEmpire.jsx b/src/pages/admin/WebsiteEmpire.jsx
+index 21c9e46..441ca35 100644
+--- a/src/pages/admin/WebsiteEmpire.jsx
++++ b/src/pages/admin/WebsiteEmpire.jsx
+@@ -3,9 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { Link } from "react-router-dom";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Globe, Rocket, MapPin, Factory, TrendingUp, Zap, Target, Sparkles,
+-  CheckCircle2, Clock, AlertCircle, Layers, DollarSign, Users, Search,
+-  ArrowRight, Crown, Building2, Network, Brain, LineChart, Lightbulb,
++  Globe, Rocket, MapPin, Factory, TrendingUp, Zap, Target,
++  CheckCircle2, Clock, Layers, DollarSign, Users, Search, Crown, Building2, Network, Brain, LineChart, Lightbulb,
+   Wand2, Smartphone, MessageSquare, BarChart3, Loader2, Play, ExternalLink
+ } from "lucide-react";
+ 
+diff --git a/src/pages/admin/WebsiteFactory.jsx b/src/pages/admin/WebsiteFactory.jsx
+index 168268e..7a8b70e 100644
+--- a/src/pages/admin/WebsiteFactory.jsx
++++ b/src/pages/admin/WebsiteFactory.jsx
+@@ -1,7 +1,7 @@
+ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+-import { Factory, Plus, Rocket, Settings, Copy, Check, Loader2, Globe } from "lucide-react";
++import { Factory, Plus, Rocket, Copy, Check, Loader2, Globe } from "lucide-react";
+ 
+ const PUBLISHED_URL = "https://epoxyquotenearme.com";
+ const slugify = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+diff --git a/src/pages/admin/WebsiteQueue.jsx b/src/pages/admin/WebsiteQueue.jsx
+index d8353e9..e62f94b 100644
+--- a/src/pages/admin/WebsiteQueue.jsx
++++ b/src/pages/admin/WebsiteQueue.jsx
+@@ -2,8 +2,8 @@ import React, { useState } from "react";
+ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  ListOrdered, Plus, Loader2, Globe, TrendingUp, Users, DollarSign, Search,
+-  Rocket, Activity, Crown,
++  ListOrdered, Plus, Loader2, Globe, TrendingUp, Users, DollarSign,
++  Rocket, Activity,
+ } from "lucide-react";
+ 
+ const NICHES = [
+diff --git a/src/pages/admin/WorkflowFindings.jsx b/src/pages/admin/WorkflowFindings.jsx
+index 55f1230..6dbebfd 100644
+--- a/src/pages/admin/WorkflowFindings.jsx
++++ b/src/pages/admin/WorkflowFindings.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from "react";
+ import { useNavigate } from "react-router-dom";
+-import { ArrowLeft, ExternalLink, Download, RefreshCw, CheckCircle2, AlertCircle, Brain, Zap } from "lucide-react";
++import { ArrowLeft, Download, RefreshCw, CheckCircle2, AlertCircle, Brain } from "lucide-react";
+ import { LOGO_URL } from "@/components/Logo";
+ import { base44 } from "@/api/base44Client";
+ 
+diff --git a/src/pages/admin/X1Company.jsx b/src/pages/admin/X1Company.jsx
+index 9a88af4..e716f79 100644
+--- a/src/pages/admin/X1Company.jsx
++++ b/src/pages/admin/X1Company.jsx
+@@ -2,9 +2,9 @@ import React, { useState } from "react";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+ import {
+-  Building2, Cpu, Rocket, CheckCircle2, AlertCircle, Clock,
++  Building2, Cpu, Rocket, CheckCircle2,
+   Activity, Zap, Target, Users, Globe, Database, Cloud, Monitor,
+-  MessageSquare, Mail, BarChart3, Play, RefreshCw, Loader2,
++  MessageSquare, Mail, BarChart3, RefreshCw, Loader2,
+   Server, Shield, GitBranch, Box, ArrowRight, Sparkles, Brain,
+   Network, Wrench, Eye, TestTube, Crown, ExternalLink
+ } from "lucide-react";
+diff --git a/src/pages/admin/XtremeComms.jsx b/src/pages/admin/XtremeComms.jsx
+index b218bf3..11ac170 100644
+--- a/src/pages/admin/XtremeComms.jsx
++++ b/src/pages/admin/XtremeComms.jsx
+@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
+ import { base44 } from "@/api/base44Client";
+ import { useQuery, useQueryClient } from "@tanstack/react-query";
+ import {
+-  MessageSquare, Phone, MessageCircle, Smartphone, Megaphone, Play, RefreshCw,
++  MessageSquare, Phone, MessageCircle, Smartphone, Megaphone, RefreshCw,
+   AlertCircle, CheckCircle2, Activity, Mail, Search, Users, Sparkles, Image,
+   ShieldCheck, Zap, Send, TrendingUp, Palette, UserCheck, Copy, BookOpen,
+   FlaskConical, Bot, PhoneCall
+diff --git a/src/pages/smai/ClientPortal.jsx b/src/pages/smai/ClientPortal.jsx
+index fadcceb..149d5f2 100644
+--- a/src/pages/smai/ClientPortal.jsx
++++ b/src/pages/smai/ClientPortal.jsx
+@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
+ import { Link } from "react-router-dom";
+ import { useQuery } from "@tanstack/react-query";
+ import { base44 } from "@/api/base44Client";
+-import { Brain, FolderKanban, MessageSquare, FileText, Send, Loader2, LogIn, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
++import { FolderKanban, MessageSquare, Send, Loader2, LogIn, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
+ import SmaiNav from "@/components/smai/SmaiNav";
+ import SmaiFooter from "@/components/smai/SmaiFooter";
+ 
+diff --git a/src/pages/smai/Services.jsx b/src/pages/smai/Services.jsx
+index f88e394..fc62705 100644
+--- a/src/pages/smai/Services.jsx
++++ b/src/pages/smai/Services.jsx
+@@ -1,6 +1,6 @@
+ import React from "react";
+ import { Link } from "react-router-dom";
+-import { Brain, TrendingUp, Code2, CheckCircle2, ArrowRight, Rocket, Search, FileText, Share2, Smartphone, Database, Workflow, Target, Zap, Bot, Building2, BarChart3, Eye, Sparkles, Layers, Radar } from "lucide-react";
++import { Brain, TrendingUp, Code2, CheckCircle2, ArrowRight, Rocket, Search, FileText, Share2, Smartphone, Database, Workflow, Target, Zap, Bot, Building2, BarChart3, Eye, Sparkles, Radar } from "lucide-react";
+ import SmaiNav from "@/components/smai/SmaiNav";
+ import SmaiFooter from "@/components/smai/SmaiFooter";
+ 
