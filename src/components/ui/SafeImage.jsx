@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { svgToDataUri } from "./svgDataUri";
 
 // Industry-relevant fallback images (Unsplash, verified stable URLs).
 // These guarantee every image slot renders something meaningful — never blank.
@@ -16,8 +17,7 @@ const INDUSTRY_FALLBACKS = {
 // NEEDS_IMAGE_REVIEW placeholder — shown when failClosed and image fails.
 // This prevents the homepage from silently showing wrong industry imagery.
 const NEEDS_REVIEW_PLACEHOLDER =
-  "data:image/svg+xml;base64," +
-  btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="700" height="500" viewBox="0 0 700 500">
+  svgToDataUri(`<svg xmlns="http://www.w3.org/2000/svg" width="700" height="500" viewBox="0 0 700 500">
   <rect width="700" height="500" fill="#0a1220"/>
   <text x="350" y="240" font-family="sans-serif" font-size="22" font-weight="bold" fill="#ff6b6b" text-anchor="middle">NEEDS IMAGE REVIEW</text>
   <text x="350" y="275" font-family="sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">Category image failed — do not substitute</text>
@@ -25,8 +25,7 @@ const NEEDS_REVIEW_PLACEHOLDER =
 
 // Generic gradient placeholder (data URI) — the ultimate fallback that never fails.
 const GRADIENT_PLACEHOLDER =
-  "data:image/svg+xml;base64," +
-  btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  svgToDataUri(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
   <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
   <stop offset="0" stop-color="#126fc8"/><stop offset="1" stop-color="#0d9488"/>
   </linearGradient></defs>
