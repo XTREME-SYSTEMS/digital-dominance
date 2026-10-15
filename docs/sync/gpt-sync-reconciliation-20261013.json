@@ -1,0 +1,55 @@
+{
+  "status": "RECONCILED_HANDOFF_ONLY",
+  "source_repository": "XTREME-SYSTEMS/digital-dominance",
+  "source_sha": "e1c833487308809681c092a0da3701208cca6902",
+  "app_id": "6a77f4491f0bf92de9a3ed8b",
+  "attachment_sha256": "267c3d95e3302893f5f6f3de64c54fe32d83329659ef87c37b2a4096e8afc8c5",
+  "normalized_repository_url": "https://github.com/XTREME-SYSTEMS/digital-dominance.git",
+  "declared_catalog": {
+    "entities": 134,
+    "functions": 130,
+    "tools": [
+      "get_capabilities",
+      "read_entities",
+      "write_entity",
+      "invoke_function"
+    ]
+  },
+  "verified": {
+    "gpt_sync_source_present": true,
+    "source_admin_auth_required": true,
+    "source_routes_groq_openrouter": true,
+    "pending_sync_events_returned": 0,
+    "session_exposes_generic_invoke_function": false,
+    "github_sync_source_pushes_main_only": true,
+    "github_sync_source_is_bidirectional": false
+  },
+  "prior_mission": {
+    "pr23_merged": true,
+    "merge_sha": "04b5f4bc2ccb42438762b03a82af5a806c6079d2",
+    "source_sync_independently_verified": true,
+    "hosted_guard_deployment": "UNKNOWN",
+    "deployment_cli_authentication": "BLOCKED at last check; user has not confirmed sign-in",
+    "synthetic_lead_canary": "NOT_RUN",
+    "pr21_launcher_repair": "Previously draft; not authorized by PR23 approval"
+  },
+  "gaps": [
+    "Declared Vercel AI Gateway requirement conflicts with sync engine's Groq/OpenRouter routing.",
+    "Catalog JSON describes hosted tools; it does not install them into this session or prove execution authorization.",
+    "githubSync source accepts no documented action switch despite catalog actions; exports DynamicPage and CodeBlock to main, returns success true even with per-file errors.",
+    "captureSnapshot source counts one-record query length, so values are presence indicators 0/1, not total entity counts.",
+    "Railway dispatcher source is present; actual cron, worker/lease and24/7 runtime remain UNKNOWN.",
+    "Hosted deployment evidence and full independent noindex form/CRM canary remain missing."
+  ],
+  "actions_not_executed": [
+    "gptSyncEngine.sync",
+    "gptSyncEngine.takeOver",
+    "githubSync",
+    "LLM calls",
+    "Railway cron changes",
+    "Lead creation",
+    "customer messages",
+    "production publication"
+  ],
+  "next_safe_action": "Expose or authenticate the existing read-only hosted getConfig/getPending/capabilities path, validate provider/source identity and scoped execution controls, then resume already-approved guard deployment and one synthetic canary. Reuse existing queue/worker/heartbeat; do not duplicate infrastructure."
+}
