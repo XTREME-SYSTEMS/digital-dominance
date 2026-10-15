@@ -81,7 +81,25 @@ async function buildLibrary(){
   for(const x of input.website_type_recipes)write(`website-recipes/${x.id}.json`,JSON.stringify({schema:"apex.website.recipe.v1",...x,release:"PENDING_APPROVAL",approval_required:true,noindex:true,import_policy:"Pending review; no production publish or customer claims"},null,2)+'\n');
   const secondary=[["storyboards",input.video_systems],["motion",input.motion_systems],["sections",input.section_systems]];
   for(const [folder,items] of secondary)items.forEach((x,i)=>write(`${folder}/${String(i+1).padStart(2,'0')}-${x.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.json`,JSON.stringify({schema:"apex.pattern.recipe.v1",family:folder,...x,approval:"DRAFT_ONLY",customer_publication:false},null,2)+'\n'));
-  const counts={original_logo_motifs:input.logo_systems.length,rendered_logo_svgs:input.logo_systems.reduce((s,x)=>s+x.variants.length,0),social_systems:input.social_campaigns.length,social_placements:input.social_channels.length,rendered_social_svgs:input.social_campaigns.length*input.social_channels.length,brand_packs:input.brand_palettes.length,email_html_drafts:input.email_systems.length,website_type_recipes:input.website_type_recipes.length,source_capability_families:Object.keys(input.legacy_capability_families).length,source_declared_patterns:Object.values(input.legacy_capability_families).reduce((s,x)=>s+x,0),creative_library_families:input.families.length};
+  function addGeneratedSystems(){
+  for(const c of input.social_campaigns){
+    const entries=Array.from({length:30},(_,i)=>{
+      const ch=input.social_channels[i%input.social_channels.length];
+      const phase=i<7?'DISCOVER':i<19?'EDUCATE':'CONVERT_WHEN_APPROVED';
+      return {day:i+1,stage:phase,platform:ch.id,creative_svg:`social/${c.id}-${ch.id}.svg`,content_pillar:i%4===0?'EDUCATIONAL':i%4===1?'STORY':i%4===2?'PRODUCT_OR_SERVICE':'ENGAGEMENT',caption_draft:`${c.headline} • ${c.cta}. Replace all facts with verified first-party material.`,hashtags:["#brandplaceholder","#conceptonly"],status:"DRAFT_AWAITING_CHANNEL_APPROVAL",scheduled_at:null,publish_receipt_id:null,requires_consent:true};
+    });
+    write(`calendars/${c.id}-30-day.json`,JSON.stringify({schema:"apex.social.campaign-calendar.v1",system_id:c.id,days:entries,approval_required:true,auto_post_allowed:false,dm_auto_reply_allowed:false,first_party_rights_required:true,platform_safe_areas_must_be_verified:true},null,2)+'\n');
+  }
+  input.logo_systems.forEach((x,i)=>{
+    const p=input.brand_palettes[i%input.brand_palettes.length];
+    write(`kits/${x.id}-brand-kit.json`,JSON.stringify({schema:"apex.brand.kit.v1",name:x.name,brand_concept_only:true,logo_geometry_id:x.id,source_logo_assets:x.variants.map(v=>`logos/${x.id}-${v}.svg`),brand_palette:`brands/${p.id}.json`,social_campaign_references:input.social_campaigns.slice(i%input.social_campaigns.length).slice(0,2).map(c=>`calendars/${c.id}-30-day.json`),email_template_reference:`emails/${input.email_systems[i%input.email_systems.length].id}.html`,trademark_clearance:"REQUIRED",media_rights_review:"REQUIRED",visual_lock:"PENDING_OPERATOR_APPROVAL",release:"NOINDEX_DRAFT_ONLY"},null,2)+'\n');
+  });
+  for(const g of input.growth_systems){
+    write(`growth/${g.family}/${g.id}.json`,JSON.stringify({schema:"apex.growth.system-recipe.v1",...g,release_state:"NOT_PUBLISHED",verified_business_facts:false,content_or_logic_implemented:false,operator_approval_required:true,customer_outbound_allowed:false,paid_media_spend_allowed:false},null,2)+'\n');
+  }
+}
+  addGeneratedSystems();
+  const counts={original_logo_motifs:input.logo_systems.length,rendered_logo_svgs:input.logo_systems.reduce((s,x)=>s+x.variants.length,0),social_systems:input.social_campaigns.length,social_placements:input.social_channels.length,rendered_social_svgs:input.social_campaigns.length*input.social_channels.length,brand_packs:input.brand_palettes.length,email_html_drafts:input.email_systems.length,website_type_recipes:input.website_type_recipes.length,source_capability_families:Object.keys(input.legacy_capability_families).length,source_declared_patterns:Object.values(input.legacy_capability_families).reduce((s,x)=>s+x,0),creative_library_families:input.families.length,brand_kit_manifests:input.logo_systems.length,social_30_day_calendars:input.social_campaigns.length,growth_system_recipes:input.growth_systems.length};
   const catalog={...input,generated_counts:counts,site_master_links:{monolith:"/premium/templates/monolith/index.html",argent:"/premium/templates/argent/index.html",atelier:"/premium/templates/atelier/index.html",premium_collection:"/premium/collection/index.html"},status:"NOINDEX_DEVELOPMENT_LIBRARY"};
   write('catalog.json',JSON.stringify(catalog,null,2)+'\n');
   if(!studio.includes('id="library-app"')||!studio.includes("Creative Library"))throw Error("STUDIO_TEMPLATE_INVALID");
@@ -91,7 +109,7 @@ async function buildLibrary(){
   const mFile=path.join(out,'manifest.json');
   if(verify){if(!fs.existsSync(mFile)||sha(fs.readFileSync(mFile))!==sha(mText))throw Error('MANIFEST_DRIFT')}
   else fs.writeFileSync(mFile,mText);
-  if(counts.rendered_logo_svgs!==36||counts.rendered_social_svgs!==72||counts.source_declared_patterns!==486||artifacts.length!==233)throw Error('COUNT_CONTRACT_FAILED:'+JSON.stringify({counts,count:artifacts.length}));
+  if(counts.rendered_logo_svgs!==36||counts.rendered_social_svgs!==72||counts.source_declared_patterns!==486||artifacts.length!==307)throw Error('COUNT_CONTRACT_FAILED:'+JSON.stringify({counts,count:artifacts.length}));
   const dup=artifacts.reduce((m,a)=>m.set(a.sha256,(m.get(a.sha256)||0)+1),new Map());
   const duplicated=Array.from(dup.values()).reduce((n,x)=>n+(x>1?x:0),0);
   if(duplicated)throw Error('DUPLICATE_OUTPUT_HASHES:'+duplicated);
