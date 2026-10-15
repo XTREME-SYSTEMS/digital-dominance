@@ -17,7 +17,7 @@
     "test:premium-20": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/verify-premium-20.mjs",
     "test:premium-sitepack": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/verify-premium-sitepack.mjs",
     "test:premium-business-brands": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/verify-premium-business-brands.mjs",
-    "test:premium-approved-handoff": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/test-premium-handoff.mjs && node scripts/promote-premium-catalog.mjs"
+    "test:premium-approved-handoff": "node scripts/build-premium-20.mjs && node scripts/build-premium-business-brands.mjs && node scripts/test-premium-handoff.mjs && node scripts/promote-premium-catalog.mjs && node scripts/test-premium-base44-mapping.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.53",
