@@ -25,6 +25,7 @@ check(resolveBase44ApiOrigin("digital-dominance-3.base44.app") === "", "native B
 check(resolveBase44ApiOrigin("unlimitedwebsites.net.attacker.example") === "https://base44.app", "untrusted host cannot hijack backend");
 check(BASE44_API_ORIGIN === "https://base44.app", "offline Node defaults to external backend");
 check(vite.includes("process.env.VITE_BASE44_APP_ID = BASE44_CANONICAL_APP_ID"), "bundler has the canonical public app ID");
+check(vite.includes("analyticsTracker: Boolean(process.env.VITE_BASE44_APP_BASE_URL)"), "external preview never calls missing same-origin visit logger");
 check(client.includes("serverUrl: BASE44_API_ORIGIN"), "SDK uses verified backend");
 check(!client.includes("serverUrl: ''"), "SDK must not silently use missing Vercel same-origin backend");
 check(params.includes("appId: BASE44_APP_ID"), "app ID cannot be overridden by untrusted query/storage");
