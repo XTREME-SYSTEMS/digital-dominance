@@ -9,6 +9,8 @@ on:
       - "base44/shared/godModeForesightSandbox.js"
       - "scripts/universal-*.mjs"
       - "src/components/universal/**"
+      - "src/components/ui/SafeImage.jsx"
+      - "scripts/safe-image-utf8-regression.mjs"
       - "src/components/template-studio/**"
       - "src/pages/TemplatesGallery.jsx"
       - "base44/shared/stock*.js"
@@ -57,6 +59,8 @@ jobs:
           if-no-files-found: error
       - name: Validate 200 canonical noindex stock websites without provider calls
         run: npm run test:public-stock-catalog
+      - name: Verify Unicode-safe image placeholders never crash React startup
+        run: npm run test:safe-image
       - name: Build Vite frontend without releasing
         run: npm run build
       - name: Verify sandbox route and fail-closed operational invariants
