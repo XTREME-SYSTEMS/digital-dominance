@@ -2,6 +2,7 @@ import base44 from "@base44/vite-plugin"
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { transformIndexHtmlForEnvironment } from './scripts/preview-index-html.mjs'
+import { generateSyntheticPreviewSite } from './scripts/synthetic-preview-site.mjs'
 import { execFileSync } from "node:child_process";
 
 function sourceIdentity() {
@@ -34,6 +35,15 @@ export default defineConfig({
       visualEditAgent: true
     }),
     react(),
+    {
+      name: 'digital-dominance-single-synthetic-canary',
+      apply: 'build',
+      generateBundle() {
+        if (process.env.VERCEL_ENV !== 'preview') return;
+        const proof=generateSyntheticPreviewSite();
+        this.emitFile({type:'asset',fileName:'proof/roofing-canary.html',source:proof.html});
+      },
+    },
     {
       name: 'digital-dominance-preview-robots',
       apply: 'build',
