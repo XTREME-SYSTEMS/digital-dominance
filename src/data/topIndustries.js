@@ -21,7 +21,7 @@ export const ACCENT_PRESETS = [
 export const TOP_20_INDUSTRIES = [
   {
     id: "water_damage", label: "Water Damage Restoration", keyword: "water damage restoration",
-    previewImage: "https://images.unsplash.com/photo-1486406146926-c690a1a3a3a3?w=600&q=80&fit=crop",
+    previewImage: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/625091ac6_generated_image.png",
     emergency: "CRITICAL", psychology: "PANIC_URGENCY", accentColor: "#2563EB", accentName: "Emergency Blue",
     avgOrder: 4500, searchVolume: "high", margin: 0.55,
     heroHeadline: "24/7 Emergency Water Damage Restoration",
@@ -131,7 +131,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "pressure_washing", label: "Pressure Washing", keyword: "pressure washing",
-    previewImage: "https://images.unsplash.com/photo-1605152276897-4296181db00d?w=600&q=80&fit=crop",
+    previewImage: "https://images.unsplash.com/photo-1754797007471-68300d87b793?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "ASPIRATION", accentColor: "#0D9488", accentName: "Ocean Teal",
     avgOrder: 450, searchVolume: "high", margin: 0.65,
     heroHeadline: "Professional Pressure Washing Service",
@@ -164,7 +164,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "garage_door_repair", label: "Garage Door Repair", keyword: "garage door repair",
-    previewImage: "https://images.unsplash.com/photo-1606761568499-4636cad0e8a7?w=600&q=80&fit=crop",
+    previewImage: "https://images.unsplash.com/photo-1647749727441-60dfb672ba78?w=600&q=80&fit=crop",
     emergency: "HIGH", psychology: "PANIC_URGENCY", accentColor: "#475569", accentName: "Slate Pro",
     avgOrder: 350, searchVolume: "high", margin: 0.55,
     heroHeadline: "Garage Door Repair — Same Day Service",
@@ -175,7 +175,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "appliance_repair", label: "Appliance Repair", keyword: "appliance repair",
-    previewImage: "https://images.unsplash.com/photo-1622895175520-59d2f3c4e642?w=600&q=80&fit=crop",
+    previewImage: "https://images.unsplash.com/photo-1587785580224-ff32e30978de?w=600&q=80&fit=crop",
     emergency: "HIGH", psychology: "PANIC_URGENCY", accentColor: "#0D9488", accentName: "Ocean Teal",
     avgOrder: 250, searchVolume: "high", margin: 0.60,
     heroHeadline: "Appliance Repair — Same Day Service",
@@ -219,7 +219,7 @@ export const TOP_20_INDUSTRIES = [
   },
   {
     id: "carpet_cleaning", label: "Carpet Cleaning", keyword: "carpet cleaning",
-    previewImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80&fit=crop",
+    previewImage: "https://images.unsplash.com/photo-1781637590564-01c65dbf2039?w=600&q=80&fit=crop",
     emergency: "MEDIUM", psychology: "HEALTH_SAFETY", accentColor: "#0D9488", accentName: "Ocean Teal",
     avgOrder: 250, searchVolume: "high", margin: 0.65,
     heroHeadline: "Professional Carpet Cleaning — Deep Clean",

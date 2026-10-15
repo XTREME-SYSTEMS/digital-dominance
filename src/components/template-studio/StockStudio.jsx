@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { STOCK_INDUSTRIES, STOCK_VERSION } from '../../../base44/shared/stockIndustries.js';
+import { STOCK_DESIGNS } from '../../../base44/shared/stockDesigns.js';
+import { stockTemplateRecord } from '../../../base44/shared/stockTemplateCompiler.js';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -10,10 +13,35 @@ import BenchmarkLibrary from '@/components/template-studio/BenchmarkLibrary';
 export default function StockStudio() {
  const [selected,setSelected]=useState(null);
  const [dismissed,setDismissed]=useState(false);
- const {state}=useLocation();
+ const location=useLocation();
+ const {state}=location;
+ const routeStock = React.useMemo(() => {
+  const slug=new URLSearchParams(location.search).get("stock");
+  if (!slug || !/^stock-[a-z0-9_-]+$/.test(slug)) return null;
+  const ind=STOCK_INDUSTRIES.find(i => slug.startsWith("stock-"+i.key+"-"));
+  if (!ind) return null;
+  const key=slug.slice(("stock-"+ind.key+"-").length);
+  const idx=STOCK_DESIGNS.findIndex(d => d.key===key);
+  if (idx<0) return null;
+  const rec=stockTemplateRecord(ind,STOCK_DESIGNS[idx],idx,STOCK_VERSION);
+  return {...rec,id:"source-"+ind.key+"-"+key,
+    source_version:STOCK_VERSION,catalog_source:"canonical_public_stock_compiler",preview_only:true};
+ },[location.search]);
  const initial=useQuery({queryKey:['selected-stock-template',state?.selectedStockTemplateId],enabled:!!state?.selectedStockTemplateId,queryFn:()=>base44.entities.TemplateLibrary.get(state.selectedStockTemplateId)});
- const active=selected||(!dismissed?initial.data:null);
+ const active=selected||(!dismissed?(state?.selectedStockTemplateSnapshot||routeStock||initial.data):null);
  const nextDesign=async()=>{
+  if (active?.preview_only) {
+    const manifest=active.sections?.find(s=>s.section_type==='manifest')?.config;
+    const ind=STOCK_INDUSTRIES.find(i=>i.key===manifest?.industry_key);
+    const idx=STOCK_DESIGNS.findIndex(d=>d.key===manifest?.design_key);
+    if (!ind || idx<0) throw new Error("Local template source mismatch");
+    const nextIdx=(idx+1)%STOCK_DESIGNS.length;
+    const design=STOCK_DESIGNS[nextIdx];
+    const rec=stockTemplateRecord(ind,design,nextIdx,STOCK_VERSION);
+    setSelected({...rec,id:"source-"+ind.key+"-"+design.key,
+      catalog_source:"canonical_public_stock_compiler",preview_only:true});
+    return;
+  }
   const query={...STOCK_QUERY,niche:active.niche,sort_order:{$gt:active.sort_order}};
   let page=await base44.entities.TemplateLibrary.filter(query,{sort:'sort_order',limit:1});
   if(!page.items.length)page=await base44.entities.TemplateLibrary.filter({...STOCK_QUERY,niche:active.niche},{sort:'sort_order',limit:1});

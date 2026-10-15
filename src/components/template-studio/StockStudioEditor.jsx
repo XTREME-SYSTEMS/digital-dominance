@@ -10,6 +10,7 @@ import GoogleReadinessPanel from '@/components/template-studio/GoogleReadinessPa
 
 export default function StockStudioEditor({ template, onBack, onNext }) {
   const queryClient = useQueryClient();
+  const isSourcePreview = template?.preview_only === true || template?.catalog_source === 'canonical_public_stock_compiler';
   const [brand, setBrand] = useState(null);
   const [assets, setAssets] = useState({});
   const [mode, setMode] = useState('desktop');
@@ -28,7 +29,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   const manifest = template.sections?.find(s => s.section_type === 'manifest')?.config;
   const compiled = useQuery({
     queryKey: ['stock-variation', template.id, brand?.accent, assets],
-    enabled: !!brand || !!assets.logoUrl || !!assets.videoUrl,
+    enabled: !isSourcePreview && (!!brand || !!assets.logoUrl || !!assets.videoUrl),
     queryFn: async () => {
       const res = await base44.functions.invoke('stockTemplateFactory', {
         action: 'compile',
@@ -41,7 +42,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   });
 
   const download = async () => {
-    const html = compiled.data?.html || (await base44.entities.TemplateLibrary.get(template.id)).content;
+    const html = compiled.data?.html || template.content || (await base44.entities.TemplateLibrary.get(template.id)).content;
     const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
     const link = document.createElement('a');
     link.href = url;
@@ -51,6 +52,10 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   };
 
   const handlePublishLive = async () => {
+    if (isSourcePreview) {
+      setPublishError('This source-defined template requires approval and a verified backend record before any deployment.');
+      return;
+    }
     const slug = (template.slug || template.niche || 'site').toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 40);
     setPublishing(true);
     setPublishError(null);
@@ -78,8 +83,12 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
         <h2 className="font-heading text-lg font-bold">{template.name}</h2>
       </div>
 
-      <BrandGenerator selected={brand} onSelect={setBrand} />
-      <StudioMediaActions industry={template.niche} onAssets={setAssets} />
+      {isSourcePreview && <p className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">
+        Canonical stock design preview only. This version is not a published site or a verified database record.
+        You can inspect and download its exact HTML. Publishing requires approval, backend validation and a real deployment receipt.
+      </p>}
+      {!isSourcePreview && <BrandGenerator selected={brand} onSelect={setBrand} />}
+      {!isSourcePreview && <StudioMediaActions industry={template.niche} onAssets={setAssets} />}
 
       <div className="flex flex-wrap gap-2">
         <Button variant={mode === 'desktop' ? 'default' : 'outline'} onClick={() => setMode('desktop')}>Desktop</Button>
@@ -88,12 +97,12 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
         <Button variant="outline" onClick={download} disabled={compiled.isFetching}>Download preview HTML</Button>
         <Button
           onClick={handlePublishLive}
-          disabled={publishing}
+          disabled={publishing || isSourcePreview}
           className="ml-auto"
           style={{ background: 'linear-gradient(135deg, #126fc8, #0d9488)', color: '#fff' }}
         >
           {publishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
-          {publishing ? 'Publishing live...' : 'Publish Live to Web'}
+          {isSourcePreview ? 'Publish requires approval' : publishing ? 'Publishing live...' : 'Publish Live to Web'}
         </Button>
       </div>
 
@@ -122,9 +131,11 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
         <StockTemplatePreview template={template} overrideHtml={compiled.data?.html} />
       </div>
 
-      <p className="text-sm text-muted-foreground">Click "Publish Live to Web" to deploy this template with your brand customization to a live Vercel URL. Google Search Console, sitemap, and indexer submission happen automatically.</p>
+      <p className="text-sm text-muted-foreground">{isSourcePreview
+        ? "This template is a source-backed, noindex preview; no public deployment or search indexing occurs from this review."
+        : 'Publishing requires a verified deployment receipt and independent search indexing proof.'}</p>
 
-      <GoogleReadinessPanel key={template.id} template={template} />
+      {!isSourcePreview && <GoogleReadinessPanel key={template.id} template={template} />}
     </div>
   );
 }

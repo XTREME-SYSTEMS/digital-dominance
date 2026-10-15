@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
 import AIAssistBubble from "@/components/ai-assist/AIAssistBubble";
@@ -41,7 +41,30 @@ export default function AdminLayout() {
       .catch(() => setBranding(null));
   }, []);
 
-  if (user && user.role !== "admin") return <Navigate to="/portal/dashboard" replace />;
+  // Do not silently redirect an authenticated non-admin into an unrelated
+  // portal: that makes the control panel appear broken. Keep the server-side
+  // admin role gate intact and offer an explicit account-switch path.
+  if (user && user.role !== "admin") {
+    return (
+      <main role="alert" className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6">
+        <section className="w-full max-w-lg rounded-2xl border border-amber-500/40 bg-slate-900 p-8 space-y-4">
+          <h1 className="text-2xl font-bold">Admin access restricted</h1>
+          <p className="text-slate-300 text-sm leading-relaxed">
+            This account is signed in, but it has not been assigned the admin role
+            for Digital Dominance. No permissions have been changed.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/login?returnTo=%2Fadmin" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold">
+              Sign in with an admin account
+            </Link>
+            <Link to="/" className="rounded-lg border border-slate-500 px-4 py-2 text-sm font-semibold">
+              Return to website
+            </Link>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   // Build the CSS variable map from the active branding record, falling back to the hardcoded mandatory set
   const brandVars = branding?.colors ? {

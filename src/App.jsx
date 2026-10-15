@@ -212,6 +212,17 @@ import SmaiAdminPortal from '@/pages/smai/AdminPortal';
 import CodeInjector from '@/components/codestudio/CodeInjector';
 
 
+/**
+ * Preserve the requested admin screen across login. safeReturnTo() in Login
+ * validates the destination again and removes bootstrap/auth query params.
+ * Never grant admin access here; ProtectedRoute and AdminLayout enforce it.
+ */
+const AdminSignInRedirect = () => {
+  const { pathname, search } = useLocation();
+  const destination = pathname + search;
+  return <Navigate to={"/login?returnTo=" + encodeURIComponent(destination)} replace />;
+};
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
   const location = useLocation();
@@ -278,7 +289,7 @@ const AuthenticatedApp = () => {
       <Route path="/ThankYou" element={<ThankYou />} />
       <Route path="/questionnaire" element={<Questionnaire />} />
       <Route path="/app-settings" element={<AppSettings />} />
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login?returnTo=%2Fadmin" replace />} />}>
+      <Route element={<ProtectedRoute unauthenticatedElement={<AdminSignInRedirect />} />}>
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<TemplateStudio />} />
         <Route path="contents" element={<Contents />} />
@@ -330,6 +341,7 @@ const AuthenticatedApp = () => {
         <Route path="autocomplete" element={<AutoComplete />} />
         <Route path="results" element={<AdminResults />} />
         <Route path="agent-builder" element={<AgentBuilder />} />
+        <Route path="generator-sandbox" element={<GeneratorSandbox />} />
         <Route path="vision-studio" element={<VisionStudio />} />
         <Route path="command-center" element={<CommandCenter />} />
         <Route path="agent-master" element={<AgentMaster />} />
