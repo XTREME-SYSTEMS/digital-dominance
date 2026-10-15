@@ -33,6 +33,10 @@ check(login.includes('base44.auth.loginWithProvider("google", returnTo)'), "Goog
 check(login.includes("safeReturnTo()"), "login destination is same-origin sanitized");
 check(routes.includes('path="/admin"') && routes.includes("<ProtectedRoute"), "admin remains protected");
 check(admin.includes('user.role !== "admin"'), "admin role enforcement preserved");
+check(routes.includes("const AdminSignInRedirect ="), "protected screen preserved through authentication");
+check(routes.includes("encodeURIComponent(destination)"), "returnTo is URL-encoded");
+check(admin.includes("Admin access restricted"), "non-admin receives actionable access message");
+check(!admin.includes('return <Navigate to="/portal/dashboard"'), "never silently misroute unauthorized admin");
 console.log(JSON.stringify({status:"PASS",checks,provider:"Base44",preview_backend:"https://base44.app",
   production_backend:"same-origin existing proxy",admin_auth_bypass:false,
   user_credentials_changed:false,production_modified:false},null,2));
