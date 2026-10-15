@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target, Code2 } from "lucide-react";
+import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target, Code2, Download } from "lucide-react";
 
 export default function ReferenceAdminSidebar() {
   const { pathname } = useLocation();
@@ -36,6 +36,12 @@ export default function ReferenceAdminSidebar() {
         </Link>
         <Link to="/admin/json-gpt-sync" className={`wle-side-nav${isCore(["/admin/json-gpt-sync"]) ? " active" : ""}`}>
           <Code2 aria-hidden="true" />JSON GPT Sync
+        </Link>
+        <Link to="/admin/one-click-factory" className={`wle-side-nav${isCore(["/admin/one-click-factory"]) ? " active" : ""}`}>
+          <Rocket aria-hidden="true" />One-Click Factory
+        </Link>
+        <Link to="/admin/generator-registry" className={`wle-side-nav${isCore(["/admin/generator-registry"]) ? " active" : ""}`}>
+          <Shield aria-hidden="true" />Generator Registry
         </Link>
       </nav>
 
@@ -91,8 +97,14 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/brand-guardian" className={`wle-side-nav${isCore(["/admin/brand-guardian"]) ? " active" : ""}`}>
           <Shield aria-hidden="true" />Brand Guardian
         </Link>
+        <Link to="/admin/image-validator" className={`wle-side-nav${isCore(["/admin/image-validator"]) ? " active" : ""}`}>
+          <Shield aria-hidden="true" />Image Validator
+        </Link>
         <Link to="/admin/visual-library" className={`wle-side-nav${isCore(["/admin/visual-library"]) ? " active" : ""}`}>
           <Layers aria-hidden="true" />Visual Render Library
+        </Link>
+        <Link to="/admin/data-export" className={`wle-side-nav${isCore(["/admin/data-export"]) ? " active" : ""}`}>
+          <Download aria-hidden="true" />Data Export Center
         </Link>
       </nav>
 

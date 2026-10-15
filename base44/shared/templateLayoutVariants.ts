@@ -43,6 +43,9 @@ export const NICHE_LAYOUT_MAP: Record<string, number> = {
   fire_damage: 1, garage_door: 3, legal: 2, real_estate: 3, remodeling: 2,
   med_spa: 3, dental: 2, chiropractic: 1, solar: 3, automotive: 2,
   cleaning: 1, identity: 3,
+  // Non-contractor digital product niches
+  saas: 1, marketplace: 2, booking: 3, social: 2, ai_tool: 1,
+  ecommerce: 2, content_gen: 3, funnel: 1,
 };
 
 export function getLayoutForNiche(niche: string): number {

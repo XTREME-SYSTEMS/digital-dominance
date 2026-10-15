@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "scope": "Homepage industry category image approval manifest",
+  "policy": "Fail closed. Every approved image requires independent visual caption/category review, reviewed source URL, image bytes SHA-256, evidence URI, reviewer identity, and semantic score >=0.98. No images are preapproved by this file.",
+  "approvals": []
+}

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { waitUntil } from 'base44:runtime';
+import { generateSite } from '../../shared/universalGenerator.ts';
 
 // ============================================================
 // bulkLaunchEngine — Mass deploy hundreds/thousands of sites
@@ -138,14 +139,27 @@ export default async function(req: Request): Promise<Response> {
           try {
             await svc.entities.SiteBank.update(site.id, { status: 'deploying' });
 
-            // Deploy to Vercel via publishTemplateLive
+            // Deploy to Vercel via publishTemplateLive (universal generator)
             let deployUrl = site.site_url;
             try {
+              // Pre-generate the site HTML from the universal generator
+              const genSite = generateSite({
+                niche: site.niche || 'generic',
+                brandName: site.site_name,
+                city: site.target_city,
+                state: site.target_state,
+                domain: site.domain,
+              });
               const deployRes = await base44.functions.invoke('publishTemplateLive', {
                 templateId: site.template_id || templateId,
                 appName: site.site_name,
                 appSlug: site.site_slug,
                 brand: { accent: '#126fc8' },
+                niche: site.niche,
+                city: site.target_city,
+                state: site.target_state,
+                domain: site.domain,
+                baseHtml: genSite.html,
               });
               if (deployRes?.data?.url) {
                 deployUrl = deployRes.data.url;

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
+import { generateSite, getNicheProfile } from '../../shared/universalGenerator.ts';
 
 // ============================================================
 // autonomousVisualOrchestrator — The background agent that
@@ -82,7 +83,31 @@ export default async function (req: Request): Promise<Response> {
             });
 
             // Step 1c: Store results as baseline templates in TemplateLibrary
+            // Also generate a universal generator template for the same niche
+            // so the App Factory has both the reverse-engineered baseline AND
+            // the deterministic universal generator version.
             const templatesStored = reverseRes.data?.templates || [];
+
+            // Generate the universal generator version for this niche
+            try {
+              const uniSite = generateSite({ niche: targetNiche, brandName: `${targetNiche} Pro` });
+              await svc.entities.TemplateLibrary.create({
+                name: `${targetNiche} — Universal Generator Baseline`,
+                slug: `${targetNiche}-universal-${Date.now()}`,
+                category: 'homepage',
+                niche: targetNiche,
+                description: `Universal generator baseline for ${targetNiche}. Deterministic, niche-accurate, layout-variant-powered.`,
+                content: uniSite.html,
+                tags: ['autonomous', 'baseline', 'universal-generator', targetNiche],
+                is_active: true,
+                status: 'active',
+                sort_order: 0,
+              });
+              summary.templates_stored++;
+            } catch (e) {
+              // Universal generator template may fail on slug collision — skip
+            }
+
             for (const tpl of templatesStored) {
               try {
                 await svc.entities.TemplateLibrary.create({

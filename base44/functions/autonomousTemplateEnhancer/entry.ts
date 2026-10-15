@@ -3,6 +3,7 @@ import {
   computeWeightedOverall,
   type ContentScoreInput,
 } from "../../shared/templateScoring.ts";
+import { generateSite } from "../../shared/universalGenerator.ts";
 
 // ============================================================
 // Autonomous Template Enhancement Loop
@@ -43,9 +44,20 @@ export default async function(req: Request) {
       return Response.json({ error: "Industry required" }, { status: 400 });
     }
 
+    // If no content provided, seed from the universal generator
+    let initialContent = content;
+    if (!content || Object.keys(content || {}).length === 0) {
+      const uniSite = generateSite({ niche: industry, brandName: body.brand?.name || '' });
+      initialContent = {
+        html: uniSite.html,
+        layout: `universal-${uniSite.profile?.desktopPattern || 'standard'}`,
+        niche: industry,
+      };
+    }
+
     // Autonomous enhancement loop using shared scoring
     const cycles: CycleResult[] = [];
-    let currentContent: any = { ...content };
+    let currentContent: any = { ...initialContent };
     let currentScore = scoreContentWrapper(currentContent, industry, location);
     const baselineScore = currentScore.overall;
 

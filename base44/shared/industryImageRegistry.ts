@@ -32,11 +32,11 @@ export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   },
   water_damage: {
     label: "Water Damage Restoration",
-    url: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/625091ac6_generated_image.png",
   },
   mold_remediation: {
     label: "Mold Remediation",
-    url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1615659794020-8820ad6c6c2a?w=800&q=80&auto=format&fit=crop",
   },
   fire_damage: {
     label: "Fire Damage Restoration",
@@ -60,7 +60,7 @@ export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   },
   personal_injury: {
     label: "Personal Injury Law",
-    url: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3a?w=800&q=80&auto=format&fit=crop",
   },
   real_estate: {
     label: "Real Estate",
@@ -72,7 +72,7 @@ export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   },
   mortgage: {
     label: "Mortgage",
-    url: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b67?w=800&q=80&auto=format&fit=crop",
+    url: "https://images.unsplash.com/photo-1554224155-6726bfcff3e7?w=800&q=80&auto=format&fit=crop",
   },
   cleaning: {
     label: "Cleaning Services",
@@ -117,6 +117,43 @@ export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   default: {
     label: "Professional",
     url: "https://images.unsplash.com/photo-1467232004584-a551f7af35c3?w=800&q=80&auto=format&fit=crop",
+  },
+  // === Non-contractor digital niches — each gets a unique image ===
+  saas: {
+    label: "SaaS Platform",
+    url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&auto=format&fit=crop",
+  },
+  marketplace: {
+    label: "Marketplace",
+    url: "https://images.unsplash.com/photo-1607082348837-497e1d4d1cbb?w=800&q=80&auto=format&fit=crop",
+  },
+  booking: {
+    label: "Booking Platform",
+    url: "https://images.unsplash.com/photo-1561070791-2526d30994b8?w=800&q=80&auto=format&fit=crop",
+  },
+  social: {
+    label: "Social Platform",
+    url: "https://images.unsplash.com/photo-1611162617213-7d7a9b4a3a3a?w=800&q=80&auto=format&fit=crop",
+  },
+  ai_tool: {
+    label: "AI Tool",
+    url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80&auto=format&fit=crop",
+  },
+  ecommerce: {
+    label: "Ecommerce Store",
+    url: "https://images.unsplash.com/photo-1556742049-0cf03492b5c9?w=800&q=80&auto=format&fit=crop",
+  },
+  content_gen: {
+    label: "Content Generator",
+    url: "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb4f?w=800&q=80&auto=format&fit=crop",
+  },
+  funnel: {
+    label: "Funnel Builder",
+    url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80&auto=format&fit=crop",
+  },
+  identity: {
+    label: "Brand & Web Design",
+    url: "https://images.unsplash.com/photo-1626785774573-4b382ee7c5f9?w=800&q=80&auto=format&fit=crop",
   },
 };
 

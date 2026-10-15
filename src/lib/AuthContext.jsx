@@ -116,14 +116,11 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingAuth(false);
       setIsAuthenticated(false);
       setAuthChecked(true);
-      
-      // If user auth fails, it might be an expired token
-      if (error.status === 401 || error.status === 403) {
-        setAuthError({
-          type: 'auth_required',
-          message: 'Authentication required'
-        });
-      }
+      // Do NOT set authError here — an expired user token is not the same as
+      // the app requiring auth. Setting authError would block ALL pages
+      // (including public ones like /) and cause a redirect loop, since
+      // AuthenticatedApp returns null on auth_required. ProtectedRoute
+      // already redirects unauthenticated users to /login when needed.
     }
   };
 

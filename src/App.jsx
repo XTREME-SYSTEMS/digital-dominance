@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { Rocket } from 'lucide-react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -140,6 +140,9 @@ import BackgroundOperations from '@/pages/admin/BackgroundOperations';
 import MultiTemplateLauncher from '@/pages/admin/MultiTemplateLauncher';
 import GptTemplateSync from '@/pages/admin/GptTemplateSync';
 import JsonGptSync from '@/pages/admin/JsonGptSync';
+import ImageValidationDashboard from '@/pages/admin/ImageValidationDashboard';
+import GeneratorRegistry from '@/pages/admin/GeneratorRegistry';
+import OneClickFactory from '@/pages/admin/OneClickFactory';
 import GoogleHappiness from '@/pages/admin/GoogleHappiness';
 import GoogleBatchSubmission from '@/pages/admin/GoogleBatchSubmission';
 import GodModeSimulationLab from '@/pages/admin/GodModeSimulationLab';
@@ -207,10 +210,13 @@ import SmaiIcons from '@/pages/smai/Icons';
 import SmaiClientPortal from '@/pages/smai/ClientPortal';
 import SmaiAdminPortal from '@/pages/smai/AdminPortal';
 import CodeInjector from '@/components/codestudio/CodeInjector';
+import DataExport from '@/pages/admin/DataExport';
+import DataDownload from '@/pages/DataDownload';
 
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
+  const location = useLocation();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -227,9 +233,12 @@ const AuthenticatedApp = () => {
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
+    }
+    if (authError.type === 'auth_required') {
+      const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/oauth/consent'];
+      if (!authRoutes.includes(location.pathname)) {
+        return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+      }
     }
   }
 
@@ -403,6 +412,9 @@ const AuthenticatedApp = () => {
         <Route path="multi-launch" element={<MultiTemplateLauncher />} />
         <Route path="gpt-template-sync" element={<GptTemplateSync />} />
       <Route path="json-gpt-sync" element={<JsonGptSync />} />
+      <Route path="image-validator" element={<ImageValidationDashboard />} />
+      <Route path="generator-registry" element={<GeneratorRegistry />} />
+      <Route path="one-click-factory" element={<OneClickFactory />} />
         <Route path="google-happiness" element={<GoogleHappiness />} />
         <Route path="google-batch" element={<GoogleBatchSubmission />} />
         <Route path="god-mode-lab" element={<GodModeSimulationLab />} />
@@ -410,6 +422,7 @@ const AuthenticatedApp = () => {
         <Route path="fault-line" element={<FaultLineScanner />} />
         <Route path="vision-intelligence" element={<VisionIntelligence />} />
         <Route path="settings" element={<SettingsPage />} />
+      <Route path="data-export" element={<DataExport />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>
         <Route index element={<TemplateStudio />} />
@@ -427,6 +440,9 @@ const AuthenticatedApp = () => {
         <Route index element={<CustomerPortal />} />
       </Route>
       <Route path="/conversations" element={<Conversations />} />
+      <Route path="/data-download" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route index element={<DataDownload />} />
+      </Route>
       <Route path="/connect" element={<Connect />} />
       <Route path="/acquire" element={<Acquire />} />
       <Route path="/contractor" element={<ContractorApp />} />

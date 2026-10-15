@@ -30,11 +30,28 @@ export default function MultiTemplateLauncher() {
     },
   });
 
-  // Get unique niches for filter
-  const niches = [...new Set(templates.map((t) => t.niche).filter(Boolean))].sort();
+  // Normalize niches — group case-variant duplicates (e.g. "Epoxy Flooring" and "epoxy")
+  // into a single canonical display label so the filter dropdown is clean.
+  const nicheMap = {};
+  for (const t of templates) {
+    if (!t.niche) continue;
+    const key = t.niche.toLowerCase().replace(/ /g, "_");
+    if (!nicheMap[key]) {
+      nicheMap[key] = { key, display: t.niche, count: 0 };
+    }
+    nicheMap[key].count++;
+    // Prefer Title Case display over lowercase
+    if (t.niche[0] === t.niche[0]?.toUpperCase() && nicheMap[key].display[0] === nicheMap[key].display[0]?.toLowerCase()) {
+      nicheMap[key].display = t.niche;
+    }
+  }
+  const niches = Object.values(nicheMap).sort((a, b) => a.display.localeCompare(b.display));
 
   const filtered = templates.filter((t) => {
-    if (nicheFilter !== "all" && t.niche !== nicheFilter) return false;
+    if (nicheFilter !== "all") {
+      const tKey = (t.niche || "").toLowerCase().replace(/ /g, "_");
+      if (tKey !== nicheFilter) return false;
+    }
     if (search) {
       const q = search.toLowerCase();
       return t.name?.toLowerCase().includes(q) || t.slug?.toLowerCase().includes(q) || t.niche?.toLowerCase().includes(q);
@@ -159,9 +176,9 @@ export default function MultiTemplateLauncher() {
           onChange={(e) => setNicheFilter(e.target.value)}
           className="h-9 px-3 rounded-lg border border-[#dce6f1] text-sm text-[#112940] focus:border-[#126fc8] outline-none bg-white"
         >
-          <option value="all">All Niches</option>
+          <option value="all">All Niches ({templates.length})</option>
           {niches.map((n) => (
-            <option key={n} value={n}>{n}</option>
+            <option key={n.key} value={n.key}>{n.display} ({n.count})</option>
           ))}
         </select>
         <button
