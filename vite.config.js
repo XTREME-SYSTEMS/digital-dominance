@@ -27,7 +27,9 @@ export default defineConfig({
       legacySDKImports: process.env.BASE44_LEGACY_SDK_IMPORTS === 'true',
       hmrNotifier: true,
       navigationNotifier: true,
-      analyticsTracker: true,
+      // Preview builds without an authenticated Base44 app must not POST to /api/apps/null.
+      // Enable SDK analytics only when a real app binding exists.
+      analyticsTracker: /^[a-f0-9]{24}$/i.test(process.env.VITE_BASE44_APP_ID || ''),
       visualEditAgent: true
     }),
     react(),
