@@ -10,10 +10,10 @@
       "kind": "VERIFIED_QUERY_SNAPSHOT",
       "count": 458,
       "entity": "TemplateLibrary",
-      "app_id": "6a77f4491f0bf92de9a3ed8b",
       "import_status": "INDEXED_NOT_AUTO_APPROVED",
       "updated_check": "2026-10-15",
-      "rights": "SOURCE_REVIEW_REQUIRED"
+      "rights": "SOURCE_REVIEW_REQUIRED",
+      "source_alias": "BASE44:DIGITAL_DOMINANCE_TEMPLATE_LIBRARY"
     },
     {
       "id": "local_universal_master",
@@ -21,9 +21,9 @@
       "kind": "LOCAL_MANIFEST_DECLARATION",
       "families": 30,
       "count": 486,
-      "path": "C:\\_Strategic_Minds_AI_OS\\16_UNIVERSAL SYSTEMS\\01_CANONICAL_SOURCE\\UNIVERSAL_MASTER_FACTORY_PACKET\\UNIVERSAL_MASTER_FACTORY_BASE44_v1",
       "import_status": "REFERENCE_ONLY",
-      "rights": "SOURCE_REVIEW_REQUIRED"
+      "rights": "SOURCE_REVIEW_REQUIRED",
+      "source_alias": "JARVIS:UNIVERSAL_MASTER_FACTORY"
     },
     {
       "id": "local_visual_v3",
@@ -31,9 +31,9 @@
       "kind": "LOCAL_MANIFEST_DECLARATION",
       "archetypes": 10,
       "count": 10,
-      "path": "C:\\_Strategic_Minds_AI_OS\\16_UNIVERSAL SYSTEMS\\13_VISUAL_TEMPLATE_ENGINE\\DIGITAL_DOMINANCE_VISUAL_FACTORY_V3",
       "import_status": "REUSE_DONOR",
-      "rights": "ORIGINAL_ASSET_REVIEW_REQUIRED"
+      "rights": "ORIGINAL_ASSET_REVIEW_REQUIRED",
+      "source_alias": "JARVIS:VISUAL_FACTORY_V3"
     },
     {
       "id": "premium20",
