@@ -21,7 +21,7 @@ export const ACCENT_PRESETS = [
 export const TOP_20_INDUSTRIES = [
   {
     id: "water_damage", label: "Water Damage Restoration", keyword: "water damage restoration",
-    previewImage: "https://images.unsplash.com/photo-1486406146926-c690a1a3a3a3?w=600&q=80&fit=crop",
+    previewImage: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/625091ac6_generated_image.png",
     emergency: "CRITICAL", psychology: "PANIC_URGENCY", accentColor: "#2563EB", accentName: "Emergency Blue",
     avgOrder: 4500, searchVolume: "high", margin: 0.55,
     heroHeadline: "24/7 Emergency Water Damage Restoration",
