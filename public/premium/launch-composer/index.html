@@ -86,7 +86,15 @@ footer{border-top:1px solid #3444547d;text-align:center;padding:25px;color:#8da4
    const copy=document.createElement('span');copy.className='master-copy';
    const title=document.createElement('strong');title.textContent=t.industry;const sub=document.createElement('small');sub.textContent=t.family;
    const pill=document.createElement('span');pill.className='master-pill';pill.textContent=t.source;
-   copy.append(title,sub,pill);b.append(thumb,copy);b.addEventListener('click',()=>choose(t));list.append(b);
+   copy.append(title,sub,pill);b.append(thumb,copy);b.addEventListener('click',()=>{choose(t);[...list.querySelectorAll('button.master-option')].find(x=>x.dataset.masterId===t.id)?.focus();});
+   b.addEventListener('keydown',e=>{
+    const k=['ArrowDown','ArrowUp','Home','End'];
+    if(!k.includes(e.key))return;
+    e.preventDefault();
+    const choices=[...list.querySelectorAll('button.master-option')],i=choices.indexOf(b);
+    const j=e.key==='Home'?0:e.key==='End'?choices.length-1:e.key==='ArrowDown'?(i+1)%choices.length:(i+choices.length-1)%choices.length;
+    choices[j].click();
+   });list.append(b);
   }
   if(!rows.length){const no=document.createElement('p');no.className='hint';no.textContent='No matching masters.';list.appendChild(no);}
  }
