@@ -1,0 +1,10 @@
+{
+  "schema": "apex.premium.signed-design-approvals.v1",
+  "source_repo": "XTREME-SYSTEMS/digital-dominance",
+  "source_sha": "827eebc6f9c665cf2df42ed965d36dec5fdd35a9",
+  "scope": "reusable_preview_only",
+  "state": "PENDING_INDEPENDENT_VISUAL_AND_ASSET_REVIEW",
+  "approved": [],
+  "production_release_allowed": false,
+  "notes": "20 designs are browsing candidates, not independently approved reusable products. Approved list stays empty until reviewed image hashes, desktop/mobile visual captures and an independently registered Ed25519 signing key provide scoped PASS."
+}
