@@ -58,4 +58,22 @@ for(const record of imageEvidence.sources){
  const rendered=fs.readFileSync(path.join(DEST,design.id,'index.html'),'utf8');
  assert.ok(rendered.includes(asset),'Master HTML lost vetted photo source '+design.id);
 }
+const experiences=JSON.parse(fs.readFileSync(path.join(ROOT,"data","premium-experience-journeys.json"),"utf8"));
+assert.equal(experiences.schema,"apex.premium.industry-experience.v1");
+assert.equal(Object.keys(experiences.patterns).length,17);
+const escapeHTML=t=>String(t).replace(/[&<>"\x27]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\x27":"&#39;"}[ch]));
+const journeysSeen=new Set();
+for(const config of templates){
+ const journey=experiences.patterns[config.id];
+ assert.ok(journey,"Missing journey "+config.id);
+ assert.ok(Array.isArray(journey.pillars)&&journey.pillars.length===3);
+ assert.ok(!journeysSeen.has(journey.heading),"Repeated experience journey heading");
+ journeysSeen.add(journey.heading);
+ const html=fs.readFileSync(path.join(DEST,config.id,"index.html"),"utf8");
+ for(const field of [journey.heading,journey.body,journey.prompt,journey.helper,...journey.pillars.flat()]){
+  assert.ok(html.includes(escapeHTML(field)),config.id+" missing industry-specific buyer text: "+field);
+ }
+ assert.ok(!html.includes("Make the next step <em>effortless."),config.id+" retained generic demo copy");
+ assert.ok(!html.includes("<strong>REAL UI</strong>"),config.id+" retained technical sales copy");
+}
 console.log('PASS PREMIUM_20_STATIC_PROOF '+JSON.stringify({new_masters:17,existing_v2_linked:3,total:20,unique_layouts:17,hashes_verified:17,noindex:true,customer_sites_released:0,proof:checks.map(x=>x.master)}));
