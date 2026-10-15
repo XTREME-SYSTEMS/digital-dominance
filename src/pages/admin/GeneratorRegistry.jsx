@@ -1,23 +1,23 @@
 import React, { useState, useMemo } from 'react';
-import { Shield, GitBranch, AlertTriangle, CheckCircle2, XCircle, HelpCircle, Layers } from 'lucide-react';
+import { Shield, AlertTriangle, CheckCircle2, XCircle, HelpCircle, Layers } from 'lucide-react';
 import { GENERATOR_REGISTRY, getGeneratorStats, getGeneratorsByClassification } from '@/lib/generatorRegistry';
 
-const CLASSIFICATION_COLORS = {
-  REUSE: 'text-emerald-700 bg-emerald-50 border-emerald-200',
-  CONNECT: 'text-sky-700 bg-sky-50 border-sky-200',
-  REPAIR: 'text-amber-700 bg-amber-50 border-amber-200',
-  REFACTOR: 'text-purple-700 bg-purple-50 border-purple-200',
-  MERGE: 'text-pink-700 bg-pink-50 border-pink-200',
-  'NEW-GAP': 'text-red-700 bg-red-50 border-red-200',
-  QUARANTINE: 'text-red-800 bg-red-100 border-red-300',
+const CLASSIFICATION_STYLES = {
+  REUSE: { color: '#047857', bg: '#ecfdf5', border: '#a7f3d0' },
+  CONNECT: { color: '#0369a1', bg: '#f0f9ff', border: '#bae6fd' },
+  REPAIR: { color: '#b45309', bg: '#fffbeb', border: '#fde68a' },
+  REFACTOR: { color: '#7e22ce', bg: '#faf5ff', border: '#e9d5ff' },
+  MERGE: { color: '#be185d', bg: '#fdf2f8', border: '#fbcfe8' },
+  'NEW-GAP': { color: '#b91c1c', bg: '#fef2f2', border: '#fecaca' },
+  QUARANTINE: { color: '#991b1b', bg: '#fee2e2', border: '#fca5a5' },
 };
 
-const GATE_ICONS = {
-  PASS: <CheckCircle2 className="h-4 w-4 text-emerald-600" />,
-  FAIL: <XCircle className="h-4 w-4 text-red-500" />,
-  UNKNOWN: <HelpCircle className="h-4 w-4 text-slate-400" />,
-  BLOCKED: <AlertTriangle className="h-4 w-4 text-amber-500" />,
-};
+function GateIcon({ status }) {
+  if (status === 'PASS') return <CheckCircle2 style={{ width: 16, height: 16, color: '#059669' }} />;
+  if (status === 'FAIL') return <XCircle style={{ width: 16, height: 16, color: '#ef4444' }} />;
+  if (status === 'BLOCKED') return <AlertTriangle style={{ width: 16, height: 16, color: '#f59e0b' }} />;
+  return <HelpCircle style={{ width: 16, height: 16, color: '#94a3b8' }} />;
+}
 
 export default function GeneratorRegistry() {
   const [filter, setFilter] = useState('ALL');
@@ -28,99 +28,186 @@ export default function GeneratorRegistry() {
     return getGeneratorsByClassification(filter);
   }, [filter]);
 
+  const cardStyle = {
+    background: 'var(--launch-admin-surface, #fff)',
+    border: '1px solid var(--launch-admin-border, #dce6f1)',
+    borderRadius: '13px',
+    padding: '23px',
+    minHeight: '120px',
+    boxShadow: '0 8px 19px rgba(20, 63, 103, 0.06)',
+  };
+
+  const labelStyle = {
+    fontSize: '13px',
+    color: 'var(--launch-admin-muted, #5b7288)',
+    display: 'block',
+  };
+
+  const valueStyle = {
+    display: 'block',
+    color: 'var(--launch-admin-stat-text, #06355f)',
+    fontWeight: '700',
+    fontSize: '24px',
+    lineHeight: '1.13',
+    marginTop: '14px',
+  };
+
+  const panelStyle = {
+    background: 'var(--launch-admin-surface, #fff)',
+    border: '1px solid var(--launch-admin-panel-border, #d9e5ef)',
+    borderRadius: '13px',
+    padding: '27px',
+    marginTop: '26px',
+  };
+
+  const thStyle = {
+    textAlign: 'left',
+    padding: '12px 16px',
+    fontSize: '12px',
+    fontWeight: '600',
+    color: 'var(--launch-admin-muted, #5b7288)',
+    borderBottom: '1px solid var(--launch-admin-border, #dce6f1)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  };
+
+  const tdStyle = {
+    padding: '14px 16px',
+    fontSize: '14px',
+    color: 'var(--launch-admin-text, #112940)',
+    borderBottom: '1px solid var(--launch-admin-task-border, #e4edf5)',
+  };
+
+  const btnBase = {
+    borderRadius: '8px',
+    padding: '8px 14px',
+    fontSize: '13px',
+    fontWeight: '600',
+    border: '1px solid var(--launch-admin-border, #dce6f1)',
+    cursor: 'pointer',
+    transition: 'all 0.15s',
+  };
+
   return (
-    <div className="wle-content" style={{ background: "var(--launch-admin-canvas)" }}>
+    <div className="wle-content" style={{ background: 'var(--launch-admin-canvas, #f4f8fd)', paddingBottom: '60px' }}>
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <Layers className="h-7 w-7 text-sky-600" />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+        <Layers style={{ width: 28, height: 28, color: 'var(--launch-admin-primary, #126fc8)' }} />
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Generator Registry</h1>
-          <p className="text-sm text-slate-500">Authoritative classification of every generator in the system</p>
+          <h1 style={{ fontSize: '28px', fontWeight: '800', color: 'var(--launch-admin-heading, #06213b)', margin: 0, letterSpacing: '-0.03em' }}>
+            Generator Registry
+          </h1>
+          <p style={{ fontSize: '15px', color: 'var(--launch-admin-muted, #5b7288)', margin: '4px 0 0' }}>
+            Authoritative classification of every generator in the system
+          </p>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-        <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
-          <div className="text-xs text-slate-500">Total Generators</div>
-          <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '17px' }}>
+        <div style={cardStyle}>
+          <small style={labelStyle}>Total Generators</small>
+          <strong style={valueStyle}>{stats.total}</strong>
         </div>
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 shadow-sm">
-          <div className="text-xs text-emerald-700">Reuse (Canonical)</div>
-          <div className="text-2xl font-bold text-emerald-800">{stats.by_classification.REUSE || 0}</div>
+        <div style={{ ...cardStyle, border: '1px solid #a7f3d0' }}>
+          <small style={{ ...labelStyle, color: '#047857' }}>Reuse (Canonical)</small>
+          <strong style={{ ...valueStyle, color: '#065f46' }}>{stats.by_classification.REUSE || 0}</strong>
         </div>
-        <div className="rounded-lg border border-sky-200 bg-sky-50 p-3 shadow-sm">
-          <div className="text-xs text-sky-700">Connect</div>
-          <div className="text-2xl font-bold text-sky-800">{stats.by_classification.CONNECT || 0}</div>
+        <div style={{ ...cardStyle, border: '1px solid #bae6fd' }}>
+          <small style={{ ...labelStyle, color: '#0369a1' }}>Connect</small>
+          <strong style={{ ...valueStyle, color: '#075985' }}>{stats.by_classification.CONNECT || 0}</strong>
         </div>
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 shadow-sm">
-          <div className="text-xs text-amber-700">Repair</div>
-          <div className="text-2xl font-bold text-amber-800">{stats.by_classification.REPAIR || 0}</div>
+        <div style={{ ...cardStyle, border: '1px solid #fde68a' }}>
+          <small style={{ ...labelStyle, color: '#b45309' }}>Repair</small>
+          <strong style={{ ...valueStyle, color: '#92400e' }}>{stats.by_classification.REPAIR || 0}</strong>
         </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
-          <div className="text-xs text-slate-500">Routed Through Contract</div>
-          <div className="text-2xl font-bold text-slate-900">{stats.routed_through_universal_contract}</div>
+        <div style={cardStyle}>
+          <small style={labelStyle}>Routed Through Contract</small>
+          <strong style={valueStyle}>{stats.routed_through_universal_contract}</strong>
         </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
-          <div className="text-xs text-slate-500">Not Routed</div>
-          <div className="text-2xl font-bold text-slate-600">{stats.not_routed}</div>
+        <div style={cardStyle}>
+          <small style={labelStyle}>Not Routed</small>
+          <strong style={{ ...valueStyle, color: 'var(--launch-admin-muted, #5b7288)' }}>{stats.not_routed}</strong>
         </div>
       </div>
 
       {/* Filter */}
-      <div className="flex flex-wrap gap-2">
-        {['ALL', 'REUSE', 'CONNECT', 'REPAIR', 'REFACTOR', 'MERGE', 'NEW-GAP', 'QUARANTINE'].map((c) => (
-          <button
-            key={c}
-            onClick={() => setFilter(c)}
-            className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
-              filter === c
-                ? 'border-sky-500 bg-sky-50 text-sky-700'
-                : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'
-            }`}
-          >
-            {c === 'ALL' ? 'All' : c}
-          </button>
-        ))}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '24px' }}>
+        {['ALL', 'REUSE', 'CONNECT', 'REPAIR', 'REFACTOR', 'MERGE', 'NEW-GAP', 'QUARANTINE'].map((c) => {
+          const isActive = filter === c;
+          const cs = CLASSIFICATION_STYLES[c];
+          return (
+            <button
+              key={c}
+              onClick={() => setFilter(c)}
+              style={{
+                ...btnBase,
+                background: isActive ? (cs?.bg || 'var(--launch-admin-action-secondary, #e8f2fd)') : 'var(--launch-admin-surface, #fff)',
+                color: isActive ? (cs?.color || 'var(--launch-admin-action-secondary-text, #1463a4)') : 'var(--launch-admin-muted, #5b7288)',
+                borderColor: isActive ? (cs?.border || 'var(--launch-admin-primary, #126fc8)') : 'var(--launch-admin-border, #dce6f1)',
+              }}
+            >
+              {c === 'ALL' ? 'All' : c}
+            </button>
+          );
+        })}
       </div>
 
       {/* Registry Table */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+      <div style={panelStyle}>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
               <tr>
-                <th className="px-4 py-3 text-left font-semibold">Generator</th>
-                <th className="px-4 py-3 text-left font-semibold">Category</th>
-                <th className="px-4 py-3 text-left font-semibold">Classification</th>
-                <th className="px-4 py-3 text-center font-semibold">Gate</th>
-                <th className="px-4 py-3 text-center font-semibold">Contract</th>
-                <th className="px-4 py-3 text-left font-semibold">Source Path</th>
-                <th className="px-4 py-3 text-left font-semibold">Notes</th>
+                <th style={thStyle}>Generator</th>
+                <th style={thStyle}>Category</th>
+                <th style={thStyle}>Classification</th>
+                <th style={{ ...thStyle, textAlign: 'center' }}>Gate</th>
+                <th style={{ ...thStyle, textAlign: 'center' }}>Contract</th>
+                <th style={thStyle}>Source Path</th>
+                <th style={thStyle}>Notes</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filtered.map((g) => (
-                <tr key={g.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-900">{g.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{g.category}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-block rounded border px-2 py-0.5 text-xs font-semibold ${CLASSIFICATION_COLORS[g.classification]}`}>
-                      {g.classification}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-center">{GATE_ICONS[g.quality_gate_status]}</td>
-                  <td className="px-4 py-3 text-center">
-                    {g.routes_through_universal_contract ? (
-                      <Shield className="mx-auto h-4 w-4 text-emerald-600" />
-                    ) : (
-                      <span className="text-slate-300">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-500">{g.source_path}</td>
-                  <td className="px-4 py-3 text-xs text-slate-500">{g.notes}</td>
-                </tr>
-              ))}
+            <tbody>
+              {filtered.map((g) => {
+                const cs = CLASSIFICATION_STYLES[g.classification] || CLASSIFICATION_STYLES.CONNECT;
+                return (
+                  <tr key={g.id}>
+                    <td style={{ ...tdStyle, fontWeight: '600' }}>{g.name}</td>
+                    <td style={tdStyle}>{g.category}</td>
+                    <td style={tdStyle}>
+                      <span style={{
+                        display: 'inline-block',
+                        borderRadius: '6px',
+                        border: `1px solid ${cs.border}`,
+                        background: cs.bg,
+                        color: cs.color,
+                        padding: '3px 8px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                      }}>
+                        {g.classification}
+                      </span>
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: 'center' }}>
+                      <GateIcon status={g.quality_gate_status} />
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: 'center' }}>
+                      {g.routes_through_universal_contract ? (
+                        <Shield style={{ width: 16, height: 16, color: '#059669', margin: '0 auto', display: 'block' }} />
+                      ) : (
+                        <span style={{ color: '#cbd5e1' }}>—</span>
+                      )}
+                    </td>
+                    <td style={{ ...tdStyle, fontFamily: 'ui-monospace, monospace', fontSize: '12px', color: 'var(--launch-admin-muted, #5b7288)' }}>
+                      {g.source_path}
+                    </td>
+                    <td style={{ ...tdStyle, fontSize: '12px', color: 'var(--launch-admin-muted, #5b7288)' }}>
+                      {g.notes}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
