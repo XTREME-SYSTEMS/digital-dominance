@@ -2,12 +2,15 @@ name: APEX Premium Master Quality
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feature/apex-premium-visual-foundry-v3-20261014]
     paths:
       - 'scripts/build-premium-20.mjs'
       - 'scripts/build-premium-business-brands.mjs'
       - 'scripts/verify-premium-business-brands.mjs'
       - 'scripts/verify-premium-20.mjs'
+      - 'scripts/verify-premium-chrome-thumbnails.mjs'
+      - 'public/premium/collection/screenshots/**'
+      - 'public/premium/collection/SCREENSHOT_PROOF.json'
       - 'scripts/compile-premium-sitepack.mjs'
       - 'scripts/verify-premium-sitepack.mjs'
       - 'scripts/verify-premium-composer.mjs'
@@ -51,6 +54,8 @@ jobs:
         run: npm run build
       - name: Verify 20 live-grade SVG business logos and gallery navigation after final build
         run: node scripts/verify-premium-business-brands.mjs
+      - name: Verify actual Chrome thumbnail bytes and capture-source SHA
+        run: node scripts/verify-premium-chrome-thumbnails.mjs
       - name: Validate generated source identity against exact catalog bytes
         run: |
           node --input-type=module -e '
