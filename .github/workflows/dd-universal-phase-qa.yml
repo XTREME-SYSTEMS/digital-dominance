@@ -1,0 +1,74 @@
+name: DD Universal Phase Independent QA
+
+on:
+  pull_request:
+    paths:
+      - "base44/shared/universalGenerator.ts"
+      - "base44/shared/universalPhaseRuntime.js"
+      - "base44/shared/universalPhaseQa.js"
+      - "base44/shared/godModeForesightSandbox.js"
+      - "scripts/universal-*.mjs"
+      - "src/components/universal/**"
+      - "src/components/template-studio/**"
+      - "src/pages/TemplatesGallery.jsx"
+      - "base44/shared/stock*.js"
+      - "scripts/public-stock-catalog-regression.mjs"
+      - "src/pages/admin/GeneratorSandbox.jsx"
+      - "src/App.jsx"
+      - "vercel.json"
+      - "vite.config.js"
+      - "package*.json"
+      - ".github/workflows/dd-universal-phase-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dd-universal-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-universal-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DD_SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run actual Universal Generator and independent QA
+        run: npm run test:universal-phase
+      - name: Audit all 37 workflow definitions without activating them
+        run: npm run audit:universal-workflows > universal-workflow-source-audit.json
+      - name: Store workflow inventory evidence (7 day retention)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dd-universal-workflow-source-audit
+          path: universal-workflow-source-audit.json
+          retention-days: 7
+          if-no-files-found: error
+      - name: Validate 200 canonical noindex stock websites without provider calls
+        run: npm run test:public-stock-catalog
+      - name: Build Vite frontend without releasing
+        run: npm run build
+      - name: Verify sandbox route and fail-closed operational invariants
+        shell: bash
+        run: |
+          test -f dist/index.html
+          test -f vercel.json
+          grep -q 'generator-sandbox' src/App.jsx
+          grep -q 'noindex,nofollow' base44/shared/universalPhaseRuntime.js
+          grep -q 'release_ready: false' base44/shared/universalPhaseQa.js
+          if sed -n '/^on:/,/^permissions:/p' .github/workflows/dd-universal-phase-qa.yml | grep -Eq '^  schedule:|^    cron:'; then
+            echo "Unexpected schedule/cron detected: fail closed"
+            exit 1
+          fi
+          echo "PASS: no scheduler, deploy or production mutation"
