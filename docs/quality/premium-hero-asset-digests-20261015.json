@@ -1,0 +1,54 @@
+{
+  "schema": "apex.premium.pinned-image-transport-receipts.v1",
+  "source_repo": "XTREME-SYSTEMS/digital-dominance",
+  "evidence_event": "Github Actions run 38820719413, independent image transport job 116716379325",
+  "evidence_head_sha": "19c5c87b026ecc20097aa49b23c304bbe409207d",
+  "evidence_artifact": "https://github.com/XTREME-SYSTEMS/digital-dominance/actions/runs/38820719413/artifacts/12012314372",
+  "pexels_license_url": "https://www.pexels.com/license/",
+  "license_scope_review": "Website/template use permitted by Pexels, but may not imply endorsement of pictured people or brands. Commercial product/business claim and likeness assessment still required.",
+  "semantic_visual_approval": "PENDING",
+  "independent_guardian_pass": false,
+  "production_release_allowed": false,
+  "records": [
+    {
+      "master": "forge-roofing",
+      "field": "photo",
+      "pexels_id": 33404248,
+      "asset_sha256": "10ff01c4cbca459e97994324c1d81bd3b05ea776b25411dbaebf3d2216e776c9",
+      "bytes": 339035,
+      "source_url": "https://www.pexels.com/photo/professional-roofer-installing-shingles-on-new-roof-33404248/"
+    },
+    {
+      "master": "forge-roofing",
+      "field": "photo2",
+      "pexels_id": 38028508,
+      "asset_sha256": "6648852c3b1de57f73ed87d148a0336d4995fe157a64333ffac1958ea4792a42",
+      "bytes": 293042,
+      "source_url": "https://www.pexels.com/photo/roofer-installing-shingles-on-a-sunny-day-38028508/"
+    },
+    {
+      "master": "remedy-restore",
+      "field": "photo",
+      "pexels_id": 28447776,
+      "asset_sha256": "2a640f3573294d0c3f44271359accadf8560a174be2f8ed5b9ebd9a9217c13e1",
+      "bytes": 275517,
+      "source_url": "https://www.pexels.com/photo/suburban-flooding-surrounding-residential-house-28447776/"
+    },
+    {
+      "master": "remedy-restore",
+      "field": "photo2",
+      "pexels_id": 28447787,
+      "asset_sha256": "26876f0ea40adb88a4ac66e41793fdeb4b0f0593dbf731af348bf3de2f075be8",
+      "bytes": 361481,
+      "source_url": "https://www.pexels.com/photo/flood-response-team-in-residential-area-28447787/"
+    },
+    {
+      "master": "flow-home",
+      "field": "photo",
+      "pexels_id": 32588548,
+      "asset_sha256": "fbfb106f7eff3c960ae3d42ae1f159afe8fd59b62f36176bccb91376f569dc13",
+      "bytes": 434923,
+      "source_url": "https://www.pexels.com/photo/plumber-repairing-pipe-with-wrench-indoors-32588548/"
+    }
+  ]
+}
