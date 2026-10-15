@@ -6,6 +6,8 @@ on:
       - feature/apex-premium-visual-foundry-v3-20261014
     paths:
       - 'scripts/premium-image-transport-audit.mjs'
+      - 'package.json'
+      - '.gitignore'
       - 'scripts/premium-promotion-policy.mjs'
       - 'scripts/promote-premium-catalog.mjs'
       - 'scripts/export-premium-handoff.mjs'
@@ -30,6 +32,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Compile candidate masters from actual V2-derived source
+        run: |
+          node scripts/build-premium-20.mjs
+          node scripts/build-premium-business-brands.mjs
       - name: Run source and cryptographic approval regression
         run: node scripts/test-premium-handoff.mjs
       - name: Generate approved-only, noindex visual catalog
