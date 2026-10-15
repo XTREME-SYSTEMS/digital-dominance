@@ -3,7 +3,6 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { Rocket } from 'lucide-react';
-import { useEffect } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -233,8 +232,12 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     }
-    // auth_required: fall through to Routes so the login page can render.
-    // The useEffect above handles the redirect for non-auth routes.
+    if (authError.type === 'auth_required') {
+      const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/oauth/consent'];
+      if (!authRoutes.includes(location.pathname)) {
+        return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+      }
+    }
   }
 
   return (
