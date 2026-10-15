@@ -210,6 +210,7 @@ import SmaiIcons from '@/pages/smai/Icons';
 import SmaiClientPortal from '@/pages/smai/ClientPortal';
 import SmaiAdminPortal from '@/pages/smai/AdminPortal';
 import CodeInjector from '@/components/codestudio/CodeInjector';
+import DataExport from '@/pages/admin/DataExport';
 
 
 const AuthenticatedApp = () => {
@@ -420,6 +421,7 @@ const AuthenticatedApp = () => {
         <Route path="fault-line" element={<FaultLineScanner />} />
         <Route path="vision-intelligence" element={<VisionIntelligence />} />
         <Route path="settings" element={<SettingsPage />} />
+      <Route path="data-export" element={<DataExport />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>
         <Route index element={<TemplateStudio />} />
