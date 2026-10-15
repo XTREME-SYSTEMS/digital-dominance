@@ -1,0 +1,2380 @@
+{
+  "schema": "apex.universal-creative-library.v1",
+  "state": "DEVELOPMENT_PREVIEW_ONLY",
+  "license_notice": "Original generated SVG assets are authored for internal preview. Third-party/local donor assets require rights review and source checks.",
+  "generated_at": null,
+  "sources": [
+    {
+      "id": "base44_templates",
+      "name": "Digital Dominance Base44 TemplateLibrary",
+      "kind": "VERIFIED_QUERY_SNAPSHOT",
+      "count": 458,
+      "entity": "TemplateLibrary",
+      "app_id": "6a77f4491f0bf92de9a3ed8b",
+      "import_status": "INDEXED_NOT_AUTO_APPROVED",
+      "updated_check": "2026-10-15",
+      "rights": "SOURCE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_universal_master",
+      "name": "Universal Master Factory local registry",
+      "kind": "LOCAL_MANIFEST_DECLARATION",
+      "families": 30,
+      "count": 486,
+      "path": "C:\\_Strategic_Minds_AI_OS\\16_UNIVERSAL SYSTEMS\\01_CANONICAL_SOURCE\\UNIVERSAL_MASTER_FACTORY_PACKET\\UNIVERSAL_MASTER_FACTORY_BASE44_v1",
+      "import_status": "REFERENCE_ONLY",
+      "rights": "SOURCE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_visual_v3",
+      "name": "Visual Factory V3.1",
+      "kind": "LOCAL_MANIFEST_DECLARATION",
+      "archetypes": 10,
+      "count": 10,
+      "path": "C:\\_Strategic_Minds_AI_OS\\16_UNIVERSAL SYSTEMS\\13_VISUAL_TEMPLATE_ENGINE\\DIGITAL_DOMINANCE_VISUAL_FACTORY_V3",
+      "import_status": "REUSE_DONOR",
+      "rights": "ORIGINAL_ASSET_REVIEW_REQUIRED"
+    },
+    {
+      "id": "premium20",
+      "name": "Premium Visual Foundry V3",
+      "kind": "GITHUB_SOURCE",
+      "count": 20,
+      "repo": "XTREME-SYSTEMS/digital-dominance",
+      "branch": "feature/apex-premium-visual-foundry-v3-20261014",
+      "import_status": "PREVIEW_ONLY",
+      "rights": "ORIGINAL_AND_REFERENCED_MEDIA_REVIEW_REQUIRED"
+    }
+  ],
+  "legacy_capability_families": {
+    "saas_tenancy_templates": 24,
+    "monetization_templates": 24,
+    "identity_auth_templates": 20,
+    "api_architecture_templates": 20,
+    "database_patterns": 30,
+    "integration_patterns": 16,
+    "sync_reconciliation_patterns": 16,
+    "migration_patterns": 16,
+    "release_patterns": 12,
+    "testing_profiles": 20,
+    "observability_sre_templates": 18,
+    "backup_dr_templates": 12,
+    "ai_runtime_templates": 20,
+    "memory_knowledge_templates": 16,
+    "workflow_grammar": 18,
+    "communications_templates": 16,
+    "analytics_experimentation_templates": 18,
+    "search_templates": 14,
+    "mobile_pwa_capability_templates": 18,
+    "commerce_marketplace_kernels": 10,
+    "crm_sales_kernels": 10,
+    "customer_success_support": 12,
+    "cms_content_templates": 12,
+    "localization_templates": 10,
+    "privacy_governance_templates": 12,
+    "file_media_processing_templates": 12,
+    "scheduling_resource_templates": 12,
+    "permissions_audit_templates": 12,
+    "quality_security_templates": 16,
+    "industry_packs": 20
+  },
+  "families": [
+    {
+      "id": "logos",
+      "name": "Logos & Identity Marks",
+      "description": "Vector motifs, logo lockups, app icons, favicons",
+      "status": "BUILDABLE_V1",
+      "release": "DRAFT_ONLY",
+      "ordinal": 1
+    },
+    {
+      "id": "brand_systems",
+      "name": "Brand Systems",
+      "description": "Brand positioning, color, typography and design tokens",
+      "status": "BUILDABLE_V1",
+      "release": "DRAFT_ONLY",
+      "ordinal": 2
+    },
+    {
+      "id": "website_masters",
+      "name": "Premium Website Masters",
+      "description": "Full-page art-directed layouts, not color swaps",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 3
+    },
+    {
+      "id": "website_types",
+      "name": "Website Type Recipes",
+      "description": "Industry and use-case specific SitePack blueprints",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 4
+    },
+    {
+      "id": "website_sections",
+      "name": "Website Components & Sections",
+      "description": "Hero, evidence, pricing, gallery, CTA and navigation",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 5
+    },
+    {
+      "id": "landing_funnels",
+      "name": "Landing & Conversion Funnels",
+      "description": "Quote, consultation, appointment, lead magnet, checkout",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 6
+    },
+    {
+      "id": "saas_apps",
+      "name": "SaaS & PWA Screens",
+      "description": "Onboarding, pricing, dashboards, billing and workspace shells",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 7
+    },
+    {
+      "id": "ecommerce",
+      "name": "Ecommerce",
+      "description": "Product discovery, collections, cart, checkout and lifecycle",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 8
+    },
+    {
+      "id": "marketplaces",
+      "name": "Marketplaces & Directories",
+      "description": "Listings, search, filters and map discovery",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 9
+    },
+    {
+      "id": "social_graphics",
+      "name": "Social Media Graphics",
+      "description": "Channel-sized posts, covers, stories and pins",
+      "status": "BUILDABLE_V1",
+      "release": "DRAFT_ONLY",
+      "ordinal": 10
+    },
+    {
+      "id": "social_campaigns",
+      "name": "Social Campaign Systems",
+      "description": "Cohesive 30-day editorial creative directions",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 11
+    },
+    {
+      "id": "ads_creatives",
+      "name": "Paid Advertising",
+      "description": "Search, paid social and display creative contracts",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 12
+    },
+    {
+      "id": "video_motion",
+      "name": "Video, Reels & Motion",
+      "description": "Short-form storyboards, motion components and safe captions",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 13
+    },
+    {
+      "id": "photography",
+      "name": "Photography Direction",
+      "description": "Photo style guides, crops, shot lists and rights registry",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 14
+    },
+    {
+      "id": "illustration",
+      "name": "Illustration & Graphics",
+      "description": "Illustration styles, backgrounds and diagram systems",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 15
+    },
+    {
+      "id": "icons",
+      "name": "Iconography",
+      "description": "UI icons, brand icon families and platform pictograms",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 16
+    },
+    {
+      "id": "email_templates",
+      "name": "Email Systems",
+      "description": "Onboarding, follow-ups, confirmations and newsletters",
+      "status": "BUILDABLE_V1",
+      "release": "DRAFT_ONLY",
+      "ordinal": 17
+    },
+    {
+      "id": "sms_voice",
+      "name": "Messaging & Voice",
+      "description": "Scripts and permissions-gated communication flows",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 18
+    },
+    {
+      "id": "sales_collateral",
+      "name": "Sales Enablement",
+      "description": "Proposals, pitch decks, case studies and one-sheets",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 19
+    },
+    {
+      "id": "print_assets",
+      "name": "Print & Signage",
+      "description": "Cards, flyers, wraps, brochures and event materials",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 20
+    },
+    {
+      "id": "content_seo",
+      "name": "Content, SEO, AEO & GEO",
+      "description": "Page architecture, original research and structured data",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 21
+    },
+    {
+      "id": "social_scheduling",
+      "name": "Publishing & Calendars",
+      "description": "Draft content calendars, approval, revocation and receipts",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 22
+    },
+    {
+      "id": "crm_workflows",
+      "name": "CRM & Lead Operations",
+      "description": "Attribution, intake, pipelines and consent",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 23
+    },
+    {
+      "id": "analytics",
+      "name": "Analytics & Experiments",
+      "description": "Events, dashboards, A/B tests and measurement",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 24
+    },
+    {
+      "id": "ai_agents",
+      "name": "AI Agents & Prompts",
+      "description": "Role/skill/prompt packs, tool invocation and evals",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 25
+    },
+    {
+      "id": "automations",
+      "name": "Automation & Integrations",
+      "description": "Schedules, durable workflows and adapters",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 26
+    },
+    {
+      "id": "document_templates",
+      "name": "Documents & Forms",
+      "description": "Briefs, onboarding, surveys, contracts, SOPs",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 27
+    },
+    {
+      "id": "ui_kits",
+      "name": "UI / UX Design Systems",
+      "description": "Components, tokens, accessibility and states",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 28
+    },
+    {
+      "id": "accessibility",
+      "name": "Accessibility & QA",
+      "description": "A11y, performance, responsive and visual proof",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 29
+    },
+    {
+      "id": "industry_packs",
+      "name": "Industry Packs",
+      "description": "Industry-safe service patterns and required proof",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 30
+    },
+    {
+      "id": "localization",
+      "name": "Localization",
+      "description": "Multilingual text, typography and regional rules",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 31
+    },
+    {
+      "id": "compliance",
+      "name": "Security, Privacy & Policy",
+      "description": "Auth, approvals, secrets, privacy and audit",
+      "status": "REGISTRY_AND_RECIPE",
+      "release": "DRAFT_ONLY",
+      "ordinal": 32
+    }
+  ],
+  "logo_systems": [
+    {
+      "id": "axis",
+      "name": "AXIS",
+      "meaning": "structural blades",
+      "accent": "#D6B883",
+      "fit": "Cinematic industrial",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "aureole",
+      "name": "AUREOLE",
+      "meaning": "concentric orbit",
+      "accent": "#93BDF1",
+      "fit": "Technology & intelligence",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "verge",
+      "name": "VERGE",
+      "meaning": "ascending ridge",
+      "accent": "#D9C1A1",
+      "fit": "Architecture & property",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "cipher",
+      "name": "CIPHER",
+      "meaning": "interlaced monogram",
+      "accent": "#B5A7EA",
+      "fit": "Professional & legal",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "arc",
+      "name": "ARC",
+      "meaning": "open gate",
+      "accent": "#84C9BC",
+      "fit": "Premium services",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "vector",
+      "name": "VECTOR",
+      "meaning": "directional chevron",
+      "accent": "#F8B77A",
+      "fit": "Automotive & motion",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "pulse",
+      "name": "PULSE",
+      "meaning": "signal bars",
+      "accent": "#E2A9B9",
+      "fit": "Health & wellness",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "halo",
+      "name": "HALO",
+      "meaning": "radial bloom",
+      "accent": "#E1CF9C",
+      "fit": "Luxury & beauty",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "grid",
+      "name": "GRID",
+      "meaning": "modular cells",
+      "accent": "#9BBAD7",
+      "fit": "SaaS & data",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "crest",
+      "name": "CREST",
+      "meaning": "architectural shield",
+      "accent": "#CE9E86",
+      "fit": "Trust & advisory",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "wave",
+      "name": "WAVE",
+      "meaning": "layered currents",
+      "accent": "#86C9CC",
+      "fit": "Hospitality & lifestyle",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    },
+    {
+      "id": "nova",
+      "name": "NOVA",
+      "meaning": "stellar spokes",
+      "accent": "#BDD5F3",
+      "fit": "Creative & launch",
+      "variants": [
+        "icon",
+        "horizontal",
+        "stacked"
+      ],
+      "state": "ORIGINAL_GENERATED_VECTOR_UNAPPROVED"
+    }
+  ],
+  "brand_palettes": [
+    {
+      "id": "obsidian",
+      "name": "Obsidian Chrome",
+      "bg": "#0A101A",
+      "fg": "#E6E8EA",
+      "accent": "#8FB6DA",
+      "muted": "#CCD8E5",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "midnight",
+      "name": "Midnight Blue",
+      "bg": "#0B1428",
+      "fg": "#F3F8FF",
+      "accent": "#73C7F1",
+      "muted": "#9CADC5",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "titanium",
+      "name": "Titanium Bronze",
+      "bg": "#15191E",
+      "fg": "#F1ECE4",
+      "accent": "#D2B27D",
+      "muted": "#ACA8A0",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "ivory",
+      "name": "Editorial Ivory",
+      "bg": "#F2EFE8",
+      "fg": "#191E24",
+      "accent": "#BB906B",
+      "muted": "#5E6775",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "forest",
+      "name": "Botanical Forest",
+      "bg": "#11251F",
+      "fg": "#F7F5ED",
+      "accent": "#93B69B",
+      "muted": "#ADC3B8",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "oxblood",
+      "name": "Oxblood Luxe",
+      "bg": "#230D17",
+      "fg": "#F8E9E9",
+      "accent": "#E5A9AE",
+      "muted": "#D0B0BC",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "atelier",
+      "name": "Atelier Sand",
+      "bg": "#F1E8DC",
+      "fg": "#2B2420",
+      "accent": "#A77C57",
+      "muted": "#6B625A",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "neon",
+      "name": "Neon Studio",
+      "bg": "#0B0B13",
+      "fg": "#FCFCFF",
+      "accent": "#C0A5FF",
+      "muted": "#91A5FF",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "slate",
+      "name": "Corporate Slate",
+      "bg": "#17212D",
+      "fg": "#F1F7FF",
+      "accent": "#7CB3D3",
+      "muted": "#A5B7CA",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "emerald",
+      "name": "Emerald Authority",
+      "bg": "#0B211C",
+      "fg": "#F8F6ED",
+      "accent": "#83CAAF",
+      "muted": "#B7D5C5",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "terracotta",
+      "name": "Terracotta Modern",
+      "bg": "#29201D",
+      "fg": "#FBF2E8",
+      "accent": "#D18D6B",
+      "muted": "#C7B1A6",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    },
+    {
+      "id": "gallery",
+      "name": "Gallery Mono",
+      "bg": "#F5F5F3",
+      "fg": "#141414",
+      "accent": "#6B7176",
+      "muted": "#888D93",
+      "typography": {
+        "display": "Georgia, serif",
+        "body": "Inter, system-ui, sans-serif"
+      }
+    }
+  ],
+  "social_channels": [
+    {
+      "id": "instagram_square",
+      "name": "Instagram Square",
+      "width": 1080,
+      "height": 1080,
+      "textSafeFraction": 0.8,
+      "revision_notice": "Creative design dimensions are examples; reconfirm current platform crop/safe zones before posting"
+    },
+    {
+      "id": "instagram_portrait",
+      "name": "Instagram Portrait",
+      "width": 1080,
+      "height": 1350,
+      "textSafeFraction": 0.8,
+      "revision_notice": "Creative design dimensions are examples; reconfirm current platform crop/safe zones before posting"
+    },
+    {
+      "id": "instagram_story",
+      "name": "Instagram Story",
+      "width": 1080,
+      "height": 1920,
+      "textSafeFraction": 0.72,
+      "revision_notice": "Creative design dimensions are examples; reconfirm current platform crop/safe zones before posting"
+    },
+    {
+      "id": "facebook_cover",
+      "name": "Facebook Cover",
+      "width": 1640,
+      "height": 624,
+      "textSafeFraction": 0.67,
+      "revision_notice": "Creative design dimensions are examples; reconfirm current platform crop/safe zones before posting"
+    },
+    {
+      "id": "linkedin_banner",
+      "name": "LinkedIn Banner",
+      "width": 1584,
+      "height": 396,
+      "textSafeFraction": 0.64,
+      "revision_notice": "Creative design dimensions are examples; reconfirm current platform crop/safe zones before posting"
+    },
+    {
+      "id": "youtube_banner",
+      "name": "YouTube Banner",
+      "width": 2560,
+      "height": 1440,
+      "textSafeFraction": 0.62,
+      "revision_notice": "Creative design dimensions are examples; reconfirm current platform crop/safe zones before posting"
+    },
+    {
+      "id": "whatsapp_card",
+      "name": "WhatsApp Catalog",
+      "width": 1080,
+      "height": 1080,
+      "textSafeFraction": 0.8,
+      "revision_notice": "Creative design dimensions are examples; reconfirm current platform crop/safe zones before posting"
+    },
+    {
+      "id": "pinterest_pin",
+      "name": "Pinterest Pin",
+      "width": 1000,
+      "height": 1500,
+      "textSafeFraction": 0.8,
+      "revision_notice": "Creative design dimensions are examples; reconfirm current platform crop/safe zones before posting"
+    },
+    {
+      "id": "google_business",
+      "name": "Google Business Cover",
+      "width": 1200,
+      "height": 900,
+      "textSafeFraction": 0.8,
+      "revision_notice": "Creative design dimensions are examples; reconfirm current platform crop/safe zones before posting"
+    }
+  ],
+  "social_campaigns": [
+    {
+      "id": "launch",
+      "name": "The Launch",
+      "headline": "Introducing something exceptional",
+      "cta": "Discover the collection",
+      "intent": "Luxury launch",
+      "palette": "titanium",
+      "schedule": "DRAFT_30_DAY_CAMPAIGN",
+      "publish_authorization": false
+    },
+    {
+      "id": "transformation",
+      "name": "The Transformation",
+      "headline": "Before. After. Beyond.",
+      "cta": "Explore the finish",
+      "intent": "Home transformation",
+      "palette": "midnight",
+      "schedule": "DRAFT_30_DAY_CAMPAIGN",
+      "publish_authorization": false
+    },
+    {
+      "id": "expertise",
+      "name": "The Authority",
+      "headline": "Craft built on intention",
+      "cta": "See the process",
+      "intent": "Professional expertise",
+      "palette": "slate",
+      "schedule": "DRAFT_30_DAY_CAMPAIGN",
+      "publish_authorization": false
+    },
+    {
+      "id": "editorial",
+      "name": "The Editorial",
+      "headline": "Designed for what matters",
+      "cta": "Read the story",
+      "intent": "Thought leadership",
+      "palette": "ivory",
+      "schedule": "DRAFT_30_DAY_CAMPAIGN",
+      "publish_authorization": false
+    },
+    {
+      "id": "community",
+      "name": "The Community",
+      "headline": "Where great ideas gather",
+      "cta": "Join the conversation",
+      "intent": "Community engagement",
+      "palette": "forest",
+      "schedule": "DRAFT_30_DAY_CAMPAIGN",
+      "publish_authorization": false
+    },
+    {
+      "id": "product",
+      "name": "The Product",
+      "headline": "Details worth experiencing",
+      "cta": "View the collection",
+      "intent": "Ecommerce & products",
+      "palette": "atelier",
+      "schedule": "DRAFT_30_DAY_CAMPAIGN",
+      "publish_authorization": false
+    },
+    {
+      "id": "event",
+      "name": "The Event",
+      "headline": "An experience worth remembering",
+      "cta": "Explore the event",
+      "intent": "Events & experiences",
+      "palette": "oxblood",
+      "schedule": "DRAFT_30_DAY_CAMPAIGN",
+      "publish_authorization": false
+    },
+    {
+      "id": "milestone",
+      "name": "The Milestone",
+      "headline": "A new chapter begins",
+      "cta": "Learn what changed",
+      "intent": "Announcements",
+      "palette": "neon",
+      "schedule": "DRAFT_30_DAY_CAMPAIGN",
+      "publish_authorization": false
+    }
+  ],
+  "website_type_recipes": [
+    {
+      "id": "web-epoxy-flooring",
+      "name": "Epoxy Flooring",
+      "group": "Local services",
+      "master": "monolith",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-polished-concrete",
+      "name": "Polished Concrete",
+      "group": "Local services",
+      "master": "monolith",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-construction-company",
+      "name": "Construction Company",
+      "group": "Local services",
+      "master": "monolith",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-roofing",
+      "name": "Roofing",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-hvac",
+      "name": "HVAC",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-plumbing",
+      "name": "Plumbing",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-electrical",
+      "name": "Electrical",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-restoration",
+      "name": "Restoration",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-landscaping",
+      "name": "Landscaping",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-garage-doors",
+      "name": "Garage Doors",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-pool-services",
+      "name": "Pool Services",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-automotive-detailing",
+      "name": "Automotive Detailing",
+      "group": "Local services",
+      "master": "monolith",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-home-remodeling",
+      "name": "Home Remodeling",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-emergency-services",
+      "name": "Emergency Services",
+      "group": "Local services",
+      "master": "v3:split",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "service_selector",
+        "visual_proof",
+        "estimate_or_booking",
+        "verified_local_coverage"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-personal-injury-law",
+      "name": "Personal Injury Law",
+      "group": "Professional & healthcare",
+      "master": "argent",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-family-law",
+      "name": "Family Law",
+      "group": "Professional & healthcare",
+      "master": "argent",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-estate-planning",
+      "name": "Estate Planning",
+      "group": "Professional & healthcare",
+      "master": "argent",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-accounting",
+      "name": "Accounting",
+      "group": "Professional & healthcare",
+      "master": "v3:editorial",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-financial-advisory",
+      "name": "Financial Advisory",
+      "group": "Professional & healthcare",
+      "master": "argent",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-insurance",
+      "name": "Insurance",
+      "group": "Professional & healthcare",
+      "master": "v3:editorial",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-real-estate-agency",
+      "name": "Real Estate Agency",
+      "group": "Professional & healthcare",
+      "master": "v3:editorial",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-architecture-studio",
+      "name": "Architecture Studio",
+      "group": "Professional & healthcare",
+      "master": "argent",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-dental-practice",
+      "name": "Dental Practice",
+      "group": "Professional & healthcare",
+      "master": "v3:editorial",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-med-spa",
+      "name": "Med Spa",
+      "group": "Professional & healthcare",
+      "master": "atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-wellness-studio",
+      "name": "Wellness Studio",
+      "group": "Professional & healthcare",
+      "master": "atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-consulting-firm",
+      "name": "Consulting Firm",
+      "group": "Professional & healthcare",
+      "master": "v3:editorial",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "expertise",
+        "compliance_evidence",
+        "consultation",
+        "privacy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-luxury-skincare",
+      "name": "Luxury Skincare",
+      "group": "Ecommerce & hospitality",
+      "master": "atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-jewelry-ecommerce",
+      "name": "Jewelry Ecommerce",
+      "group": "Ecommerce & hospitality",
+      "master": "atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-fashion-boutique",
+      "name": "Fashion Boutique",
+      "group": "Ecommerce & hospitality",
+      "master": "atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-furniture-ecommerce",
+      "name": "Furniture Ecommerce",
+      "group": "Ecommerce & hospitality",
+      "master": "v3:atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-subscription-box",
+      "name": "Subscription Box",
+      "group": "Ecommerce & hospitality",
+      "master": "v3:atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-wholesale-b2b",
+      "name": "Wholesale B2B",
+      "group": "Ecommerce & hospitality",
+      "master": "v3:atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-digital-products",
+      "name": "Digital Products",
+      "group": "Ecommerce & hospitality",
+      "master": "v3:atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-restaurant",
+      "name": "Restaurant",
+      "group": "Ecommerce & hospitality",
+      "master": "v3:atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-hotel",
+      "name": "Hotel",
+      "group": "Ecommerce & hospitality",
+      "master": "atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-travel-agency",
+      "name": "Travel Agency",
+      "group": "Ecommerce & hospitality",
+      "master": "v3:atelier",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-luxury-automotive",
+      "name": "Luxury Automotive",
+      "group": "Ecommerce & hospitality",
+      "master": "monolith",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "collection",
+        "gallery",
+        "product_or_booking_flow",
+        "returns_or_policy"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-saas-marketing",
+      "name": "SaaS Marketing",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-saas-application",
+      "name": "SaaS Application",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-pwa",
+      "name": "PWA",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-marketplace",
+      "name": "Marketplace",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-local-directory",
+      "name": "Local Directory",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-booking-platform",
+      "name": "Booking Platform",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-learning-management",
+      "name": "Learning Management",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-membership-community",
+      "name": "Membership Community",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-ai-agent-portal",
+      "name": "AI Agent Portal",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-analytics-dashboard",
+      "name": "Analytics Dashboard",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-developer-documentation",
+      "name": "Developer Documentation",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-customer-portal",
+      "name": "Customer Portal",
+      "group": "Technology & platforms",
+      "master": "v3:blueprint",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "workflow_demo",
+        "pricing_or_feature_matrix",
+        "auth_plan",
+        "security_evidence"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-creative-agency",
+      "name": "Creative Agency",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-photographer-portfolio",
+      "name": "Photographer Portfolio",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-podcast",
+      "name": "Podcast",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-newsletter",
+      "name": "Newsletter",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-news-publication",
+      "name": "News Publication",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-events",
+      "name": "Events",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-charity-fundraising",
+      "name": "Charity Fundraising",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-nonprofit",
+      "name": "Nonprofit",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-government-services",
+      "name": "Government Services",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-municipal-portal",
+      "name": "Municipal Portal",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-knowledge-base",
+      "name": "Knowledge Base",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    },
+    {
+      "id": "web-creator-link-hub",
+      "name": "Creator Link Hub",
+      "group": "Media, events & public",
+      "master": "v3:mosaic",
+      "recipe_state": "BLUEPRINT_NOT_APPROVED_MASTER",
+      "modules": [
+        "hero",
+        "editorial_story",
+        "proof",
+        "subscription_or_contact",
+        "accessibility"
+      ],
+      "governance": [
+        "verified_brand_facts",
+        "original_content",
+        "approved_media_rights",
+        "mobile_QA",
+        "consent_and_privacy",
+        "independent_preview_receipt"
+      ]
+    }
+  ],
+  "email_systems": [
+    {
+      "id": "welcome-series",
+      "name": "Welcome Series",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    },
+    {
+      "id": "lead-follow-up",
+      "name": "Lead Follow-up",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    },
+    {
+      "id": "appointment-confirmation",
+      "name": "Appointment Confirmation",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    },
+    {
+      "id": "consultation-reminder",
+      "name": "Consultation Reminder",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    },
+    {
+      "id": "quote-delivery",
+      "name": "Quote Delivery",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    },
+    {
+      "id": "quote-follow-up",
+      "name": "Quote Follow-up",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    },
+    {
+      "id": "abandoned-cart-draft",
+      "name": "Abandoned Cart Draft",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    },
+    {
+      "id": "product-education",
+      "name": "Product Education",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    },
+    {
+      "id": "monthly-newsletter",
+      "name": "Monthly Newsletter",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    },
+    {
+      "id": "renewal-retention",
+      "name": "Renewal & Retention",
+      "state": "DRAFT_ONLY",
+      "outbound_authorized": false
+    }
+  ],
+  "video_systems": [
+    {
+      "name": "Brand Anthem",
+      "state": "STORYBOARD_ONLY"
+    },
+    {
+      "name": "Product Macro Detail",
+      "state": "STORYBOARD_ONLY"
+    },
+    {
+      "name": "Before and After (verified source only)",
+      "state": "STORYBOARD_ONLY"
+    },
+    {
+      "name": "Founder Message",
+      "state": "STORYBOARD_ONLY"
+    },
+    {
+      "name": "Expert Tutorial",
+      "state": "STORYBOARD_ONLY"
+    },
+    {
+      "name": "Customer Journey (consent required)",
+      "state": "STORYBOARD_ONLY"
+    },
+    {
+      "name": "Event Teaser",
+      "state": "STORYBOARD_ONLY"
+    },
+    {
+      "name": "Social Story Cut",
+      "state": "STORYBOARD_ONLY"
+    }
+  ],
+  "motion_systems": [
+    {
+      "name": "Editorial Reveal",
+      "reduced_motion_required": true
+    },
+    {
+      "name": "Metric Count (verified numbers only)",
+      "reduced_motion_required": true
+    },
+    {
+      "name": "Image Crossfade",
+      "reduced_motion_required": true
+    },
+    {
+      "name": "Before/After Divider",
+      "reduced_motion_required": true
+    },
+    {
+      "name": "Sticky Chapter Scroll",
+      "reduced_motion_required": true
+    },
+    {
+      "name": "Grid Reflow",
+      "reduced_motion_required": true
+    },
+    {
+      "name": "Product Zoom",
+      "reduced_motion_required": true
+    },
+    {
+      "name": "Micro-interaction",
+      "reduced_motion_required": true
+    }
+  ],
+  "section_systems": [
+    {
+      "name": "Cinematic Hero",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Editorial Hero",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Split Hero",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Proof Bar",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Services Mosaic",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Before/After",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Product Showcase",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Case Study",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Real Testimonials Only",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Trust Evidence",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Quote Calculator",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Service Area Verifier",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Comparison Chart",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Pricing",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Team Profile",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Booking Widget",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Lead Funnel",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Video Story",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "FAQ",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Map",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Accessibility Help",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Contact",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Newsletter",
+      "state": "PATTERN_RECIPE_ONLY"
+    },
+    {
+      "name": "Footer",
+      "state": "PATTERN_RECIPE_ONLY"
+    }
+  ],
+  "governance": {
+    "mass_publish_allowed": false,
+    "customer_contact_allowed": false,
+    "auto_social_publish_allowed": false,
+    "logo_trademark_clearance_required": true,
+    "images_rights_validation_required": true,
+    "verified_facts_required": true,
+    "independent_qa_required": true
+  }
+}
