@@ -1,0 +1,60 @@
+{
+    "schema_version":  "x1.universal-generator.build-packet.v1",
+    "project_id":  "digital-dominance",
+    "mission_id":  "dd-website-factory-phase1-20261014",
+    "task_id":  "dd.website.preview.phase1",
+    "requested_by":  "operator",
+    "builder":  "codex-cli",
+    "agent_role":  "frontend-and-backend-coding",
+    "action_class":  "NON_PRODUCTION_MUTATION",
+    "repo":  "XTREME-SYSTEMS/digital-dominance",
+    "branch":  "feature/dd-universal-convergence-20261014",
+    "scope":  "DEVELOPMENT_AND_NOINDEX_PREVIEW_ONLY",
+    "visual_template":  "src/pages/LaunchEngine.jsx",
+    "visual_reference_sha256":  "24cb7867a738889ff5ae0544384ca39a49d543d063349cf8659cd8ad09822190",
+    "approved_scope_paths":  [
+                                 "src/components/launch-engine/",
+                                 "src/components/template-studio/",
+                                 "src/pages/",
+                                 "src/generator/",
+                                 "tests/",
+                                 "docs/",
+                                 "config/x1/"
+                             ],
+    "requirements":  [
+                         "Preserve approved premium Website Launch Engine public design and 20 industry categories",
+                         "Preserve existing functional website generation and Base44 donor integrations",
+                         "Industry -\u003e full-page template -\u003e quantity -\u003e researched markets -\u003e approval -\u003e noindex preview",
+                         "Persist launch draft only after authenticated tenant authorization and approved contract",
+                         "Create real reachable proof rather than fabricated city records or static placeholders",
+                         "Keep protected production release behind separate explicit approval"
+                     ],
+    "required_checks":  [
+                            "unit",
+                            "typecheck",
+                            "lint",
+                            "build",
+                            "browser-desktop",
+                            "browser-mobile",
+                            "navigation",
+                            "auth-negative",
+                            "tenant-isolation",
+                            "preview-noindex",
+                            "independent-guardian"
+                        ],
+    "synthetic":  true,
+    "no_customer_data":  true,
+    "no_spend":  true,
+    "noindex":  true,
+    "production_release":  false,
+    "approved_build":  false,
+    "execution_status":  "PENDING_AUTHORIZED_MODEL_EXECUTOR",
+    "idempotency_scope":  "per-mission-and-source-revision",
+    "dependencies":  [
+                         "fresh-github-sha",
+                         "signed-x1-worker-authorization",
+                         "provider-verified-spending-cap",
+                         "codex-cli-authenticated",
+                         "distinct-independent-validator"
+                     ]
+}

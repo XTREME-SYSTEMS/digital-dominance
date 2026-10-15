@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+const {spawn}=require('node:child_process'),{mkdirSync,writeFileSync,mkdtempSync,rmSync}=require('node:fs'),os=require('node:os'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),out=path.resolve(process.env.QA_OUT||path.join(root,'audit-evidence','browser-qa')),baseUrl=process.env.QA_BASE_URL||'http://127.0.0.1:4175/',sleep=t=>new Promise(r=>setTimeout(r,t));mkdirSync(out,{recursive:true});
+const profile=mkdtempSync(path.join(os.tmpdir(),'dd-home-qa-')),PORT=(19000+Math.floor(Math.random()*4000)),chrome=spawn(process.env.CHROME_BIN||(process.platform==='win32'?'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe':'google-chrome'),['--headless=new','--disable-gpu','--hide-scrollbars','--no-first-run','--no-default-browser-check','--remote-allow-origins=*','--remote-debugging-port='+PORT,'--user-data-dir='+profile,'about:blank'],{stdio:'ignore',windowsHide:true});
+async function waitFor(fn,ms=15000){const start=Date.now();while(Date.now()-start<ms){try{const r=await fn();if(r)return r}catch{}await sleep(200)}throw Error('Timed out waiting for browser');}
+let socket,cnt=0;const pending=new Map();
+async function call(method,params={}){return await new Promise((resolve,reject)=>{const id=++cnt;pending.set(id,{resolve,reject});socket.send(JSON.stringify({id,method,params}));setTimeout(()=>{if(pending.has(id)){pending.delete(id);reject(Error('CDP timeout '+method))}},15000)})}
+async function evalJS(expr){const r=await call('Runtime.evaluate',{expression:expr,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.text);return r.result.value;}
+async function main(){const target=await waitFor(async()=>{const r=await fetch('http://127.0.0.1:'+PORT+'/json');const a=await r.json();return a.find(x=>x.type==='page'&&x.webSocketDebuggerUrl)});socket=new WebSocket(target.webSocketDebuggerUrl);socket.addEventListener('message',m=>{try{const o=JSON.parse(m.data);if(o.id&&pending.has(o.id)){const p=pending.get(o.id);pending.delete(o.id);o.error?p.reject(Error(o.error.message)):p.resolve(o.result)}}catch{}});await waitFor(()=>socket.readyState===1);await call('Page.enable');await call('Runtime.enable');const results=[];
+for(const [view,width,height] of [['desktop',1440,900],['tablet',768,1000],['mobile',390,844]]){
+ await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:view==='mobile'});
+ await call('Page.navigate',{url:baseUrl});
+ await waitFor(()=>evalJS('document.readyState==="complete" && Boolean(document.querySelector("#industries"))'),16000);
+ const heroShot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+ writeFileSync(path.join(out,'hero-'+view+'.png'),Buffer.from(heroShot.data,'base64'));
+ await evalJS('(()=>{document.querySelector("#industries").scrollIntoView();[...document.querySelectorAll("#industries img")].forEach(x=>{x.loading="eager"});return true})()');
+ // Wait for actual decoded images, not merely window.onload or completed network requests.
+ await waitFor(async()=>await evalJS('(()=>{const images=[...document.querySelectorAll("#industries img")];return images.length===20&&images.every(x=>x.complete&&x.naturalWidth>0)})()'),12000).catch(()=>false);
+
+ const data=await evalJS('(()=>{const region=document.querySelector("#industries");const imgs=[...region.querySelectorAll("img")];const cards=[...region.querySelectorAll("button")];return {cards:cards.length,images:imgs.length,broken:imgs.filter(x=>!x.complete||x.naturalWidth===0).map(x=>x.src),imageSrcs:imgs.map(x=>x.getAttribute("src")),localAssets:imgs.filter(x=>x.getAttribute("src")?.startsWith("/images/")).length,viewport:innerWidth,documentWidth:document.documentElement.scrollWidth,heading:region.querySelector("h2")?.innerText||"",serverNotice:!!region.querySelector("[role=status]")}})()');
+ const shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});writeFileSync(path.join(out,'homepage-categories-'+view+'.png'),Buffer.from(shot.data,'base64'));
+ await evalJS('(()=>{document.querySelector("#industries button").click();return true})()');
+ await sleep(300);
+ const wizardOpened=await evalJS('Boolean([...document.querySelectorAll("h3")].some(x=>x.textContent?.includes("Website Launch Wizard")))');
+ const pass=data.cards===20&&data.images===20&&data.broken.length===0&&data.localAssets===20&&data.documentWidth<=data.viewport+5&&wizardOpened;
+ results.push({view,pass,wizardOpened,...data});console.log(view+' '+(pass?'PASS':'FAIL')+' local='+data.localAssets+'/20 overflow='+(data.documentWidth-data.viewport));
+}
+const result={status:results.every(x=>x.pass)?'PASS':'FAIL',testedAt:new Date().toISOString(),baseUrl,source:baseUrl.includes('127.0.0.1')?'local Vite preview (no live Base44 backend)':'hosted HTTPS Vercel preview (not production)',screenshots:results.flatMap(x=>['hero-'+x.view+'.png','homepage-categories-'+x.view+'.png']),results,limitations:['No authenticated Base44 backend, live workflows untested','No independent semantic image signoff','No production promotion or release verification']};writeFileSync(path.join(out,'HOMEPAGE_CHROME_QA_RECEIPT.json'),JSON.stringify(result,null,2));console.log('OVERALL='+result.status);if(result.status!=='PASS')process.exitCode=1;
+}
+main().catch(e=>{console.error('BLOCKED '+e.stack);process.exitCode=2}).finally(()=>{if(socket)socket.close();chrome.kill();try{rmSync(profile,{force:true,recursive:true,maxRetries:2})}catch{}});

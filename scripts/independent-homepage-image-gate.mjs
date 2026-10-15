@@ -1,79 +1,72 @@
 #!/usr/bin/env node
 /**
- * Independent homepage image-evidence preflight for Digital Dominance.
- *
- * This gate verifies that the canonical homepage image registry
- * (src/data/homeIndustryImages.js) has:
- *   1. A valid URL for every category
- *   2. No duplicate URLs across unrelated categories
- *   3. An independent semantic evidence record in
- *      docs/quality/approved-homepage-image-evidence.json
- *
- * This gate NEVER generates its own approvals. A URL that loads is NOT
- * proof of category relevance. Semantic approval requires a separate
- * independent visual reviewer.
- *
- * To run: node scripts/independent-homepage-image-gate.mjs
- * To export: IMAGE_AUDIT_OUT=... node scripts/independent-homepage-image-gate.mjs
+ * Semantic evidence gate remains fail-closed. Unlike the legacy check, it
+ * recognizes self-hosted, hash-verified image paths as secure technical assets.
+ * Asset integrity is NOT independent approval of the depicted subject.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { resolve } from 'node:path';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { getAllHomepageImages } from '../src/data/homeIndustryImages.js';
+import { auditHomepageAssetIntegrity } from './homepage-image-asset-integrity.mjs';
 
-const root = resolve(import.meta.dirname, '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const manifestPath = resolve(root, 'docs/quality/approved-homepage-image-evidence.json');
-const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-const approvals = Object.fromEntries((manifest.approvals || []).map(x => [x.category_id, x]));
+const raw = readFileSync(manifestPath);
+const manifest = JSON.parse(raw.toString('utf8'));
+const approvals = new Map((manifest.approvals || []).map(x => [x.category_id, x]));
+const images = getAllHomepageImages();
+const technical = auditHomepageAssetIntegrity();
 const findings = [];
-const seen = new Map();
+const seen = new Set();
 
-for (const item of getAllHomepageImages()) {
+for (const item of images) {
   const url = item.image_url;
-  if (!url || !/^https:\/\//.test(url)) {
-    findings.push({ category: item.id, status: 'FAIL', issue: 'MISSING_OR_INSECURE_IMAGE_URL' });
+  if (!url || !/^\/images\/(industries|home-industries)\/[a-z0-9_-]+\.(png|jpe?g|webp)$/i.test(url)) {
+    findings.push({ category: item.id, status:'FAIL', issue:'MISSING_OR_UNSAFE_LOCAL_IMAGE_URL',url });
     continue;
   }
-  const normalizedUrl = url.split('?')[0];
-  if (seen.has(normalizedUrl)) {
-    findings.push({ category: item.id, status: 'FAIL', issue: 'CATEGORY_IMAGE_REUSED', also_used_by: seen.get(normalizedUrl) });
+  if (seen.has(url)) {
+    findings.push({ category:item.id,status:'FAIL',issue:'CATEGORY_IMAGE_REUSED',url });
     continue;
-  } else {
-    seen.set(normalizedUrl, item.id);
   }
-  const evidence = approvals[item.id];
+  seen.add(url);
+  const badAsset = technical.issues.find(x => x.category === item.id);
+  if (badAsset) {
+    findings.push({ category:item.id,status:'FAIL',issue:badAsset.issue,url });
+    continue;
+  }
+  const evidence = approvals.get(item.id);
   if (!evidence) {
-    findings.push({ category: item.id, status: 'UNKNOWN', issue: 'NO_INDEPENDENT_SEMANTIC_IMAGE_EVIDENCE', url });
+    findings.push({ category:item.id,status:'UNKNOWN',issue:'NO_INDEPENDENT_SEMANTIC_IMAGE_EVIDENCE',url });
     continue;
   }
-  const hasProof =
+  const valid =
     evidence.image_url === url &&
     evidence.category_label === item.label &&
+    evidence.image_sha256 === item.image_sha256 &&
     typeof evidence.evidence_uri === 'string' && evidence.evidence_uri.trim().length > 0 &&
     typeof evidence.independent_validator === 'string' && evidence.independent_validator.trim().length > 0 &&
-    typeof evidence.image_sha256 === 'string' && /^[0-9a-f]{64}$/i.test(evidence.image_sha256) &&
     typeof evidence.semantic_match_score === 'number' && evidence.semantic_match_score >= 0.98 &&
     evidence.status === 'APPROVED';
-  if (!hasProof) {
-    findings.push({ category: item.id, status: 'UNKNOWN', issue: 'INVALID_OR_STALE_SEMANTIC_EVIDENCE', url });
-  }
+  if (!valid) findings.push({ category:item.id,status:'UNKNOWN',issue:'INVALID_OR_STALE_SEMANTIC_EVIDENCE',url });
 }
-
-const blocked = findings.filter(x => x.status !== 'PASS').length;
+const blocked = technical.issues.length > 0 || findings.length > 0;
 const report = {
-  schema_version: 'digital-dominance.independent-homepage-image-evidence-gate.v1',
-  repo_scope: 'XTREME-SYSTEMS/digital-dominance',
-  status: blocked ? 'BLOCKED' : 'EVIDENCE_PRESENT_PENDING_INDEPENDENT_RUNTIME_QA',
-  total_categories: getAllHomepageImages().length,
-  categories_without_verifiable_evidence: blocked,
-  checks: ['URL presence', 'URL uniqueness', 'category identity', 'independent evidence reference', 'approved semantic match score'],
-  limitation: 'This deterministic gate checks evidence records, not image pixels. Independent visual inspection and browser screenshots remain separate required gates.',
-  manifest_sha256: createHash('sha256').update(readFileSync(manifestPath)).digest('hex'),
+  schema_version:'digital-dominance.independent-homepage-image-evidence-gate.v2',
+  status:blocked?'BLOCKED':'EVIDENCE_PRESENT_PENDING_INDEPENDENT_RUNTIME_QA',
+  total_categories:images.length,
+  technically_verified:technical.verified_assets,
+  technical_issues:technical.issues,
+  independent_semantic_approvals:images.length - findings.length,
+  categories_without_verifiable_semantic_evidence:findings.filter(x=>x.status==='UNKNOWN').length,
+  no_self_certification:true,
+  limitation:'SHA-256 and HTTP availability do not prove category relevance. Independently approved pixel review, visual-reference comparison and license verification remain separate.',
+  semantic_manifest_sha256:createHash('sha256').update(raw).digest('hex'),
   findings,
 };
-
-if (process.env.IMAGE_AUDIT_OUT) {
-  writeFileSync(resolve(process.env.IMAGE_AUDIT_OUT), JSON.stringify(report, null, 2) + '\n');
-}
-console.log(JSON.stringify(report, null, 2));
-if (blocked) process.exitCode = 1;
+if (process.env.IMAGE_AUDIT_OUT)
+  writeFileSync(resolve(process.env.IMAGE_AUDIT_OUT),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report,null,2));
+if (blocked) process.exitCode=1;

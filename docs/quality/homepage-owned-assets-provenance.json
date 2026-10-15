@@ -1,0 +1,98 @@
+{
+  "schema": "digital-dominance.homepage-asset-provenance.v1",
+  "not_release_approval": true,
+  "items": [
+    {
+      "category": "real_estate",
+      "public_url": "/images/home-industries/real_estate.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/e6aa23e34_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "79d8c9c8489e2bffedbc46d40629a9138401a9c4ad9a043ae888b2c132056058",
+      "bytes": 212274,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "med_spa",
+      "public_url": "/images/home-industries/med_spa.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/5ef289bef_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "0112d024001106934d793d9d6f73e85904a64aa5b9397f30fca74d61359c5f6c",
+      "bytes": 166422,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "chiropractic",
+      "public_url": "/images/home-industries/chiropractic.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/e3d3c1306_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "c2725f006e1cd16be06036ca2c3b0602500aaf26206ae61a03bcd820c772d07b",
+      "bytes": 183703,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "remodeling",
+      "public_url": "/images/home-industries/remodeling.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/bd651939c_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "f9ae6feeb19c88495503e0546a2c7ad12bb2da569604fc8b1a7f63c3eba4146a",
+      "bytes": 183625,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "moving",
+      "public_url": "/images/home-industries/moving.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a2d49e89b_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "4307e46dbee5cfc16b54e9fe23de24e5fe8efee3eababbc960f46a8c16acbac2",
+      "bytes": 268612,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "auto_detailing",
+      "public_url": "/images/home-industries/auto_detailing.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/6bee96b87_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "b9e56f9434bfea71477b5b5905eec8e9c41baba6f9103d7a32dadc79265545a8",
+      "bytes": 135091,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "restaurants",
+      "public_url": "/images/home-industries/restaurants.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/6a26270b8_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "2227946c03b27569d83cc05659ad2d81688100dddb021e5a505c0c829c289021",
+      "bytes": 186547,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "insurance",
+      "public_url": "/images/home-industries/insurance.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ce38bc06e_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "c7273c19b551a15a22891439dc650d6c58eb14fb49fc0dd7551fd4945aa16e19",
+      "bytes": 253352,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "mortgage",
+      "public_url": "/images/home-industries/mortgage.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/23df705e2_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "60dab21fbe0468029e5cdbf3b37c78e0ca1eff25559897c1e45529397af21ef7",
+      "bytes": 124804,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    },
+    {
+      "category": "cleaning_services",
+      "public_url": "/images/home-industries/cleaning_services.jpg",
+      "source_url": "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/c2936f808_generated_image.png",
+      "license": "Existing user Base44-generated asset; verify Base44 commercial usage terms",
+      "sha256": "d0df492f625e56894e287769cf01e7775000a462538016133f98bdb877a0d851",
+      "bytes": 211766,
+      "semantic_status": "CANDIDATE_NEEDS_INDEPENDENT_REVIEW"
+    }
+  ],
+  "file_encoding": "JPEG/JFIF",
+  "extension_corrected_from": ".png"
+}
