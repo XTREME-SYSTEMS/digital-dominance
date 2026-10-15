@@ -79,6 +79,18 @@ async function testCreativeLibrary(){
    assert.equal(r.customer_outbound_allowed,false);
    assert.equal(r.release_state,'NOT_PUBLISHED');
  }
+ const JSZip=(await import('jszip')).default;
+ const zip=await JSZip.loadAsync(fs.readFileSync(path.join(out,'APEX_CREATIVE_LIBRARY_V1.zip')));
+ const allZip=Object.entries(zip.files).filter(([name,file])=>!file.dir);
+ assert.equal(allZip.length,308,'307 assets plus one hash manifest in reproducible zip');
+ for(const a of manifest.artifacts){
+   const entry=zip.file(a.path);
+   assert.ok(entry,'ZIP_MISSING_ARTIFACT '+a.path);
+   const data=await entry.async('nodebuffer');
+   assert.equal(sha(data),a.sha256,'ZIP_CONTENT_MISMATCH:'+a.path);
+ }
+ const embeddedManifest=await zip.file('manifest.json').async('string');
+ assert.equal(sha(embeddedManifest),sha(fs.readFileSync(path.join(out,'manifest.json'))));
  const html=fs.readFileSync(path.join(out,'index.html'),'utf8');
  for(const token of ['id="library-app"','id="library-nav"','id="grid"','id="detail"','id="jump-social"','id="download-primary"','id="search"','id="export-catalog"']) {
    if(token==='id="download-primary"'){assert.match(html,/download-primary/)}else assert.ok(html.includes(token),token);
