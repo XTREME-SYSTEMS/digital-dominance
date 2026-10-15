@@ -211,6 +211,7 @@ import SmaiClientPortal from '@/pages/smai/ClientPortal';
 import SmaiAdminPortal from '@/pages/smai/AdminPortal';
 import CodeInjector from '@/components/codestudio/CodeInjector';
 import DataExport from '@/pages/admin/DataExport';
+import DataDownload from '@/pages/DataDownload';
 
 
 const AuthenticatedApp = () => {
@@ -439,6 +440,9 @@ const AuthenticatedApp = () => {
         <Route index element={<CustomerPortal />} />
       </Route>
       <Route path="/conversations" element={<Conversations />} />
+      <Route path="/data-download" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route index element={<DataDownload />} />
+      </Route>
       <Route path="/connect" element={<Connect />} />
       <Route path="/acquire" element={<Acquire />} />
       <Route path="/contractor" element={<ContractorApp />} />
