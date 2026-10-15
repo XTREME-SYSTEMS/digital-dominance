@@ -37,6 +37,12 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/json-gpt-sync" className={`wle-side-nav${isCore(["/admin/json-gpt-sync"]) ? " active" : ""}`}>
           <Code2 aria-hidden="true" />JSON GPT Sync
         </Link>
+        <Link to="/admin/one-click-factory" className={`wle-side-nav${isCore(["/admin/one-click-factory"]) ? " active" : ""}`}>
+          <Rocket aria-hidden="true" />One-Click Factory
+        </Link>
+        <Link to="/admin/generator-registry" className={`wle-side-nav${isCore(["/admin/generator-registry"]) ? " active" : ""}`}>
+          <Shield aria-hidden="true" />Generator Registry
+        </Link>
       </nav>
 
       {/* ── CORE: Inventory & Deployment ──────────────────────── */}
