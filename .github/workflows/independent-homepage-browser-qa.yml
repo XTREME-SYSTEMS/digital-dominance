@@ -7,6 +7,12 @@ on:
       - 'src/components/launch-engine/**'
       - 'src/data/homeIndustryImages.js'
       - 'src/components/template-studio/**'
+      - 'src/api/base44Client.js'
+      - 'src/lib/**'
+      - 'src/components/Seo.jsx'
+      - 'vite.config.js'
+      - 'scripts/preview-index-html.mjs'
+      - 'tests/*preview*.test.mjs'
       - 'public/images/**'
       - 'scripts/independent-homepage-browser-qa.cjs'
       - '.github/workflows/independent-homepage-browser-qa.yml'
@@ -29,8 +35,15 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+      - name: Run preview security and catalog regression tests
+        run: node --test tests/base44-preview-binding.test.mjs tests/local-stock-offline.test.mjs tests/preview-host.test.mjs tests/preview-index-html.test.mjs tests/wle-marketing-seo.test.mjs tests/unconfigured-base44-client.test.mjs
       - name: Build exact PR source
+        env:
+          VERCEL_ENV: preview
         run: npm run build
+      - name: Require static noindex in generated preview HTML
+        run: |
+          node -e "const h=require('node:fs').readFileSync('dist/index.html','utf8');if(!h.includes('name=\"robots\" content=\"noindex, nofollow, noarchive\"')){console.error('PREVIEW_NOT_NOINDEX');process.exit(1)}"
       - name: Discover Chrome or fail closed
         shell: bash
         run: |
