@@ -20,6 +20,13 @@ on:
       - "scripts/public-stock-catalog-regression.mjs"
       - "src/pages/admin/GeneratorSandbox.jsx"
       - "src/App.jsx"
+      - "src/lib/base44-backend.js"
+      - "src/lib/app-params.js"
+      - "src/lib/AuthContext.jsx"
+      - "src/api/base44Client.js"
+      - "src/pages/Login.jsx"
+      - "src/components/admin/AdminLayout.jsx"
+      - "scripts/admin-auth-routing-regression.mjs"
       - "vercel.json"
       - "vite.config.js"
       - "package*.json"
@@ -73,6 +80,8 @@ jobs:
           path: image-review/
           retention-days: 7
           if-no-files-found: error
+      - name: Verify authenticated admin API routing and strict role guards
+        run: npm run test:admin-auth
       - name: Build Vite frontend without releasing
         run: npm run build
       - name: Verify sandbox route and fail-closed operational invariants
