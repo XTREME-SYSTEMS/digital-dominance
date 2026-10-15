@@ -17,10 +17,10 @@ export default function LaunchHeroNav() {
   return (
     <nav className="wle-home-nav" aria-label="Main navigation">
       <div className="wle-home-nav-in">
-        <Link to="/" className="wle-home-logo" aria-label="Digital Dominance home" onClick={() => setMenuOpen(false)}>
+        <Link to="/" className="wle-home-logo" aria-label="Unlimited Websites home" onClick={() => setMenuOpen(false)}>
           <span className="wle-home-logo-mark"><Rocket aria-hidden="true" /></span>
           <span className="wle-home-logo-wordmark">
-            <strong>DIGITAL <span>DOMINANCE</span></strong>
+            <strong>UNLIMITED <span>WEBSITES</span></strong>
             <small>A STRATEGIC MINDS AI SYSTEM</small>
           </span>
         </Link>
