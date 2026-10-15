@@ -8,6 +8,8 @@ on:
       - 'base44/workflows/GPT Template Sync.jsonc'
       - 'scripts/gpt-template-ingestor-regression.mjs'
       - '.github/workflows/apex-gpt-template-qa.yml'
+      - 'scripts/apex-model-compatibility-audit.mjs'
+      - 'scripts/apex-tls-readonly-audit.mjs'
 
 permissions:
   contents: read
@@ -32,6 +34,17 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Regression of authorization, bound generation, and inert drafts
         run: node scripts/gpt-template-ingestor-regression.mjs
+      - name: Audit official OpenAI model deprecations against source, no provider calls
+        run: node scripts/apex-model-compatibility-audit.mjs
+      - name: Probe public Supabase TLS 1.3 only, no credentials
+        run: node scripts/apex-tls-readonly-audit.mjs
+      - name: Upload source and TLS audit receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: apex-safe-model-tls-audit
+          path: qa-receipts/
+          retention-days: 7
+          if-no-files-found: error
       - name: Assert scheduler stays status-only
         shell: bash
         run: |
