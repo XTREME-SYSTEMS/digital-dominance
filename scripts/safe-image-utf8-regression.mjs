@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 
-const source = readFileSync("src/components/ui/SafeImage.jsx", "utf8");
+const source = readFileSync("src/components/ui/SafeImage.jsx", "utf8").replace(/\r\n/g, "\n");
 const start = source.indexOf("const svgDataUri =");
 const end = source.indexOf("/**\n * SafeImage", start);
 if (start === -1 || end === -1) throw new Error("SAFE_IMAGE_PLACEHOLDER_BOUNDARY_MISSING");
