@@ -12,6 +12,8 @@ on:
       - 'scripts/promote-premium-catalog.mjs'
       - 'scripts/export-premium-handoff.mjs'
       - 'scripts/test-premium-handoff.mjs'
+      - 'scripts/test-premium-base44-mapping.mjs'
+      - 'scripts/premium-base44-template-mapping.mjs'
       - 'docs/quality/premium-hero-image-evidence-20261014.json'
       - 'docs/quality/premium-reviewer-keys.json'
       - 'docs/quality/premium-signed-approvals.json'
@@ -38,6 +40,8 @@ jobs:
           node scripts/build-premium-business-brands.mjs
       - name: Run source and cryptographic approval regression
         run: node scripts/test-premium-handoff.mjs
+      - name: Enforce exact Base44 TemplateLibrary schema before any admin import
+        run: node scripts/test-premium-base44-mapping.mjs
       - name: Generate approved-only, noindex visual catalog
         run: node scripts/promote-premium-catalog.mjs
       - name: Verify all unapproved designs are excluded
