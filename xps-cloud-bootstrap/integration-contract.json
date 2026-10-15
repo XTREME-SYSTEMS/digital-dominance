@@ -1,0 +1,43 @@
+{
+  "schema_version": "xps-sync/1.0-draft",
+  "status": "DRAFT_NOT_LIVE",
+  "tenant": "xps",
+  "event_fields": [
+    "event_id",
+    "tenant_id",
+    "aggregate_type",
+    "entity_id",
+    "origin",
+    "revision",
+    "idempotency_key",
+    "occurred_at",
+    "payload_hash",
+    "approval_class",
+    "receipt_ref"
+  ],
+  "provider_roles": {
+    "GPT": "authenticated instructions via MCP",
+    "GitHub": "code and immutable SHA",
+    "Drive": "documents and approved assets",
+    "Supabase": "existing authorized state and receipts",
+    "Vercel": "preview",
+    "Railway": "existing workers",
+    "Base44": "approved app adapters"
+  },
+  "controls": [
+    "field-level write ownership",
+    "echo suppression",
+    "idempotency",
+    "cursor replay",
+    "conflict quarantine",
+    "independent validation",
+    "rollback",
+    "approval gates"
+  ],
+  "pilot": {
+    "app": "XPS Xpress lead preview",
+    "environment": "development",
+    "synthetic_data": true,
+    "noindex": true
+  }
+}
