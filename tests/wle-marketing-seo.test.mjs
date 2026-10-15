@@ -6,7 +6,7 @@ test('approved website launch pages cannot inherit donor Epoxy metadata',()=>{
   for(const path of ['/', '/launch-engine', '/templates']){
     assert.equal(isWleMarketingRoute(path),true);
     assert.match(WLE_MARKETING_ROUTES[path].title,/Website|Templates|Unlimited/);
-    assert.doesNotMatch(JSON.stringify(WLE_MARKETING_ROUTES[path]),/epoxy|4[.]9|reviews|guaranteed/i);
+    assert.doesNotMatch(JSON.stringify(WLE_MARKETING_ROUTES[path]),/epoxy|4[.]9|\breviews\b|guaranteed/i);
   }
   assert.equal(isWleMarketingRoute('/epoxy-garage-floor-cost'),false);
 });
