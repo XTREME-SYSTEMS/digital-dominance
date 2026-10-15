@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build-premium-20.mjs && node scripts/compile-premium-sitepack.mjs --example && node scripts/write-premium-build-provenance.mjs && vite build",
+    "build": "node scripts/build-apex-creative-library.mjs && node scripts/build-premium-20.mjs && node scripts/compile-premium-sitepack.mjs --example && node scripts/write-premium-build-provenance.mjs && vite build",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
@@ -15,7 +15,8 @@
     "test:semrush-evidence": "node --test scripts/semrush-evidence.test.mjs",
     "preview": "vite preview",
     "test:premium-20": "node scripts/build-premium-20.mjs && node scripts/verify-premium-20.mjs",
-    "test:premium-sitepack": "node scripts/build-premium-20.mjs && node scripts/verify-premium-sitepack.mjs"
+    "test:premium-sitepack": "node scripts/build-premium-20.mjs && node scripts/verify-premium-sitepack.mjs",
+    "test:creative-library": "node scripts/build-apex-creative-library.mjs && node scripts/build-apex-creative-library.mjs --verify && node scripts/test-apex-creative-library.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.53",
