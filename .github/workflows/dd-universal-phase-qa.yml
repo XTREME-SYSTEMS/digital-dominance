@@ -10,6 +10,9 @@ on:
       - "scripts/universal-*.mjs"
       - "src/components/universal/**"
       - "src/components/ui/SafeImage.jsx"
+      - "src/data/homeIndustryImages.js"
+      - "src/data/topIndustries.js"
+      - "scripts/prepare-image-review-packet.mjs"
       - "scripts/safe-image-utf8-regression.mjs"
       - "src/components/template-studio/**"
       - "src/pages/TemplatesGallery.jsx"
@@ -61,6 +64,15 @@ jobs:
         run: npm run test:public-stock-catalog
       - name: Verify Unicode-safe image placeholders never crash React startup
         run: npm run test:safe-image
+      - name: Download and hash 40 approved-host preview images, no approvals
+        run: node scripts/prepare-image-review-packet.mjs --out image-review --fetch
+      - name: Save independent image review packet for human/vision agent
+        uses: actions/upload-artifact@v4
+        with:
+          name: dd-universal-image-review-packet
+          path: image-review/
+          retention-days: 7
+          if-no-files-found: error
       - name: Build Vite frontend without releasing
         run: npm run build
       - name: Verify sandbox route and fail-closed operational invariants
