@@ -1,0 +1,112 @@
+{
+  "validator": "independent guardian-validator /root/guardian_validator",
+  "timestamp_utc": "2026-10-13T12:34:21.291472+00:00",
+  "overall": "UNKNOWN",
+  "scope": "Connector-driven original template static preview; not X1 worker or batch pipeline",
+  "deployment_id": "dpl_3bBKzy9psAnznYZQzHqiCvarbZNF",
+  "url": "https://funnel-floor-visualizer-epoxy-website-43d0ibhqa.vercel.app/",
+  "project_id": "prj_nQ6dzGYzlumIfWRNkQEzvkWU2H61",
+  "checks": {
+    "provider_ready": {
+      "status": "PASS",
+      "state": "READY"
+    },
+    "preview_isolation": {
+      "status": "PASS",
+      "target": null,
+      "aliases": []
+    },
+    "http": {
+      "status": "PASS",
+      "status_code": 200,
+      "title": "Epoxy Flooring Studio | Epoxy Flooring"
+    },
+    "template_identity": {
+      "status": "PASS",
+      "expected_sha256": "ad337b29124479c449f4b76a98a4e5966f97642b24c1fee79e1f1ebe17a87f61",
+      "local_sha256": "ad337b29124479c449f4b76a98a4e5966f97642b24c1fee79e1f1ebe17a87f61",
+      "served_template_prefix_match": true,
+      "served_full_response_sha256": "42e7d6128ff168925bb2183d7e72ec1f76a3b571945c75a2a3b01b3bd37bee6d",
+      "suffix": "Vercel automatically appends feedback script (163 characters); CSP does not allow its script source; exact full-response bytes are therefore not identical."
+    },
+    "noindex": {
+      "status": "PASS",
+      "header": "noindex, nofollow, noarchive",
+      "meta": "noindex,nofollow",
+      "robots_txt": "User-agent: *\nDisallow: /\n",
+      "robots_http": 200
+    },
+    "security_headers": {
+      "status": "PASS",
+      "csp": "default-src 'none'; img-src https://media.base44.com; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+      "nosniff": "nosniff",
+      "hsts": "max-age=63072000; includeSubDomains; preload"
+    },
+    "desktop_dom": {
+      "status": "PASS",
+      "requested_viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "observation_request": "mcp_1791894584557_klefuy",
+      "controls": 16,
+      "title": "Epoxy Flooring Studio | Epoxy Flooring"
+    },
+    "service_select_action": {
+      "status": "PASS",
+      "receipt": "rcpt_1791894605396_di6q7v",
+      "action": "selected Metallic Epoxy",
+      "evidence": "Independent cloud browser selected Metallic Epoxy and accessibility tree confirmed selected value."
+    },
+    "anchors_and_faq": {
+      "status": "PASS",
+      "evidence": "Cloud browser verified 15 valid hash target links. Questions link navigated to #faq. First FAQ expanded and answer text visibly appeared. Contact anchor navigated to #contact."
+    },
+    "desktop_mobile_overflow_assets_console_screenshots": {
+      "status": "UNKNOWN",
+      "reason": "Exact requested 1440 and mobile390 viewports not tested; cloud browser has no documented resize API. Default desktop render, overflow, assets and screenshot now verified separately."
+    },
+    "visual_parity": {
+      "status": "UNKNOWN",
+      "reason": "No reference measurement or stored screenshots."
+    },
+    "x1_worker_batch_pipeline": {
+      "status": "UNKNOWN",
+      "reason": "Not dispatched or exercised in this scope."
+    },
+    "desktop_render_overflow_assets": {
+      "status": "PASS",
+      "viewport": {
+        "width": 1363,
+        "height": 936
+      },
+      "scrollWidth": 1348,
+      "overflow": false,
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 1024
+        },
+        {
+          "complete": true,
+          "naturalWidth": 1024
+        },
+        {
+          "complete": true,
+          "naturalWidth": 1024
+        }
+      ],
+      "screenshot": "/workspace/scratch/guardian-canary-desktop-proof.jpg"
+    },
+    "console": {
+      "status": "PASS",
+      "evidence": "No application-origin error in sampled browser log; extension metadata errors and prior Vercel-login Google warning excluded. No zero-error claim for injected provider code."
+    }
+  },
+  "limitations": [
+    "Full independent Guardian PASS withheld because exact desktop1440/mobile390 and measured visual parity remain unverified.",
+    "Preview has no lead submission endpoint and states it is a design preview.",
+    "No production or provider configuration mutations by validator."
+  ],
+  "first_failed_attempt_receipt": "guardian-failed-attempt-receipt.json"
+}

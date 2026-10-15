@@ -25,7 +25,7 @@ export default async function(req) {
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await req.json();
-    const {
+    let {
       templateKey, templateName,
       domainStrategy = 'nearme_subdomain',
       domainBase = 'epoxyquotenearme.com',
@@ -45,36 +45,49 @@ export default async function(req) {
 
     const svc = base44.asServiceRole;
 
+    // Confirm a real per-site exporter before queue mutation or paid research.
+    // The legacy Code Studio exporter ignores these payloads and releases
+    // unrelated published pages to production.
+    const capabilityResponse = await base44.functions.invoke('vercelDeploy', { action: 'capabilities' });
+    if (capabilityResponse?.data?.per_site_deploy !== true) {
+      return Response.json({
+        error: 'PER_SITE_EXPORT_NOT_SUPPORTED',
+        status: 'blocked',
+        deployed: 0,
+        validated: 0,
+      }, { status: 409 });
+    }
+
     // Auto mode: find the most recent batch with pending sites and continue it
     if (mode === 'auto') {
       const activeBatches = await svc.entities.MassLaunchBatch.filter(
         { status: { $in: ['orchestrating', 'queued', 'validating'] } },
         { limit: 5, sort: '-created_at' }
       );
-      const activeBatch = (activeBatches.items || [])[0];
+      const activeBatch = (activeBatches.items || activeBatches)[0];
       if (activeBatch) {
         // Continue this batch
         const pendingCheck = await svc.entities.WebsiteQueue.filter(
           { id: { $in: activeBatch.queue_item_ids }, status: 'queued' },
           { limit: 1 }
         );
-        if ((pendingCheck.items || []).length > 0) {
+        if ((pendingCheck.items || pendingCheck).length > 0) {
           // Re-run with continueBatchId
-          body.continueBatchId = activeBatch.batch_id;
-          body.templateKey = activeBatch.template_key;
-          body.templateName = activeBatch.template_name;
-          body.domainBase = activeBatch.domain_base;
-          body.domainStrategy = activeBatch.domain_strategy;
-          body.googleSyncEnabled = activeBatch.google_sync_enabled;
-          body.autoHealEnabled = activeBatch.auto_heal_enabled;
-          body.contentOptimization = activeBatch.content_optimization;
+          continueBatchId = activeBatch.batch_id;
+          templateKey = activeBatch.template_key;
+          templateName = activeBatch.template_name;
+          domainBase = activeBatch.domain_base;
+          domainStrategy = activeBatch.domain_strategy;
+          googleSyncEnabled = activeBatch.google_sync_enabled;
+          autoHealEnabled = activeBatch.auto_heal_enabled;
+          contentOptimization = activeBatch.content_optimization;
         } else {
           // No pending sites — trigger test swarm directly
           waitUntil(runTestSwarmAsync(base44, activeBatch.batch_id));
-          await svc.entities.MassLaunchBatch.update(activeBatch.id, { status: 'complete', current_step: 'complete', completed_at: new Date().toISOString() });
+          await svc.entities.MassLaunchBatch.update(activeBatch.id, { status: 'validating', current_step: 'awaiting_independent_qa' });
           return Response.json({
             batch_id: activeBatch.batch_id,
-            status: 'complete',
+            status: 'validating',
             processed_this_run: 0,
             message: 'No pending sites — triggered final test swarm for existing batch.',
           });
@@ -97,7 +110,7 @@ export default async function(req) {
     // ── Create or continue batch ──────────────────────────────────────────
     if (continueBatchId) {
       const existing = await svc.entities.MassLaunchBatch.filter({ batch_id: continueBatchId }, { limit: 1 });
-      batch = existing.items?.[0];
+      batch = (existing.items || existing)[0];
       if (!batch) return Response.json({ error: 'Batch not found' }, { status: 404 });
     } else {
       if (!templateKey || !locations.length) {
@@ -239,31 +252,25 @@ export default async function(req) {
 
           // 2) Deploy via Vercel — use universal generator HTML as the base
           await svc.entities.WebsiteQueue.update(site.id, { status: 'deploying' });
-          let deployedUrl = site.domain;
-          try {
-            const deployRes = await base44.functions.invoke('vercelDeploy', {
+          const deployRes = await base44.functions.invoke('vercelDeploy', {
               domain: site.domain,
               city: site.target_city,
               state: site.target_state,
               templateKey: batch.template_key,
+              site_id: site.id,
               content,
               baseHtml: baseSite.html,
             });
-            deployedUrl = deployRes?.data?.url || deployedUrl;
-          } catch (e) { /* deployment may fail if Vercel not configured */ }
+          const proof = requireDeploymentProof(deployRes?.data, site.id);
+          const deployedUrl = proof.url;
           deployed++;
           await svc.entities.WebsiteQueue.update(site.id, {
-            status: 'live',
-            generated_url: deployedUrl.startsWith('http') ? deployedUrl : `https://${deployedUrl}`,
+            status: 'deploying',
+            generated_url: deployedUrl,
             deployed_at: new Date().toISOString(),
             seo_score: content.seo_score || 0,
             aeo_score: content.aeo_score || 0,
           });
-
-          // 3) Google sync + sitemap + indexing — fire and forget (async, non-blocking)
-          if (batch.google_sync_enabled) {
-            waitUntil(runGoogleSyncAsync(base44, deployedUrl));
-          }
 
           // 4) Validate
           const validation = runValidation(deployedUrl, site, content);
@@ -271,12 +278,18 @@ export default async function(req) {
             canonical_url: `https://${deployedUrl.replace(/^https?:\/\//, '')}`,
             location_id: site.id,
             validated_at: new Date().toISOString(),
-            validator_version: '3.0',
-            deployment_id: batch.batch_id,
+            validator_version: '4.0-evidence-incomplete',
+            deployment_id: proof.deployment_id,
             ...validation,
           });
           newReceiptIds.push(receipt.id);
           if (validation.overall_pass) validated++;
+          if (!validation.overall_pass) throw new Error('INDEPENDENT_SITE_QA_REQUIRED');
+
+          // Indexing is eligible only after independent QA, never on enqueue.
+          if (batch.google_sync_enabled) {
+            waitUntil(runGoogleSyncAsync(base44, deployedUrl));
+          }
 
           // 5) Google 2026 Programmatic Standard scoring (deterministic)
           const siteDataForScoring = buildSiteDataForScoring(content, validation, site);
@@ -313,7 +326,7 @@ export default async function(req) {
         } catch (err) {
           failed++;
           await svc.entities.WebsiteQueue.update(site.id, {
-            status: 'queued',
+            status: 'archived',
             notes: (site.notes || '') + ` | ERROR: ${err.message?.slice(0, 200)}`,
           }).catch(() => {});
           return { siteId: site.id, error: err.message };
@@ -333,7 +346,7 @@ export default async function(req) {
 
     // ── Finalize ───────────────────────────────────────────────────────────
     const avgScore = scoreSum.count > 0 ? Math.round(scoreSum.total / scoreSum.count) : 0;
-    const isComplete = toProcess.length > 0; // processed all pending in this run
+    const isComplete = toProcess.length > 0 && failed === 0 && validated === toProcess.length;
 
     await svc.entities.MassLaunchBatch.update(batch.id, {
       sites_built: (batch.sites_built || 0) + built,
@@ -342,8 +355,8 @@ export default async function(req) {
       sites_scored: (batch.sites_scored || 0) + scored,
       sites_failed: (batch.sites_failed || 0) + failed,
       average_google_score: avgScore,
-      status: isComplete ? 'validating' : 'complete',
-      current_step: isComplete ? 'swarm_testing' : 'complete',
+      status: 'validating',
+      current_step: isComplete ? 'swarm_testing' : 'awaiting_independent_qa_or_repair',
     });
 
     // ── Trigger parallel test swarm (async, non-blocking) ─────────────────
@@ -361,11 +374,11 @@ export default async function(req) {
       benchmark_run: !!benchmarkData,
       services_included: services.length,
       parallel_batch_size: batchSize,
-      status: isComplete ? 'validating' : 'complete',
+      status: 'validating',
       test_swarm_triggered: isComplete && body.runTestSwarm !== false,
       message: isComplete
-        ? 'Batch deployed — parallel test swarm running async. All sites launched with skip trace, benchmark enhancement, Google Standard scoring, God Mode optimization, and cloud browser validation.'
-        : 'No pending sites to process.',
+        ? 'Deployment evidence recorded; independent batch QA still pending.'
+        : 'Batch remains unverified; inspect failure evidence before retrying.',
     });
   } catch (error) {
     console.error('massLaunchOrchestrator error:', error.message);
@@ -496,47 +509,27 @@ async function runGodModeOptimization(base44, site, currentScore, googleStandard
   }
 }
 
-function runValidation(url, site, content) {
-  const failures = [];
-  const hasUrl = !!url;
-  const hasContent = !!content?.title;
-  const hasStructured = !!content?.structured_data;
-  const hasFaqs = (content?.faqs?.length || 0) > 0;
-  const hasLocal = !!content?.local_content;
-
-  if (!hasUrl) failures.push('No deployment URL');
-  if (!hasContent) failures.push('Missing title/meta content');
-  if (!hasStructured) failures.push('Missing structured data');
-  if (!hasFaqs) failures.push('No FAQs for AEO');
-  if (!hasLocal) failures.push('No local-specific content');
-
+// No browser/HTTP measurements are made here. Omitted schema fields are UNKNOWN,
+// not fabricated booleans. A distinct validator must supply real evidence.
+function runValidation(url, _site, _content) {
   return {
-    dns_reachable: hasUrl,
-    tls_valid: hasUrl,
-    http_status: hasUrl ? 200 : 0,
     final_url: url,
-    render_complete: hasContent,
-    correct_city: !!site.target_city,
-    correct_state: !!site.target_state,
-    correct_h1: hasContent,
-    correct_title: hasContent,
-    correct_description: hasContent,
-    correct_canonical: hasUrl,
-    correct_robots: true,
-    correct_og_url: hasUrl,
-    structured_data_valid: hasStructured,
-    correct_business_facts: hasContent,
-    internal_nav_works: true,
-    estimate_cta_present: true,
-    visualizer_accessible: true,
-    mobile_viewport_ok: true,
-    desktop_viewport_ok: true,
-    canonical_conflict: false,
-    sitemap_member: hasUrl,
-    registry_member: hasUrl,
-    overall_pass: failures.length === 0,
-    failure_reasons: failures,
+    overall_pass: false,
+    failure_reasons: ['INDEPENDENT_SITE_QA_REQUIRED', 'HTTP_DNS_TLS_AND_BROWSER_CHECKS_UNMEASURED'],
   };
+}
+
+function requireDeploymentProof(proof, siteId) {
+  if (!proof || proof.success !== true || proof.ready_state !== 'READY' ||
+      !/^dpl_[A-Za-z0-9]+$/.test(proof.deployment_id || '') ||
+      proof.site_id !== siteId) throw new Error('DEPLOYMENT_PROOF_INCOMPLETE_OR_MISMATCHED');
+  let url;
+  try { url = new URL(proof.url); } catch { throw new Error('DEPLOYMENT_URL_INVALID'); }
+  if (url.protocol !== 'https:' || url.username || url.password || url.port ||
+      url.search || url.hash || !/^[a-z0-9-]+\.vercel\.app$/.test(url.hostname)) {
+    throw new Error('DEPLOYMENT_URL_NOT_PROVIDER_ISSUED');
+  }
+  return proof;
 }
 
 function computeGoogleScore(content, validation) {

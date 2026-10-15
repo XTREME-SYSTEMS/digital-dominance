@@ -79,6 +79,22 @@ export default async function (req: Request): Promise<Response> {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
 
+    const body = await req.json().catch(() => ({}));
+    // This exporter reads published Code Studio pages; it does not implement
+    // the per-site batch contract. Probe it without secrets or provider writes.
+    if (body.action === 'capabilities') {
+      return Response.json({
+        exporter: 'published-code-studio',
+        per_site_deploy: false,
+        synthetic_noindex_preview: false,
+        independent_qa: false,
+      });
+    }
+    if (['domain', 'city', 'state', 'templateKey', 'content', 'site_id', 'preview']
+      .some((key) => Object.hasOwn(body, key))) {
+      return Response.json({ error: 'PER_SITE_EXPORT_NOT_SUPPORTED' }, { status: 409 });
+    }
+
     const token = secrets.get('VERCEL_API_TOKEN');
     const projectName = secrets.get('VERCEL_PROJECT_NAME') || 'epoxy-garage-code-studio';
     if (!token) return Response.json({ error: 'VERCEL_API_TOKEN secret is not set' }, { status: 500 });
@@ -112,7 +128,12 @@ export default async function (req: Request): Promise<Response> {
     // Add vercel.json for routing
     files.push({
       file: 'vercel.json',
-      data: JSON.stringify({ rewrites: pages.map((p: any) => ({ source: `/p/${p.slug}`, destination: `/p/${p.slug}.html` })) }, null, 2)
+      data: JSON.stringify({
+        // Explicit static outputs prevent an existing Vite project preset
+        // from trying to run vite build on an HTML-only export.
+        builds: [{ src: '**/*.html', use: '@vercel/static' }],
+        rewrites: pages.map((p: any) => ({ source: `/p/${p.slug}`, destination: `/p/${p.slug}.html` })),
+      }, null, 2)
     });
 
     // Create the deployment
@@ -137,7 +158,10 @@ export default async function (req: Request): Promise<Response> {
 
     const deployment = await deployRes.json();
     return Response.json({
-      success: true,
+      success: false,
+      accepted: true,
+      ready_state: deployment.readyState || deployment.status || 'UNKNOWN',
+      validation_status: 'UNKNOWN',
       deployment_id: deployment.id,
       url: deployment.url ? `https://${deployment.url}` : null,
       inspect_url: deployment.inspectorUrl || null,
