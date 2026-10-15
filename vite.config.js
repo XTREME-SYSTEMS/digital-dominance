@@ -1,6 +1,7 @@
 import base44 from "@base44/vite-plugin"
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { transformIndexHtmlForEnvironment } from './scripts/preview-index-html.mjs'
 import { execFileSync } from "node:child_process";
 
 function sourceIdentity() {
@@ -33,5 +34,15 @@ export default defineConfig({
       visualEditAgent: true
     }),
     react(),
+    {
+      name: 'digital-dominance-preview-robots',
+      apply: 'build',
+      transformIndexHtml: {
+        order: 'post',
+        handler(html) {
+          return transformIndexHtmlForEnvironment(html, process.env.VERCEL_ENV);
+        },
+      },
+    },
   ]
 });
