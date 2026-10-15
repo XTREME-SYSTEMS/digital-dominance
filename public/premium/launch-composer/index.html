@@ -22,8 +22,8 @@ h1 em{font-style:normal;color:var(--gold)}p{color:var(--muted);line-height:1.7} 
 .rail{max-height:810px;overflow-y:auto;padding:12px;scrollbar-color:#425363 #111b26}
 .search{width:100%;background:#0c1722;color:var(--pale);border:1px solid #455566;border-radius:9px;padding:13px 14px;margin-bottom:12px;font-size:13px}
 .master-option{display:flex;width:100%;gap:12px;align-items:center;background:transparent;border:1px solid transparent;text-align:left;color:var(--pale);padding:9px;border-radius:12px;margin:3px 0;transition:background .2s,border-color .2s}
-.master-option:hover{background:#233445}.master-option[aria-selected=true]{border-color:var(--gold);background:#342c2c}
-.thumb{width:73px;height:57px;flex-shrink:0;background:radial-gradient(at 40% 30%,#38556f,#0c1724);border-radius:7px;overflow:hidden}.thumb img{width:100%;height:100%;object-fit:cover}
+.master-option:hover{background:#233445}.master-option[aria-pressed=true]{border-color:var(--gold);background:#342c2c}
+.thumb{width:73px;height:57px;flex-shrink:0;background:radial-gradient(at 40% 30%,#38556f,#0c1724);border-radius:7px;overflow:hidden}.thumb img{width:100%;height:100%;object-fit:contain;background:#111b26}
 .master-copy{min-width:0}.master-copy strong{display:block;font:750 13px 'Manrope',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.master-copy small{display:block;font-size:10px;color:var(--muted);margin-top:5px}.master-pill{font-size:9px;color:var(--gold)}
 .main-preview{padding:18px}.preview-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:16px}.preview-title{font:700 17px 'Manrope',sans-serif}
 .device-switch{display:flex;gap:5px;background:#09131c;border-radius:9px;border:1px solid #3b4b59;padding:4px}.device-switch button{border:0;background:transparent;color:#b7c5cf;border-radius:6px;padding:8px 11px;font-size:11px}.device-switch button[aria-pressed=true]{background:#d4b281;color:#151b22;font-weight:800}
@@ -53,7 +53,7 @@ footer{border-top:1px solid #3444547d;text-align:center;padding:25px;color:#8da4
   <div class="stats"><div class="stat"><strong id="master-count">20</strong><small>Premium design masters</small></div><div class="stat"><strong>0</strong><small>Public sites created here</small></div><div class="stat"><strong>1 → 10 → 100</strong><small>Approval-gated batch ladder</small></div></div>
 </div>
 <main class="workspace">
- <section class="panel"><div class="panel-head"><div class="eyebrow">01 / Select your design</div><h2>Master Library</h2><p class="panel-sub">Twenty art-directed full-page compositions</p></div><div class="rail"><input class="search" type="search" id="master-filter" placeholder="Search a master or industry" aria-label="Filter premium masters"><div role="listbox" aria-label="Premium master designs" id="master-list"><p class="hint">Loading verified catalog…</p></div></div></section>
+ <section class="panel"><div class="panel-head"><div class="eyebrow">01 / Select your design</div><h2>Master Library</h2><p class="panel-sub">Twenty art-directed full-page compositions</p></div><div class="rail"><input class="search" type="search" id="master-filter" placeholder="Search a master or industry" aria-label="Filter premium masters"><div role="group" aria-label="Premium master designs" id="master-list"><p class="hint">Loading verified catalog…</p></div></div></section>
  <section class="panel"><div class="main-preview"><div class="preview-toolbar"><div><div class="eyebrow">02 / Actual scrollable website</div><div class="preview-title" id="preview-name">Select a master</div></div><div class="device-switch" role="group" aria-label="Preview device"><button id="desktop-btn" aria-pressed="true" type="button">Desktop</button><button id="mobile-btn" aria-pressed="false" type="button">Mobile</button></div></div><div class="frame-wrap" id="preview-frame-wrap"><iframe id="premium-frame" sandbox="allow-scripts" title="Isolated full-page website preview" referrerpolicy="no-referrer" loading="eager"></iframe></div><a class="open-full" id="open-full" href="../collection/" target="_blank" rel="noopener noreferrer">Open complete website in another tab ↗</a><p class="notice">The iframe is an isolated development preview. Scroll within it to inspect the complete homepage. Live forms, CRM writes and payments are not enabled.</p></div></section>
  <section class="panel right"><div class="panel-head"><div class="eyebrow">03 / Configure batch</div><h2>Launch Proposal</h2><p class="panel-sub">A versioned draft. Not deployment approval.</p></div><div class="controls">
    <section><div class="step">A / BRAND AND VOLUME</div><label for="brand">Working brand name</label><input id="brand" autocomplete="off" maxlength="90" placeholder="e.g. XPS Surface Concepts" value="Synthetic Concept Brand">
@@ -73,15 +73,15 @@ footer{border-top:1px solid #3444547d;text-align:center;padding:25px;color:#8da4
    {id:'argent',industry:'Legal Services',family:'Architectural editorial',source:'V2 signature',url:'../templates/argent/index.html',photo:'../previews/argent-desktop.png'},
    {id:'atelier',industry:'Luxury Ecommerce',family:'Minimal luxury commerce',source:'V2 signature',url:'../templates/atelier/index.html',photo:'../previews/atelier-desktop.png'}
  ];
- const photoSources=['photo-1492144534655-ae79c964c9d7','photo-1600585154340-be6161a56a0c','photo-1544161515-4ab6ce6db874','photo-1551288049-bebda4e38f71','photo-1487958449943-2429e8be8625','photo-1571896349842-33c89424de2d','photo-1600566752355-35792bedcfea','photo-1486406146926-c627a92ad1ab','photo-1509391366360-2e959784a276','photo-1486406146926-c627a92ad1ab','photo-1600607687939-ce8a6c25118c','photo-1558655146-9f40138edfeb','photo-1600607687939-ce8a6c25118c','photo-1600585154340-be6161a56a0c','photo-1517836357463-d25dfeac3438','photo-1523275335684-37898b6baf30','photo-1606811971618-4486d14f3f99'];
+
  const masterList=[];let selected=null;let sourceIdentity=null;
  function safeText(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
  function render(){
   const needle=search.value.trim().toLowerCase();list.replaceChildren();
   const rows=masterList.filter(t=>[t.id,t.industry,t.family].join(' ').toLowerCase().includes(needle));
   for(const t of rows){
-   const b=document.createElement('button');b.type='button';b.className='master-option';b.setAttribute('role','option');
-   b.setAttribute('aria-selected',String(selected?.id===t.id));b.dataset.masterId=t.id;
+   const b=document.createElement('button');b.type='button';b.className='master-option';
+   b.setAttribute('aria-pressed',String(selected?.id===t.id));b.dataset.masterId=t.id;
    const thumb=document.createElement('span');thumb.className='thumb';const pic=document.createElement('img');pic.loading='lazy';pic.alt='';pic.src=t.photo;thumb.appendChild(pic);
    const copy=document.createElement('span');copy.className='master-copy';
    const title=document.createElement('strong');title.textContent=t.industry;const sub=document.createElement('small');sub.textContent=t.family;
@@ -91,7 +91,8 @@ footer{border-top:1px solid #3444547d;text-align:center;padding:25px;color:#8da4
   if(!rows.length){const no=document.createElement('p');no.className='hint';no.textContent='No matching masters.';list.appendChild(no);}
  }
  function choose(t){
-   selected=t;name.textContent=t.industry+' · '+t.family;frame.src=t.url;full.href=t.url;render();
+   selected=t;name.textContent=t.industry+' · '+t.family;frame.src=t.url;full.href=t.url;
+   for(const b of list.querySelectorAll('.master-option'))b.setAttribute('aria-pressed',String(b.dataset.masterId===t.id));
    status.textContent='Master selected: '+t.id+'. Complete the markets and export a review packet. No provider writes occurred.';
  }
  document.getElementById('desktop-btn').addEventListener('click',()=>setDevice('desktop'));
@@ -175,9 +176,9 @@ footer{border-top:1px solid #3444547d;text-align:center;padding:25px;color:#8da4
      sourceIdentity=x;
    }
    masterList.push(...original);
-   for(let i=0;i<c.new_masters.length;i++){const t=c.new_masters[i];if(!/^[a-z0-9-]+$/.test(t.id))throw Error('Invalid template id');
+   for(const t of c.new_masters){if(!/^[a-z0-9-]+$/.test(t.id))throw Error('Invalid template id');
      masterList.push({id:t.id,industry:t.industry,family:t.family,source:'New editorial master',
-       photo:'https://images.unsplash.com/'+photoSources[i]+'?auto=format&fit=crop&w=400&q=70',
+       photo:'../collection/screenshots/'+t.id+'-desktop.jpg',
        url:'../collection/'+t.id+'/index.html'});
    }
    document.getElementById('master-count').textContent=String(masterList.length);render();choose(original[0]);
