@@ -38,7 +38,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
       - name: Run preview security and catalog regression tests
-        run: node --test tests/base44-preview-binding.test.mjs tests/local-stock-offline.test.mjs tests/preview-host.test.mjs tests/preview-index-html.test.mjs tests/wle-marketing-seo.test.mjs tests/unconfigured-base44-client.test.mjs
+        run: node --test tests/base44-preview-binding.test.mjs tests/local-stock-offline.test.mjs tests/preview-host.test.mjs tests/preview-index-html.test.mjs tests/wle-marketing-seo.test.mjs tests/unconfigured-base44-client.test.mjs tests/stock-template-preview-source.test.mjs
       - name: Build exact PR source
         env:
           VERCEL_ENV: preview
