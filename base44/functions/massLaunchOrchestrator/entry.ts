@@ -250,8 +250,8 @@ export default async function(req) {
           built++;
 
           // 2) Provider receipt + bounded public GET. This is not final QA.
-          // Legacy vercelDeploy still targets production; do NOT run a canary
-          // until a separate preview-only adapter is independently validated.
+          // Legacy Vercel adapter targets production. Operator-authorized releases
+          // require provider/HTTP proof; separate site/domain identity is still pending.
           await svc.entities.WebsiteQueue.update(site.id, { status: 'deploying' });
           const deployRes = await base44.functions.invoke('vercelDeploy', {
             domain: site.domain, city: site.target_city, state: site.target_state,
@@ -284,8 +284,7 @@ export default async function(req) {
           // No Search Console, IndexNow or sitemap publication here.
           // Release and indexing need a distinct operator-approved validation gate.
 
-          // 5) Google 2026 Programmatic Standard scoring (deterministic)
-          // 5) Scoring is not a Google score and must not run on unreviewed content.
+          // 5) Internal scoring is not a Google ranking score and must not run on unreviewed content.
           let googleStandardScore = null;
           let googleScore = 0;
           if (validation.overall_pass) {
@@ -300,11 +299,8 @@ export default async function(req) {
             scored++;
           }
 
-          // 6) God Mode optimization for scores < 90 (async)
-          const googleScore = googleStandardScore?.score || computeGoogleScore(content, validation);
-          scoreSum.total += googleScore;
-          scoreSum.count++;
-          scored++;
+          // 6) Internal optimization is allowed only after evidence-backed validation.
+          // The previously calculated googleScore is already available above.
 
           if (validation.overall_pass && googleScore < 90) {
             waitUntil(runGodModeOptimization(base44, site, googleScore, googleStandardScore, batch));
@@ -316,7 +312,9 @@ export default async function(req) {
           }
 
           await svc.entities.WebsiteQueue.update(site.id, {
-            status: validation.overall_pass ? 'monitoring' : 'deploying',
+            // 'live' means a provider-confirmed, publicly reachable Vercel deployment only.
+            // Independent SEO/content validation is tracked separately and stays pending.
+            status: validation.overall_pass ? 'monitoring' : 'live',
             traffic_score: googleScore,
             assigned_agent: `site-agent-${site.target_city?.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
             last_audit_at: new Date().toISOString(),
