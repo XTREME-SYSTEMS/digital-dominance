@@ -1,0 +1,31 @@
+name: Live Template Gallery Browser Smoke
+on:
+  push:
+    branches: ['test/stock-gallery-live-browser-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      LIVE_SITE: https://digital-dominance-jade.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright test dependencies
+        run: npm --prefix scripts/browser-smoke install --ignore-scripts --no-audit --no-fund
+      - name: Install Chromium browser
+        run: ./scripts/browser-smoke/node_modules/.bin/playwright install --with-deps chromium
+      - name: Test live gallery at desktop and mobile
+        run: node scripts/browser-smoke/check.mjs
+      - name: Upload visual test evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gallery-browser-evidence
+          path: scripts/browser-smoke/artifacts/*.png
+          if-no-files-found: ignore
