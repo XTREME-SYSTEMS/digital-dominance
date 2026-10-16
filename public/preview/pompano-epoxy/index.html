@@ -45,15 +45,15 @@
         </div>
         <aside class="lead-panel" aria-labelledby="lead-title">
           <div class="lead-panel-top"><span class="panel-kicker">START YOUR PROJECT</span><h2 id="lead-title">GET A <em>FREE</em> PROJECT ESTIMATE</h2><p>Tell us about your project. In this preview, details stay on your device.</p></div>
-          <form id="intro-form" novalidate>
+          <div id="intro-form" role="group" aria-label="Local-only preview intake">
             <label class="field-label">Your name <span aria-hidden="true">*</span><input id="intro-name" name="name" autocomplete="name" maxlength="90" required placeholder="Full name" /></label>
             <label class="field-label">Your phone <span aria-hidden="true">*</span><input id="intro-phone" name="phone" type="tel" autocomplete="tel" maxlength="30" required placeholder="Phone number" /></label>
             <label class="field-label">Your email <span aria-hidden="true">*</span><input id="intro-email" name="email" type="email" autocomplete="email" maxlength="200" required placeholder="Email address" /></label>
             <label class="field-label">Project ZIP code <span aria-hidden="true">*</span><input id="intro-zip" name="zip" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5" required placeholder="ZIP code" /></label>
             <p id="intro-error" role="alert" class="form-error" hidden></p>
-            <button class="cta cta-yellow cta-wide" type="submit">Continue to sample estimate <span aria-hidden="true">→</span></button>
+            <button id="intro-next" class="cta cta-yellow cta-wide" type="button">Continue to sample estimate <span aria-hidden="true">→</span></button>
             <p class="preview-disclaimer">No lead is submitted. No CRM, email or SMS is triggered in this development preview.</p>
-          </form>
+          </div>
           <div class="panel-divider"><span>OR ASK ABOUT XPS PRODUCTS &amp; TRAINING</span></div>
           <a class="cta cta-outline cta-wide" href="tel:+18779585264"><span aria-hidden="true">☎</span> Call XPS (877) 958-5264</a>
         </aside>
@@ -66,7 +66,7 @@
         <div><p class="eyebrow dark">01 / PLAN YOUR FLOOR</p><h2 id="estimate-heading">Tell us about <span>your project.</span></h2><p>Five quick choices shape your example range. Your selections remain in this browser session.</p></div>
         <span class="preview-pill">PREVIEW CALCULATOR</span>
       </div>
-      <form id="estimate-form" novalidate>
+      <div id="estimate-form" role="group" aria-label="Local-only sample estimator">
         <div class="upload-block">
           <div class="upload-lead"><span class="section-number">1.</span><div><h3>UPLOAD PROJECT PHOTOS</h3><p>Optional, up to 10 photos. Files are inspected locally and never uploaded.</p></div></div>
           <label class="photo-picker" for="project-photos"><span class="upload-icon" aria-hidden="true">↑</span><strong>Choose photos of your floor</strong><span>JPG, PNG or WebP, max 10 MB each</span><input id="project-photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple /></label>
@@ -78,12 +78,12 @@
           <label class="estimate-field"><span><b>4.</b> SURFACE CONDITION</span><select id="condition"><option value="good">Clean / minimal repairs</option><option value="minor">Some cracks or stains</option><option value="several">Several repairs</option><option value="major">Significant repairs / unsure</option></select></label>
           <label class="estimate-field"><span><b>5.</b> DESIRED FINISH</span><select id="finish"><option value="flake">Decorative epoxy flake</option><option value="solid">Solid color coating</option><option value="quartz">Quartz broadcast</option><option value="metallic">Metallic decorative</option></select></label>
         </div>
-        <div class="estimate-actions"><p>Test assumptions only. Actual pricing requires slab assessment, moisture testing and a qualified installer quote.</p><button class="cta cta-yellow" type="submit">See illustrative range <span aria-hidden="true">→</span></button></div>
+        <div class="estimate-actions"><p>Test assumptions only. Actual pricing requires slab assessment, moisture testing and a qualified installer quote.</p><button id="calculate-estimate" class="cta cta-yellow" type="button">See illustrative range <span aria-hidden="true">→</span></button></div>
         <p id="estimate-error" class="form-error" role="alert" hidden></p>
         <output id="estimate-output" class="estimate-result" aria-live="polite" hidden>
           <span class="result-icon" aria-hidden="true">✓</span><div><p>ILLUSTRATIVE RANGE ONLY</p><strong id="estimate-value">$0–$0</strong><small id="estimate-detail"></small><span class="result-note">Demonstration values are drawn from existing test settings. This is not a verified local quote, price offer or commitment. Photos are not uploaded and no lead was saved.</span></div>
         </output>
-      </form>
+      </div>
     </section>
 
     <section class="colors dark-section" id="colors" aria-labelledby="colors-title">
