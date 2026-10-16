@@ -67,3 +67,19 @@ test('validator contains no hard-coded indexation assertions', () => {
   assert.doesNotMatch(src, /sitemap_generated:\s*true/);
   assert.doesNotMatch(src, /queued:\s*site\.status !== 'queued' \|\| true/);
 });
+
+test('provider-verified site is shown live without impersonating independent content approval', () => {
+  const src = readFileSync(new URL('../base44/functions/massLaunchOrchestrator/entry.ts', import.meta.url), 'utf8');
+  assert.match(src, /let googleScore = 0;/);
+  assert.doesNotMatch(src, /const googleScore = googleStandardScore\?\.score/);
+  assert.match(src, /status: validation\.overall_pass \? 'monitoring' : 'live'/);
+  assert.match(src, /if \(validation\.overall_pass\)/);
+});
+
+test('test swarm never counts failures as validations or invents viewport evidence', () => {
+  const src = readFileSync(new URL('../base44/functions/parallelTestSwarm/entry.ts', import.meta.url), 'utf8');
+  assert.match(src, /sites_validated: \(b\.sites_validated \|\| 0\) \+ passed,/);
+  assert.doesNotMatch(src, /sites_validated: [^\n]*\+ passed \+ failed/);
+  assert.match(src, /mobile_viewport_ok: result\.tests\?\.responsive\?\.mobile === true/);
+  assert.match(src, /desktop_viewport_ok: result\.tests\?\.responsive\?\.desktop === true/);
+});
