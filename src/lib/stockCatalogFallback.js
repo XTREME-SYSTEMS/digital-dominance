@@ -6,7 +6,7 @@
  */
 import { STOCK_INDUSTRIES, STOCK_VERSION } from '../../base44/shared/stockIndustries.js';
 import { STOCK_DESIGNS } from '../../base44/shared/stockDesigns.js';
-import { stockTemplateRecord } from '../../base44/shared/stockTemplateCompiler.js';
+import { stockTemplateRecord, compileStockTemplate } from '../../base44/shared/stockTemplateCompiler.js';
 
 export const BUILTIN_STOCK_PREFIX = 'builtin-stock-';
 let cache = null;
@@ -87,4 +87,18 @@ export function isStockBackendUnavailable(error) {
   if (code === 404 || code === 502 || code === 503 || code === 504) return true;
   return /the page could not be found|404|not found|network error|failed to fetch|network request failed|service unavailable|temporarily unavailable|connection refused/i
     .test(String(error?.message || error || ''));
+}
+
+/** Apply approved visual customizations without a missing Base44 function. */
+export function compileBuiltinStockVariation(template, brand = {}) {
+  if (!isBuiltinStockTemplate(template)) return null;
+  const manifest = template?.sections?.find(section => section.section_type === 'manifest')?.config;
+  const industry = STOCK_INDUSTRIES.find(i => i.key === manifest?.industry_key);
+  const design = STOCK_DESIGNS.find(d => d.key === manifest?.design_key);
+  if (!industry || !design) throw new Error('Built-in template configuration not found');
+  return {
+    html: compileStockTemplate(industry, design, brand),
+    compiler_version: STOCK_VERSION,
+    release_state: 'preview_only'
+  };
 }
