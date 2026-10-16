@@ -86,6 +86,20 @@ function buildAnchorText(fromSite, toSite) {
 export default async function(req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+
+    // Fail closed before granting the service role. The SiteBank administration
+    // endpoint must never execute privileged CRUD for anonymous callers.
+    // The former public entrypoint allowed launchBatch and buildBacklinks without
+    // any session check. Scheduled service calls must use a separately reviewed,
+    // scoped authentication path; do not reuse the GPT Sync superuser key here.
+    const actor = await base44.auth.me().catch(() => null);
+    if (!actor) {
+      return Response.json({ error: 'Authentication required' }, { status: 401 });
+    }
+    if (actor.role !== 'admin') {
+      return Response.json({ error: 'Administrator access required' }, { status: 403 });
+    }
+
     const svc = base44.asServiceRole;
     const body = await req.json().catch(() => ({}));
     const action = body.action || 'getStats';
@@ -317,7 +331,7 @@ export default async function(req: Request): Promise<Response> {
     return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
   } catch (error: any) {
     console.error('[siteBankOrchestrator] Error:', error.message);
-    return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
