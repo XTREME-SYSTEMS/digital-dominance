@@ -11,10 +11,10 @@ const CATEGORIES = [
   { id: 'contractor', label: 'Contractor', niches: ['epoxy','roofing','hvac','plumbing','electrical','remodeling','landscaping','garage'], image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80' },
   { id: 'health', label: 'Health & Wellness', niches: ['med_spa','dental','chiropractic','medical','wellness'], image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80' },
   { id: 'legal', label: 'Legal', niches: ['legal','attorney','law'], image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&q=80' },
-  { id: 'professional', label: 'Professional', niches: ['insurance','mortgage','accounting','consulting','financial'], image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3a?w=400&q=80' },
+  { id: 'professional', label: 'Professional', niches: ['insurance','mortgage','accounting','consulting','financial'], image: 'https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/fbb49df42_generated_image.png' },
   { id: 'realestate', label: 'Real Estate', niches: ['real_estate','property','realtor'], image: 'https://images.unsplash.com/photo-1568605114987-395e3a5eb4c5?w=400&q=80' },
-  { id: 'home', label: 'Home Services', niches: ['cleaning','pest_control','moving','painting'], image: 'https://images.unsplash.com/photo-1581578731548-c64695cccae9?w=400&q=80' },
-  { id: 'automotive', label: 'Automotive', niches: ['auto_detailing','auto_repair','towing'], image: 'https://images.unsplash.com/photo-1492144534155-93156a5f2de7?w=400&q=80' },
+  { id: 'home', label: 'Home Services', niches: ['cleaning','pest_control','moving','painting'], image: 'https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/8860a9bbc_generated_image.png' },
+  { id: 'automotive', label: 'Automotive', niches: ['auto_detailing','auto_repair','towing'], image: 'https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/879b0b4e1_generated_image.png' },
 ];
 
 const normalize = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -93,7 +93,17 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
                 </span>
               </div>
               <div className="px-4 py-4">
-                <h3 className="line-clamp-1 text-lg font-extrabold tracking-tight text-white">{template.name}</h3>
+                {(() => {
+                  const parts = template.name.split(' / ');
+                  const niche = parts[0];
+                  const designName = parts.slice(1).join(' / ');
+                  return (
+                    <>
+                      <h3 className="line-clamp-1 text-lg font-extrabold tracking-tight text-white">{niche}</h3>
+                      {designName && <p className="text-[11px] font-bold uppercase tracking-wider text-[#55ceff]/80">{designName}</p>}
+                    </>
+                  );
+                })()}
                 <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-300">{template.description || 'Explore the layout and sections in a full-page preview.'}</p>
               </div>
             </button>

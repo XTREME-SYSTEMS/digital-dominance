@@ -14,7 +14,18 @@ export default function StockTemplatePreview({ template, industry, className = '
  if(!overrideHtml&&isLoading)return <div className="flex h-full min-h-48 items-center justify-center bg-card"><Loader2 className="h-6 w-6 animate-spin" aria-label="Loading template"/></div>;
  if(error)return <p role="alert" className="p-6 text-destructive">Unable to load this template: {error.message}</p>;
  if(!overrideHtml&&!data?.content)return <p className="p-6 text-muted-foreground">No matching stock template. Choose a design from this industry’s library.</p>;
- const source=overrideHtml||data.content;
- const html=/^#[0-9a-f]{6}$/i.test(brand?.accent||'')?source.replace(/--accent:#[0-9a-f]{3,6};/i,`--accent:${brand.accent};`):source;
- return <iframe title={data?.name||'Original website template preview'} className={className} srcDoc={html} sandbox="" referrerPolicy="no-referrer" />;
+ let source=overrideHtml||data.content;
+ if(brand?.colorScheme?.accent&&/^#[0-9a-f]{3,6}$/i.test(brand.colorScheme.accent)){
+   source=source.replace(/--accent:#[0-9a-f]{3,6};/gi,`--accent:${brand.colorScheme.accent};`);
+   source=source.replace(/--accent-light:#[0-9a-f]{3,6};/gi,`--accent-light:${brand.colorScheme.accentLight};`);
+ } else if(brand?.accent&&/^#[0-9a-f]{3,6}$/i.test(brand.accent)){
+   source=source.replace(/--accent:#[0-9a-f]{3,6};/gi,`--accent:${brand.accent};`);
+ }
+ if(brand?.businessName){
+   source=source.replace(/<h1[^>]*>.*?<\/h1>/i,`<h1>${brand.businessName.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))}</h1>`);
+ }
+ if(brand?.logo?.url){
+   source=source.replace(/<img[^>]*class="[^"]*logo[^"]*"[^>]*>/i,`<img src="${brand.logo.url}" alt="logo" style="max-height:48px;object-fit:contain;" />`);
+ }
+ return <iframe title={data?.name||'Original website template preview'} className={className} srcDoc={source} sandbox="" referrerPolicy="no-referrer" />;
 }
