@@ -4,11 +4,14 @@ import { X, Rocket, MapPin, Check, ChevronRight, Eye } from "lucide-react";
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import BrandGenerator from "@/components/launch-engine/BrandGenerator";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
+import StockDesignThumbnail from '@/components/template-studio/StockDesignThumbnail';
+import StockPreviewDialog from '@/components/template-studio/StockPreviewDialog';
 
 export default function LaunchWizard({ initial, onClose }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [brand, setBrand] = useState(null);
+  const [previewChoice, setPreviewChoice] = useState(null);
   const [selection, setSelection] = useState({
     industry: initial?.industry || initial?.template?.niche || "",
     template: initial?.template || null,
@@ -21,8 +24,8 @@ export default function LaunchWizard({ initial, onClose }) {
 
   const STEPS = [
     { label: "Industry", desc: "Choose a business category" },
-    { label: "Template", desc: "Pick a conversion-focused design" },
-    { label: "Preview", desc: "Your finished website preview" },
+    { label: "Design", desc: "Look at the websites below. Pick the one you like, or open the full preview first." },
+    { label: "Preview", desc: "Explore your chosen website and try a color." },
     { label: "Locations", desc: "How many sites to launch" },
     { label: "Review", desc: "Review your template and open the studio" },
   ];
@@ -30,12 +33,16 @@ export default function LaunchWizard({ initial, onClose }) {
   const canAdvance = step === 0 ? !!selection.industry : step === 1 ? !!selection.template : step === 3 ? selection.count > 0 : true;
 
   const launch = () => {
-    navigate('/admin/template-studio', { state: { selectedStockTemplateId:selection.template.id } });
+    navigate('/admin/template-studio', { state: {
+      selectedStockTemplateId: selection.template.id,
+      selectedStockTemplateSnapshot: selection.template,
+    } });
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+    <>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 backdrop-blur-sm sm:p-4" onClick={onClose} role="presentation">
+      <div role="dialog" aria-modal="true" aria-label="Website Launch Wizard" className={`relative max-h-[94dvh] w-full overflow-y-auto rounded-2xl bg-white shadow-2xl ${step === 1 ? "max-w-5xl" : "max-w-lg"}`} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between bg-[#0a1220] px-5 py-4">
           <div className="flex items-center gap-2.5">
@@ -44,7 +51,7 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
             <div>
               <h3 className="text-sm font-bold text-white">Website Launch Wizard</h3>
-              <p className="text-[10px] text-white/50">Choose a Template</p>
+              <p className="text-[10px] text-white/60">Choose a website by its picture</p>
             </div>
           </div>
           <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white">
@@ -88,18 +95,56 @@ export default function LaunchWizard({ initial, onClose }) {
           )}
 
           {step === 1 && (
-            <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
-              {designs.isLoading && <p role="status">Loading stock designs…</p>}
-              {designs.error && <p role="alert">{designs.error.message}</p>}
-              {designs.items.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => setSelection({ ...selection, template: t })}
-                  className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${selection.template?.id === t.id ? "border-[#00a2ff] bg-[#00a2ff]/5 text-[#00a2ff]" : "border-gray-200 text-gray-700 hover:border-gray-300"}`}
-                >
-                  {t.name.split(' / ')[1]}
-                </button>
-              ))}
+            <div>
+              <h4 className="mb-3 text-xl font-black text-[#0a1220]">Which website do you like?</h4>
+              <p className="mb-4 text-sm text-gray-600">
+                These are pictures of the actual websites, not just example photos.
+                Tap a design to select it. Choose "See full website" to scroll through every page section.
+              </p>
+              {designs.isLoading && <p role="status">Preparing website pictures…</p>}
+              {designs.error && <p role="alert" className="text-red-700">Website designs could not be loaded. Please go back and try again.</p>}
+              <div role="group" aria-label="Choose a website design" className="grid max-h-[57dvh] grid-cols-1 gap-4 overflow-y-auto pb-2 sm:grid-cols-2">
+                {designs.items.map((t, index) => {
+                  const picked = selection.template?.id === t.id;
+                  return (
+                    <div key={t.id} className={`overflow-hidden rounded-2xl border-2 bg-white shadow-sm ${picked ? 'border-[#00a2ff] ring-2 ring-[#00a2ff]/30' : 'border-slate-200'}`}>
+                      <button
+                        type="button"
+                        aria-pressed={picked}
+                        aria-label={`Choose design ${index + 1}: ${t.name.split(' / ')[1] || 'website'}`}
+                        onClick={() => setSelection(previous => ({ ...previous, template: t }))}
+                        className="block w-full text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#00a2ff]"
+                      >
+                        <StockDesignThumbnail template={t} />
+                        <div className="flex items-center justify-between gap-3 px-4 py-3">
+                          <div>
+                            <strong className="block text-base text-[#0a1220]">Design {index + 1}</strong>
+                            <span className="text-xs text-slate-600">{t.name.split(' / ')[1] || 'Website design'}</span>
+                          </div>
+                          {picked
+                            ? <span className="flex items-center gap-1 rounded-full bg-[#00a2ff] px-3 py-1.5 text-xs font-bold text-white"><Check className="h-3.5 w-3.5" /> Selected</span>
+                            : <span className="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-bold text-[#164c7b]">Choose</span>}
+                        </div>
+                      </button>
+                      <div className="border-t border-slate-100 px-4 py-2.5">
+                        <button
+                          type="button"
+                          aria-label={`See full website for design ${index + 1}`}
+                          onClick={() => setPreviewChoice(t)}
+                          className="flex min-h-9 items-center gap-2 text-sm font-bold text-[#0869b5] hover:underline"
+                        >
+                          <Eye className="h-4 w-4" /> See full website
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {!designs.isLoading && !designs.error && !designs.items.length && (
+                <p role="status" className="rounded-lg border border-slate-200 p-4 text-sm">
+                  No website designs for this industry yet. Go back and choose another industry.
+                </p>
+              )}
             </div>
           )}
 
@@ -188,6 +233,12 @@ export default function LaunchWizard({ initial, onClose }) {
         </div>
       </div>
     </div>
+    <StockPreviewDialog
+      template={previewChoice}
+      onClose={() => setPreviewChoice(null)}
+      onChoose={template => setSelection(previous => ({ ...previous, template }))}
+    />
+    </>
   );
 }
 
