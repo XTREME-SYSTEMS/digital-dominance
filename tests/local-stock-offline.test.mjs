@@ -36,3 +36,13 @@ test('local query supports finite search and pagination without network calls', 
   assert.throws(() => getLocalStockPage({},20,'bad'), /INVALID_STOCK_CURSOR/);
   assert.throws(() => getLocalStockPage({},500), /INVALID_STOCK_PAGE_SIZE/);
 });
+
+test('Classic Business replaces the old display label without deleting a website design', () => {
+  const all = compiledLocalStockCatalog();
+  const retainedLayout = all.filter(item => item.id.endsWith('-signature'));
+  assert.equal(all.length, 200);
+  assert.equal(retainedLayout.length, 20);
+  assert.ok(retainedLayout.every(item => item.name.endsWith(' / Classic Business')));
+  assert.ok(all.every(item => !item.name.includes('Signature Atelier') &&
+                             !item.content.includes('Signature Atelier')));
+});
