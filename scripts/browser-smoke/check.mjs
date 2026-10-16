@@ -27,6 +27,9 @@ try {
     }
     const text=await page.locator('body').innerText();
     if(text.includes('Unable to load templates:'))throw new Error(view.name+': original error still displayed');
+    if(requestFailures.some(req => /\/api\/apps\/null\/entities\/TemplateLibrary/.test(req.url))) {
+      throw new Error(view.name+': gallery still calls missing Base44 app ID: '+JSON.stringify(requestFailures));
+    }
     await page.locator('button').filter({hasText:'Preview this template'}).first().click();
     const dialog=page.getByRole('dialog');
     await dialog.waitFor({timeout:12000});
