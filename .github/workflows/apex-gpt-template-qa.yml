@@ -1,0 +1,47 @@
+name: APEX GPT Template Draft Safety
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'base44/functions/gptTemplateIngestor/**'
+      - 'base44/workflows/GPT Template Sync.jsonc'
+      - 'scripts/gpt-template-ingestor-regression.mjs'
+      - '.github/workflows/apex-gpt-template-qa.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gpt-template-qa-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  gpt-draft-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Regression of authorization, bound generation, and inert drafts
+        run: node scripts/gpt-template-ingestor-regression.mjs
+      - name: Assert scheduler stays status-only
+        shell: bash
+        run: |
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import assert from "node:assert/strict";
+            const src=fs.readFileSync("base44/workflows/GPT Template Sync.jsonc","utf8");
+            const flow=JSON.parse(src);
+            const d=JSON.stringify(flow.definition);
+            assert.ok(d.includes("gptTemplateIngestor"));
+            assert.ok(d.includes("status"));
+            assert.ok(!d.includes("generate_batch"));
+            assert.ok(!d.includes("action\\\":\\\"generate"));
+            console.log("PASS recurring job: inventory-only, no model spend");
+          '

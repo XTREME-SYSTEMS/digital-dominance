@@ -1,6 +1,6 @@
 {
   "name": "GPT Template Sync",
-  "description": "Syncs with ChatGPT every 6 hours to generate fresh, AI-designed website templates. ChatGPT creates complete HTML templates for each industry niche, which are ingested into the Template Library for deployment.",
+  "description": "Read-only template inventory heartbeat. Paid template generation is paused pending scoped scheduler authorization and independent premium visual QA. No record writes.",
   "trigger": {
     "condition": null,
     "config": {
@@ -22,7 +22,7 @@
     "document": {
       "dsl": "1.0.0",
       "name": "gpt_template_sync",
-      "version": "1.0",
+      "version": "1.1-read-only",
       "namespace": "base44"
     },
     "do": [
@@ -32,36 +32,13 @@
           "with": {
             "function_name": "gptTemplateIngestor",
             "args": {
-              "action": "generate_batch",
-              "niches": [
-                "epoxy",
-                "water_damage",
-                "roofing",
-                "hvac",
-                "plumbing",
-                "electrician",
-                "pest_control",
-                "landscaping",
-                "mold_remediation",
-                "fire_damage",
-                "garage_door",
-                "legal",
-                "real_estate",
-                "remodeling",
-                "med_spa",
-                "dental",
-                "chiropractic",
-                "solar",
-                "automotive",
-                "cleaning",
-                "identity"
-              ]
+              "action": "status"
             }
           },
           "then": "end",
           "x-base44": {
-            "title": "Generate templates via ChatGPT",
-            "description": "ChatGPT creates fresh website templates for all supported niches"
+            "title": "Inspect GPT template inventory only",
+            "description": "No InvokeLLM generation, spending, approval or writes"
           }
         }
       }
