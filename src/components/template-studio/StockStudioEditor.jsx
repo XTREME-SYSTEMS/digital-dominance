@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { hasRuntimeBase44AppId } from '@/lib/base44Binding';
 import { Button } from '@/components/ui/button';
 import { Globe, Loader2, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
 import BrandGenerator from '@/components/launch-engine/BrandGenerator';
@@ -28,7 +29,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   const manifest = template.sections?.find(s => s.section_type === 'manifest')?.config;
   const compiled = useQuery({
     queryKey: ['stock-variation', template.id, brand?.accent, assets],
-    enabled: !!brand || !!assets.logoUrl || !!assets.videoUrl,
+    enabled: hasRuntimeBase44AppId && (!!brand || !!assets.logoUrl || !!assets.videoUrl),
     queryFn: async () => {
       const res = await base44.functions.invoke('stockTemplateFactory', {
         action: 'compile',
@@ -41,7 +42,9 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   });
 
   const download = async () => {
-    const html = compiled.data?.html || (await base44.entities.TemplateLibrary.get(template.id)).content;
+    const html = compiled.data?.html || template.content ||
+      (hasRuntimeBase44AppId ? (await base44.entities.TemplateLibrary.get(template.id)).content : null);
+    if (!html) throw new Error('No local preview HTML available');
     const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
     const link = document.createElement('a');
     link.href = url;
@@ -51,6 +54,10 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   };
 
   const handlePublishLive = async () => {
+    if (!hasRuntimeBase44AppId) {
+      setPublishError('Website publishing is unavailable in this preview. Request a verified release first.');
+      return;
+    }
     const slug = (template.slug || template.niche || 'site').toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 40);
     setPublishing(true);
     setPublishError(null);
@@ -88,7 +95,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
         <Button variant="outline" onClick={download} disabled={compiled.isFetching}>Download preview HTML</Button>
         <Button
           onClick={handlePublishLive}
-          disabled={publishing}
+          disabled={publishing || !hasRuntimeBase44AppId}
           className="ml-auto"
           style={{ background: 'linear-gradient(135deg, #126fc8, #0d9488)', color: '#fff' }}
         >
@@ -97,6 +104,11 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
         </Button>
       </div>
 
+      {!hasRuntimeBase44AppId && (
+        <p role="status" className="text-sm text-muted-foreground">
+          Design preview only. Publishing needs an authenticated website account and approval.
+        </p>
+      )}
       {cycleError && <p role="alert" className="text-sm text-destructive">{cycleError}</p>}
       {publishError && (
         <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3">
