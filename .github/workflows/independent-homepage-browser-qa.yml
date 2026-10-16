@@ -7,6 +7,8 @@ on:
       - 'src/components/launch-engine/**'
       - 'src/data/homeIndustryImages.js'
       - 'src/components/template-studio/**'
+      - 'base44/shared/stockDesigns.js'
+      - 'tests/local-stock-offline.test.mjs'
       - 'src/api/base44Client.js'
       - 'src/lib/**'
       - 'src/components/Seo.jsx'
