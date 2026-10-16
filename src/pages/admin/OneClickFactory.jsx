@@ -108,15 +108,10 @@ export default function OneClickFactory() {
   }, []);
 
   const handlePublish = useCallback(async () => {
-    setBatchStatus('BUILDING');
-    try {
-      // Publish would go through publishTemplateLive with validation
-      setBatchStatus('LIVE');
-      setStep(7);
-    } catch (err) {
-      setBatchStatus('FAILED');
-      setError(err.message);
-    }
+    // This UI does not verify a deployment provider or Guardian receipt.
+    // Never mark a synthetic preview LIVE or publish from local state.
+    setError('Release blocked: a verified deployment, independent validation receipt, and scoped operator approval are required in the governed launch workflow.');
+    setBatchStatus('APPROVED');
   }, []);
 
   const reset = useCallback(() => {
