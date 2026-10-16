@@ -1,7 +1,7 @@
 name: Live Template Gallery Browser Smoke
 on:
   push:
-    branches: ['test/stock-gallery-live-browser-*']
+    branches: ['test/stock-gallery-live-browser-*', main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      LIVE_SITE: https://digital-dominance-jade.vercel.app
+      LIVE_SITE: ${{ github.ref_name == 'main' && 'https://digital-dominance-jade.vercel.app' || 'https://digital-dominance-git-test-stoc-b471cf-strategic-minds-advisory.vercel.app' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
