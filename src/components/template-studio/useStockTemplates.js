@@ -1,5 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { appParams } from '@/lib/app-params';
 import {
   getBuiltinStockPage, filterBuiltinStockTemplates, isStockBackendUnavailable,
 } from '@/lib/stockCatalogFallback';
@@ -27,6 +28,9 @@ export default function useStockTemplates(query = {}, limit = 20) {
       if (typeof pageParam === 'string' && pageParam.startsWith('builtin:')) {
         return getBuiltinStockPage(condition, { limit, cursor: pageParam });
       }
+      // On Vercel, a missing appId would produce /api/apps/null/entities/* 404.
+      // Serve the source-compiled public previews without a doomed SDK request.
+      if (!appParams.appId) return getBuiltinStockPage(condition, { limit, cursor: pageParam });
       try {
         const page = await base44.entities.TemplateLibrary.filter(condition, {
           sort: 'sort_order', limit, fields, ...(pageParam ? {cursor: pageParam} : {})
@@ -47,6 +51,7 @@ export default function useStockTemplates(query = {}, limit = 20) {
     staleTime: 30_000,
     retry: false,
     queryFn: async () => {
+      if (!appParams.appId) return filterBuiltinStockTemplates(condition).length;
       try {
         const value = await base44.entities.TemplateLibrary.count(condition);
         const number = Number(value);
