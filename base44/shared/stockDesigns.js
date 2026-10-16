@@ -1,5 +1,5 @@
 export const STOCK_DESIGNS = [
- {key:'signature',name:'Signature Atelier',hero:'split',order:['services','process','gallery','faq','contact'],surface:'#fbf8f2',ink:'#1c2929',accent:'#215e59',font:'Georgia,serif',detail:'Editorial split hero, numbered services and a quiet architectural rhythm.'},
+ {key:'signature',name:'Classic Business',hero:'split',order:['services','process','gallery','faq','contact'],surface:'#fbf8f2',ink:'#1c2929',accent:'#215e59',font:'Georgia,serif',detail:'Clean two-column homepage, clear services and easy-to-find contact options.'},
  {key:'immersive',name:'Cinematic Canvas',hero:'immersive',order:['gallery','services','process','contact','faq'],surface:'#111c26',ink:'#f4f6f8',accent:'#a8d4c2',font:'Arial,sans-serif',detail:'Full-bleed photography, dark surfaces and spacious project panels.'},
  {key:'editorial',name:'The Editorial',hero:'editorial',order:['process','services','faq','gallery','contact'],surface:'#fff7ed',ink:'#392a21',accent:'#933d2c',font:'Georgia,serif',detail:'Oversized editorial headline, offset photograph and a story-first sequence.'},
  {key:'bento',name:'Modular Mosaic',hero:'bento',order:['services','faq','gallery','process','contact'],surface:'#f1f6fb',ink:'#102c47',accent:'#185cac',font:'Arial,sans-serif',detail:'Asymmetric mosaic hero with compact, clearly separated capability tiles.'},
