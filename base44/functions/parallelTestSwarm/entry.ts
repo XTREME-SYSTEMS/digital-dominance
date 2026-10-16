@@ -114,8 +114,8 @@ export default async function(req) {
                 correct_description: !!result.tests?.seo?.meta_description,
                 structured_data_valid: result.tests?.seo?.schema_found || false,
                 estimate_cta_present: result.tests?.buttons?.clickable > 0,
-                mobile_viewport_ok: true,
-                desktop_viewport_ok: true,
+                mobile_viewport_ok: result.tests?.responsive?.mobile === true,
+                desktop_viewport_ok: result.tests?.responsive?.desktop === true,
                 overall_pass: result.overall === 'passed',
                 failure_reasons: result.recommendations || [],
               });
@@ -157,7 +157,7 @@ export default async function(req) {
         const b = batch.items?.[0];
         if (b) {
           await svc.entities.MassLaunchBatch.update(b.id, {
-            sites_validated: (b.sites_validated || 0) + passed + failed,
+            sites_validated: (b.sites_validated || 0) + passed, // only independently passing sites
             current_step: `swarm_tested_${passed + failed}_of_${siteList.length}`,
             validation_receipt_ids: [...(b.validation_receipt_ids || []), ...receiptIds],
           });

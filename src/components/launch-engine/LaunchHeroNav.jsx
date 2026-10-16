@@ -1,22 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone } from 'lucide-react';
+import { Menu, Phone, Rocket, X } from 'lucide-react';
+import AdminAccessDropdown from '@/components/launch-engine/AdminAccessDropdown';
 
-const links = [['Industries', '#industries'], ['Templates', '#templates'], ['How It Works', '#how'], ['Pricing', '#pricing'], ['Portals', '#portals'], ['Contact', '#contact']];
+const links = [
+  ['Industries', '#industries'],
+  ['Templates', '#templates'],
+  ['How It Works', '#how'],
+  ['Pricing', '#pricing'],
+  ['Contact', '#contact'],
+];
 
 export default function LaunchHeroNav() {
-  return <nav className="wle-home-nav" aria-label="Main navigation">
-    <div className="wle-home-nav-in">
-      <Link to="/" className="wle-home-logo" aria-label="Website Launch Engine home">
-        <span className="wle-home-rocket" aria-hidden="true">🚀</span>
-        <span>Website<br />Launch Engine<small>FLORIDA BASED · NATIONWIDE REACH</small></span>
-      </Link>
-      <div className="wle-home-nav-links">
-        {links.map(([label, href]) => href.startsWith('/') ? <Link key={label} to={href}>{label}</Link> : <a key={label} href={href}>{label}{label === 'Industries' ? ' ▾' : ''}</a>)}
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <nav className="wle-home-nav" aria-label="Main navigation">
+      <div className="wle-home-nav-in">
+        <Link to="/" className="wle-home-logo" aria-label="Unlimited Websites home" onClick={() => setMenuOpen(false)}>
+          <span className="wle-home-logo-mark"><Rocket aria-hidden="true" /></span>
+          <span className="wle-home-logo-wordmark">
+            <strong>UNLIMITED <span>WEBSITES</span></strong>
+            <small>A STRATEGIC MINDS AI SYSTEM</small>
+          </span>
+        </Link>
+
+        <div className="wle-home-nav-links">
+          {links.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+        </div>
+
+        <a className="wle-home-phone" href="tel:+17722090266" aria-label="Call Digital Dominance at 772 209 0266">
+          <Phone aria-hidden="true" /><span>(772) 209-0266</span>
+        </a>
+
+        <AdminAccessDropdown />
+
+        <button type="button" className="wle-mobile-nav-toggle" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen} aria-controls="wle-mobile-nav" onClick={() => setMenuOpen(value => !value)}>
+          {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+        </button>
       </div>
-      <a className="wle-home-phone" href="tel:+17722090266" aria-label="Call Website Launch Engine at 772 209 0266">
-        <Phone aria-hidden="true" /><span>(772) 209-0266</span>
-      </a>
-    </div>
-  </nav>;
+
+      {menuOpen && (
+        <div id="wle-mobile-nav" className="wle-mobile-nav-links">
+          {links.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
+          <Link to="/templates" onClick={() => setMenuOpen(false)}>Browse All Templates</Link>
+        </div>
+      )}
+    </nav>
+  );
 }

@@ -7,6 +7,7 @@ import BrandGenerator from '@/components/launch-engine/BrandGenerator';
 import StockTemplatePreview from '@/components/template-studio/StockTemplatePreview';
 import StudioMediaActions from '@/components/template-studio/StudioMediaActions';
 import GoogleReadinessPanel from '@/components/template-studio/GoogleReadinessPanel';
+import { compileBuiltinStockVariation, isBuiltinStockTemplate } from '@/lib/stockCatalogFallback';
 
 export default function StockStudioEditor({ template, onBack, onNext }) {
   const queryClient = useQueryClient();
@@ -30,6 +31,9 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
     queryKey: ['stock-variation', template.id, brand?.accent, assets],
     enabled: !!brand || !!assets.logoUrl || !!assets.videoUrl,
     queryFn: async () => {
+      if (isBuiltinStockTemplate(template)) {
+        return compileBuiltinStockVariation(template, { accent: brand?.accent, ...assets });
+      }
       const res = await base44.functions.invoke('stockTemplateFactory', {
         action: 'compile',
         industryKey: manifest.industry_key,
@@ -41,7 +45,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   });
 
   const download = async () => {
-    const html = compiled.data?.html || (await base44.entities.TemplateLibrary.get(template.id)).content;
+    const html = compiled.data?.html || template.content || (await base44.entities.TemplateLibrary.get(template.id)).content;
     const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
     const link = document.createElement('a');
     link.href = url;
@@ -51,6 +55,11 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
   };
 
   const handlePublishLive = async () => {
+    if (isBuiltinStockTemplate(template)) {
+      setPublishResult(null);
+      setPublishError('This bundled design is available for browsing, editing and download. Live publishing requires importing it into an authenticated deployment workspace.');
+      return;
+    }
     const slug = (template.slug || template.niche || 'site').toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 40);
     setPublishing(true);
     setPublishError(null);
@@ -88,7 +97,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
         <Button variant="outline" onClick={download} disabled={compiled.isFetching}>Download preview HTML</Button>
         <Button
           onClick={handlePublishLive}
-          disabled={publishing}
+          disabled={publishing || isBuiltinStockTemplate(template)}
           className="ml-auto"
           style={{ background: 'linear-gradient(135deg, #126fc8, #0d9488)', color: '#fff' }}
         >
@@ -122,7 +131,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
         <StockTemplatePreview template={template} overrideHtml={compiled.data?.html} />
       </div>
 
-      <p className="text-sm text-muted-foreground">Click "Publish Live to Web" to deploy this template with your brand customization to a live Vercel URL. Google Search Console, sitemap, and indexer submission happen automatically.</p>
+      <p className="text-sm text-muted-foreground">Bundled templates can be customized, previewed and downloaded even if the database is temporarily unavailable. Live publishing requires a verified, connected deployment record and separate release checks.</p>
 
       <GoogleReadinessPanel key={template.id} template={template} />
     </div>

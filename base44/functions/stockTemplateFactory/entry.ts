@@ -4,6 +4,7 @@ import { STOCK_DESIGNS } from '../../shared/stockDesigns.js';
 import { stockTemplateRecord, compileStockTemplate } from '../../shared/stockTemplateCompiler.js';
 import { assessGoogleReadiness } from '../../shared/googleReadiness.js';
 import { openBenchmarkBrowser, loadStockDocument, screenshotFile } from '../../shared/benchmarkBrowser.js';
+import { generateSite, generateSiteHtml, getSupportedNiches } from '../../shared/universalGenerator.ts';
 export default async function(req) {
  let browser;
  try {
@@ -33,6 +34,18 @@ export default async function(req) {
    if(!industry||!design)return Response.json({error:'Select a stock industry and design'},{status:400});
    const html=compileStockTemplate(industry,design,body.brand||{});
    return Response.json({html,readiness:assessGoogleReadiness(html),compiler_version:STOCK_VERSION});
+  }
+  // ── Universal Generator: generate from any niche using the visual template engine ──
+  if(body.action==='generate'){
+   const site=generateSite({
+     niche:body.niche||body.industryKey||'generic',
+     brandName:body.brand?.name||body.brandName||'',
+     city:body.city,state:body.state,phone:body.phone,domain:body.domain,
+   });
+   return Response.json({html:site.html,meta:site.meta,profile:site.profile,niche:site.niche,readiness:assessGoogleReadiness(site.html),generator:'universal'});
+  }
+  if(body.action==='niches'){
+   return Response.json({niches:getSupportedNiches()});
   }
   if(body.action==='readiness'){
    const record=await svc.entities.TemplateLibrary.get(body.templateId);

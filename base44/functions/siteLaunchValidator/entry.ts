@@ -91,7 +91,7 @@ export default async function(req) {
         checks: r.checks,
       })),
       message: avgScore >= 100
-        ? 'All sites scored 100 — full Google compliance achieved.'
+        ? 'Internal checklist only. Google does not certify site compliance or guarantee rankings.'
         : `${Math.max(0, 100 - avgScore)} points to 100. See recommendations per site.`,
     });
   } catch (error) {
@@ -117,14 +117,14 @@ async function validateSite(base44, site, batch) {
 
   // Run deterministic checks
   const checks = {
-    queued: site.status !== 'queued' || true,
-    content_generated: !!site.seo_score || !!site.aeo_score,
-    deployed: !!site.generated_url || site.status === 'live' || site.status === 'monitoring',
-    google_synced: batch?.google_sync_enabled !== false,
-    sitemap_generated: true, // validated via receipt
-    indexed: true, // submitted via orchestrator
+    queued: site.status !== 'queued',
+    content_generated: receipt?.render_complete === true,
+    deployed: receipt?.http_status === 200 && receipt?.dns_reachable === true,
+    google_synced: false, // UNKNOWN until independently verified within Google property
+    sitemap_generated: false, // UNKNOWN until the served sitemap is checked
+    indexed: false, // UNKNOWN without real Search Console indexing evidence
     agent_assigned: !!site.assigned_agent,
-    validated: !!receipt,
+    validated: receipt?.overall_pass === true,
     monitoring: site.status === 'monitoring' || site.status === 'optimizing',
   };
 

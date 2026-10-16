@@ -9,14 +9,30 @@
         "input_schema": {
           "type": "object",
           "properties": {
-            "action": { "type": "string", "description": "Always 'assist'" },
-            "raw_idea": { "type": "string", "description": "The user's rough business idea or vision description" },
-            "feedback": { "type": "string", "description": "Optional feedback for regeneration" }
+            "action": {
+              "type": "string",
+              "description": "Always 'assist'"
+            },
+            "raw_idea": {
+              "type": "string",
+              "description": "The user's rough business idea or vision description"
+            },
+            "feedback": {
+              "type": "string",
+              "description": "Optional feedback for regeneration"
+            }
           },
-          "required": ["action", "raw_idea"]
+          "required": [
+            "action",
+            "raw_idea"
+          ]
         },
         "handler": "visionEngine",
-        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+        "annotations": {
+          "read_only_hint": false,
+          "destructive_hint": false,
+          "idempotent_hint": false
+        }
       },
       {
         "name": "generate_strategies",
@@ -25,14 +41,30 @@
         "input_schema": {
           "type": "object",
           "properties": {
-            "action": { "type": "string", "description": "Always 'strategies'" },
-            "vision": { "type": "string", "description": "The approved vision statement" },
-            "angle": { "type": "string", "description": "Optional strategic angle for regeneration" }
+            "action": {
+              "type": "string",
+              "description": "Always 'strategies'"
+            },
+            "vision": {
+              "type": "string",
+              "description": "The approved vision statement"
+            },
+            "angle": {
+              "type": "string",
+              "description": "Optional strategic angle for regeneration"
+            }
           },
-          "required": ["action", "vision"]
+          "required": [
+            "action",
+            "vision"
+          ]
         },
         "handler": "visionEngine",
-        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+        "annotations": {
+          "read_only_hint": false,
+          "destructive_hint": false,
+          "idempotent_hint": false
+        }
       },
       {
         "name": "build_agent_fleet",
@@ -41,14 +73,32 @@
         "input_schema": {
           "type": "object",
           "properties": {
-            "action": { "type": "string", "description": "'analyze' to get recommendations, 'generate' to create agents, 'launch' to validate" },
-            "vision": { "type": "string", "description": "The vision or strategy description" },
-            "recommended_agents": { "type": "array", "items": { "type": "object" }, "description": "Required for 'generate' action — the agent recommendations from 'analyze'" }
+            "action": {
+              "type": "string",
+              "description": "'analyze' to get recommendations, 'generate' to create agents, 'launch' to validate"
+            },
+            "vision": {
+              "type": "string",
+              "description": "The vision or strategy description"
+            },
+            "recommended_agents": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              },
+              "description": "Required for 'generate' action — the agent recommendations from 'analyze'"
+            }
           },
-          "required": ["action"]
+          "required": [
+            "action"
+          ]
         },
         "handler": "agentBuilderEngine",
-        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+        "annotations": {
+          "read_only_hint": false,
+          "destructive_hint": false,
+          "idempotent_hint": false
+        }
       },
       {
         "name": "run_dominance_campaign",
@@ -57,16 +107,37 @@
         "input_schema": {
           "type": "object",
           "properties": {
-            "action": { "type": "string", "description": "'launch' to start, 'status' to check, 'list' to see all campaigns" },
-            "niche": { "type": "string", "description": "Target industry niche" },
-            "city": { "type": "string", "description": "Target city" },
-            "state": { "type": "string", "description": "Target state" },
-            "keyword": { "type": "string", "description": "Seed keyword" }
+            "action": {
+              "type": "string",
+              "description": "'launch' to start, 'status' to check, 'list' to see all campaigns"
+            },
+            "niche": {
+              "type": "string",
+              "description": "Target industry niche"
+            },
+            "city": {
+              "type": "string",
+              "description": "Target city"
+            },
+            "state": {
+              "type": "string",
+              "description": "Target state"
+            },
+            "keyword": {
+              "type": "string",
+              "description": "Seed keyword"
+            }
           },
-          "required": ["action"]
+          "required": [
+            "action"
+          ]
         },
         "handler": "dominanceEngine",
-        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+        "annotations": {
+          "read_only_hint": false,
+          "destructive_hint": false,
+          "idempotent_hint": false
+        }
       },
       {
         "name": "orchestrate_system",
@@ -75,13 +146,25 @@
         "input_schema": {
           "type": "object",
           "properties": {
-            "action": { "type": "string", "description": "'health' for system status, 'activity' for agent activity, 'heal' for auto-repair, 'operate' to run a command" },
-            "command": { "type": "string", "description": "Natural language command for 'operate' action" }
+            "action": {
+              "type": "string",
+              "description": "'health' for system status, 'activity' for agent activity, 'heal' for auto-repair, 'operate' to run a command"
+            },
+            "command": {
+              "type": "string",
+              "description": "Natural language command for 'operate' action"
+            }
           },
-          "required": ["action"]
+          "required": [
+            "action"
+          ]
         },
         "handler": "systemOrchestrator",
-        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": true }
+        "annotations": {
+          "read_only_hint": false,
+          "destructive_hint": false,
+          "idempotent_hint": true
+        }
       },
       {
         "name": "scan_competitors",
@@ -90,13 +173,23 @@
         "input_schema": {
           "type": "object",
           "properties": {
-            "niche": { "type": "string", "description": "Industry niche to scan" },
-            "location": { "type": "string", "description": "Geographic location" }
+            "niche": {
+              "type": "string",
+              "description": "Industry niche to scan"
+            },
+            "location": {
+              "type": "string",
+              "description": "Geographic location"
+            }
           },
           "required": []
         },
         "handler": "scanCompetitors",
-        "annotations": { "read_only_hint": true, "destructive_hint": false, "idempotent_hint": true }
+        "annotations": {
+          "read_only_hint": true,
+          "destructive_hint": false,
+          "idempotent_hint": true
+        }
       },
       {
         "name": "analyze_industry_trends",
@@ -105,14 +198,29 @@
         "input_schema": {
           "type": "object",
           "properties": {
-            "action": { "type": "string", "description": "'analyze' for specific industry, 'industries' to list all" },
-            "industry": { "type": "string", "description": "Industry to analyze" },
-            "years": { "type": "number", "description": "Projection years (1-15)" }
+            "action": {
+              "type": "string",
+              "description": "'analyze' for specific industry, 'industries' to list all"
+            },
+            "industry": {
+              "type": "string",
+              "description": "Industry to analyze"
+            },
+            "years": {
+              "type": "number",
+              "description": "Projection years (1-15)"
+            }
           },
-          "required": ["action"]
+          "required": [
+            "action"
+          ]
         },
         "handler": "tradeCrystalBall",
-        "annotations": { "read_only_hint": true, "destructive_hint": false, "idempotent_hint": true }
+        "annotations": {
+          "read_only_hint": true,
+          "destructive_hint": false,
+          "idempotent_hint": true
+        }
       },
       {
         "name": "validate_system",
@@ -121,13 +229,52 @@
         "input_schema": {
           "type": "object",
           "properties": {
-            "action": { "type": "string", "description": "'status' for current state, 'cycle' to run validation, 'full_cycle' for complete convergence" },
-            "system_id": { "type": "string", "description": "Target system ID" }
+            "action": {
+              "type": "string",
+              "description": "'status' for current state, 'cycle' to run validation, 'full_cycle' for complete convergence"
+            },
+            "system_id": {
+              "type": "string",
+              "description": "Target system ID"
+            }
           },
-          "required": ["action"]
+          "required": [
+            "action"
+          ]
         },
         "handler": "autoComplete",
-        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+        "annotations": {
+          "read_only_hint": false,
+          "destructive_hint": false,
+          "idempotent_hint": false
+        }
+      },
+      {
+        "name": "inspect_twilio_connection",
+        "title": "Inspect Twilio Voice Connection",
+        "description": "Read-only check of the approved Twilio account or Eden Skye number ending 1174. Does not call, text, purchase, record, or change routing. Live voice remains UNKNOWN until tested.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "status",
+                "inspect_number"
+              ]
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": false
+        },
+        "handler": "gptTwilio",
+        "annotations": {
+          "read_only_hint": true,
+          "destructive_hint": false,
+          "idempotent_hint": true
+        }
       }
     ]
   }

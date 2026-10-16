@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database } from "lucide-react";
+import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target, Code2, Download } from "lucide-react";
 
 export default function ReferenceAdminSidebar() {
   const { pathname } = useLocation();
@@ -11,9 +11,16 @@ export default function ReferenceAdminSidebar() {
   return (
     <aside className="wle-aside">
       <Link to="/" className="wle-brand">
-        <em aria-hidden="true">🚀</em>
-        <span>Website<br />Launch Engine<small>STRATEGIC MINDS AI</small></span>
+        <img src="https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ceeb745d3_generated_image.png" alt="Unlimited Websites" style={{ height: "36px", width: "auto", objectFit: "contain" }} />
       </Link>
+
+      {/* ── MASTER COMMAND CENTER ──────────────────────────── */}
+      <div className="wle-rail-label" style={{ marginTop: "14px" }}>COMMAND CENTER</div>
+      <nav className="wle-nav-container" aria-label="Master plan">
+        <Link to="/admin/master-plan" className={`wle-side-nav${isCore(["/admin/master-plan"]) ? " active" : ""}`}>
+          <Target aria-hidden="true" />Master Plan & Strategy
+        </Link>
+      </nav>
 
       {/* ── CORE: Template & Catalog ──────────────────────────── */}
       <div className="wle-rail-label">TEMPLATE & CATALOG</div>
@@ -24,6 +31,18 @@ export default function ReferenceAdminSidebar() {
         <Link to="/admin/templates" className={`wle-side-nav${isCore(["/admin/templates"]) ? " active" : ""}`}>
           <Layers aria-hidden="true" />Website Catalog
         </Link>
+        <Link to="/admin/gpt-template-sync" className={`wle-side-nav${isCore(["/admin/gpt-template-sync"]) ? " active" : ""}`}>
+          <Sparkles aria-hidden="true" />GPT Template Sync
+        </Link>
+        <Link to="/admin/json-gpt-sync" className={`wle-side-nav${isCore(["/admin/json-gpt-sync"]) ? " active" : ""}`}>
+          <Code2 aria-hidden="true" />JSON GPT Sync
+        </Link>
+        <Link to="/admin/one-click-factory" className={`wle-side-nav${isCore(["/admin/one-click-factory"]) ? " active" : ""}`}>
+          <Rocket aria-hidden="true" />One-Click Factory
+        </Link>
+        <Link to="/admin/generator-registry" className={`wle-side-nav${isCore(["/admin/generator-registry"]) ? " active" : ""}`}>
+          <Shield aria-hidden="true" />Generator Registry
+        </Link>
       </nav>
 
       {/* ── CORE: Inventory & Deployment ──────────────────────── */}
@@ -31,6 +50,9 @@ export default function ReferenceAdminSidebar() {
       <nav className="wle-nav-container" aria-label="Inventory and deployment">
         <Link to="/admin/site-inventory" className={`wle-side-nav${isCore(["/admin/site-inventory"]) ? " active" : ""}`}>
           <Globe aria-hidden="true" />Site Inventory
+        </Link>
+        <Link to="/admin/launch-control" className={`wle-side-nav${isCore(["/admin/launch-control"]) ? " active" : ""}`}>
+          <Rocket aria-hidden="true" />Launch Control Center
         </Link>
         <Link to="/admin/site-bank" className={`wle-side-nav${isCore(["/admin/site-bank"]) ? " active" : ""}`}>
           <Database aria-hidden="true" />Site Bank Automation
@@ -74,6 +96,15 @@ export default function ReferenceAdminSidebar() {
         </Link>
         <Link to="/admin/brand-guardian" className={`wle-side-nav${isCore(["/admin/brand-guardian"]) ? " active" : ""}`}>
           <Shield aria-hidden="true" />Brand Guardian
+        </Link>
+        <Link to="/admin/image-validator" className={`wle-side-nav${isCore(["/admin/image-validator"]) ? " active" : ""}`}>
+          <Shield aria-hidden="true" />Image Validator
+        </Link>
+        <Link to="/admin/visual-library" className={`wle-side-nav${isCore(["/admin/visual-library"]) ? " active" : ""}`}>
+          <Layers aria-hidden="true" />Visual Render Library
+        </Link>
+        <Link to="/admin/data-export" className={`wle-side-nav${isCore(["/admin/data-export"]) ? " active" : ""}`}>
+          <Download aria-hidden="true" />Data Export Center
         </Link>
       </nav>
 

@@ -1,0 +1,40 @@
+name: Independent Industry Image Evidence Gate
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  image-evidence:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Determine if image sources or evidence changed
+        id: scope
+        shell: bash
+        env:
+          EVENT_KIND: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_KIND" == "workflow_dispatch" ]]; then
+            echo "required=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$BASE_SHA" HEAD)"
+          printf '%s\n' "$changed"
+          if printf '%s\n' "$changed" | grep -Eq '^(src/data/(topIndustries\.js|homeIndustryImages\.js)|docs/quality/(approved-industry-image-evidence\.json|approved-homepage-image-evidence\.json)|scripts/(independent-image-evidence-gate\.mjs|independent-homepage-image-gate\.mjs)|src/components/.*(IndustriesGrid|SafeImage)|public/(images|assets/industry)/)'; then
+            echo "required=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "required=false" >> "$GITHUB_OUTPUT"
+            echo "Image sources unchanged; no new image evidence is asserted or approved."
+          fi
+      - name: Require independent semantic evidence when images change
+        if: steps.scope.outputs.required == 'true'
+        run: node scripts/independent-image-evidence-gate.mjs
