@@ -75,12 +75,12 @@ const IMG = {
   elec_rewire: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/f8d1f7b0e_generated_image.png",
   // Generic fallbacks
   generic_hero: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80",
-  pest_hero: "https://images.unsplash.com/photo-1581094271901-4d0e8e6f3a91?w=1600&q=80",
+  pest_hero: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/4d0a72608_generated_image.png",
   fire_hero: "https://images.unsplash.com/photo-1600585154340-be6161a1a817?w=1600&q=80",
   garage_door_hero: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80",
   landscaping_hero: "https://images.unsplash.com/photo-1558904541-efa843a96f01?w=1600&q=80",
   solar_hero: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1600&q=80",
-  remodeling_hero: "https://images.unsplash.com/photo-1503387762-592deb58ef3e?w=1600&q=80",
+  remodeling_hero: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/5ee466065_generated_image.png",
   avatar1: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80",
   avatar2: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
   avatar3: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
@@ -89,10 +89,10 @@ const IMG = {
   avatar6: "https://images.unsplash.com/photo-1539571696357-5a69c7e5b9e5?w=200&q=80",
   // Gallery fallbacks
   // Verified stable Unsplash fallbacks (from SafeImage component)
-  gallery1: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
-  gallery2: "https://images.unsplash.com/photo-1581578731548-c64695cccae9?w=800&q=80",
-  gallery3: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
-  gallery4: "https://images.unsplash.com/photo-1581578731548-c64695cccae9?w=800&q=80",
+  gallery1: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/8860a9bbc_generated_image.png",
+  gallery2: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/879b0b4e1_generated_image.png",
+  gallery3: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/0da50cb04_generated_image.png",
+  gallery4: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/840b229c3_generated_image.png",
 };
 
 const NICHES: Record<string, NicheProfile> = {

@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Rocket, MapPin, Check, ChevronRight, Eye } from "lucide-react";
+import { X, Rocket, MapPin, Check, ChevronRight, Eye, ExternalLink } from "lucide-react";
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
-import BrandGenerator from "@/components/launch-engine/BrandGenerator";
+import BrandStudio from "@/components/launch-engine/BrandStudio";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import StockDesignThumbnail from '@/components/template-studio/StockDesignThumbnail';
 import StockPreviewDialog from '@/components/template-studio/StockPreviewDialog';
@@ -25,7 +25,7 @@ export default function LaunchWizard({ initial, onClose }) {
   const STEPS = [
     { label: "Industry", desc: "Choose a business category" },
     { label: "Design", desc: "Look at the websites below. Pick the one you like, or open the full preview first." },
-    { label: "Preview", desc: "Explore your chosen website and try a color." },
+    { label: "Brand", desc: "Try a logo, business name and color scheme on your chosen website." },
     { label: "Locations", desc: "How many sites to launch" },
     { label: "Review", desc: "Review your template and open the studio" },
   ];
@@ -36,13 +36,37 @@ export default function LaunchWizard({ initial, onClose }) {
     navigate('/admin/template-studio', { state: {
       selectedStockTemplateId: selection.template.id,
       selectedStockTemplateSnapshot: selection.template,
+      brand,
     } });
+  };
+
+  // Build a full-page HTML for "open in browser"
+  const previewHtml = useMemo(() => {
+    if (!selection.template?.content) return null;
+    let html = selection.template.content;
+    if (brand?.colorScheme?.accent) {
+      html = html.replace(/--accent:#[0-9a-f]{3,6};/gi, `--accent:${brand.colorScheme.accent};`);
+      html = html.replace(/--accent-light:#[0-9a-f]{3,6};/gi, `--accent-light:${brand.colorScheme.accentLight};`);
+    }
+    if (brand?.businessName) {
+      const safeName = brand.businessName.replace(/[&<>"\']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"' : "&quot;", "\'": "&#39;" }[c]));
+      html = html.replace(/<h1[^>]*>.*?<\/h1>/i, `<h1>${safeName}</h1>`);
+    }
+    return html;
+  }, [selection.template, brand]);
+
+  const openInBrowser = () => {
+    if (!previewHtml) return;
+    const blob = new Blob([previewHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
   };
 
   return (
     <>
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 backdrop-blur-sm sm:p-4" onClick={onClose} role="presentation">
-      <div role="dialog" aria-modal="true" aria-label="Website Launch Wizard" className={`relative max-h-[94dvh] w-full overflow-y-auto rounded-2xl bg-white shadow-2xl ${step === 1 ? "max-w-5xl" : "max-w-lg"}`} onClick={(e) => e.stopPropagation()}>
+      <div role="dialog" aria-modal="true" aria-label="Website Launch Wizard" className={`relative max-h-[94dvh] w-full overflow-y-auto rounded-2xl bg-white shadow-2xl ${step === 1 ? "max-w-5xl" : "max-w-2xl"}`} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between bg-[#0a1220] px-5 py-4">
           <div className="flex items-center gap-2.5">
@@ -78,19 +102,26 @@ export default function LaunchWizard({ initial, onClose }) {
         <div className="p-5 min-h-[280px]">
           <p className="text-sm text-gray-500 mb-4">{STEPS[step].desc}</p>
 
+          {/* Step 0: Industry */}
           {step === 0 && (
-            <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-              {industries.isLoading && <p role="status">Loading industries…</p>}
-              {industries.error && <p role="alert">{industries.error.message}</p>}
-              {industries.items.map((record) => { const ind=record.niche; return (
-                <button
-                  key={ind}
-                  onClick={() => setSelection({ ...selection, industry: ind, template:null })}
-                  className={`rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition ${selection.industry === ind ? "border-[#00a2ff] bg-[#00a2ff]/5 text-[#00a2ff]" : "border-gray-200 text-gray-700 hover:border-gray-300"}`}
-                >
-                  {ind}
-                </button>
-              ); })}
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-72 overflow-y-auto">
+              {industries.isLoading && <p role="status" className="col-span-full text-center text-gray-400">Loading industries…</p>}
+              {industries.error && <p role="alert" className="col-span-full text-center text-red-500">{industries.error.message}</p>}
+              {industries.items.map((record) => {
+                const ind = record.niche;
+                return (
+                  <button
+                    key={ind}
+                    onClick={() => setSelection({ ...selection, industry: ind, template:null })}
+                    className={`flex flex-col items-center gap-2 rounded-xl border p-3 text-center transition ${selection.industry === ind ? "border-[#00a2ff] bg-[#00a2ff]/5" : "border-gray-200 hover:border-gray-300"}`}
+                  >
+                    <div className="h-16 w-full overflow-hidden rounded-lg bg-gray-100">
+                      <SafeImage src={record.preview_image_url} alt={ind} className="h-full w-full object-cover" />
+                    </div>
+                    <span className={`text-xs font-bold ${selection.industry === ind ? "text-[#00a2ff]" : "text-gray-700"}`}>{ind}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -148,17 +179,26 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
+          {/* Step 2: Brand Studio + Preview */}
           {step === 2 && (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Eye className="h-4 w-4 text-[#00a2ff]" />
-                <p className="text-xs font-bold text-gray-700">This is the exact stock design. Business details require launch review.</p>
+              <BrandStudio selected={brand} onSelect={setBrand} industry={selection.industry} />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-[#00a2ff]" />
+                  <p className="text-xs font-bold text-gray-700">Live preview — your brand applies in real-time</p>
+                </div>
+                <button
+                  onClick={openInBrowser}
+                  disabled={!selection.template}
+                  className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Open in Browser
+                </button>
               </div>
-              <BrandGenerator selected={brand} onSelect={setBrand} />
               <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "380px" }}>
                 <WebsitePreview industry={selection.industry} template={selection.template} brand={brand} />
               </div>
-              <p className="text-[10px] text-gray-400 text-center">Scroll inside the preview to explore the full site. Every section is built and polished.</p>
             </div>
           )}
 
@@ -192,21 +232,34 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
+          {/* Step 4: Review */}
           {step === 4 && (
             <div className="space-y-3">
               <div className="rounded-xl bg-gray-50 p-4 space-y-2">
                 <Row label="Industry" value={selection.industry} />
-                <Row label="Template" value={selection.template?.name} />
+                <Row label="Template" value={selection.template?.name?.split(' / ')[0] + ' — ' + (selection.template?.name?.split(' / ').slice(1).join(' / ') || '')} />
+                <Row label="Business Name" value={brand?.businessName || '—'} />
+                <Row label="Domain" value={brand?.domain?.domain || '—'} />
+                <Row label="Color Scheme" value={brand?.colorScheme?.name || '—'} />
                 <Row label="Location Sites" value={`${selection.count} sites`} />
                 <Row label="Markets" value={selection.locations || "Nationwide"} />
               </div>
-              <p className="text-xs text-gray-400 text-center">Open this exact template in the studio for brand assets and a publication-readiness review.</p>
+              {brand?.logo && (
+                <div className="flex items-center gap-3 rounded-xl border border-gray-200 p-3">
+                  <img src={brand.logo.url} alt="Selected logo" className="h-12 w-12 rounded-lg border border-gray-200 bg-white object-contain p-1" />
+                  <div>
+                    <p className="text-xs font-bold text-gray-700">Your Logo: {brand.logo.style}</p>
+                    <p className="text-[10px] text-gray-400">This will be applied to your website</p>
+                  </div>
+                </div>
+              )}
+              <p className="text-xs text-gray-400 text-center">Open the studio to point-and-click edit, regenerate sections, and run the validation agent.</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-4 border-t border-gray-100 bg-gray-50">
+        <div className="sticky bottom-0 flex items-center justify-between px-5 py-4 border-t border-gray-100 bg-gray-50">
           <button
             onClick={() => setStep((s) => Math.max(0, s - 1))}
             disabled={step === 0}

@@ -44,9 +44,28 @@ export default function StockTemplatePreview({ template, industry, className = '
     return <p className="p-6 text-muted-foreground">No matching design. Choose a website from the gallery.</p>;
   }
 
-  const html = /^#[0-9a-f]{6}$/i.test(brand?.accent || '')
-    ? source.replace(/--accent:#[0-9a-f]{3,6};/i, `--accent:${brand.accent};`)
-    : source;
+  let html = source;
+  if (brand?.colorScheme?.accent && /^#[0-9a-f]{6}$/i.test(brand.colorScheme.accent)) {
+    html = html.replace(/--accent:#[0-9a-f]{3,6};/gi, `--accent:${brand.colorScheme.accent};`);
+    if (/^#[0-9a-f]{6}$/i.test(brand.colorScheme.accentLight || '')) {
+      html = html.replace(/--accent-light:#[0-9a-f]{3,6};/gi, `--accent-light:${brand.colorScheme.accentLight};`);
+    }
+  } else if (brand?.accent && /^#[0-9a-f]{6}$/i.test(brand.accent)) {
+    html = html.replace(/--accent:#[0-9a-f]{3,6};/gi, `--accent:${brand.accent};`);
+  }
+  if (brand?.businessName) {
+    const safeName = String(brand.businessName).replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[ch]));
+    html = html.replace(/<h1[^>]*>.*?<\/h1>/i, `<h1>${safeName}</h1>`);
+  }
+  if (typeof brand?.logo?.url === 'string' && /^https:\/\//i.test(brand.logo.url)) {
+    const safeLogo = brand.logo.url.replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[ch]));
+    html = html.replace(/<img[^>]*class="[^"]*logo[^"]*"[^>]*>/i,
+      `<img src="${safeLogo}" alt="Business logo" style="max-height:48px;object-fit:contain" />`);
+  }
 
   return <iframe
     title={local?.name || data?.name || 'Full website design preview'}
