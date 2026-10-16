@@ -4,20 +4,20 @@ import { findPreviewTemplate } from '../src/components/template-studio/previewSo
 import { compiledLocalStockCatalog } from '../src/components/template-studio/localStockData.js';
 
 test('preview uses the exact selected HTML, even without a backend', () => {
-  const selected = compiledLocalStockCatalog().find(item => item.id === 'source-epoxy-signature');
+  const selected = compiledLocalStockCatalog().find(item => item.id === 'source-epoxy_flooring-signature');
   assert.ok(selected?.content?.includes('<main'));
   assert.strictEqual(findPreviewTemplate(selected, 'Epoxy Flooring'), selected);
 });
 
 test('lookup by stable ID or slug reuses local design without a Base44 request', () => {
-  const selected = compiledLocalStockCatalog().find(item => item.id === 'source-epoxy-signature');
+  const selected = compiledLocalStockCatalog().find(item => item.id === 'source-epoxy_flooring-signature');
   assert.equal(findPreviewTemplate({ id: selected.id })?.content, selected.content);
   assert.equal(findPreviewTemplate(selected.slug)?.id, selected.id);
 });
 
 test('industry default can be previewed safely when no template object is supplied', () => {
   const selected = findPreviewTemplate(null, 'Epoxy Flooring');
-  assert.equal(selected?.id, 'source-epoxy-signature');
+  assert.equal(selected?.id, 'source-epoxy_flooring-signature');
   assert.ok(selected?.content?.includes('noindex,nofollow'));
   assert.equal(findPreviewTemplate({id:'other-tenant-id'}), null);
 });
