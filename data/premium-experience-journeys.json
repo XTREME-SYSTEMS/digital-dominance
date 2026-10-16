@@ -1,0 +1,363 @@
+{
+  "schema": "apex.premium.industry-experience.v1",
+  "state": "SYNTHETIC_PREVIEW",
+  "patterns": {
+    "vanta-motors": {
+      "eyebrow": "04 / YOUR COLLECTION",
+      "heading": "Discover the drive that moves you.",
+      "body": "A great machine deserves more than a specification sheet. Explore the paths from first impression to personal discovery.",
+      "prompt": "How would you like to explore?",
+      "helper": "Choose a discovery route to preview the next step.",
+      "pillars": [
+        [
+          "DISCOVER",
+          "An introduction"
+        ],
+        [
+          "COMPARE",
+          "Design and detail"
+        ],
+        [
+          "CONNECT",
+          "Your next step"
+        ]
+      ]
+    },
+    "halcyon-estates": {
+      "eyebrow": "04 / FIND YOUR PLACE",
+      "heading": "Space to imagine what comes next.",
+      "body": "From city residences to architectural retreats, browse a curated set of possibilities before arranging a real viewing.",
+      "prompt": "Which space feels like home?",
+      "helper": "Switch between residential, commercial and conceptual spaces.",
+      "pillars": [
+        [
+          "RESIDENTIAL",
+          "Home, reimagined"
+        ],
+        [
+          "COMMERCIAL",
+          "Space with purpose"
+        ],
+        [
+          "DESIGN",
+          "The details matter"
+        ]
+      ]
+    },
+    "veil-wellness": {
+      "eyebrow": "04 / A PERSONAL EXPERIENCE",
+      "heading": "A quieter path to feeling your best.",
+      "body": "Discover a consultation journey built around informed questions, considered options and individual comfort.",
+      "prompt": "Where would you like to begin?",
+      "helper": "Preview a personalized discovery flow. No treatment or booking is offered.",
+      "pillars": [
+        [
+          "DISCOVER",
+          "Ask the right questions"
+        ],
+        [
+          "UNDERSTAND",
+          "Explore options"
+        ],
+        [
+          "DECIDE",
+          "At your own pace"
+        ]
+      ]
+    },
+    "nexus-cloud": {
+      "eyebrow": "04 / THE WORKSPACE",
+      "heading": "See what a connected workflow feels like.",
+      "body": "Make the complicated feel intuitive. Explore a product path designed for clarity, collaboration and forward motion.",
+      "prompt": "Choose your product path.",
+      "helper": "Try the local interface with no account or data connection.",
+      "pillars": [
+        [
+          "ORGANIZE",
+          "See the big picture"
+        ],
+        [
+          "CONNECT",
+          "Bridge workflows"
+        ],
+        [
+          "MOVE",
+          "Stay in motion"
+        ]
+      ]
+    },
+    "arcus-architecture": {
+      "eyebrow": "04 / THE DESIGN PROCESS",
+      "heading": "From first sketch to lasting form.",
+      "body": "Every meaningful space begins with a question. Explore the stages of a thoughtful architectural process.",
+      "prompt": "Find your next design chapter.",
+      "helper": "Move through concept, specification and care.",
+      "pillars": [
+        [
+          "VISION",
+          "Define the brief"
+        ],
+        [
+          "FORM",
+          "Explore materials"
+        ],
+        [
+          "DETAIL",
+          "Refine the plan"
+        ]
+      ]
+    },
+    "aster-escapes": {
+      "eyebrow": "04 / PLAN YOUR ESCAPE",
+      "heading": "Where will the journey take you?",
+      "body": "Imagine the rhythm of your stay. Discover an elegant trip-planning experience without making an actual reservation.",
+      "prompt": "Preview your perfect getaway.",
+      "helper": "Select a demonstration date and party size to explore the flow.",
+      "pillars": [
+        [
+          "EXPLORE",
+          "Discover the place"
+        ],
+        [
+          "PLAN",
+          "Make room for wonder"
+        ],
+        [
+          "ARRIVE",
+          "Begin the story"
+        ]
+      ]
+    },
+    "forge-roofing": {
+      "eyebrow": "04 / PLAN WITH CONFIDENCE",
+      "heading": "A roof deserves the right questions.",
+      "body": "Explore how a clear inspection and project process helps you plan the next step without pressure or guesswork.",
+      "prompt": "What would you like to evaluate?",
+      "helper": "Browse inspection, material and planning stages. No quote is provided.",
+      "pillars": [
+        [
+          "INSPECT",
+          "Know the conditions"
+        ],
+        [
+          "COMPARE",
+          "Review the systems"
+        ],
+        [
+          "PLAN",
+          "Understand the scope"
+        ]
+      ]
+    },
+    "phase-electric": {
+      "eyebrow": "04 / POWER YOUR PROJECT",
+      "heading": "Clarity at every connection.",
+      "body": "From initial questions to system planning, take a guided look at a thoughtful electrical-service experience.",
+      "prompt": "Select the next step.",
+      "helper": "Explore service categories in a local demonstration.",
+      "pillars": [
+        [
+          "ASSESS",
+          "Start with safety"
+        ],
+        [
+          "DESIGN",
+          "Plan the system"
+        ],
+        [
+          "VERIFY",
+          "Check the details"
+        ]
+      ]
+    },
+    "lumen-solar": {
+      "eyebrow": "04 / ENERGY EXPLORER",
+      "heading": "Explore a brighter energy plan.",
+      "body": "Use a simple interactive space study as the first step toward understanding options. This is not a savings forecast.",
+      "prompt": "Explore a project scale.",
+      "helper": "Move the slider to compare illustrative sizes, not actual power production.",
+      "pillars": [
+        [
+          "DISCOVER",
+          "Learn the options"
+        ],
+        [
+          "SCALE",
+          "Explore project size"
+        ],
+        [
+          "PLAN",
+          "Verify site conditions"
+        ]
+      ]
+    },
+    "vault-private": {
+      "eyebrow": "04 / PRIVATE CLIENT EXPERIENCE",
+      "heading": "Insight, with room to think.",
+      "body": "An elegant client experience should give people clarity and control, without unsupported promises or invented performance.",
+      "prompt": "Begin with what matters.",
+      "helper": "Navigate a fictional discovery process. No investment advice is provided.",
+      "pillars": [
+        [
+          "CLARITY",
+          "Understand the brief"
+        ],
+        [
+          "DISCRETION",
+          "A considered approach"
+        ],
+        [
+          "CHOICE",
+          "Know the next step"
+        ]
+      ]
+    },
+    "remedy-restore": {
+      "eyebrow": "04 / RESTORATION PROCESS",
+      "heading": "Know what happens next.",
+      "body": "A calm, accessible response journey helps people understand documentation, assessment and the restoration process.",
+      "prompt": "Explore the restoration journey.",
+      "helper": "Review the sequence without placing a real emergency request.",
+      "pillars": [
+        [
+          "ASSESS",
+          "Document conditions"
+        ],
+        [
+          "RESPOND",
+          "Understand the plan"
+        ],
+        [
+          "RESTORE",
+          "Review the work"
+        ]
+      ]
+    },
+    "sync-creative": {
+      "eyebrow": "04 / CREATIVE PLAYGROUND",
+      "heading": "Ideas become tangible here.",
+      "body": "Explore different creative directions in a studio experience where strategy, craft and expression can meet.",
+      "prompt": "Find a creative direction.",
+      "helper": "Switch between study categories and see the local interface respond.",
+      "pillars": [
+        [
+          "IMAGINE",
+          "Define the ambition"
+        ],
+        [
+          "SHAPE",
+          "Build the identity"
+        ],
+        [
+          "LAUNCH",
+          "Create an experience"
+        ]
+      ]
+    },
+    "heritage-homes": {
+      "eyebrow": "04 / THE HOME JOURNEY",
+      "heading": "Make more of the space you love.",
+      "body": "See how a considered renovation process moves from ideas and planning to the detail that makes a home personal.",
+      "prompt": "Where does your project begin?",
+      "helper": "Explore a locally simulated home-project journey.",
+      "pillars": [
+        [
+          "DISCOVER",
+          "Imagine possibilities"
+        ],
+        [
+          "PLAN",
+          "Build the scope"
+        ],
+        [
+          "CREATE",
+          "Make it yours"
+        ]
+      ]
+    },
+    "flow-home": {
+      "eyebrow": "04 / HOME SERVICE GUIDE",
+      "heading": "Every detail, flowing together.",
+      "body": "Help homeowners find the right starting point for maintenance, repair or an upgrade through a reassuring digital path.",
+      "prompt": "Explore the service you need.",
+      "helper": "Choose a local demonstration option. No service call is dispatched.",
+      "pillars": [
+        [
+          "IDENTIFY",
+          "Understand the issue"
+        ],
+        [
+          "PLAN",
+          "Review solutions"
+        ],
+        [
+          "CARE",
+          "Protect what matters"
+        ]
+      ]
+    },
+    "nova-performance": {
+      "eyebrow": "04 / MOVE WITH PURPOSE",
+      "heading": "Make your next step count.",
+      "body": "Find a balanced starting point for movement, training and recovery in a focused, accessible member experience.",
+      "prompt": "Choose your path forward.",
+      "helper": "Discover training and recovery categories in a fictional studio.",
+      "pillars": [
+        [
+          "MOVE",
+          "Find your rhythm"
+        ],
+        [
+          "TRAIN",
+          "Develop your practice"
+        ],
+        [
+          "RECOVER",
+          "Make space to rest"
+        ]
+      ]
+    },
+    "eclipse-time": {
+      "eyebrow": "04 / YOUR SELECTION",
+      "heading": "The details are the difference.",
+      "body": "Explore finish, character and craftsmanship in a product experience designed for considered decisions.",
+      "prompt": "Find your finishing touch.",
+      "helper": "Preview product finishes locally. Purchasing is not enabled.",
+      "pillars": [
+        [
+          "EXPLORE",
+          "Discover the design"
+        ],
+        [
+          "SELECT",
+          "Choose a finish"
+        ],
+        [
+          "CONSIDER",
+          "Stay with the details"
+        ]
+      ]
+    },
+    "aurora-dental": {
+      "eyebrow": "04 / YOUR FIRST CONVERSATION",
+      "heading": "Care begins with understanding.",
+      "body": "An inviting patient journey should make room for questions, clear expectations and confident next steps.",
+      "prompt": "Plan a first conversation.",
+      "helper": "Try the appointment-flow demonstration. No patient details are collected.",
+      "pillars": [
+        [
+          "WELCOME",
+          "Know what to expect"
+        ],
+        [
+          "EXPLORE",
+          "Ask your questions"
+        ],
+        [
+          "PLAN",
+          "Take your time"
+        ]
+      ]
+    }
+  }
+}

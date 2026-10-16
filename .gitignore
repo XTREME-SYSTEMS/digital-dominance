@@ -30,3 +30,6 @@ dist-ssr
 .env
 .vite
 base44/.app.jsonc
+
+# Local-only imported operator SitePacks, never public or committed
+factory/.sitepack-preview-output/
