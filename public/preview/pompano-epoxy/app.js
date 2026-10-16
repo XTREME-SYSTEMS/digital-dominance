@@ -40,7 +40,7 @@
     target.hidden = true;
   };
 
-  introForm?.addEventListener("submit", (event) => {
+  element("intro-next")?.addEventListener("click", (event) => {
     event.preventDefault();
 
     // Contacts stay in form fields only: never sent, persisted, or logged.
@@ -127,7 +127,7 @@
   });
   const round50 = (value) => Math.round(value / 50) * 50;
 
-  estimateForm?.addEventListener("submit", (event) => {
+  element("calculate-estimate")?.addEventListener("click", (event) => {
     event.preventDefault();
     const feetInput = element("square-feet");
     const squareFeet = Number(feetInput.value);
