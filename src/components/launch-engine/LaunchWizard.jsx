@@ -4,12 +4,15 @@ import { X, Rocket, MapPin, Check, ChevronRight, Eye, ExternalLink } from "lucid
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import BrandStudio from "@/components/launch-engine/BrandStudio";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
+import StockDesignThumbnail from '@/components/template-studio/StockDesignThumbnail';
 import SafeImage from '@/components/ui/SafeImage';
+import StockPreviewDialog from '@/components/template-studio/StockPreviewDialog';
 
 export default function LaunchWizard({ initial, onClose }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [brand, setBrand] = useState(null);
+  const [previewChoice, setPreviewChoice] = useState(null);
   const [selection, setSelection] = useState({
     industry: initial?.industry || initial?.template?.niche || "",
     template: initial?.template || null,
@@ -22,16 +25,20 @@ export default function LaunchWizard({ initial, onClose }) {
 
   const STEPS = [
     { label: "Industry", desc: "Choose a business category" },
-    { label: "Template", desc: "Pick a design — hover to preview the layout" },
-    { label: "Brand", desc: "Generate your logo, domain, and brand colors" },
+    { label: "Design", desc: "Look at the websites below. Pick the one you like, or open the full preview first." },
+    { label: "Brand", desc: "Try a logo, business name and color scheme on your chosen website." },
     { label: "Locations", desc: "How many sites to launch" },
-    { label: "Review", desc: "Review your brand and open the studio" },
+    { label: "Review", desc: "Review your template and open the studio" },
   ];
 
   const canAdvance = step === 0 ? !!selection.industry : step === 1 ? !!selection.template : step === 3 ? selection.count > 0 : true;
 
   const launch = () => {
-    navigate('/admin/template-studio', { state: { selectedStockTemplateId:selection.template.id, brand } });
+    navigate('/admin/template-studio', { state: {
+      selectedStockTemplateId: selection.template.id,
+      selectedStockTemplateSnapshot: selection.template,
+      brand,
+    } });
   };
 
   // Build a full-page HTML for "open in browser"
@@ -43,7 +50,8 @@ export default function LaunchWizard({ initial, onClose }) {
       html = html.replace(/--accent-light:#[0-9a-f]{3,6};/gi, `--accent-light:${brand.colorScheme.accentLight};`);
     }
     if (brand?.businessName) {
-      html = html.replace(/<h1[^>]*>.*?<\/h1>/i, `<h1>${brand.businessName}</h1>`);
+      const safeName = brand.businessName.replace(/[&<>"\']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"' : "&quot;", "\'": "&#39;" }[c]));
+      html = html.replace(/<h1[^>]*>.*?<\/h1>/i, `<h1>${safeName}</h1>`);
     }
     return html;
   }, [selection.template, brand]);
@@ -57,17 +65,18 @@ export default function LaunchWizard({ initial, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative max-h-[92dvh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+    <>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 backdrop-blur-sm sm:p-4" onClick={onClose} role="presentation">
+      <div role="dialog" aria-modal="true" aria-label="Website Launch Wizard" className={`relative max-h-[94dvh] w-full overflow-y-auto rounded-2xl bg-white shadow-2xl ${step === 1 ? "max-w-5xl" : "max-w-2xl"}`} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between bg-[#0a1220] px-5 py-4">
+        <div className="flex items-center justify-between bg-[#0a1220] px-5 py-4">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#00a2ff]">
               <Rocket className="h-5 w-5 text-white" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-white">Website Launch Wizard</h3>
-              <p className="text-[10px] text-white/50">{STEPS[step].label}</p>
+              <p className="text-[10px] text-white/60">Choose a website by its picture</p>
             </div>
           </div>
           <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white">
@@ -91,7 +100,7 @@ export default function LaunchWizard({ initial, onClose }) {
         </div>
 
         {/* Body */}
-        <div className="p-5 min-h-[320px]">
+        <div className="p-5 min-h-[280px]">
           <p className="text-sm text-gray-500 mb-4">{STEPS[step].desc}</p>
 
           {/* Step 0: Industry */}
@@ -117,35 +126,57 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 1: Template — Visual Thumbnails */}
           {step === 1 && (
-            <div className="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto">
-              {designs.isLoading && <p role="status" className="col-span-full text-center text-gray-400">Loading designs…</p>}
-              {designs.error && <p role="alert" className="col-span-full text-center text-red-500">{designs.error.message}</p>}
-              {designs.items.map((t) => {
-                const designName = t.name.includes(' / ') ? t.name.split(' / ').slice(1).join(' / ') : t.name;
-                const active = selection.template?.id === t.id;
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => setSelection({ ...selection, template: t })}
-                    className={`overflow-hidden rounded-xl border-2 text-left transition ${active ? "border-[#00a2ff] ring-2 ring-[#00a2ff]/30" : "border-gray-200 hover:border-gray-300"}`}
-                  >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
-                      <SafeImage src={t.preview_image_url} alt={t.name} className="h-full w-full object-cover transition duration-300 hover:scale-105" />
-                      {active && (
-                        <div className="absolute top-2 right-2 rounded-full bg-[#00a2ff] p-1">
-                          <Check className="h-3 w-3 text-white" />
+            <div>
+              <h4 className="mb-3 text-xl font-black text-[#0a1220]">Which website do you like?</h4>
+              <p className="mb-4 text-sm text-gray-600">
+                These are pictures of the actual websites, not just example photos.
+                Tap a design to select it. Choose "See full website" to scroll through every page section.
+              </p>
+              {designs.isLoading && <p role="status">Preparing website pictures…</p>}
+              {designs.error && <p role="alert" className="text-red-700">Website designs could not be loaded. Please go back and try again.</p>}
+              <div role="group" aria-label="Choose a website design" className="grid max-h-[57dvh] grid-cols-1 gap-4 overflow-y-auto pb-2 sm:grid-cols-2">
+                {designs.items.map((t, index) => {
+                  const picked = selection.template?.id === t.id;
+                  return (
+                    <div key={t.id} className={`overflow-hidden rounded-2xl border-2 bg-white shadow-sm ${picked ? 'border-[#00a2ff] ring-2 ring-[#00a2ff]/30' : 'border-slate-200'}`}>
+                      <button
+                        type="button"
+                        aria-pressed={picked}
+                        aria-label={`Choose design ${index + 1}: ${t.name.split(' / ')[1] || 'website'}`}
+                        onClick={() => setSelection(previous => ({ ...previous, template: t }))}
+                        className="block w-full text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#00a2ff]"
+                      >
+                        <StockDesignThumbnail template={t} />
+                        <div className="flex items-center justify-between gap-3 px-4 py-3">
+                          <div>
+                            <strong className="block text-base text-[#0a1220]">Design {index + 1}</strong>
+                            <span className="text-xs text-slate-600">{t.name.split(' / ')[1] || 'Website design'}</span>
+                          </div>
+                          {picked
+                            ? <span className="flex items-center gap-1 rounded-full bg-[#00a2ff] px-3 py-1.5 text-xs font-bold text-white"><Check className="h-3.5 w-3.5" /> Selected</span>
+                            : <span className="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-bold text-[#164c7b]">Choose</span>}
                         </div>
-                      )}
+                      </button>
+                      <div className="border-t border-slate-100 px-4 py-2.5">
+                        <button
+                          type="button"
+                          aria-label={`See full website for design ${index + 1}`}
+                          onClick={() => setPreviewChoice(t)}
+                          className="flex min-h-9 items-center gap-2 text-sm font-bold text-[#0869b5] hover:underline"
+                        >
+                          <Eye className="h-4 w-4" /> See full website
+                        </button>
+                      </div>
                     </div>
-                    <div className="px-3 py-2">
-                      <p className={`text-xs font-bold ${active ? "text-[#00a2ff]" : "text-gray-800"}`}>{designName}</p>
-                      <p className="mt-0.5 line-clamp-1 text-[10px] text-gray-400">{t.description || ''}</p>
-                    </div>
-                  </button>
-                );
-              })}
+                  );
+                })}
+              </div>
+              {!designs.isLoading && !designs.error && !designs.items.length && (
+                <p role="status" className="rounded-lg border border-slate-200 p-4 text-sm">
+                  No website designs for this industry yet. Go back and choose another industry.
+                </p>
+              )}
             </div>
           )}
 
@@ -172,7 +203,6 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 3: Locations */}
           {step === 3 && (
             <div className="space-y-4">
               <div>
@@ -257,6 +287,12 @@ export default function LaunchWizard({ initial, onClose }) {
         </div>
       </div>
     </div>
+    <StockPreviewDialog
+      template={previewChoice}
+      onClose={() => setPreviewChoice(null)}
+      onChoose={template => setSelection(previous => ({ ...previous, template }))}
+    />
+    </>
   );
 }
 

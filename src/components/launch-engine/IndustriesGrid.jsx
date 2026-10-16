@@ -47,12 +47,12 @@ export default function IndustriesGrid({ onSelect, workspace = false }) {
               type="button"
               onClick={() => onSelect?.(ind.niche)}
               aria-label={`Explore ${ind.label} website designs`}
-              className="group relative aspect-[5/3] min-h-[120px] overflow-hidden rounded-xl border border-slate-200 bg-[#061932] text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#20b8ff] hover:shadow-[0_12px_24px_rgba(3,80,160,.20)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3dc7ff]"
+              className="group relative aspect-[5/3] min-h-[100px] sm:min-h-[120px] min-w-0 w-full overflow-hidden rounded-xl border border-slate-200 bg-[#061932] text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:border-[#20b8ff] hover:shadow-[0_12px_24px_rgba(3,80,160,.20)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3dc7ff]"
             >
               <SafeImage src={ind.image} alt={ind.alt_text || `${ind.label} industry concept photography`} niche={ind.niche} failClosed className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
               <span className="absolute inset-0 bg-gradient-to-t from-[#00152a]/95 via-[#001c38]/10 to-transparent" aria-hidden="true" />
               <span className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-3 text-white">
-                <span className="text-[15px] font-extrabold leading-tight md:text-[17px]">{ind.label}</span>
+                <span className="min-w-0 break-words text-[15px] font-extrabold leading-tight md:text-[17px]">{ind.label}</span>
                 <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/65 bg-[#071e3d]/45 text-white group-hover:bg-[#0877ea]" aria-hidden="true"><ArrowUpRight className="h-4 w-4" /></span>
               </span>
             </button>

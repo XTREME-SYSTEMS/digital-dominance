@@ -1,17 +1,21 @@
 import { createClient } from '@base44/sdk';
 import { appParams } from '@/lib/app-params';
+import { hasRuntimeBase44AppId } from '@/lib/base44Binding';
+import { createUnconfiguredBase44Client } from '@/lib/unconfiguredBase44Client';
 
 const { appId, token, functionsVersion, appBaseUrl } = appParams;
 
 //Create a client with authentication required
-export const base44 = createClient({
+// A missing app binding cannot bootstrap or track against an arbitrary tenant.
+// @ts-ignore Both sides intentionally expose the Base44 client interface.
+export const base44 = hasRuntimeBase44AppId ? createClient({
   appId,
   token,
   functionsVersion,
   serverUrl: '',
   requiresAuth: false,
   appBaseUrl
-});
+}) : createUnconfiguredBase44Client();
 
 // ─────────────────────────────────────────────────────────────────────────────
 // End-to-end Vercel AI Gateway routing
@@ -175,6 +179,7 @@ function patchCoreMethods(core) {
 // lazy access via a Proxy on base44.integrations so the overrides land whenever
 // the SDK materialises Core (it may not exist at import time).
 function installGatewayOverrides() {
+  if (!hasRuntimeBase44AppId) return;
   const integrations = base44?.integrations;
   if (!integrations) return;
   const core = integrations.Core;

@@ -33,7 +33,7 @@ export default function LaunchHeroNav() {
           <Phone aria-hidden="true" /><span>(772) 209-0266</span>
         </a>
 
-        <AdminAccessDropdown />
+        <div className="wle-home-admin-desktop"><AdminAccessDropdown /></div>
 
         <button type="button" className="wle-mobile-nav-toggle" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen} aria-controls="wle-mobile-nav" onClick={() => setMenuOpen(value => !value)}>
           {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
@@ -44,6 +44,7 @@ export default function LaunchHeroNav() {
         <div id="wle-mobile-nav" className="wle-mobile-nav-links">
           {links.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
           <Link to="/templates" onClick={() => setMenuOpen(false)}>Browse All Templates</Link>
+          <div className="wle-home-admin-mobile"><AdminAccessDropdown /></div>
         </div>
       )}
     </nav>

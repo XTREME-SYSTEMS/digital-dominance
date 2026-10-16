@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+const {spawn}=require('node:child_process'),{mkdirSync,writeFileSync,mkdtempSync,rmSync}=require('node:fs'),os=require('node:os'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),out=path.resolve(process.env.QA_OUT||path.join(root,'audit-evidence','browser-qa')),baseUrl=process.env.QA_BASE_URL||'http://127.0.0.1:4175/',sleep=t=>new Promise(r=>setTimeout(r,t));mkdirSync(out,{recursive:true});
+const profile=mkdtempSync(path.join(os.tmpdir(),'dd-home-qa-')),PORT=(19000+Math.floor(Math.random()*4000)),chrome=spawn(process.env.CHROME_BIN||(process.platform==='win32'?'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe':'google-chrome'),['--headless=new','--disable-gpu','--hide-scrollbars','--no-first-run','--no-default-browser-check','--remote-allow-origins=*','--remote-debugging-port='+PORT,'--user-data-dir='+profile,'about:blank'],{stdio:'ignore',windowsHide:true});
+async function waitFor(fn,ms=15000){const start=Date.now();while(Date.now()-start<ms){try{const r=await fn();if(r)return r}catch{}await sleep(200)}throw Error('Timed out waiting for browser');}
+let socket,cnt=0;const pending=new Map();
+async function call(method,params={}){return await new Promise((resolve,reject)=>{const id=++cnt;pending.set(id,{resolve,reject});socket.send(JSON.stringify({id,method,params}));setTimeout(()=>{if(pending.has(id)){pending.delete(id);reject(Error('CDP timeout '+method))}},15000)})}
+async function evalJS(expr){const r=await call('Runtime.evaluate',{expression:expr,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.text);return r.result.value;}
+async function main(){const target=await waitFor(async()=>{const r=await fetch('http://127.0.0.1:'+PORT+'/json');const a=await r.json();return a.find(x=>x.type==='page'&&x.webSocketDebuggerUrl)});socket=new WebSocket(target.webSocketDebuggerUrl);socket.addEventListener('message',m=>{try{const o=JSON.parse(m.data);if(o.id&&pending.has(o.id)){const p=pending.get(o.id);pending.delete(o.id);o.error?p.reject(Error(o.error.message)):p.resolve(o.result)}}catch{}});await waitFor(()=>socket.readyState===1);await call('Page.enable');await call('Runtime.enable');const results=[];
+for(const [view,width,height] of [['desktop',1440,900],['tablet',768,1000],['mobile',390,844]]){
+ await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:view==='mobile'});
+ await call('Page.navigate',{url:baseUrl});
+ await waitFor(()=>evalJS('document.readyState==="complete" && Boolean(document.querySelector("#industries"))'),16000);
+ const heroShot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+ writeFileSync(path.join(out,'hero-'+view+'.png'),Buffer.from(heroShot.data,'base64'));
+ await evalJS('(()=>{document.querySelector("#industries").scrollIntoView();[...document.querySelectorAll("#industries img")].forEach(x=>{x.loading="eager"});return true})()');
+ // Wait for actual decoded images, not merely window.onload or completed network requests.
+ await waitFor(async()=>await evalJS('(()=>{const images=[...document.querySelectorAll("#industries img")];return images.length===20&&images.every(x=>x.complete&&x.naturalWidth>0)})()'),12000).catch(()=>false);
+
+ const data=await evalJS(`(()=>{const region=document.querySelector("#industries");const imgs=[...region.querySelectorAll("img")];const cards=[...region.querySelectorAll("button")];return {cards:cards.length,images:imgs.length,broken:imgs.filter(x=>!x.complete||x.naturalWidth===0).map(x=>x.src),imageSrcs:imgs.map(x=>x.getAttribute("src")),localAssets:imgs.filter(x=>x.getAttribute("src")?.startsWith("/images/")).length,viewport:innerWidth,requestedViewport:${width},layoutClientWidth:document.documentElement.clientWidth,visualViewportWidth:visualViewport?.width ?? null,documentWidth:document.documentElement.scrollWidth,overflowCandidates:[...document.body.querySelectorAll("*")].map(el=>({tag:el.tagName,cls:typeof el.className==="string"?el.className.slice(0,90):"",right:Math.round(el.getBoundingClientRect().right),left:Math.round(el.getBoundingClientRect().left)})).filter(el=>el.right>${width}+4||el.left< -4).slice(0,15),heading:region.querySelector("h2")?.innerText||"",serverNotice:!!region.querySelector("[role=status]")}})()`);
+ const shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});writeFileSync(path.join(out,'homepage-categories-'+view+'.png'),Buffer.from(shot.data,'base64'));
+ await evalJS('(()=>{document.querySelector("#industries button").click();return true})()');
+ await sleep(300);
+ const wizardOpened=await evalJS('Boolean([...document.querySelectorAll("h3")].some(x=>x.textContent?.includes("Website Launch Wizard")))');
+ let stage2={pass:false,error:null};
+ try {
+   const industryChoice=await waitFor(()=>evalJS('(()=>{const d=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");return [...(d?.querySelectorAll("button")||[])].some(b=>b.textContent?.trim()==="Epoxy Flooring")})()'),8000);
+   if(!industryChoice)throw Error('Epoxy Flooring choice missing in industry step');
+   await evalJS('(()=>{const d=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=[...d.querySelectorAll("button")].find(x=>x.textContent?.trim()==="Epoxy Flooring");b.click();return true})()');
+   await sleep(200);
+   const advanced=await evalJS('(()=>{const d=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=[...d.querySelectorAll("button")].find(x=>x.textContent?.trim().startsWith("Next"));if(!b||b.disabled)return false;b.click();return true})()');
+   if(!advanced)throw Error('Stage 2 Next button blocked');
+   await waitFor(()=>evalJS('document.querySelectorAll("[data-testid=real-website-thumbnail]").length===10'),14000);
+   const previews=await evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const cards=[...root.querySelectorAll("[data-testid=real-website-thumbnail]")];const html=cards.map(el=>el.querySelector("iframe")?.getAttribute("srcdoc")||"");return {count:cards.length,withHtml:html.filter(s=>s.includes("<main")).length,uniqueHtml:new Set(html).size,buttons:root.querySelectorAll("button[aria-pressed]").length,oldError:root.textContent.includes("Backend not configured")}})()');
+   const designShot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+   writeFileSync(path.join(out,'wizard-stage2-pictures-'+view+'.png'),Buffer.from(designShot.data,'base64'));
+   const select=await evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=root?.querySelector("button[aria-pressed]");if(!b)return false;b.click();return true})()');
+   const openFull=await evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=[...(root?.querySelectorAll("button")||[])].find(x=>x.textContent?.includes("See full website"));if(!b)return false;b.click();return true})()');
+   const full=await waitFor(()=>evalJS('(()=>{const all=[...document.querySelectorAll("[role=dialog]")];const full=all.find(x=>x.textContent?.includes("This is the actual full-page website design"));const html=full?.querySelector("iframe")?.getAttribute("srcdoc")||"";return html.includes("<main")&&html.includes("noindex,nofollow")})()'),9000);
+   const choose=await evalJS('(()=>{const all=[...document.querySelectorAll("[role=dialog]")];const full=all.find(x=>x.textContent?.includes("This is the actual full-page website design"));const b=[...(full?.querySelectorAll("button")||[])].find(x=>x.textContent?.includes("Choose this design"));if(!b)return false;b.click();return true})()');
+   await sleep(200);
+   const next=await evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=[...(root?.querySelectorAll("button")||[])].find(x=>x.textContent?.trim().startsWith("Next"));if(!b||b.disabled)return false;b.click();return true})()');
+   const stage3=await waitFor(()=>evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const html=root?.querySelector("iframe")?.getAttribute("srcdoc")||"";return html.includes("<main")&&html.includes("noindex,nofollow")&&!root.textContent.includes("Backend not configured")})()'),10000);
+   const stage3Shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+   writeFileSync(path.join(out,'wizard-stage3-full-preview-'+view+'.png'),Buffer.from(stage3Shot.data,'base64'));
+   stage2={pass:previews.count===10&&previews.withHtml===10&&previews.uniqueHtml===10&&previews.buttons===10&&!previews.oldError&&select&&openFull&&full&&choose&&next&&stage3,previews,select,openFull,full,choose,next,stage3};
+ } catch(error) {
+   stage2={pass:false,error:String(error?.message||error)};
+ }
+ const pass=data.cards===20&&data.images===20&&data.broken.length===0&&data.localAssets===20&&data.documentWidth<=width+5&&data.viewport<=width+5&&wizardOpened&&stage2.pass;
+ results.push({view,pass,wizardOpened,stage2,...data});console.log(view+' '+(pass?'PASS':'FAIL')+' local='+data.localAssets+'/20 overflowPx='+(data.documentWidth-width)+' stage2='+JSON.stringify(stage2)+' layoutWidth='+data.viewport+' candidates='+JSON.stringify(data.overflowCandidates.slice(0,5)));
+}
+const result={status:results.every(x=>x.pass)?'PASS':'FAIL',testedAt:new Date().toISOString(),baseUrl,source:baseUrl.includes('127.0.0.1')?'local Vite preview (no live Base44 backend)':'hosted HTTPS Vercel preview (not production)',screenshots:results.flatMap(x=>['hero-'+x.view+'.png','homepage-categories-'+x.view+'.png','wizard-stage2-pictures-'+x.view+'.png','wizard-stage3-full-preview-'+x.view+'.png']),results,limitations:['No authenticated Base44 backend, live workflows untested','No independent semantic image signoff','No production promotion or release verification']};writeFileSync(path.join(out,'HOMEPAGE_CHROME_QA_RECEIPT.json'),JSON.stringify(result,null,2));console.log('OVERALL='+result.status);if(result.status!=='PASS')process.exitCode=1;
+}
+main().catch(e=>{console.error('BLOCKED '+e.stack);process.exitCode=2}).finally(()=>{if(socket)socket.close();chrome.kill();try{rmSync(profile,{force:true,recursive:true,maxRetries:2})}catch{}});

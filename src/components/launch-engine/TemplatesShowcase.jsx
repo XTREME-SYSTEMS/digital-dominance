@@ -7,14 +7,14 @@ import SafeImage from '@/components/ui/SafeImage';
 
 // Preserve the industry-image filters added on main while restoring premium full-page previews.
 const CATEGORIES = [
-  { id: 'all', label: 'All Styles', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80' },
-  { id: 'contractor', label: 'Contractor', niches: ['epoxy','roofing','hvac','plumbing','electrical','remodeling','landscaping','garage'], image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80' },
-  { id: 'health', label: 'Health & Wellness', niches: ['med_spa','dental','chiropractic','medical','wellness'], image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80' },
-  { id: 'legal', label: 'Legal', niches: ['legal','attorney','law'], image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&q=80' },
-  { id: 'professional', label: 'Professional', niches: ['insurance','mortgage','accounting','consulting','financial'], image: 'https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/fbb49df42_generated_image.png' },
-  { id: 'realestate', label: 'Real Estate', niches: ['real_estate','property','realtor'], image: 'https://images.unsplash.com/photo-1568605114987-395e3a5eb4c5?w=400&q=80' },
-  { id: 'home', label: 'Home Services', niches: ['cleaning','pest_control','moving','painting'], image: 'https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/8860a9bbc_generated_image.png' },
-  { id: 'automotive', label: 'Automotive', niches: ['auto_detailing','auto_repair','towing'], image: 'https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/879b0b4e1_generated_image.png' },
+  { id: 'all', label: 'All Styles', image: '/images/home-industries/real_estate.jpg' },
+  { id: 'contractor', label: 'Contractor', niches: ['epoxy','roofing','hvac','plumbing','electrical','remodeling','landscaping','garage'], image: '/images/industries/roof_repair.jpg' },
+  { id: 'health', label: 'Health & Wellness', niches: ['med_spa','dental','chiropractic','medical','wellness'], image: '/images/home-industries/med_spa.jpg' },
+  { id: 'legal', label: 'Legal', niches: ['legal','attorney','law'], image: '/images/industries/personal_injury.jpg' },
+  { id: 'professional', label: 'Professional', niches: ['insurance','mortgage','accounting','consulting','financial'], image: '/images/home-industries/insurance.jpg' },
+  { id: 'realestate', label: 'Real Estate', niches: ['real_estate','property','realtor'], image: '/images/home-industries/real_estate.jpg' },
+  { id: 'home', label: 'Home Services', niches: ['cleaning','pest_control','moving','painting'], image: '/images/home-industries/cleaning_services.jpg' },
+  { id: 'automotive', label: 'Automotive', niches: ['auto_detailing','auto_repair','towing'], image: '/images/home-industries/auto_detailing.jpg' },
 ];
 
 const normalize = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -65,7 +65,7 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
             <button key={item.id} type="button" aria-pressed={category === item.id}
               onClick={() => setCategory(item.id)}
               className={`group relative min-h-20 w-28 overflow-hidden rounded-xl border-2 text-left transition duration-200 hover:-translate-y-0.5 sm:w-36 ${category === item.id ? 'border-[#57cfff] shadow-[0_0_18px_rgba(20,156,255,.50)]' : 'border-[#93caed]/20 hover:border-[#57cfff]'}`}>
-              <SafeImage src={item.image} alt={`${item.label} template category`} category={item.id}
+              <SafeImage src={item.image} alt={`${item.label} template category`} category={item.id} failClosed
                 className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
               <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#00152c] via-[#00152c]/25 to-transparent" />
               <span className="absolute bottom-0 left-0 right-0 p-2 text-center text-[11px] font-extrabold leading-tight text-white sm:text-xs">{item.label}</span>
@@ -85,7 +85,7 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
               </div>
               <div className="relative aspect-[16/10] overflow-hidden bg-[#15375e]">
                 <SafeImage src={template.preview_image_url} alt={`${template.name} website template preview`}
-                  category={category === 'all' ? 'default' : category}
+                  category={category === 'all' ? 'default' : category} failClosed
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#001024]/75 via-transparent to-transparent" aria-hidden="true" />
                 <span className="absolute bottom-4 right-4 flex items-center gap-2 rounded-lg border border-white/70 bg-[#0479ec]/90 px-3 py-2 text-xs font-bold text-white">
@@ -93,17 +93,7 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
                 </span>
               </div>
               <div className="px-4 py-4">
-                {(() => {
-                  const parts = template.name.split(' / ');
-                  const niche = parts[0];
-                  const designName = parts.slice(1).join(' / ');
-                  return (
-                    <>
-                      <h3 className="line-clamp-1 text-lg font-extrabold tracking-tight text-white">{niche}</h3>
-                      {designName && <p className="text-[11px] font-bold uppercase tracking-wider text-[#55ceff]/80">{designName}</p>}
-                    </>
-                  );
-                })()}
+                <h3 className="line-clamp-1 text-lg font-extrabold tracking-tight text-white">{template.name}</h3>
                 <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-300">{template.description || 'Explore the layout and sections in a full-page preview.'}</p>
               </div>
             </button>
