@@ -5,6 +5,7 @@ import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import BrandStudio from "@/components/launch-engine/BrandStudio";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import StockDesignThumbnail from '@/components/template-studio/StockDesignThumbnail';
+import SafeImage from '@/components/ui/SafeImage';
 import StockPreviewDialog from '@/components/template-studio/StockPreviewDialog';
 
 export default function LaunchWizard({ initial, onClose }) {
