@@ -5,15 +5,22 @@ import { base44 } from '@/api/base44Client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import StockTemplateLibrary from '@/components/template-studio/StockTemplateLibrary';
 import { STOCK_QUERY } from '@/components/template-studio/useStockTemplates';
+import { getBuiltinStockTemplateById, filterBuiltinStockTemplates, isBuiltinStockTemplate } from '@/lib/stockCatalogFallback';
 import StockStudioEditor from '@/components/template-studio/StockStudioEditor';
 import BenchmarkLibrary from '@/components/template-studio/BenchmarkLibrary';
 export default function StockStudio() {
  const [selected,setSelected]=useState(null);
  const [dismissed,setDismissed]=useState(false);
  const {state}=useLocation();
- const initial=useQuery({queryKey:['selected-stock-template',state?.selectedStockTemplateId],enabled:!!state?.selectedStockTemplateId,queryFn:()=>base44.entities.TemplateLibrary.get(state.selectedStockTemplateId)});
- const active=selected||(!dismissed?initial.data:null);
+ const initial=useQuery({queryKey:['selected-stock-template',state?.selectedStockTemplateId],enabled:!!state?.selectedStockTemplateId&&!state?.selectedStockTemplate,queryFn:async()=>getBuiltinStockTemplateById(state.selectedStockTemplateId)||base44.entities.TemplateLibrary.get(state.selectedStockTemplateId)});
+ const active=selected||(!dismissed?(state?.selectedStockTemplate||initial.data):null);
  const nextDesign=async()=>{
+  if(isBuiltinStockTemplate(active)){
+   const matching=filterBuiltinStockTemplates({...STOCK_QUERY,niche:active.niche}).sort((a,b)=>a.sort_order-b.sort_order);
+   const index=matching.findIndex(t=>t.id===active.id);
+   setSelected(matching[(index+1)%matching.length]||active);
+   return;
+  }
   const query={...STOCK_QUERY,niche:active.niche,sort_order:{$gt:active.sort_order}};
   let page=await base44.entities.TemplateLibrary.filter(query,{sort:'sort_order',limit:1});
   if(!page.items.length)page=await base44.entities.TemplateLibrary.filter({...STOCK_QUERY,niche:active.niche},{sort:'sort_order',limit:1});
