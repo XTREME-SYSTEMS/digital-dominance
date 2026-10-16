@@ -1,0 +1,50 @@
+{
+  "schema_version": "apex.premium.hero-image-review.v1",
+  "status": "DEVELOPMENT_CANDIDATES_VISUALLY_REVIEWED_NOT_GUARDIAN_APPROVED",
+  "original_problem": "True top-of-page Chrome screenshot comparison found three premium masters led with unrelated house/interior photography, despite technical HTTP and image loading PASS.",
+  "scope": "PREVIEW_ONLY",
+  "review_date": "2026-10-14",
+  "source_gallery": "https://digital-dominance-r67bjd0eg-strategic-minds-advisory.vercel.app/premium/collection/",
+  "image_change_count": 5,
+  "image_bytes_sha256_review": "PENDING",
+  "independent_semantic_approval": "PENDING",
+  "production_allowed": false,
+  "sources": [
+    {
+      "master": "forge-roofing",
+      "field": "photo",
+      "pexels_id": 33404248,
+      "source_url": "https://www.pexels.com/photo/professional-roofer-installing-shingles-on-new-roof-33404248/",
+      "semantic": "Actual roofer using nail gun to install asphalt shingles on roof"
+    },
+    {
+      "master": "forge-roofing",
+      "field": "photo2",
+      "pexels_id": 38028508,
+      "source_url": "https://www.pexels.com/photo/roofer-installing-shingles-on-a-sunny-day-38028508/",
+      "semantic": "Roofers working on shingle installation on a house"
+    },
+    {
+      "master": "remedy-restore",
+      "field": "photo",
+      "pexels_id": 28447776,
+      "source_url": "https://www.pexels.com/photo/suburban-flooding-surrounding-residential-house-28447776/",
+      "semantic": "Flood water surrounding residential house after weather event"
+    },
+    {
+      "master": "remedy-restore",
+      "field": "photo2",
+      "pexels_id": 28447787,
+      "source_url": "https://www.pexels.com/photo/flood-response-team-in-residential-area-28447787/",
+      "semantic": "Response team and sandbags in residential flood"
+    },
+    {
+      "master": "flow-home",
+      "field": "photo",
+      "pexels_id": 32588548,
+      "source_url": "https://www.pexels.com/photo/plumber-repairing-pipe-with-wrench-indoors-32588548/",
+      "semantic": "Plumber working on indoor pipe repair using wrench"
+    }
+  ],
+  "summary": "Photographic subject match evaluated from original source descriptions and visual candidate atlas; not independent production proof, no verified claims about operating businesses."
+}
