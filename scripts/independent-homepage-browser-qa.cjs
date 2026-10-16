@@ -22,9 +22,34 @@ for(const [view,width,height] of [['desktop',1440,900],['tablet',768,1000],['mob
  await evalJS('(()=>{document.querySelector("#industries button").click();return true})()');
  await sleep(300);
  const wizardOpened=await evalJS('Boolean([...document.querySelectorAll("h3")].some(x=>x.textContent?.includes("Website Launch Wizard")))');
- const pass=data.cards===20&&data.images===20&&data.broken.length===0&&data.localAssets===20&&data.documentWidth<=width+5&&data.viewport<=width+5&&wizardOpened;
- results.push({view,pass,wizardOpened,...data});console.log(view+' '+(pass?'PASS':'FAIL')+' local='+data.localAssets+'/20 overflowPx='+(data.documentWidth-width)+' layoutWidth='+data.viewport+' candidates='+JSON.stringify(data.overflowCandidates.slice(0,5)));
+ let stage2={pass:false,error:null};
+ try {
+   const industryChoice=await waitFor(()=>evalJS('(()=>{const d=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");return [...(d?.querySelectorAll("button")||[])].some(b=>b.textContent?.trim()==="Epoxy Flooring")})()'),8000);
+   if(!industryChoice)throw Error('Epoxy Flooring choice missing in industry step');
+   await evalJS('(()=>{const d=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=[...d.querySelectorAll("button")].find(x=>x.textContent?.trim()==="Epoxy Flooring");b.click();return true})()');
+   await sleep(200);
+   const advanced=await evalJS('(()=>{const d=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=[...d.querySelectorAll("button")].find(x=>x.textContent?.trim().startsWith("Next"));if(!b||b.disabled)return false;b.click();return true})()');
+   if(!advanced)throw Error('Stage 2 Next button blocked');
+   await waitFor(()=>evalJS('document.querySelectorAll("[data-testid=real-website-thumbnail]").length===10'),14000);
+   const previews=await evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const cards=[...root.querySelectorAll("[data-testid=real-website-thumbnail]")];const html=cards.map(el=>el.querySelector("iframe")?.getAttribute("srcdoc")||"");return {count:cards.length,withHtml:html.filter(s=>s.includes("<main")).length,uniqueHtml:new Set(html).size,buttons:root.querySelectorAll("button[aria-pressed]").length,oldError:root.textContent.includes("Backend not configured")}})()');
+   const designShot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+   writeFileSync(path.join(out,'wizard-stage2-pictures-'+view+'.png'),Buffer.from(designShot.data,'base64'));
+   const select=await evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=root?.querySelector("button[aria-pressed]");if(!b)return false;b.click();return true})()');
+   const openFull=await evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=[...(root?.querySelectorAll("button")||[])].find(x=>x.textContent?.includes("See full website"));if(!b)return false;b.click();return true})()');
+   const full=await waitFor(()=>evalJS('(()=>{const all=[...document.querySelectorAll("[role=dialog]")];const full=all.find(x=>x.textContent?.includes("This is the actual full-page website design"));const html=full?.querySelector("iframe")?.getAttribute("srcdoc")||"";return html.includes("<main")&&html.includes("noindex,nofollow")})()'),9000);
+   const choose=await evalJS('(()=>{const all=[...document.querySelectorAll("[role=dialog]")];const full=all.find(x=>x.textContent?.includes("This is the actual full-page website design"));const b=[...(full?.querySelectorAll("button")||[])].find(x=>x.textContent?.includes("Choose this design"));if(!b)return false;b.click();return true})()');
+   await sleep(200);
+   const next=await evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const b=[...(root?.querySelectorAll("button")||[])].find(x=>x.textContent?.trim().startsWith("Next"));if(!b||b.disabled)return false;b.click();return true})()');
+   const stage3=await waitFor(()=>evalJS('(()=>{const root=document.querySelector("[role=dialog][aria-label=\\\"Website Launch Wizard\\\"]");const html=root?.querySelector("iframe")?.getAttribute("srcdoc")||"";return html.includes("<main")&&html.includes("noindex,nofollow")&&!root.textContent.includes("Backend not configured")})()'),10000);
+   const stage3Shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+   writeFileSync(path.join(out,'wizard-stage3-full-preview-'+view+'.png'),Buffer.from(stage3Shot.data,'base64'));
+   stage2={pass:previews.count===10&&previews.withHtml===10&&previews.uniqueHtml===10&&previews.buttons===10&&!previews.oldError&&select&&openFull&&full&&choose&&next&&stage3,previews,select,openFull,full,choose,next,stage3};
+ } catch(error) {
+   stage2={pass:false,error:String(error?.message||error)};
+ }
+ const pass=data.cards===20&&data.images===20&&data.broken.length===0&&data.localAssets===20&&data.documentWidth<=width+5&&data.viewport<=width+5&&wizardOpened&&stage2.pass;
+ results.push({view,pass,wizardOpened,stage2,...data});console.log(view+' '+(pass?'PASS':'FAIL')+' local='+data.localAssets+'/20 overflowPx='+(data.documentWidth-width)+' stage2='+JSON.stringify(stage2)+' layoutWidth='+data.viewport+' candidates='+JSON.stringify(data.overflowCandidates.slice(0,5)));
 }
-const result={status:results.every(x=>x.pass)?'PASS':'FAIL',testedAt:new Date().toISOString(),baseUrl,source:baseUrl.includes('127.0.0.1')?'local Vite preview (no live Base44 backend)':'hosted HTTPS Vercel preview (not production)',screenshots:results.flatMap(x=>['hero-'+x.view+'.png','homepage-categories-'+x.view+'.png']),results,limitations:['No authenticated Base44 backend, live workflows untested','No independent semantic image signoff','No production promotion or release verification']};writeFileSync(path.join(out,'HOMEPAGE_CHROME_QA_RECEIPT.json'),JSON.stringify(result,null,2));console.log('OVERALL='+result.status);if(result.status!=='PASS')process.exitCode=1;
+const result={status:results.every(x=>x.pass)?'PASS':'FAIL',testedAt:new Date().toISOString(),baseUrl,source:baseUrl.includes('127.0.0.1')?'local Vite preview (no live Base44 backend)':'hosted HTTPS Vercel preview (not production)',screenshots:results.flatMap(x=>['hero-'+x.view+'.png','homepage-categories-'+x.view+'.png','wizard-stage2-pictures-'+x.view+'.png','wizard-stage3-full-preview-'+x.view+'.png']),results,limitations:['No authenticated Base44 backend, live workflows untested','No independent semantic image signoff','No production promotion or release verification']};writeFileSync(path.join(out,'HOMEPAGE_CHROME_QA_RECEIPT.json'),JSON.stringify(result,null,2));console.log('OVERALL='+result.status);if(result.status!=='PASS')process.exitCode=1;
 }
 main().catch(e=>{console.error('BLOCKED '+e.stack);process.exitCode=2}).finally(()=>{if(socket)socket.close();chrome.kill();try{rmSync(profile,{force:true,recursive:true,maxRetries:2})}catch{}});
