@@ -23,7 +23,7 @@ test('industry default can be previewed safely when no template object is suppli
 });
 
 test('all ten designs for one industry contain unique renderable HTML', () => {
-  const templates = compiledLocalStockCatalog().filter(t => t.id.startsWith('source-epoxy-'));
+  const templates = compiledLocalStockCatalog().filter(t => t.id.startsWith('source-epoxy_flooring-'));
   assert.equal(templates.length, 10);
   assert.equal(new Set(templates.map(t => t.content)).size, 10);
   assert.ok(templates.every(t => t.content.includes('<main')));
