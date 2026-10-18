@@ -44,5 +44,12 @@ export default function StockTemplatePreview({ template, industry, className = '
  if(brand?.logo?.url){
    source=source.replace(/<img[^>]*class="[^"]*logo[^"]*"[^>]*>/i,`<img src="${brand.logo.url}" alt="logo" style="max-height:48px;object-fit:contain;" />`);
  }
+ if(brand?.phone){
+   const safePhone=brand.phone.replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+   // Replace all tel: href values with the user's phone
+   source=source.replace(/href="tel:[^"]*"/gi,`href="tel:${safePhone.replace(/\s/g,'')}"`);
+   // Replace displayed phone numbers in (555) XXX-XXXX format
+   source=source.replace(/\(555\)\s*\d{3}-\d{4}/g,safePhone);
+ }
  return <iframe title={data?.name||'Original website template preview'} className={className} srcDoc={source} sandbox="" referrerPolicy="no-referrer" />;
 }

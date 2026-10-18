@@ -210,6 +210,7 @@ export default function LaunchWizard({ initial, onClose }) {
                 <Row label="Industry" value={selection.industry} />
                 <Row label="Template" value={selection.template?.name?.split(' / ')[0] + ' — ' + (selection.template?.name?.split(' / ').slice(1).join(' / ') || '')} />
                 <Row label="Business Name" value={brand?.businessName || '—'} />
+                <Row label="Phone Number" value={brand?.phone || '—'} />
                 <Row label="Domain" value={brand?.domain?.domain || '—'} />
                 <Row label="Color Scheme" value={brand?.colorScheme?.name || '—'} />
                 <Row label="Location Sites" value={`${selection.count} sites`} />

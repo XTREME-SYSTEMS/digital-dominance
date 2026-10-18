@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Building2, Globe, Loader2, Check, X, Search, Sparkles, Palette } from 'lucide-react';
+import { Building2, Globe, Loader2, Check, X, Search, Sparkles, Palette, Phone } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const COLOR_SCHEMES = [
@@ -15,6 +15,7 @@ const COLOR_SCHEMES = [
 
 export default function BrandStudio({ selected, onSelect, industry }) {
   const [businessName, setBusinessName] = useState(selected?.businessName || '');
+  const [phone, setPhone] = useState(selected?.phone || '');
   const [logos, setLogos] = useState(selected?.logos || []);
   const [domains, setDomains] = useState(selected?.domains || []);
   const [generating, setGenerating] = useState(false);
@@ -62,13 +63,14 @@ export default function BrandStudio({ selected, onSelect, industry }) {
   const commitBrand = useCallback(() => {
     onSelect({
       businessName: businessName.trim(),
+      phone: phone.trim(),
       logo: selectedLogo,
       colorScheme,
       domain: selectedDomain,
       logos,
       domains,
     });
-  }, [businessName, selectedLogo, colorScheme, selectedDomain, logos, domains, onSelect]);
+  }, [businessName, phone, selectedLogo, colorScheme, selectedDomain, logos, domains, onSelect]);
 
   return (
     <div className="space-y-3">
@@ -95,6 +97,21 @@ export default function BrandStudio({ selected, onSelect, industry }) {
             Generate
           </button>
         </div>
+      </div>
+
+      {/* Phone Number Input — clickable edit, applies to the template preview in real-time */}
+      <div>
+        <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 flex items-center gap-1.5">
+          <Phone className="h-3.5 w-3.5" /> Phone Number
+        </label>
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => { setPhone(e.target.value); commitBrand(); }}
+          placeholder="e.g. (555) 123-4567 — click to edit on the website"
+          className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-[#00a2ff]"
+        />
+        <p className="mt-1 text-[10px] text-gray-400">Type your number — it updates the phone links on the template preview instantly.</p>
       </div>
 
       {/* Tabs */}
