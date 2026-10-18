@@ -1,18 +1,19 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Rocket, MapPin, Check, ChevronRight, Eye, ExternalLink, Sparkles } from "lucide-react";
+import { X, Rocket, MapPin, Check, ChevronRight, Eye, ExternalLink, Sparkles, Loader2, Wand2, Globe, RefreshCw } from "lucide-react";
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import InteractiveTemplateEditor from "@/components/launch-engine/InteractiveTemplateEditor";
-import BrandStudio from "@/components/launch-engine/BrandStudio";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import SafeImage from '@/components/ui/SafeImage';
+import { base44 } from '@/api/base44Client';
 
 export default function LaunchWizard({ initial, onClose }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [brand, setBrand] = useState(null);
   const [showEditor, setShowEditor] = useState(false);
   const [editedContent, setEditedContent] = useState(null);
+  const [generating, setGenerating] = useState(false);
+  const [generateStatus, setGenerateStatus] = useState(null);
   const [selection, setSelection] = useState({
     industry: initial?.industry || initial?.template?.niche || "",
     template: initial?.template || null,
@@ -20,36 +21,28 @@ export default function LaunchWizard({ initial, onClose }) {
     count: 10,
   });
 
-  const industries = useStockTemplates({is_default:true},20);
-  const designs = useStockTemplates({niche:selection.industry || '__unselected__'},10);
+  const industries = useStockTemplates({ is_default: true }, 20);
+  const designs = useStockTemplates({ niche: selection.industry || '__unselected__' }, 10);
 
   const STEPS = [
     { label: "Industry", desc: "Choose a business category" },
-    { label: "Template", desc: "Pick a design — hover to preview the layout" },
-    { label: "Brand", desc: "Generate your logo, domain, and brand colors" },
+    { label: "Template", desc: "Pick a design — these are the exact templates from the admin studio" },
+    { label: "Customize", desc: "Click to edit any section, or generate industry-specific content" },
     { label: "Locations", desc: "How many sites to launch" },
-    { label: "Review", desc: "Review your brand and open the studio" },
+    { label: "Review", desc: "Review your selections and open the studio" },
   ];
 
   const canAdvance = step === 0 ? !!selection.industry : step === 1 ? !!selection.template : step === 3 ? selection.count > 0 : true;
 
   const launch = () => {
-    navigate('/admin/template-studio', { state: { selectedStockTemplateId:selection.template.id, brand } });
+    navigate('/admin/template-studio', { state: { selectedStockTemplateId: selection.template?.id } });
   };
 
+  // The active template content (edited or original)
+  const activeContent = editedContent || selection.template?.content || '';
+
   // Build a full-page HTML for "open in browser"
-  const previewHtml = useMemo(() => {
-    if (!selection.template?.content) return null;
-    let html = selection.template.content;
-    if (brand?.colorScheme?.accent) {
-      html = html.replace(/--accent:#[0-9a-f]{3,6};/gi, `--accent:${brand.colorScheme.accent};`);
-      html = html.replace(/--accent-light:#[0-9a-f]{3,6};/gi, `--accent-light:${brand.colorScheme.accentLight};`);
-    }
-    if (brand?.businessName) {
-      html = html.replace(/<h1[^>]*>.*?<\/h1>/i, `<h1>${brand.businessName}</h1>`);
-    }
-    return html;
-  }, [selection.template, brand]);
+  const previewHtml = useMemo(() => activeContent || null, [activeContent]);
 
   const openInBrowser = () => {
     if (!previewHtml) return;
@@ -58,6 +51,65 @@ export default function LaunchWizard({ initial, onClose }) {
     window.open(url, '_blank');
     setTimeout(() => URL.revokeObjectURL(url), 30000);
   };
+
+  // Generate industry-specific content and apply it to the template
+  const generateContent = useCallback(async () => {
+    if (!selection.template) return;
+    setGenerating(true);
+    setGenerateStatus('Generating industry-specific content with AI...');
+    try {
+      const res = await base44.functions.invoke('industryTemplateEnhancer', {
+        action: 'enhance_template',
+        industry: selection.industry,
+        businessName: 'Your Business Name',
+        phone: '',
+        email: '',
+      });
+      const content = res.data?.content;
+      if (!content) throw new Error('No content returned');
+
+      // Apply generated content to the template HTML
+      let html = activeContent;
+      const esc = (s) => String(s || '').replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+
+      // Replace hero headline
+      if (content.heroHeadline) {
+        html = html.replace(/<h1[^>]*>.*?<\/h1>/i, `<h1>${esc(content.heroHeadline)}</h1>`);
+      }
+      // Replace hero subtext (first <p> after h1)
+      if (content.heroSubtext) {
+        html = html.replace(/(<\/h1>\s*<p[^>]*>)([^<]*)(<\/p>)/i, `$1${esc(content.heroSubtext)}$3`);
+      }
+      // Replace about text
+      if (content.aboutText) {
+        const aboutMatch = html.match(/<section[^>]*class="[^"]*about[^"]*"[^>]*>([\s\S]*?)<\/section>/i);
+        if (aboutMatch) {
+          const newAbout = aboutMatch[0].replace(/<p[^>]*>[\s\S]*?<\/p>/, `<p>${esc(content.aboutText)}</p>`);
+          html = html.replace(aboutMatch[0], newAbout);
+        }
+      }
+      // Replace FAQs
+      if (content.faqs?.length) {
+        const faqHtml = content.faqs.map(f => `<div class="faq-item"><h3>${esc(f.q)}</h3><p>${esc(f.a)}</p></div>`).join('');
+        html = html.replace(/(<section[^>]*class="[^"]*faq[^"]*"[^>]*>)([\s\S]*?)(<\/section>)/i, `$1${faqHtml}$3`);
+      }
+      // Replace testimonials
+      if (content.testimonials?.length) {
+        const tHtml = content.testimonials.map(t => `<div class="testimonial"><p>"${esc(t.text)}"</p><cite>${esc(t.name)}</cite></div>`).join('');
+        html = html.replace(/(<section[^>]*class="[^"]*testimonial[^"]*"[^>]*>)([\s\S]*?)(<\/section>)/i, `$1${tHtml}$3`);
+      }
+
+      setEditedContent(html);
+      setSelection(prev => ({ ...prev, template: { ...prev.template, content: html } }));
+      setGenerateStatus('✓ Content generated and applied!');
+      setTimeout(() => setGenerateStatus(null), 3000);
+    } catch (err) {
+      console.error('Generate failed:', err);
+      setGenerateStatus('Generation failed: ' + (err.message || 'Unknown error'));
+    } finally {
+      setGenerating(false);
+    }
+  }, [selection.template, selection.industry, activeContent]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
@@ -107,7 +159,7 @@ export default function LaunchWizard({ initial, onClose }) {
                 return (
                   <button
                     key={ind}
-                    onClick={() => setSelection({ ...selection, industry: ind, template:null })}
+                    onClick={() => setSelection({ ...selection, industry: ind, template: null })}
                     className={`flex flex-col items-center gap-2 rounded-xl border p-3 text-center transition ${selection.industry === ind ? "border-[#00a2ff] bg-[#00a2ff]/5" : "border-gray-200 hover:border-gray-300"}`}
                   >
                     <div className="h-16 w-full overflow-hidden rounded-lg bg-gray-100">
@@ -120,7 +172,7 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 1: Template — Visual Thumbnails */}
+          {/* Step 1: Template — exact admin templates */}
           {step === 1 && (
             <div className="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto">
               {designs.isLoading && <p role="status" className="col-span-full text-center text-gray-400">Loading designs…</p>}
@@ -131,7 +183,7 @@ export default function LaunchWizard({ initial, onClose }) {
                 return (
                   <button
                     key={t.id}
-                    onClick={() => setSelection({ ...selection, template: t })}
+                    onClick={() => setSelection({ ...selection, template: t, editedContent: null })}
                     className={`overflow-hidden rounded-xl border-2 text-left transition ${active ? "border-[#00a2ff] ring-2 ring-[#00a2ff]/30" : "border-gray-200 hover:border-gray-300"}`}
                   >
                     <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
@@ -149,17 +201,19 @@ export default function LaunchWizard({ initial, onClose }) {
                   </button>
                 );
               })}
+              {!designs.isLoading && designs.items.length === 0 && (
+                <p className="col-span-full text-center text-gray-400 text-sm py-8">No templates found for this industry. Try another category.</p>
+              )}
             </div>
           )}
 
-          {/* Step 2: Brand Studio + Preview */}
+          {/* Step 2: Customize — click-to-edit + generate */}
           {step === 2 && (
             <div className="space-y-3">
-              <BrandStudio selected={brand} onSelect={setBrand} industry={selection.industry} />
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-[#00a2ff]" />
-                  <p className="text-xs font-bold text-gray-700">Live preview — your brand applies in real-time</p>
+                  <p className="text-xs font-bold text-gray-700">Live preview of your selected template</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -174,12 +228,27 @@ export default function LaunchWizard({ initial, onClose }) {
                     disabled={!selection.template}
                     className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-40"
                   >
-                    <ExternalLink className="h-3.5 w-3.5" /> Open in Browser
+                    <ExternalLink className="h-3.5 w-3.5" /> Open
                   </button>
                 </div>
               </div>
-              <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "380px" }}>
-                <WebsitePreview industry={selection.industry} template={selection.template} brand={brand} />
+
+              {/* Generate button — best generator technology */}
+              <button
+                onClick={generateContent}
+                disabled={!selection.template || generating}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#00a2ff] to-[#0066cc] px-4 py-3 text-sm font-bold text-white hover:opacity-90 disabled:opacity-40 transition"
+              >
+                {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                {generating ? 'Generating...' : 'Generate Industry-Specific Content'}
+              </button>
+              {generateStatus && (
+                <p className={`text-xs text-center ${generateStatus.startsWith('✓') ? 'text-green-600' : 'text-red-500'}`}>{generateStatus}</p>
+              )}
+              <p className="text-[10px] text-gray-400 text-center">Uses AI to generate {selection.industry}-specific headlines, services, FAQs, and testimonials — then applies them to your template.</p>
+
+              <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "340px" }}>
+                <WebsitePreview industry={selection.industry} template={selection.template} overrideHtml={editedContent} />
               </div>
             </div>
           )}
@@ -220,23 +289,11 @@ export default function LaunchWizard({ initial, onClose }) {
             <div className="space-y-3">
               <div className="rounded-xl bg-gray-50 p-4 space-y-2">
                 <Row label="Industry" value={selection.industry} />
-                <Row label="Template" value={selection.template?.name?.split(' / ')[0] + ' — ' + (selection.template?.name?.split(' / ').slice(1).join(' / ') || '')} />
-                <Row label="Business Name" value={brand?.businessName || '—'} />
-                <Row label="Phone Number" value={brand?.phone || '—'} />
-                <Row label="Domain" value={brand?.domain?.domain || '—'} />
-                <Row label="Color Scheme" value={brand?.colorScheme?.name || '—'} />
+                <Row label="Template" value={selection.template?.name || '—'} />
+                <Row label="Content" value={editedContent ? 'AI-generated & customized' : 'Original template'} />
                 <Row label="Location Sites" value={`${selection.count} sites`} />
                 <Row label="Markets" value={selection.locations || "Nationwide"} />
               </div>
-              {brand?.logo && (
-                <div className="flex items-center gap-3 rounded-xl border border-gray-200 p-3">
-                  <img src={brand.logo.url} alt="Selected logo" className="h-12 w-12 rounded-lg border border-gray-200 bg-white object-contain p-1" />
-                  <div>
-                    <p className="text-xs font-bold text-gray-700">Your Logo: {brand.logo.style}</p>
-                    <p className="text-[10px] text-gray-400">This will be applied to your website</p>
-                  </div>
-                </div>
-              )}
               <p className="text-xs text-gray-400 text-center">Open the studio to point-and-click edit, regenerate sections, and run the validation agent.</p>
             </div>
           )}
@@ -246,7 +303,6 @@ export default function LaunchWizard({ initial, onClose }) {
         {showEditor && (
           <InteractiveTemplateEditor
             template={selection.template}
-            brand={brand}
             industry={selection.industry}
             onClose={() => setShowEditor(false)}
             onSave={(content) => {
