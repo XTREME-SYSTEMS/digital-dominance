@@ -21,7 +21,7 @@ header{height:76px;border-bottom:1px solid #ffffff14;display:flex;align-items:ce
 </head><body>
 <header>
 <a class="brand" href="/launch-studio/" aria-label="Strategic Minds AI Digital Dominance Launch Studio"><span class="brand-mark">S</span><span><strong>STRATEGIC MINDS AI</strong><small>DIGITAL DOMINANCE / LAUNCH STUDIO</small></span></a>
-<div class="top-right"><span class="status"><i class="live-dot"></i>PREVIEW FACTORY</span><a class="navlink" href="https://github.com/Strategic-Minds-AI/x1-auto-buiilder" target="_blank" rel="noopener">GitHub source ↗</a><a class="navlink" href="https://epoxyquotenearme.base44.app/" target="_blank" rel="noopener">Digital Dominance ↗</a></div>
+<div class="top-right"><span class="status"><i class="live-dot"></i>PREVIEW FACTORY</span><a class="navlink" href="https://github.com/Strategic-Minds-AI/x1-auto-buiilder" target="_blank" rel="noopener">GitHub source ↗</a><a class="navlink" href="https://github.com/XTREME-SYSTEMS/digital-dominance/blob/feature/smai-garage-floor-pack-20261018/public/preview-packs/smai-garage-floor-v1/manifest.json" target="_blank" rel="noopener">Verified sync pack ↗</a></div>
 </header>
 <main class="wrap">
 <div class="intro"><div><div class="eyebrow">Build / Generate / Preview / Sync / Launch</div><h1>One beautiful website.<br><em>Or a hundred.</em></h1><p>Choose an industry, configure a premium conversion template, preview it instantly, and prepare a governed launch batch for your existing Digital Dominance system.</p></div><div class="tagline"><strong>01 → 10 → 100</strong><span>Canary-first batch progression</span></div></div>
@@ -57,14 +57,14 @@ header{height:76px;border-bottom:1px solid #ffffff14;display:flex;align-items:ce
  <div id="framewrap" style="background:#07111a;display:flex;justify-content:center;overflow:auto"><iframe title="Generated website preview" class="viewport" id="preview" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe></div>
 </div>
 <section class="panel fullwide" id="batch-panel">
- <div class="panel-head"><div><h2>Launch batch / preview receipts</h2><small>Draft site URLs generated on demand, with exact market and layout metadata</small></div><button type="button" class="btn secondary" id="batchButton">Generate preview batch ↗</button></div>
+ <div class="panel-head"><div><h2>Launch batch / preview receipts</h2><small>Draft site URLs generated on demand, with exact market and layout metadata</small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn secondary" id="hostedBatch" href="/site-batch/">View 10 hosted sites ↗</a><button type="button" class="btn secondary" id="batchButton">Generate preview batch ↗</button></div></div>
  <div class="batch-box"><div class="body"><div class="step">04 &nbsp; PROVISION & VALIDATE</div><p class="batch-meta"><b id="batchCount">0 preview records</b><br>Generate a canary first. The actual production queue and worker bridge stay behind operator approval. Downloadable manifests can be ingested by Digital Dominance without recreating a factory.</p><div class="notice" id="batchStatus">No launch work submitted. Ready to generate previews locally.</div></div><div class="batch-table" id="batchList"><div class="batchrow"><span class="hint">Your generated preview rows will appear here.</span></div></div></div>
 </section>
 <section class="panel fullwide" id="integrations">
  <div class="panel-head"><div><h2>One existing stack. No duplicate systems.</h2><small>Existing integrations and safe launch destinations</small></div><span class="eyebrow">05 / CONNECT</span></div>
  <div class="body integrations">
   <div class="integration"><strong>GitHub / source truth</strong><span>Template code, config and manifest history</span><a href="https://github.com/Strategic-Minds-AI/x1-auto-buiilder" target="_blank" rel="noopener">Open repository ↗</a></div>
-  <div class="integration"><strong>Digital Dominance</strong><span>Existing template registry and site factory, not a replacement</span><a href="https://epoxyquotenearme.base44.app/" target="_blank" rel="noopener">Open Digital Dominance ↗</a></div>
+  <div class="integration"><strong>Digital Dominance</strong><span>Existing template registry and site factory, not a replacement</span><a href="https://github.com/XTREME-SYSTEMS/digital-dominance/blob/feature/smai-garage-floor-pack-20261018/public/preview-packs/smai-garage-floor-v1/manifest.json" target="_blank" rel="noopener">View synced draft pack ↗</a></div>
   <div class="integration"><strong>Google Search Console</strong><span>Property verification and performance data after launch</span><a href="https://search.google.com/search-console/welcome" target="_blank" rel="noopener">Open Search Console ↗</a></div>
   <div class="integration"><strong>Google Analytics</strong><span>Measurement IDs and events bound after release</span><a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener">Open Analytics ↗</a></div>
  </div>
@@ -134,7 +134,7 @@ document.querySelectorAll("[data-device]").forEach(function(b){b.onclick=functio
 $("generate").onclick=render;$("download").onclick=function(){save(currentHtml,slug(info().brand)+"-"+slug(info().city)+".html","text/html")};$("openSite").onclick=function(){openDoc(currentHtml)};
 $("batchButton").onclick=generateBatch;
 $("export").onclick=function(){var payload=manifest(batch);save(JSON.stringify(payload,null,2),payload.template_key+"-sync.json","application/json");flash("Download complete. Pack is a draft ready for governed Digital Dominance ingestion.")};
-renderMarkets();render();
+if(location.pathname.indexOf("/preview-packs/")===0){$("hostedBatch").href="/preview-packs/site-batch/"};renderMarkets();render();
 })();
 </script>
 </body></html>

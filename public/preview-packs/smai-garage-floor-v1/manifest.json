@@ -13,11 +13,11 @@
     "provider": "github",
     "repo": "Strategic-Minds-AI/x1-auto-buiilder",
     "branch": "feature/dd-launch-studio-20261018",
-    "source_commit": "3ec0047184fe91777dc331cda15ec0313c21b379",
+    "source_commit": "250e31fe2d21adc106cd4f02bb18d1b7d1ab794a",
     "template_path": "public/sites/garage-floor/index.html",
-    "template_blob_sha": "9332551deea3d1b414ea9a6e6bd81f3a33856b79",
+    "template_blob_sha": "e63092bbcdbac7f29ba01fc73fd614e57d783d93",
     "generator_path": "public/launch-studio/index.html",
-    "generator_blob_sha": "df076d91c885844e5e7a4b99dbad7f3fd6b4509b"
+    "generator_blob_sha": "ba3a7062b6f4eca35d62b076aac95e0b3beccf5d"
   },
   "digital_dominance": {
     "provider": "github",
@@ -25,7 +25,7 @@
     "branch": "feature/smai-garage-floor-pack-20261018",
     "site_file": "public/preview-packs/smai-garage-floor-v1/index.html",
     "generator_file": "public/preview-packs/smai-launch-studio-v1/index.html",
-    "sync_mode": "draft_git_mirror",
+    "sync_mode": "draft_git_mirror_13_html_files",
     "integrity": "SOURCE_BLOB_SHA_EQUALS_MIRROR_BLOB_SHA",
     "base44_import": "PENDING_RESEARCH_AND_TOKEN_VALIDATION"
   },
@@ -92,5 +92,13 @@
   "verification": {
     "mirror_sha_equal": true,
     "digital_dominance_production_sync": false
+  },
+  "batch": {
+    "site_count": 10,
+    "layout_variants": 3,
+    "source_path": "public/site-batch/index.html",
+    "digital_dominance_path": "public/preview-packs/site-batch/index.html",
+    "status": "PREVIEW_ONLY",
+    "source_commit": "250e31fe2d21adc106cd4f02bb18d1b7d1ab794a"
   }
 }

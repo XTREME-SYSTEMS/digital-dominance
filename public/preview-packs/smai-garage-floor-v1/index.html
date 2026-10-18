@@ -29,4 +29,4 @@ buttons.forEach(function(b){b.addEventListener('click',function(){selected=b.dat
 get('estimateForm').addEventListener('submit',function(e){e.preventDefault();if(!this.reportValidity())return;var msg='Garage floor project inquiry. Name: '+get('name').value.trim()+'. ZIP: '+get('zip').value.trim()+'. Approx size: '+(Number(get('length').value)*Number(get('width').value))+' sq ft. Preferred system: '+selected+'. Please advise on next steps.';window.location.href='sms:+17722090266?body='+encodeURIComponent(msg)});update();
 })();
 </script>
-</body></html>
+<script>(function(){if(location.pathname.indexOf('/preview-packs/')===0){document.querySelectorAll('a[href="/launch-studio/"]').forEach(function(a){a.href='/preview-packs/smai-launch-studio-v1/'})}})();</script></body></html>
