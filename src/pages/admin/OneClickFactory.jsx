@@ -67,6 +67,7 @@ export default function OneClickFactory() {
       for (let i = 0; i < count; i++) {
         try {
           const response = await base44.functions.invoke('stockTemplateFactory', {
+            action: 'generate',
             niche: selectedIndustry,
             layout_variant: selectedLayout,
             preview_index: i,
