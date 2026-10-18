@@ -120,6 +120,7 @@ import SiteCommandCenter from '@/pages/admin/SiteCommandCenter';
 import ProgrammaticTargeting from '@/pages/admin/ProgrammaticTargeting';
 import BulkLaunchBuilder from '@/pages/admin/BulkLaunchBuilder';
 import TemplateStudio from '@/pages/admin/TemplateStudio';
+import XPSApprovedStudio from '@/components/xps/XPSApprovedStudio';
 import AutonomousCompany from '@/pages/admin/AutonomousCompany';
 import HeroEnhancer from '@/pages/admin/HeroEnhancer';
 import EdenSkye from '@/pages/admin/EdenSkye';
@@ -392,6 +393,7 @@ const AuthenticatedApp = () => {
         <Route path="targeting" element={<ProgrammaticTargeting />} />
         <Route path="bulk-launch" element={<BulkLaunchBuilder />} />
         <Route path="template-studio" element={<TemplateStudio />} />
+        <Route path="xps-studio" element={<XPSApprovedStudio />} />
         <Route path="autonomous-company" element={<AutonomousCompany />} />
         <Route path="hero-enhancer" element={<HeroEnhancer />} />
         <Route path="eden-skye" element={<EdenSkye />} />
