@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Rocket, MapPin, Check, ChevronRight, Eye, ExternalLink } from "lucide-react";
+import { X, Rocket, MapPin, Check, ChevronRight, Eye, ExternalLink, Sparkles } from "lucide-react";
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
+import InteractiveTemplateEditor from "@/components/launch-engine/InteractiveTemplateEditor";
 import BrandStudio from "@/components/launch-engine/BrandStudio";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import SafeImage from '@/components/ui/SafeImage';
@@ -10,6 +11,8 @@ export default function LaunchWizard({ initial, onClose }) {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [brand, setBrand] = useState(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editedContent, setEditedContent] = useState(null);
   const [selection, setSelection] = useState({
     industry: initial?.industry || initial?.template?.niche || "",
     template: initial?.template || null,
@@ -158,13 +161,22 @@ export default function LaunchWizard({ initial, onClose }) {
                   <Eye className="h-4 w-4 text-[#00a2ff]" />
                   <p className="text-xs font-bold text-gray-700">Live preview — your brand applies in real-time</p>
                 </div>
-                <button
-                  onClick={openInBrowser}
-                  disabled={!selection.template}
-                  className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" /> Open in Browser
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowEditor(true)}
+                    disabled={!selection.template}
+                    className="flex items-center gap-1.5 rounded-lg bg-[#00a2ff] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#0090e0] disabled:opacity-40"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" /> Click to Edit
+                  </button>
+                  <button
+                    onClick={openInBrowser}
+                    disabled={!selection.template}
+                    className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" /> Open in Browser
+                  </button>
+                </div>
               </div>
               <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "380px" }}>
                 <WebsitePreview industry={selection.industry} template={selection.template} brand={brand} />
@@ -229,6 +241,20 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
         </div>
+
+        {/* Interactive Click-to-Edit Editor */}
+        {showEditor && (
+          <InteractiveTemplateEditor
+            template={selection.template}
+            brand={brand}
+            industry={selection.industry}
+            onClose={() => setShowEditor(false)}
+            onSave={(content) => {
+              setEditedContent(content);
+              setSelection({ ...selection, template: { ...selection.template, content } });
+            }}
+          />
+        )}
 
         {/* Footer */}
         <div className="sticky bottom-0 flex items-center justify-between px-5 py-4 border-t border-gray-100 bg-gray-50">
