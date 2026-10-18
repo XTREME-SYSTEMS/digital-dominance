@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0",
+  "source_repo": "Strategic-Minds-AI/x1-auto-buiilder",
+  "branch": "feature/dd-launch-studio-20261018",
+  "mode": "preview_only",
+  "noindex": true,
+  "total": 10,
+  "sites": [
+    {
+      "id": "DD10-001",
+      "slug": "epoxy-flooring",
+      "industry": "Epoxy Flooring",
+      "layout": "split",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/epoxy-flooring/index.html"
+    },
+    {
+      "id": "DD10-002",
+      "slug": "roofing",
+      "industry": "Roofing",
+      "layout": "editorial",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/roofing/index.html"
+    },
+    {
+      "id": "DD10-003",
+      "slug": "hvac",
+      "industry": "HVAC",
+      "layout": "centered",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/hvac/index.html"
+    },
+    {
+      "id": "DD10-004",
+      "slug": "plumbing",
+      "industry": "Plumbing",
+      "layout": "split",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/plumbing/index.html"
+    },
+    {
+      "id": "DD10-005",
+      "slug": "landscaping",
+      "industry": "Landscaping",
+      "layout": "editorial",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/landscaping/index.html"
+    },
+    {
+      "id": "DD10-006",
+      "slug": "personal-injury-law",
+      "industry": "Personal Injury Law",
+      "layout": "centered",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/personal-injury-law/index.html"
+    },
+    {
+      "id": "DD10-007",
+      "slug": "med-spa",
+      "industry": "Med Spa",
+      "layout": "editorial",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/med-spa/index.html"
+    },
+    {
+      "id": "DD10-008",
+      "slug": "real-estate",
+      "industry": "Real Estate",
+      "layout": "split",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/real-estate/index.html"
+    },
+    {
+      "id": "DD10-009",
+      "slug": "water-damage",
+      "industry": "Water Damage Restoration",
+      "layout": "centered",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/water-damage/index.html"
+    },
+    {
+      "id": "DD10-010",
+      "slug": "auto-detailing",
+      "industry": "Auto Detailing",
+      "layout": "split",
+      "status": "PREVIEW_GENERATED",
+      "path": "sites/auto-detailing/index.html"
+    }
+  ],
+  "release": {
+    "approved": false,
+    "production": false,
+    "analytics_bound": false,
+    "customer_leads": false
+  }
+}

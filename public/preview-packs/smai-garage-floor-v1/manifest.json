@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0.0",
+  "id": "smai-dd-epoxy-garage-premium-20261018",
+  "template_key": "smai-garage-floor-premium-v1",
+  "pack_type": "web_pack",
+  "name": "Garage Floor Studio | Premium Epoxy Conversion",
+  "status": "draft",
+  "brand_id": "custom_contractor",
+  "category": "full_site",
+  "niche": "epoxy_flooring",
+  "version": "1.0.0",
+  "source_truth": {
+    "provider": "github",
+    "repo": "Strategic-Minds-AI/x1-auto-buiilder",
+    "branch": "feature/dd-launch-studio-20261018",
+    "source_commit": "250e31fe2d21adc106cd4f02bb18d1b7d1ab794a",
+    "template_path": "public/sites/garage-floor/index.html",
+    "template_blob_sha": "e63092bbcdbac7f29ba01fc73fd614e57d783d93",
+    "generator_path": "public/launch-studio/index.html",
+    "generator_blob_sha": "ba3a7062b6f4eca35d62b076aac95e0b3beccf5d"
+  },
+  "digital_dominance": {
+    "provider": "github",
+    "repo": "XTREME-SYSTEMS/digital-dominance",
+    "branch": "feature/smai-garage-floor-pack-20261018",
+    "site_file": "public/preview-packs/smai-garage-floor-v1/index.html",
+    "generator_file": "public/preview-packs/smai-launch-studio-v1/index.html",
+    "sync_mode": "draft_git_mirror_13_html_files",
+    "integrity": "SOURCE_BLOB_SHA_EQUALS_MIRROR_BLOB_SHA",
+    "base44_import": "PENDING_RESEARCH_AND_TOKEN_VALIDATION"
+  },
+  "brand_config": {
+    "brand_name": "Garage Floor Studio",
+    "city": "Fort Lauderdale",
+    "state": "Florida",
+    "phone": "(772) 209-0266",
+    "layout": "cinematic",
+    "primary_color": "#0b151e",
+    "accent_color": "#b7f1e4"
+  },
+  "preview_urls": {
+    "generator": "https://the-ultimate-auto-buiilder-h6qatwbu2-strategic-minds-advisory.vercel.app/launch-studio/",
+    "demo_site": "https://the-ultimate-auto-buiilder-h6qatwbu2-strategic-minds-advisory.vercel.app/sites/garage-floor/"
+  },
+  "sections": [
+    {
+      "section_id": "hero",
+      "section_type": "hero"
+    },
+    {
+      "section_id": "systems",
+      "section_type": "services"
+    },
+    {
+      "section_id": "process",
+      "section_type": "process"
+    },
+    {
+      "section_id": "estimate",
+      "section_type": "contact"
+    },
+    {
+      "section_id": "footer",
+      "section_type": "footer"
+    }
+  ],
+  "capabilities": [
+    "template_editing",
+    "responsive_preview",
+    "service_selection",
+    "project_square_foot_calculator",
+    "user_initiated_contact",
+    "draft_manifest_export",
+    "draft_batch_generation_1_10_100"
+  ],
+  "launch_gate": {
+    "preview_only": true,
+    "noindex": true,
+    "real_customer_leads": false,
+    "domain_provisioning": false,
+    "production_release_requires_approval": true
+  },
+  "analytics": {
+    "gsc_property": "NOT_BOUND",
+    "ga4_measurement_id": "NOT_BOUND",
+    "event_aggregation": "NOT_VERIFIED"
+  },
+  "research_gate": {
+    "status": "PENDING",
+    "reason": "Production/packSync import waits for source-backed dossier and independent validation."
+  },
+  "verification": {
+    "mirror_sha_equal": true,
+    "digital_dominance_production_sync": false
+  },
+  "batch": {
+    "site_count": 10,
+    "layout_variants": 3,
+    "source_path": "public/site-batch/index.html",
+    "digital_dominance_path": "public/preview-packs/site-batch/index.html",
+    "status": "PREVIEW_ONLY",
+    "source_commit": "250e31fe2d21adc106cd4f02bb18d1b7d1ab794a"
+  }
+}
