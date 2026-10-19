@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-10",
+  "mode": "PROACTIVE_RECOMMEND_ONLY",
+  "source_truth": {
+    "donor_repo": "XTREME-SYSTEMS/digital-dominance",
+    "donor_main_sha": "8b4d0526df9c99d9f05b5396628bb7fd72c7f449",
+    "x1_staging_project": "uvdkzsbjackpjvpoxtyk",
+    "intelligence_project": "jadlpbokfdkonvnfxjzs"
+  },
+  "actions": [
+    {
+      "id": "DD-P0-01",
+      "title": "Security and RLS repair plan",
+      "priority": "P0",
+      "class": "SECURITY",
+      "decision": "DRAFT_REPAIR",
+      "evidence": "Supabase advisor 2026-10-11T00:52Z; 10 public tables with RLS disabled",
+      "production_allowed": false
+    },
+    {
+      "id": "DD-P0-02",
+      "title": "Staging queue dead-letter recovery",
+      "priority": "P0",
+      "class": "RELIABILITY",
+      "decision": "DIAGNOSE",
+      "evidence": "Supabase x1_work_queue status counts: 20 dead letter, 16 blocked of 72",
+      "production_allowed": false
+    },
+    {
+      "id": "DD-P0-03",
+      "title": "Idea Proving Machine source evidence gate",
+      "priority": "P0",
+      "class": "EVIDENCE",
+      "decision": "PATCH_BRANCH",
+      "evidence": "GitHub base44/functions/ideaProvingMachine/entry.ts @ donor main SHA",
+      "production_allowed": false
+    },
+    {
+      "id": "DD-P0-04",
+      "title": "Synthetic revenue attribution trace",
+      "priority": "P0",
+      "class": "REVENUE",
+      "decision": "STAGING_TEST",
+      "evidence": "Strategic Intelligence crm_contacts and validation_receipts tables empty",
+      "production_allowed": false
+    },
+    {
+      "id": "DD-P0-05",
+      "title": "Agent tool side-effect permission boundary",
+      "priority": "P0",
+      "class": "GOVERNANCE",
+      "decision": "PATCH_BRANCH",
+      "evidence": "GitHub base44/shared/operatorHosted.js has service-role CRUD and generic function invocations",
+      "production_allowed": false
+    },
+    {
+      "id": "DD-W-01",
+      "title": "Epoxy instant estimate funnel repair",
+      "priority": "P1",
+      "class": "SITE",
+      "decision": "IMPROVE_EXISTING",
+      "evidence": "Existing epoxyquotenearme.com service and Admin evidence; latest Google organic demand unavailable",
+      "production_allowed": false
+    },
+    {
+      "id": "DD-W-02",
+      "title": "Commercial polished concrete quote system",
+      "priority": "P1",
+      "class": "SITE",
+      "decision": "RESEARCH_AND_DRAFT",
+      "evidence": "XPS/NCP existing brand and project source context; buyer economics unverified",
+      "production_allowed": false
+    },
+    {
+      "id": "DD-W-03",
+      "title": "PCU training enrollment funnel",
+      "priority": "P1",
+      "class": "SITE",
+      "decision": "RESEARCH_AND_DRAFT",
+      "evidence": "PCU verified operator-affiliated brand from Project source; current course/price not verified",
+      "production_allowed": false
+    },
+    {
+      "id": "DD-W-04",
+      "title": "XPS real-store location hub",
+      "priority": "P1",
+      "class": "SITE",
+      "decision": "AUDIT_EXISTING",
+      "evidence": "Project reports XPS Xpress multi-location fleet; current active coverage not independently verified",
+      "production_allowed": false
+    },
+    {
+      "id": "DD-W-05",
+      "title": "Storm/roof emergency pilot",
+      "priority": "P2",
+      "class": "SITE",
+      "decision": "RESEARCH_ONLY",
+      "evidence": "Project TOP_100_SERVICE_PORTFOLIO.md provisional internal Wave 1 ranking",
+      "production_allowed": false
+    }
+  ]
+}
