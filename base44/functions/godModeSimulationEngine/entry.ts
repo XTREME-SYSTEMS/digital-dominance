@@ -1,4 +1,5 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.53";
+import { secrets } from "base44:runtime";
 import { logStep } from "../../shared/sopLog.ts";
 
 // ═══════════════════════════════════════════════
@@ -195,7 +196,100 @@ export default async function (req: Request): Promise<Response> {
 
     const svc = base44.asServiceRole;
     const body = await req.json().catch(() => ({}));
-    const { action } = body; // 'ingest' | 'simulate' | 'full_pipeline'
+    const { action } = body; // preview_simulation is SAFE; existing write paths stay gated
+
+    // READ-ONLY, reproducible staging simulation. Reuses this engine's
+    // existing seeded model, yet performs no Base44 entity reads/writes,
+    // no integration calls and no external messaging. This is a synthetic
+    // test of computation, not an evidence-backed market forecast.
+    if (action === "preview_simulation") {
+      const siteCounts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      const stressCases = [
+        { demand: 0.50, cost: 1.50, conv: "LOW" },
+        { demand: 0.60, cost: 1.40, conv: "LOW" },
+        { demand: 0.70, cost: 1.30, conv: "CAUTIOUS" },
+        { demand: 0.80, cost: 1.20, conv: "CAUTIOUS" },
+        { demand: 0.90, cost: 1.10, conv: "BASE" },
+        { demand: 1.00, cost: 1.00, conv: "BASE" },
+        { demand: 1.10, cost: 0.95, conv: "HIGH" },
+        { demand: 1.20, cost: 0.90, conv: "HIGH" },
+        { demand: 1.35, cost: 0.80, conv: "OPTIMISTIC" },
+        { demand: 1.50, cost: 0.75, conv: "OPTIMISTIC" },
+      ];
+      const drawsPerScenario = 20;
+      let scenarioCount = 0;
+      let digest = 2166136261;
+      const strategyResults: any[] = [];
+      for (const strategy of STRATEGIES) {
+        let netTotal = 0, netWorst = Number.POSITIVE_INFINITY, budgetFitTotal = 0, downsideCount = 0;
+        for (const sites of siteCounts) {
+          for (const stress of stressCases) {
+            const assumptions = {
+              ...DEFAULT_ASSUMPTIONS,
+              base_build_cost: DEFAULT_ASSUMPTIONS.base_build_cost * stress.cost,
+              monthly_impressions_per_site: DEFAULT_ASSUMPTIONS.monthly_impressions_per_site * stress.demand,
+            };
+            const result = runSimulation(strategy, sites, stress.conv, assumptions, drawsPerScenario);
+            if (!Number.isFinite(result.net_12mo)) {
+              return Response.json({ ok: false, error: "Non-finite modeled result" }, { status: 422 });
+            }
+            scenarioCount += 1;
+            netTotal += result.net_12mo;
+            netWorst = Math.min(netWorst, result.net_12mo);
+            budgetFitTotal += result.budget_fit;
+            if (result.net_12mo < 0) downsideCount += 1;
+            const identity = strategy.strategy_id + "|" + sites + "|" + stress.conv + "|" +
+              stress.demand + "|" + stress.cost + "|" + result.net_12mo;
+            for (let i = 0; i < identity.length; i++) {
+              digest = Math.imul(digest ^ identity.charCodeAt(i), 16777619) >>> 0;
+            }
+          }
+        }
+        strategyResults.push({
+          strategy_id: strategy.strategy_id,
+          strategy_name: strategy.model_name,
+          scenarios: siteCounts.length * stressCases.length,
+          average_net_12mo: Math.round(netTotal / 100),
+          worst_net_12mo: Math.round(netWorst),
+          negative_net_cases: downsideCount,
+          average_budget_fit: Math.round(budgetFitTotal) / 100,
+        });
+      }
+      return Response.json({
+        ok: true,
+        action,
+        state: "SIMULATED_UNCALIBRATED",
+        evidence_status: "SIMULATED",
+        execution_mode: "READ_ONLY",
+        input_provenance: "STATIC_DEFAULT_ASSUMPTIONS_NOT_MARKET_VALIDATED",
+        strategy_count: STRATEGIES.length,
+        site_count_variants: siteCounts.length,
+        market_stress_cases: stressCases.length,
+        scenario_evaluations: scenarioCount,
+        draws_per_scenario: drawsPerScenario,
+        total_seeded_draws: scenarioCount * drawsPerScenario,
+        deterministic_fingerprint: digest.toString(16).padStart(8, "0"),
+        strategies: strategyResults,
+        warnings: [
+          "NOT buyer demand evidence, no live keyword or competitor data.",
+          "No database persistence, queue dispatch, sync, external communication or deployment.",
+          "Ranking requires independently verified buyers, costs and source provenance.",
+        ],
+      });
+    }
+
+    // Protect legacy ingest/simulate/full_pipeline because they mutate Base44
+    // entities (including deleteMany). Only a separately configured privileged
+    // server gate may enable those legacy operations; a request flag cannot.
+    if (!["ingest", "simulate", "full_pipeline"].includes(action)) {
+      return Response.json({ ok: false, error: "Unsupported action; preview_simulation is read-only" }, { status: 400 });
+    }
+    if (secrets.get("GOD_MODE_PERSISTENT_WRITE_ENABLED") !== "true") {
+      return Response.json({
+        ok: false, status: "BLOCKED",
+        error: "Durable simulation mutations disabled pending scoped operator approval",
+      }, { status: 403 });
+    }
 
     let ingestResult: any = null;
     let simulationResults: any[] = [];
