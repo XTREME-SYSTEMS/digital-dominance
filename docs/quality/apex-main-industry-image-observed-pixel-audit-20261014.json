@@ -1,0 +1,257 @@
+{
+  "schema_version": "apex.industry-image-actual-pixel-observation.v1",
+  "source_repo": "XTREME-SYSTEMS/digital-dominance",
+  "source_branch": "main",
+  "source_path": "src/data/topIndustries.js",
+  "source_blob_sha": "76319314c7a87c43e69b753c377148fc3fd0c91c",
+  "review_stage": "OPERATOR_ASSISTANT_VISUAL_OBSERVATION_NOT_GUARDIAN",
+  "evidence_method": "JARVIS headless Chrome 1480px contact sheet, actual image naturalWidth, assistant pixel inspection",
+  "local_contact_sheet": "C:\\_Strategic_Minds_AI_OS\\13_TESTS\\APEX_CHROME_QA_TOOLKIT\\INDUSTRY_IMAGE_REVIEW_20261014\\contact-sheet.png",
+  "local_machine_evidence": "C:\\_Strategic_Minds_AI_OS\\13_TESTS\\APEX_CHROME_QA_TOOLKIT\\INDUSTRY_IMAGE_REVIEW_20261014\\source-and-load-evidence.json",
+  "observed_count": 20,
+  "counts": {
+    "IMAGE_LOAD_FAILURE": 4,
+    "SEMANTIC_MISMATCH": 9,
+    "REVIEW_REQUIRED": 7
+  },
+  "approved_count": 0,
+  "independent_gate": "FAIL_AS_EXPECTED",
+  "production_release_approval": false,
+  "website_visual_lock": "UNCHANGED",
+  "evidence_missing": [
+    "independent validator semantic proof",
+    "SHA256 of actual approved replacement image bytes",
+    "licensed image usage evidence",
+    "recorded approved image URL matching code"
+  ],
+  "replacement_requirements": [
+    "exact industry subject/camera composition",
+    "usage permission/license and attribution verification",
+    "independent semantic reviewer signoff",
+    "checked desktop/mobile cropping",
+    "no image URL reuse across distinct categories",
+    "approved marketing visual baseline not altered without user approval"
+  ],
+  "entries": [
+    {
+      "id": "water_damage",
+      "category": "Water Damage Restoration",
+      "url": "https://images.unsplash.com/photo-1486406146926-c690a1a3a3a3?w=600&q=80&fit=crop",
+      "observed_status": "IMAGE_LOAD_FAILURE",
+      "observed_subject": "Broken image in 1480px headless Chrome contact sheet",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "mold_remediation",
+      "category": "Mold Remediation",
+      "url": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&q=80&fit=crop",
+      "observed_status": "REVIEW_REQUIRED",
+      "observed_subject": "Person wearing protective mask wipes indoor shutter or wall; mold-specific work not established",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "emergency_plumbing",
+      "category": "Emergency Plumbing",
+      "url": "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&q=80&fit=crop",
+      "observed_status": "SEMANTIC_MISMATCH",
+      "observed_subject": "Person working on technical drawings at a desk, no visible plumbing emergency",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "roof_repair",
+      "category": "Roof Repair",
+      "url": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=600&q=80&fit=crop",
+      "observed_status": "SEMANTIC_MISMATCH",
+      "observed_subject": "High-end dining/interior architectural space, no roof repair visible",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "ac_repair",
+      "category": "AC Repair",
+      "url": "https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=600&q=80&fit=crop",
+      "observed_status": "REVIEW_REQUIRED",
+      "observed_subject": "Close-up tool/circuit work, no identifiable air-conditioning equipment",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "electrician",
+      "category": "Electrician",
+      "url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&q=80&fit=crop",
+      "observed_status": "REVIEW_REQUIRED",
+      "observed_subject": "Worker appearing to wire an electrical fixture/panel; industry relevance plausible but requires reviewer proof",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "epoxy_garage",
+      "category": "Epoxy Garage Floors",
+      "url": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600&q=80&fit=crop",
+      "observed_status": "SEMANTIC_MISMATCH",
+      "observed_subject": "Exterior of a contemporary house, no epoxy garage floor visible",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "pest_control",
+      "category": "Pest Control",
+      "url": "https://images.unsplash.com/photo-1615529182904-14819c35db37?w=600&q=80&fit=crop",
+      "observed_status": "SEMANTIC_MISMATCH",
+      "observed_subject": "Styled living room interior, no pest inspection, treatment or prevention visible",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "tree_service",
+      "category": "Tree Service",
+      "url": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80&fit=crop",
+      "observed_status": "SEMANTIC_MISMATCH",
+      "observed_subject": "Mountains and forest landscape without arborist, tree pruning or tree service",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "landscaping",
+      "category": "Landscaping",
+      "url": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80&fit=crop",
+      "observed_status": "REVIEW_REQUIRED",
+      "observed_subject": "Soil, spade/trowel and garden preparation. Plausible but reviewer/rights evidence missing",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "pressure_washing",
+      "category": "Pressure Washing",
+      "url": "https://images.unsplash.com/photo-1605152276897-4296181db00d?w=600&q=80&fit=crop",
+      "observed_status": "IMAGE_LOAD_FAILURE",
+      "observed_subject": "Broken image in 1480px headless Chrome contact sheet",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "fence_install",
+      "category": "Fence Installation",
+      "url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&fit=crop",
+      "observed_status": "REVIEW_REQUIRED",
+      "observed_subject": "Close-up craftsperson using tool on metal/wood, fence installation not clearly visible",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "solar_install",
+      "category": "Solar Panel Installation",
+      "url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80&fit=crop",
+      "observed_status": "SEMANTIC_MISMATCH",
+      "observed_subject": "Residential indoor architecture, no solar installation or panels",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "garage_door_repair",
+      "category": "Garage Door Repair",
+      "url": "https://images.unsplash.com/photo-1606761568499-4636cad0e8a7?w=600&q=80&fit=crop",
+      "observed_status": "IMAGE_LOAD_FAILURE",
+      "observed_subject": "Broken image in 1480px headless Chrome contact sheet",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "appliance_repair",
+      "category": "Appliance Repair",
+      "url": "https://images.unsplash.com/photo-1622895175520-59d2f3c4e642?w=600&q=80&fit=crop",
+      "observed_status": "IMAGE_LOAD_FAILURE",
+      "observed_subject": "Broken image in 1480px headless Chrome contact sheet",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "towing",
+      "category": "Towing Service",
+      "url": "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&q=80&fit=crop",
+      "observed_status": "SEMANTIC_MISMATCH",
+      "observed_subject": "Sports cars in indoor showroom/garage, no tow truck or towing activity",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "emergency_dentist",
+      "category": "Emergency Dentist",
+      "url": "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&q=80&fit=crop",
+      "observed_status": "REVIEW_REQUIRED",
+      "observed_subject": "Dental cleaning/flossing closeup but emergency treatment not demonstrated",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "personal_injury",
+      "category": "Personal Injury Lawyer",
+      "url": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80&fit=crop",
+      "observed_status": "REVIEW_REQUIRED",
+      "observed_subject": "Justice statue/courthouse iconography fits general law, not specifically injury advocacy",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "carpet_cleaning",
+      "category": "Carpet Cleaning",
+      "url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80&fit=crop",
+      "observed_status": "SEMANTIC_MISMATCH",
+      "observed_subject": "Restaurant dining interior with chairs/tables, no carpet cleaning",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    },
+    {
+      "id": "deck_building",
+      "category": "Deck Building",
+      "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&fit=crop",
+      "observed_status": "SEMANTIC_MISMATCH",
+      "observed_subject": "Modern home exterior with no identifiable decking construction",
+      "independent_semantic_approval": "NOT_PRESENT",
+      "license_verification": "NOT_PRESENT",
+      "image_sha256": "NOT_YET_CAPTURED",
+      "release_recommendation": "KEEP_APPROVAL_GATE_BLOCKED_UNTIL_REVIEW"
+    }
+  ]
+}
