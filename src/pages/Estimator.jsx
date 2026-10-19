@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useSettings } from "@/lib/useSettings";
 import { calcEstimate, calcLeadScore } from "@/lib/pricing";
-import { trackEvent, getDeviceType } from "@/lib/tracking";
+import { trackEvent, getDeviceType, linkLeadAttribution } from "@/lib/tracking";
 import { loadDraft, saveDraft, clearDraft, captureAttribution } from "@/lib/estimatorStore";
 import AddressStep from "@/components/estimator/AddressStep";
 import SizeStep from "@/components/estimator/SizeStep";
@@ -56,6 +56,7 @@ export default function Estimator() {
     setSubmitting(true);
     const est = calcEstimate(settings, data);
     const score = calcLeadScore(settings, data);
+    const attribution = captureAttribution();
     const lead = await base44.entities.Lead.create({
       first_name: data.first_name,
       last_name: data.last_name,
@@ -82,9 +83,9 @@ export default function Estimator() {
       status: "NEW ESTIMATE",
       appointment_status: "none",
       device: getDeviceType(),
-      ...captureAttribution()
+      ...attribution
     });
-    await trackEvent("lead_created", { lead_id: lead.id });
+    await linkLeadAttribution(lead.id, { source: "estimator" });
     clearDraft();
     navigate(`/results/${lead.id}`);
   };

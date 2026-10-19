@@ -12,6 +12,7 @@ import { logStep } from "../../shared/sopLog.ts";
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
+    const body = await req.json().catch(() => ({}));
     const { accessToken } = await base44.asServiceRole.connectors.getConnection("google_search_console");
     const headers = { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" };
 
@@ -52,6 +53,28 @@ export default async function (req: Request): Promise<Response> {
         matchedProperty = urlPrefix;
         matchType = "url-prefix";
       }
+    }
+
+    // Diagnostic mode is strictly read-only: enumerate the available properties,
+    // show the deterministic exact match, and exit before registry/content writes.
+    if (body.action === "diagnose") {
+      return Response.json({
+        ok: Boolean(matchedProperty),
+        diagnostic_only: true,
+        canonicalDomain,
+        canonicalBase,
+        registry_property: registry.google_search_console_property || null,
+        expected_properties: [
+          `sc-domain:${canonicalDomain}`,
+          `${canonicalBase}/`,
+        ],
+        matched_property: matchedProperty?.siteUrl || null,
+        match_type: matchType,
+        available_properties: sites.map((s) => ({
+          url: s.siteUrl,
+          permission: s.permissionLevel,
+        })),
+      });
     }
 
     // Precedence 3: BLOCKED — do not silently use a different property
