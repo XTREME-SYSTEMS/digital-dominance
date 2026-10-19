@@ -1,0 +1,269 @@
+{
+  "schema_id": "strategic-minds-ai.manus-style-factory.checklist.v1",
+  "version": "1.0.0",
+  "date": "2026-10-10",
+  "contract_status": "PROPOSED_NOT_IMPLEMENTED",
+  "source_repo": "XTREME-SYSTEMS/digital-dominance",
+  "host": "epoxyquotenearme.com",
+  "scope": "general-purpose software/business system/website factory; not epoxy-specific",
+  "operating_model": {
+    "entrypoints": [
+      "web_chat",
+      "authenticated_gpt_bridge",
+      "mobile_chat"
+    ],
+    "worker": "existing_verified_single_supervisor",
+    "workspace": "versioned persistent project memory",
+    "sandbox": "isolated per-mission ephemeral runtime",
+    "user_surface": "one conversational operator",
+    "release": "approval-gated immutable validated manifest"
+  },
+  "project_kinds": [
+    "website",
+    "multi-site portfolio",
+    "app",
+    "pwa",
+    "funnel",
+    "crm",
+    "portal",
+    "business_os",
+    "agent",
+    "automation",
+    "social system",
+    "other"
+  ],
+  "mission_spec_fields": [
+    "mission_id",
+    "tenant_id",
+    "project_id",
+    "request",
+    "project_kind",
+    "business_identity_and_sources",
+    "quantity",
+    "locations",
+    "brand_pack_version",
+    "template_pack_versions",
+    "pages_and_routes",
+    "features",
+    "integrations",
+    "social_channels_and_policy",
+    "data_model",
+    "auth_roles",
+    "SEO_and_local_intent",
+    "acceptance_criteria",
+    "budget",
+    "permissions",
+    "source_sha",
+    "sandbox_id",
+    "idempotency_key",
+    "approval_manifest",
+    "test_receipts",
+    "artifacts"
+  ],
+  "template_families": [
+    "website",
+    "brand",
+    "logo",
+    "app",
+    "workflow",
+    "crm",
+    "social",
+    "image",
+    "video",
+    "agent",
+    "tool",
+    "documents",
+    "SEO",
+    "provisioning"
+  ],
+  "mission_states": [
+    "REQUESTED",
+    "SCOPED",
+    "RESEARCHED",
+    "SPEC_READY",
+    "BUILDING",
+    "VALIDATING_1",
+    "VALIDATING_2",
+    "VALIDATING_3",
+    "RELEASE_READY",
+    "WAITING_APPROVAL",
+    "APPROVED",
+    "PROVISIONING",
+    "LIVE_VERIFIED",
+    "OPERATING",
+    "PAUSED",
+    "BLOCKED",
+    "FAILED",
+    "ROLLED_BACK"
+  ],
+  "phases": [
+    {
+      "id": "01",
+      "name": "Source truth",
+      "owner": "Guardian",
+      "checks": [
+        "Correct current repo/branch/SHA and Base44 app identity",
+        "Working Admin inventory complete",
+        "No duplicate canonical data or agent runtime",
+        "Prior live URLs and rollback baseline preserved"
+      ]
+    },
+    {
+      "id": "02",
+      "name": "Mission intake",
+      "owner": "Primary Mission Operator",
+      "checks": [
+        "Request converted to durable MissionSpec",
+        "Known client facts and previous context reused",
+        "Quantity and locations explicit or policy-defined",
+        "Project-type requirements and acceptance criteria frozen",
+        "Cost, permissions and approval class recorded"
+      ]
+    },
+    {
+      "id": "03",
+      "name": "Research and strategy",
+      "owner": "Research/Strategy",
+      "checks": [
+        "Grounded evidence attached",
+        "Industry-appropriate feasibility and risk analysis",
+        "Competitors and differentiators validated",
+        "No unsupported claims, prices or locations"
+      ]
+    },
+    {
+      "id": "04",
+      "name": "Template resolution",
+      "owner": "Template Vault",
+      "checks": [
+        "Required Web/Brand/Logo/App/Workflow/Doc/Social packs resolved",
+        "License/provenance/hash/version recorded",
+        "Approved design screenshot references locked",
+        "Dependencies pinned"
+      ]
+    },
+    {
+      "id": "05",
+      "name": "Sandbox bootstrap",
+      "owner": "Sandbox Supervisor",
+      "checks": [
+        "Isolated per-mission filesystem and execution",
+        "No production secret leakage or client data writes",
+        "Durable work packet/lease/checkpoint created",
+        "Unique preview URL/worktree assigned",
+        "Idempotent retries and cleanup verified"
+      ]
+    },
+    {
+      "id": "06",
+      "name": "Super Agent implementation",
+      "owner": "Agent Orchestrator",
+      "checks": [
+        "Specialist tasks leased and receipts stored",
+        "Functional pages/data/API/CRM/social drafts built",
+        "Docs and manifests generated concurrently",
+        "Browser-closed execution resumes from checkpoint",
+        "Cost and resource ceilings enforced"
+      ]
+    },
+    {
+      "id": "07",
+      "name": "PASS 1 - Engineering",
+      "owner": "Implementation CI",
+      "checks": [
+        "Full build and typecheck",
+        "Static analysis and tests",
+        "API/data/auth/RLS/security tests",
+        "No placeholders/fake LIVE states",
+        "Complete requirements-to-test traceability"
+      ],
+      "required_outcome": "ALL_PASS"
+    },
+    {
+      "id": "08",
+      "name": "PASS 2 - Behavioral",
+      "owner": "Separate QA Runner",
+      "checks": [
+        "Desktop 1440x900 and mobile 390x844 screenshot visual comparison",
+        "Direct-route navigation and interaction tests",
+        "Synthetic CRM/lead/integration end-to-end",
+        "Worker restart and retry/duplicate/cancel tests",
+        "SEO canonical/schema/a11y/performance tests",
+        "Social draft approval boundary tests"
+      ],
+      "required_outcome": "ALL_PASS"
+    },
+    {
+      "id": "09",
+      "name": "PASS 3 - Independent",
+      "owner": "Independent Guardian/Fault Line",
+      "checks": [
+        "Independent SHA/source re-fetch",
+        "Independent negative/security/tenant isolation checks",
+        "Every deliverable/document present",
+        "Privacy/policy/content and local claim verification",
+        "Release manifest/hash/dry-run provisioning matches preview",
+        "Rollback/backup/recovery evidence complete"
+      ],
+      "required_outcome": "ALL_PASS"
+    },
+    {
+      "id": "10",
+      "name": "Release authorization",
+      "owner": "Operator",
+      "checks": [
+        "Exact immutable release manifest presented",
+        "All 3 passes green, zero blocking unknowns",
+        "Provider scopes/costs/domains/outbound channels approved",
+        "No authorization via chat inference"
+      ]
+    },
+    {
+      "id": "11",
+      "name": "Provision",
+      "owner": "Provisioning Agent",
+      "checks": [
+        "GitHub source and deployment verified",
+        "Vercel runtime HTTP + smoke tested",
+        "Supabase tenant data/auth RLS and migrations verified",
+        "Existing Railway worker bound with one heartbeat",
+        "Registrar domain SSL via approved account",
+        "GA4 connected and test event collected where authorized",
+        "Search Console property ownership verified and index policy passed",
+        "CRM and client portal tested",
+        "Social channels bound under scoped authorization"
+      ],
+      "required_outcome": "VERIFIED_OR_EXPLICITLY_BLOCKED"
+    },
+    {
+      "id": "12",
+      "name": "Operate and handoff",
+      "owner": "Monitoring/Client Success",
+      "checks": [
+        "Actual LIVE URL and provider IDs stored",
+        "Complete docs and ownership/credential references delivered safely",
+        "Business leads and attribution work",
+        "Agent monitoring/healing with bounded safe retries",
+        "Client portal and scheduled content configuration usable",
+        "Rollback tested and receipt linked"
+      ]
+    }
+  ],
+  "release_guardrails": {
+    "required_passes": 3,
+    "all_mandatory_checks_must_pass": true,
+    "zero_open_release_blocking_findings": true,
+    "unknown_blocks_release": true,
+    "independent_third_party_validation": true,
+    "published_without_approval": false,
+    "unverified_site_may_be_marked_live": false,
+    "live_external_communications_sandbox": false,
+    "three_pass_perfect_software_guarantee": false
+  },
+  "source_links": [
+    "https://github.com/XTREME-SYSTEMS/digital-dominance",
+    "https://github.com/Strategic-Minds-AI/dominance-engine/commit/a2864fc875e977ac0db5402ab18fc6e447fa7d3d",
+    "https://manus.im/blog/manus-sandbox",
+    "https://open.manus.im/docs/v2/task-lifecycle"
+  ]
+}
