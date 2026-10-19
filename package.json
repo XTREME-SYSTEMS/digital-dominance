@@ -13,7 +13,9 @@
     "test:seo-indexing": "node scripts/seo-indexing-regression.mjs",
     "test:seo-parity": "node --test scripts/seo-parity.test.mjs",
     "test:semrush-evidence": "node --test scripts/semrush-evidence.test.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:sitebank-auth": "node scripts/sitebank-auth-regression.mjs",
+    "prebuild": "npm run test:sitebank-auth"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.54",
