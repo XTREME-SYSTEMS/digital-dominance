@@ -4,7 +4,7 @@ import { ArrowRight, ExternalLink } from 'lucide-react';
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import StockPreviewDialog from '@/components/template-studio/StockPreviewDialog';
 import SafeImage from '@/components/ui/SafeImage';
-import TemplateLivePreview from '@/components/launch-engine/TemplateLivePreview';
+import ShowcaseCard from '@/components/launch-engine/ShowcaseCard';
 
 // Preserve the industry-image filters added on main while restoring premium full-page previews.
 const CATEGORIES = [
@@ -79,33 +79,7 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map(template => (
-            <button key={template.id} type="button" onClick={() => setPreview(template)}
-              className="group overflow-hidden rounded-xl border border-[#7ed4ff]/25 bg-[#0b2b50] text-left shadow-[0_20px_40px_rgba(0,0,0,.20)] transition duration-200 hover:-translate-y-1 hover:border-[#6ecfff] hover:shadow-[0_22px_45px_rgba(0,145,255,.26)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6cd3ff]">
-              <div className="flex h-7 items-center justify-between border-b border-white/10 bg-[#061429] px-3 text-[10px] font-extrabold uppercase tracking-[.12em] text-slate-300">
-                <span aria-hidden="true" className="text-[#66ceff]">● ● ●</span><span>{template.niche || 'Website'}</span>
-              </div>
-              <div className="relative aspect-[4/5] overflow-hidden bg-white p-2">
-                <TemplateLivePreview template={template} className="h-full w-full" />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#001024]/55 to-transparent" aria-hidden="true" />
-                <span className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-2 rounded-lg border border-white/70 bg-[#0479ec]/90 px-3 py-2 text-xs font-bold text-white">
-                  View Full Preview <ExternalLink className="h-3.5 w-3.5" />
-                </span>
-              </div>
-              <div className="px-4 py-4">
-                {(() => {
-                  const parts = template.name.split(' / ');
-                  const niche = parts[0];
-                  const designName = parts.slice(1).join(' / ');
-                  return (
-                    <>
-                      <h3 className="line-clamp-1 text-lg font-extrabold tracking-tight text-white">{niche}</h3>
-                      {designName && <p className="text-[11px] font-bold uppercase tracking-wider text-[#55ceff]/80">{designName}</p>}
-                    </>
-                  );
-                })()}
-                <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-300">{template.description || 'Explore the layout and sections in a full-page preview.'}</p>
-              </div>
-            </button>
+            <ShowcaseCard key={template.id} template={template} onPreview={setPreview} />
           ))}
         </div>
 

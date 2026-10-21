@@ -5,9 +5,9 @@ import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import InteractiveTemplateEditor from "@/components/launch-engine/InteractiveTemplateEditor";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import SafeImage from '@/components/ui/SafeImage';
-import TemplateLivePreview from '@/components/launch-engine/TemplateLivePreview';
+import LayoutCard from '@/components/launch-engine/wizard/LayoutCard';
 import BusinessProfileStep from '@/components/launch-engine/BusinessProfileStep';
-import { OTHER_OPTION, industryKeyForLabel, industryLabel } from '@/data/industryCatalog';
+import { OTHER_OPTION, industryKeyForLabel, industryLabel, industryServices } from '@/data/industryCatalog';
 import { base44 } from '@/api/base44Client';
 
 const EMPTY_BRIEF = {
@@ -50,6 +50,25 @@ export default function LaunchWizard({ initial, onClose }) {
 
   const briefTrade = brief.industry === OTHER_OPTION ? brief.industry_other : (industryLabel(brief.industry) || brief.industry);
   const briefSpecialty = brief.sub_industry === OTHER_OPTION ? brief.sub_industry_other : brief.sub_industry;
+
+  // Every layout style is previewed with this business's own details.
+  const previewBrief = React.useMemo(() => {
+    const trade = briefTrade || selection.industry || 'Local Services';
+    const listed = industryServices(industryKeyForLabel(trade));
+    const place = [brief.city, brief.state].filter(Boolean).join(', ');
+    return {
+      businessName: brief.business_name.trim() || trade,
+      industry: trade,
+      tagline: brief.slogan.trim() || `${trade} done right the first time.`,
+      description: `${trade} services for ${place || 'your service area'}.`,
+      location: place || 'Your service area',
+      services: brief.services.length ? brief.services : (listed.length ? listed : undefined),
+      phone: brief.phone.trim(),
+      ctaLabel: 'Request a Quote',
+      accent: '#0f7bd6',
+      draft: false,
+    };
+  }, [brief, briefTrade, selection.industry]);
 
   const canAdvance = step === 0 ? !!selection.industry
     : step === 1 ? !!selection.template
@@ -232,33 +251,19 @@ export default function LaunchWizard({ initial, onClose }) {
 
           {/* Step 1: Template — exact admin templates */}
           {step === 1 && (
-            <div className="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto">
+            <div className="grid grid-cols-1 gap-3 max-h-[440px] overflow-y-auto sm:grid-cols-2">
               {designs.isLoading && <p role="status" className="col-span-full text-center text-gray-400">Loading designs…</p>}
               {designs.error && <p role="alert" className="col-span-full text-center text-red-500">{designs.error.message}</p>}
-              {designs.items.map((t) => {
-                const designName = t.name.includes(' / ') ? t.name.split(' / ').slice(1).join(' / ') : t.name;
-                const active = selection.template?.id === t.id;
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => setSelection({ ...selection, template: t, editedContent: null })}
-                    className={`overflow-hidden rounded-xl border-2 text-left transition ${active ? "border-[#00a2ff] ring-2 ring-[#00a2ff]/30" : "border-gray-200 hover:border-gray-300"}`}
-                  >
-                    <div className="relative aspect-[4/5] overflow-hidden bg-gray-100 p-1.5">
-                      <TemplateLivePreview template={t} className="h-full w-full" />
-                      {active && (
-                        <div className="absolute top-2 right-2 rounded-full bg-[#00a2ff] p-1">
-                          <Check className="h-3 w-3 text-white" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="px-3 py-2">
-                      <p className={`text-xs font-bold ${active ? "text-[#00a2ff]" : "text-gray-800"}`}>{designName}</p>
-                      <p className="mt-0.5 line-clamp-1 text-[10px] text-gray-400">{t.description || ''}</p>
-                    </div>
-                  </button>
-                );
-              })}
+              {designs.items.map((t) => (
+                <LayoutCard
+                  key={t.id}
+                  template={t}
+                  brief={previewBrief}
+                  active={selection.template?.id === t.id}
+                  designName={t.name.includes(' / ') ? t.name.split(' / ').slice(1).join(' / ') : t.name}
+                  onSelect={() => setSelection({ ...selection, template: t, editedContent: null })}
+                />
+              ))}
               {!designs.isLoading && designs.items.length === 0 && (
                 <p className="col-span-full text-center text-gray-400 text-sm py-8">No templates found for this industry. Try another category.</p>
               )}

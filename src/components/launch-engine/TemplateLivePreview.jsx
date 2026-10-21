@@ -1,98 +1,110 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Monitor, Smartphone } from 'lucide-react';
-import { fetchTemplateHtml } from '@/lib/stockPreviewHtml';
+import React, { useEffect, useRef, useState } from 'react';
+import { Monitor, Smartphone, Maximize2 } from 'lucide-react';
+import { openHtmlInBrowser } from '@/lib/x1Preview';
 
 const DESKTOP_WIDTH = 1280;
 const MOBILE_WIDTH = 390;
-const MAX_RENDER_HEIGHT = 14000;
 
 /**
- * Renders the template's real page — never a shared stock photo.
- * Desktop shows the whole page top to bottom; the mobile pane renders the same
- * page at phone width so the responsive layout is what the visitor will see.
+ * A pane holds a real page at its true layout width, scaled to fit the pane.
+ * It opens at the top of the page and scrolls inside, so the visitor sees a
+ * close-up of the hero and can scroll the whole site — never a squeezed strip.
  */
-function LiveFrame({ html, width, label, icon: Icon, fit, className = '' }) {
+function Pane({ html, width, label, icon: Icon, className = '', hint }) {
   const boxRef = useRef(null);
-  const frameRef = useRef(null);
-  const measured = useRef(false);
-  const [pageHeight, setPageHeight] = useState(6000);
-  const [box, setBox] = useState({ width: 0, height: 0 });
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const element = boxRef.current;
     if (!element || typeof ResizeObserver === 'undefined') return undefined;
     const observer = new ResizeObserver(entries => {
       const rect = entries[0]?.contentRect;
-      if (rect) setBox({ width: rect.width, height: rect.height });
+      if (rect) setSize({ width: rect.width, height: rect.height });
     });
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
 
-  const measure = () => {
-    if (measured.current) return;
-    const doc = frameRef.current?.contentDocument;
-    if (!doc) return;
-    const height = Math.max(doc.documentElement?.scrollHeight || 0, doc.body?.scrollHeight || 0);
-    if (height > 0) {
-      measured.current = true;
-      setPageHeight(Math.min(height + 120, MAX_RENDER_HEIGHT));
-    }
-  };
-
-  const scale = box.width > 0
-    ? (fit === 'width' ? box.width / width : Math.min(box.width / width, box.height / pageHeight))
-    : 0;
-  const viewport = fit === 'width' ? 'h-full overflow-y-auto' : 'flex h-full items-start justify-center overflow-hidden';
+  const scale = size.width > 0 ? size.width / width : 0;
+  const ready = html && scale > 0 && size.height > 0;
 
   return (
-    <div ref={boxRef} className={`relative min-w-0 overflow-hidden bg-white ${className}`}>
-      <span className="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1 rounded bg-black/75 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+    <div ref={boxRef} className={`relative overflow-hidden bg-white ${className}`}>
+      <span className="pointer-events-none absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
         <Icon className="h-2.5 w-2.5" aria-hidden="true" /> {label}
       </span>
-      <div className={viewport}>
-        <div className="shrink-0 bg-white" style={{ width: width * scale, height: pageHeight * scale }}>
-          <iframe
-            ref={frameRef}
-            title={`${label} live page preview`}
-            srcDoc={html}
-            onLoad={measure}
-            tabIndex={-1}
-            scrolling="no"
-            aria-hidden="true"
-            style={{ width, height: pageHeight, border: 0, transform: `scale(${scale})`, transformOrigin: 'top left', pointerEvents: 'none' }}
-          />
-        </div>
-      </div>
+      {ready && (
+        <iframe
+          title={`${label} website layout preview`}
+          srcDoc={html}
+          scrolling="yes"
+          style={{
+            width,
+            height: size.height / scale,
+            border: 0,
+            display: 'block',
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left',
+          }}
+        />
+      )}
+      {hint && ready && (
+        <span className="pointer-events-none absolute bottom-1.5 left-1.5 rounded bg-black/60 px-2 py-1 text-[9px] font-semibold text-white">
+          {hint}
+        </span>
+      )}
     </div>
   );
 }
 
-export default function TemplateLivePreview({ template, html, className = '', fit = 'contain', mobileClassName = 'w-[24%] min-w-[58px] shrink-0' }) {
-  const [loaded, setLoaded] = useState(null);
-  const direct = html || template?.content || null;
-
-  useEffect(() => {
-    let live = true;
-    if (direct || !template) { setLoaded(null); return undefined; }
-    fetchTemplateHtml(template).then(page => { if (live) setLoaded(page); });
-    return () => { live = false; };
-  }, [direct, template]);
-
-  const source = useMemo(() => direct || loaded, [direct, loaded]);
-
-  if (!source) {
+export default function TemplateLivePreview({
+  html,
+  className = '',
+  showMobile = true,
+  showFullScreen = false,
+  showHint = false,
+  desktopClassName = 'flex-1',
+  mobileClassName = 'w-[22%] min-w-[72px] shrink-0',
+  emptyLabel = 'Preparing this layout…',
+}) {
+  if (!html) {
     return (
       <p className={`flex items-center justify-center p-4 text-center text-xs text-muted-foreground ${className}`}>
-        Loading this template's page…
+        {emptyLabel}
       </p>
     );
   }
 
   return (
-    <div className={`flex gap-2 ${className}`}>
-      <LiveFrame html={source} width={DESKTOP_WIDTH} label="Desktop" icon={Monitor} fit={fit} className="flex-1 rounded-md ring-1 ring-black/10" />
-      <LiveFrame html={source} width={MOBILE_WIDTH} label="Mobile" icon={Smartphone} fit={fit} className={`${mobileClassName} rounded-md ring-1 ring-black/10`} />
+    <div className={`flex flex-col gap-2 ${className}`}>
+      <div className="relative flex min-h-0 flex-1 gap-2">
+        <Pane
+          html={html}
+          width={DESKTOP_WIDTH}
+          label="Desktop"
+          icon={Monitor}
+          className={`${desktopClassName} rounded-md ring-1 ring-black/10`}
+          hint={showHint ? 'Scroll inside to see the whole page' : undefined}
+        />
+        {showMobile && (
+          <Pane
+            html={html}
+            width={MOBILE_WIDTH}
+            label="Mobile"
+            icon={Smartphone}
+            className={`${mobileClassName} rounded-md ring-1 ring-black/10`}
+          />
+        )}
+      </div>
+      {showFullScreen && (
+        <button
+          type="button"
+          onClick={() => openHtmlInBrowser(html)}
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold text-gray-700 transition hover:border-[#00a2ff] hover:text-[#00a2ff]"
+        >
+          <Maximize2 className="h-3.5 w-3.5" /> See it full screen in the browser
+        </button>
+      )}
     </div>
   );
 }
