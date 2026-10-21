@@ -7,7 +7,6 @@ import {
   Brain, Eye, Code2, Mail, Phone, Calendar, Star, Cpu,
   Network, AlertCircle, ArrowRight, Lightbulb, Search,
 } from "lucide-react";
-import USMap from "@/components/master-plan/USMap";
 
 // ── Agent Roster ────────────────────────────────────────────────────────────
 const AGENTS = [
@@ -96,7 +95,7 @@ export default function MasterPlan() {
   const [auditError, setAuditError] = useState(null);
 
   // Load SiteBank entries for the map and website list
-  const { data: siteBank = [], isLoading: sitesLoading } = useQuery({
+  const { data: siteBank = [] } = useQuery({
     queryKey: ["mp-sitebank"],
     queryFn: async () => {
       const page = await base44.entities.SiteBank.filter({}, { sort: "-created_date", limit: 200 });
@@ -105,7 +104,7 @@ export default function MasterPlan() {
   });
 
   // Load WebsiteQueue entries
-  const { data: queue = [], isLoading: queueLoading } = useQuery({
+  const { data: queue = [] } = useQuery({
     queryKey: ["mp-queue"],
     queryFn: async () => {
       const page = await base44.entities.WebsiteQueue.filter({}, { sort: "-created_date", limit: 200 });
@@ -226,41 +225,6 @@ Be direct, specific, and actionable. No fluff.`,
         <div className="wle-stat"><small>States</small><strong>{stats.states}</strong></div>
         <div className="wle-stat"><small>Niches</small><strong>{stats.niches}</strong></div>
         <div className="wle-stat"><small>AI Agents</small><strong>{stats.agents}</strong></div>
-      </div>
-
-      {/* Interactive US Map */}
-      <div className="wle-panels" style={{ marginBottom: 16 }}>
-        <section className="wle-panel" style={{ gridColumn: "1 / -1" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <div>
-              <h2 style={{ fontSize: 18, fontWeight: 800, color: "#112940", margin: 0 }}>
-                🗺️ Live Network Map — Website Locations
-              </h2>
-              <p style={{ fontSize: 12, color: "#607790", margin: "4px 0 0" }}>
-                Every star 💻 is a live site. Every ✦ is queued for deployment. Click any marker for details.
-              </p>
-            </div>
-            <div style={{ display: "flex", gap: 8, fontSize: 11 }}>
-              <span style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 6, background: "#dcfce7", color: "#16a34a", fontWeight: 700 }}>
-                💻 Live ({stats.live})
-              </span>
-              <span style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 6, background: "#fef3c7", color: "#d97706", fontWeight: 700 }}>
-                ✦ Queued ({stats.queued})
-              </span>
-            </div>
-          </div>
-          {sitesLoading || queueLoading ? (
-            <div style={{ height: 520, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Loader2 className="w-6 h-6 animate-spin text-[#126fc8]" />
-            </div>
-          ) : allSites.length === 0 ? (
-            <div style={{ height: 520, display: "flex", alignItems: "center", justifyContent: "center", color: "#607790", fontSize: 14 }}>
-              No sites deployed yet. Launch sites from the Site Bank or Mass Launch console to populate the map.
-            </div>
-          ) : (
-            <USMap sites={allSites} />
-          )}
-        </section>
       </div>
 
       {/* Master Checklist + To-Do */}
