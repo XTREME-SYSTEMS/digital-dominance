@@ -1,0 +1,153 @@
+{
+  "name": "BrandProfile",
+  "type": "object",
+  "properties": {
+    "business_name": {
+      "type": "string",
+      "description": "The business name the site is built around"
+    },
+    "website_mode": {
+      "type": "string",
+      "enum": [
+        "existing",
+        "new"
+      ],
+      "default": "new",
+      "description": "Whether the business already has a website or needs a new one"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Existing website URL when website_mode is existing"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Industry niche key, matching the stock template catalogue"
+    },
+    "industry_label": {
+      "type": "string",
+      "description": "Human-readable industry name"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "palette_id": {
+      "type": "string"
+    },
+    "palette": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "accent": {
+          "type": "string"
+        },
+        "accentLight": {
+          "type": "string"
+        },
+        "gradient": {
+          "type": "string"
+        }
+      }
+    },
+    "logos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "style": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "The 10 generated transparent-background logo concepts"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "The logo concept the user selected for the site"
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Exhaustive industry discovery: services, image prompts, products and tools, hooks, phrases and slogans, SEO/AEO/GEO, trust signals, marketing recommendations, layouts, fonts and funnel placements"
+    },
+    "discovery_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "ready",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "discovery_error": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "configured",
+        "ready"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "business_name",
+    "industry"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

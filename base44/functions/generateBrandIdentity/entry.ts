@@ -10,13 +10,17 @@ export default async function(req: Request): Promise<Response> {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json().catch(() => ({}));
-    const { action, businessName, industry } = body;
+    const { action, businessName, industry, transparent } = body;
 
     if (action === 'generate_logos') {
       if (!businessName) return Response.json({ error: 'businessName required' }, { status: 400 });
 
       const cleanName = businessName.trim();
       const ind = (industry || 'general').toLowerCase();
+      // Transparent-background concepts: no plate, no shadow, PNG with alpha.
+      const plate = transparent
+        ? ', isolated on a fully transparent background, no background, no plate, no shadow, PNG with alpha channel, centered with even padding'
+        : '';
 
       // 10 distinct logo style prompts
       const logoStyles = [
@@ -36,7 +40,7 @@ export default async function(req: Request): Promise<Response> {
       const results = await Promise.allSettled(
         logoStyles.map(async (ls) => {
           const res = await base44.integrations.Core.GenerateImage({
-            prompt: ls.prompt,
+            prompt: `${ls.prompt}${plate}`,
           });
           return { style: ls.style, url: res.url };
         })
