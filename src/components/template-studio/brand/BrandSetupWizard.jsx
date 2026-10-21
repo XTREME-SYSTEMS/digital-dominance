@@ -23,6 +23,8 @@ export default function BrandSetupWizard({ onComplete }) {
   const [industryLabel, setIndustryLabel] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [palette, setPalette] = useState(null);
   const [domains, setDomains] = useState(null);
   const [checking, setChecking] = useState(false);
@@ -30,7 +32,7 @@ export default function BrandSetupWizard({ onComplete }) {
   const [error, setError] = useState(null);
 
   const canAdvance = [
-    businessName.trim().length > 1,
+    businessName.trim().length > 1 && phone.replace(/\D/g, '').length >= 7,
     websiteMode === 'existing' ? websiteUrl.trim().length > 3 : websiteMode === 'new',
     !!industry,
     city.trim().length > 1 && state.trim().length === 2,
@@ -67,6 +69,8 @@ export default function BrandSetupWizard({ onComplete }) {
         industry_label: industryLabel,
         city: city.trim(),
         state: state.trim().toUpperCase(),
+        phone: phone.trim(),
+        email: email.trim(),
         palette_id: palette.id,
         palette,
         status: 'configured',
@@ -134,6 +138,30 @@ export default function BrandSetupWizard({ onComplete }) {
             className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold outline-none focus:border-[#00a2ff]"
           />
           <p className="text-xs text-muted-foreground">This name is used for your logo concepts, domain suggestions and every page headline.</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-muted-foreground">Phone number</label>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="(555) 123-4567"
+                inputMode="tel"
+                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-[#00a2ff]"
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground">Every call button and every page uses this number.</p>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-muted-foreground">Email <span className="font-normal normal-case">(optional)</span></label>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="office@yourbusiness.com"
+                inputMode="email"
+                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-[#00a2ff]"
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground">Shown on your contact page for quote requests.</p>
+            </div>
+          </div>
         </div>
       )}
 

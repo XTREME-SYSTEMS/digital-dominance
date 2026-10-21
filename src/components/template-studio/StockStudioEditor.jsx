@@ -6,6 +6,7 @@ import { Globe, Loader2, CheckCircle2, AlertCircle, ExternalLink, Maximize2, Ref
 import BrandSetupWizard from '@/components/template-studio/brand/BrandSetupWizard';
 import LogoGeneratorPanel from '@/components/template-studio/brand/LogoGeneratorPanel';
 import BrandDiscoveryPanel from '@/components/template-studio/brand/BrandDiscoveryPanel';
+import SitePagePackPanel from '@/components/template-studio/brand/SitePagePackPanel';
 import StockTemplatePreview from '@/components/template-studio/StockTemplatePreview';
 import StudioMediaActions from '@/components/template-studio/StudioMediaActions';
 import GoogleReadinessPanel from '@/components/template-studio/GoogleReadinessPanel';
@@ -144,6 +145,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
           </div>
           <LogoGeneratorPanel profile={profile} onSelectLogo={(url) => setAssets((prev) => ({ ...prev, logoUrl: url }))} />
           <BrandDiscoveryPanel profile={profile} />
+          <SitePagePackPanel profile={profile} onBuilt={(pages) => setProfile((prev) => ({ ...prev, pages }))} />
         </>
       ) : profileChecked ? (
         <BrandSetupWizard onComplete={applyProfile} />

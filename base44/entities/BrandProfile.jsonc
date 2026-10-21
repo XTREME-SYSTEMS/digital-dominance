@@ -33,6 +33,14 @@
     "state": {
       "type": "string"
     },
+    "phone": {
+      "type": "string",
+      "description": "Primary phone number shown on every page and used for call buttons"
+    },
+    "email": {
+      "type": "string",
+      "description": "Contact email shown on every page and used for quote replies"
+    },
     "palette_id": {
       "type": "string"
     },
@@ -75,6 +83,31 @@
     "logo_url": {
       "type": "string",
       "description": "The logo concept the user selected for the site"
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "template_id": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "The built website page pack: one entry per generated page, linked to its TemplateLibrary record"
     },
     "discovery": {
       "type": "object",
