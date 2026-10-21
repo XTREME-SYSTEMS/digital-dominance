@@ -5,7 +5,17 @@ import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import InteractiveTemplateEditor from "@/components/launch-engine/InteractiveTemplateEditor";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import SafeImage from '@/components/ui/SafeImage';
+import TemplateLivePreview from '@/components/launch-engine/TemplateLivePreview';
+import BusinessProfileStep from '@/components/launch-engine/BusinessProfileStep';
+import { OTHER_OPTION, industryKeyForLabel, industryLabel } from '@/data/industryCatalog';
 import { base44 } from '@/api/base44Client';
+
+const EMPTY_BRIEF = {
+  business_name: '', phone: '', website_mode: 'none', website_url: '',
+  address: '', city: '', state: '', territory_radius_miles: 25,
+  industry: '', industry_other: '', sub_industry: '', sub_industry_other: '',
+  services: [], custom_services: [], slogan: '', logo_url: '', photos: [], image_plan: 'own_photos',
+};
 
 export default function LaunchWizard({ initial, onClose }) {
   const navigate = useNavigate();
@@ -14,6 +24,12 @@ export default function LaunchWizard({ initial, onClose }) {
   const [editedContent, setEditedContent] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [generateStatus, setGenerateStatus] = useState(null);
+  const [brief, setBrief] = useState({
+    ...EMPTY_BRIEF,
+    industry: industryKeyForLabel(initial?.industry) || industryKeyForLabel(initial?.template?.niche) || '',
+  });
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
   const [selection, setSelection] = useState({
     industry: initial?.industry || initial?.template?.niche || "",
     template: initial?.template || null,
@@ -32,10 +48,47 @@ export default function LaunchWizard({ initial, onClose }) {
     { label: "Review", desc: "Review your selections and open the studio" },
   ];
 
-  const canAdvance = step === 0 ? !!selection.industry : step === 1 ? !!selection.template : step === 3 ? selection.count > 0 : true;
+  const briefTrade = brief.industry === OTHER_OPTION ? brief.industry_other : (industryLabel(brief.industry) || brief.industry);
+  const briefSpecialty = brief.sub_industry === OTHER_OPTION ? brief.sub_industry_other : brief.sub_industry;
 
-  const launch = () => {
-    navigate('/admin/template-studio', { state: { selectedStockTemplateId: selection.template?.id } });
+  const canAdvance = step === 0 ? !!selection.industry
+    : step === 1 ? !!selection.template
+      : step === 2 ? brief.business_name.trim().length > 1 && brief.phone.replace(/\D/g, '').length >= 7
+        : step === 3 ? selection.count > 0
+          : true;
+
+  // Save the collected brief for the signed-in owner, then hand it to the studio.
+  const launch = async () => {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      if (await base44.auth.isAuthenticated()) {
+        await base44.entities.BrandProfile.create({
+          business_name: brief.business_name.trim(),
+          website_mode: brief.website_mode === 'existing' ? 'existing' : 'new',
+          website_url: brief.website_mode === 'existing' ? brief.website_url.trim() : '',
+          industry: brief.industry || 'other',
+          industry_label: briefTrade,
+          sub_industry: briefSpecialty,
+          services: brief.services,
+          slogan: brief.slogan.trim(),
+          address: brief.address.trim(),
+          city: brief.city.trim(),
+          state: brief.state.trim(),
+          territory_radius_miles: brief.territory_radius_miles,
+          phone: brief.phone.trim(),
+          logo_url: brief.logo_url,
+          image_plan: brief.image_plan,
+          photos: brief.photos,
+          status: 'configured',
+        });
+      }
+      navigate('/admin/template-studio', { state: { selectedStockTemplateId: selection.template?.id } });
+    } catch (e) {
+      setSaveError(e.message || 'Could not save your business details');
+    } finally {
+      setSaving(false);
+    }
   };
 
   // The active template content (edited or original)
@@ -60,9 +113,11 @@ export default function LaunchWizard({ initial, onClose }) {
     try {
       const res = await base44.functions.invoke('industryTemplateEnhancer', {
         action: 'enhance_template',
-        industry: selection.industry,
-        businessName: 'Your Business Name',
-        phone: '',
+        industry: briefTrade || selection.industry,
+        subIndustry: briefSpecialty,
+        services: brief.services,
+        businessName: brief.business_name.trim() || 'Your Business Name',
+        phone: brief.phone.trim(),
         email: '',
       });
       const content = res.data?.content;
@@ -109,7 +164,7 @@ export default function LaunchWizard({ initial, onClose }) {
     } finally {
       setGenerating(false);
     }
-  }, [selection.template, selection.industry, activeContent]);
+  }, [selection.template, selection.industry, activeContent, briefTrade, briefSpecialty, brief.services, brief.business_name, brief.phone]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
@@ -159,7 +214,10 @@ export default function LaunchWizard({ initial, onClose }) {
                 return (
                   <button
                     key={ind}
-                    onClick={() => setSelection({ ...selection, industry: ind, template: null })}
+                    onClick={() => {
+                      setSelection({ ...selection, industry: ind, template: null });
+                      setBrief(prev => ({ ...prev, industry: industryKeyForLabel(ind) || prev.industry, sub_industry: '', sub_industry_other: '', services: [], custom_services: [] }));
+                    }}
                     className={`flex flex-col items-center gap-2 rounded-xl border p-3 text-center transition ${selection.industry === ind ? "border-[#00a2ff] bg-[#00a2ff]/5" : "border-gray-200 hover:border-gray-300"}`}
                   >
                     <div className="h-16 w-full overflow-hidden rounded-lg bg-gray-100">
@@ -186,8 +244,8 @@ export default function LaunchWizard({ initial, onClose }) {
                     onClick={() => setSelection({ ...selection, template: t, editedContent: null })}
                     className={`overflow-hidden rounded-xl border-2 text-left transition ${active ? "border-[#00a2ff] ring-2 ring-[#00a2ff]/30" : "border-gray-200 hover:border-gray-300"}`}
                   >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
-                      <SafeImage src={t.preview_image_url} alt={t.name} className="h-full w-full object-cover transition duration-300 hover:scale-105" />
+                    <div className="relative aspect-[4/5] overflow-hidden bg-gray-100 p-1.5">
+                      <TemplateLivePreview template={t} className="h-full w-full" />
                       {active && (
                         <div className="absolute top-2 right-2 rounded-full bg-[#00a2ff] p-1">
                           <Check className="h-3 w-3 text-white" />
@@ -207,9 +265,11 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 2: Customize — click-to-edit + generate */}
+          {/* Step 2: Customize — business brief, click-to-edit + generate */}
           {step === 2 && (
-            <div className="space-y-3">
+            <div className="space-y-4">
+              <BusinessProfileStep value={brief} onChange={setBrief} />
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-[#00a2ff]" />
@@ -288,12 +348,22 @@ export default function LaunchWizard({ initial, onClose }) {
           {step === 4 && (
             <div className="space-y-3">
               <div className="rounded-xl bg-gray-50 p-4 space-y-2">
-                <Row label="Industry" value={selection.industry} />
+                <Row label="Business" value={brief.business_name} />
+                <Row label="Phone" value={brief.phone} />
+                <Row label="Website" value={brief.website_mode === 'existing' ? brief.website_url : 'New site'} />
+                <Row label="Address" value={[brief.address, brief.city, brief.state].filter(Boolean).join(', ')} />
+                <Row label="Service radius" value={`${brief.territory_radius_miles} miles`} />
+                <Row label="Industry" value={briefTrade || selection.industry} />
+                <Row label="Specialty" value={briefSpecialty} />
+                <Row label="Services" value={`${brief.services.length} selected`} />
+                <Row label="Slogan" value={brief.slogan} />
+                <Row label="Images" value={brief.image_plan === 'ai_generated' ? 'AI generated — review before publishing' : `${brief.photos.length} of your own`} />
                 <Row label="Template" value={selection.template?.name || '—'} />
                 <Row label="Content" value={editedContent ? 'AI-generated & customized' : 'Original template'} />
                 <Row label="Location Sites" value={`${selection.count} sites`} />
                 <Row label="Markets" value={selection.locations || "Nationwide"} />
               </div>
+              {saveError && <p role="alert" className="text-center text-xs text-red-500">{saveError}</p>}
               <p className="text-xs text-gray-400 text-center">Open the studio to point-and-click edit, regenerate sections, and run the validation agent.</p>
             </div>
           )}
@@ -332,9 +402,11 @@ export default function LaunchWizard({ initial, onClose }) {
           ) : (
             <button
               onClick={launch}
-              className="flex items-center gap-2 rounded-lg bg-[#00a2ff] px-5 py-2 text-sm font-bold text-white hover:bg-[#0090e0]"
+              disabled={saving}
+              className="flex items-center gap-2 rounded-lg bg-[#00a2ff] px-5 py-2 text-sm font-bold text-white hover:bg-[#0090e0] disabled:opacity-50"
             >
-              <Rocket className="h-4 w-4" /> Open in Studio
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4" />}
+              {saving ? 'Saving…' : 'Open in Studio'}
             </button>
           )}
         </div>

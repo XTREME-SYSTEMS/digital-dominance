@@ -4,6 +4,7 @@ import { ArrowRight, ExternalLink } from 'lucide-react';
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import StockPreviewDialog from '@/components/template-studio/StockPreviewDialog';
 import SafeImage from '@/components/ui/SafeImage';
+import TemplateLivePreview from '@/components/launch-engine/TemplateLivePreview';
 
 // Preserve the industry-image filters added on main while restoring premium full-page previews.
 const CATEGORIES = [
@@ -83,12 +84,10 @@ export default function TemplatesShowcase({ onChoose, workspace = false }) {
               <div className="flex h-7 items-center justify-between border-b border-white/10 bg-[#061429] px-3 text-[10px] font-extrabold uppercase tracking-[.12em] text-slate-300">
                 <span aria-hidden="true" className="text-[#66ceff]">● ● ●</span><span>{template.niche || 'Website'}</span>
               </div>
-              <div className="relative aspect-[16/10] overflow-hidden bg-[#15375e]">
-                <SafeImage src={template.preview_image_url} alt={`${template.name} website template preview`}
-                  category={category === 'all' ? 'default' : category}
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#001024]/75 via-transparent to-transparent" aria-hidden="true" />
-                <span className="absolute bottom-4 right-4 flex items-center gap-2 rounded-lg border border-white/70 bg-[#0479ec]/90 px-3 py-2 text-xs font-bold text-white">
+              <div className="relative aspect-[4/5] overflow-hidden bg-white p-2">
+                <TemplateLivePreview template={template} className="h-full w-full" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#001024]/55 to-transparent" aria-hidden="true" />
+                <span className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-2 rounded-lg border border-white/70 bg-[#0479ec]/90 px-3 py-2 text-xs font-bold text-white">
                   View Full Preview <ExternalLink className="h-3.5 w-3.5" />
                 </span>
               </div>

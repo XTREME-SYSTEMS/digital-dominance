@@ -27,11 +27,35 @@
       "type": "string",
       "description": "Human-readable industry name"
     },
+    "sub_industry": {
+      "type": "string",
+      "description": "Sub-industry or specialty chosen inside the industry, including a written-in value when none of the options fit"
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "The services the business offers, chosen from the industry's traditional service list"
+    },
+    "slogan": {
+      "type": "string",
+      "description": "Business slogan or tagline, written by the owner or generated"
+    },
+    "address": {
+      "type": "string",
+      "description": "Street address of the business"
+    },
     "city": {
       "type": "string"
     },
     "state": {
       "type": "string"
+    },
+    "territory_radius_miles": {
+      "type": "number",
+      "description": "How far from the business address it serves customers, in miles"
     },
     "phone": {
       "type": "string",
@@ -83,6 +107,15 @@
     "logo_url": {
       "type": "string",
       "description": "The logo concept the user selected for the site"
+    },
+    "image_plan": {
+      "type": "string",
+      "enum": [
+        "own_photos",
+        "ai_generated"
+      ],
+      "default": "own_photos",
+      "description": "Whether the site uses the owner's own uploaded photos or AI-generated imagery reviewed before publishing"
     },
     "photos": {
       "type": "array",
