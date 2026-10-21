@@ -62,6 +62,37 @@ function hrefFor(key) {
   return key === 'home' ? '/' : `/${key}`;
 }
 
+// Per-page search copy: every page gets its own description, keywords and topic
+// line so no two pages share the same metadata.
+function descriptionFor(key, profile, d, place, label, business) {
+  const services = list(d.services).slice(0, 3).map((s) => s?.name).filter(Boolean);
+  const base = {
+    home: sentences(d.summary, 1) || `${business} provides ${label} work in ${place || 'your area'} with written quotes and measured work.`,
+    services: `Every ${label} service ${business} offers in ${place || 'your area'}${services.length ? `: ${services.join(', ')}` : ''}. Written scope and pricing before work starts.`,
+    'service-area': `${label} serving ${place || 'your area'} and the surrounding area. Local conditions, scheduled crews and a written quote first.`,
+    about: `The team behind ${business}${place ? ` in ${place}` : ''} — how we work, what we stand behind, and how a ${label} job runs from first call to walkthrough.`,
+    gallery: `Recent ${label} work, materials and finishes${place ? ` from ${business} in ${place}` : ''}, showing the preparation as well as the finished surface.`,
+    contact: `Request a free ${label} estimate${place ? ` in ${place}` : ''}.${profile.phone ? ` Call ${profile.phone}` : ''}${profile.email ? ` or email ${profile.email}` : ''} — measured visit, written price, no obligation.`,
+    quote: `Tell us about your ${label} job${place ? ` in ${place}` : ''} and get a written price back. What to send us, and exactly what happens next.`,
+  };
+  let text = String(base[key] || base.home).replace(/\s+/g, ' ').trim();
+  if (text.length < 40) text = `${text} ${business} — ${label}${place ? ` in ${place}` : ''}, with a written quote before any work starts.`.replace(/\s+/g, ' ').trim();
+  return text.length > 160 ? `${text.slice(0, 156).trim()}...` : text;
+}
+
+function keywordsFor(key, profile, d, place, label, business) {
+  const topics = {
+    home: `${label} ${place}`,
+    services: `${label} services ${place}`,
+    'service-area': `${label} near ${place}`,
+    about: `about ${business}`,
+    gallery: `${label} project gallery ${place}`,
+    contact: `free ${label} estimate ${place}`,
+    quote: `${label} quote ${place}`,
+  };
+  return [...list(d.seo_keywords).slice(0, 6), topics[key] || label, business].filter(Boolean).join(', ');
+}
+
 function brandBar(profile, tokens) {
   const initials = String(profile.business_name || '')
     .split(/\s+/).slice(0, 2).map((w) => w[0] || '').join('').toUpperCase() || 'B';
@@ -97,30 +128,56 @@ function ctaBand(profile, tokens, contact) {
   </section>`;
 }
 
-function trustSection(d, contact) {
-  const signals = list(d.trust_signals).slice(0, 6);
+// Trust copy is page-specific and rotates through the researched signals, so the
+// same list never appears twice on a site.
+const TRUST_COPY = {
+  home: ['What you can ask us for', 'Any of these, with your quote. You should not have to take our word for it.'],
+  services: ['Included with every job', 'The paperwork and the standards that come with the work itself.'],
+  about: ['Credentials we can document', 'Ask, and we will send the documents that back any of these up.'],
+  contact: ['Before you commit', 'Check any of this before you book, not after.'],
+  quote: ['What you will get in writing', 'Your quote names all of this, so nothing about the job is verbal.'],
+  gallery: ['Behind the finished surface', 'Every project is worked to these standards, not just the ones we photograph.'],
+};
+
+function trustSection(d, page) {
+  const signals = list(d.trust_signals);
   if (!signals.length) return '';
-  return `<section class="band">
+  const [heading, lede] = TRUST_COPY[page] || TRUST_COPY.home;
+  const windows = Math.max(1, Math.ceil(signals.length / 2));
+  const start = (Math.max(0, Object.keys(PAGES).indexOf(page)) % windows) * 2;
+  const picked = signals.slice(start, start + 4);
+  const items = picked.length ? picked : signals.slice(0, 4);
+  const tint = !['services', 'contact', 'quote'].includes(page);
+  return `<section class="band${tint ? ' tint' : ''}">
     <div class="wrap">
-      <h2>Proof, provided on request</h2>
-      <p class="lede">Ask for any of these and we will send the documentation with your quote.</p>
-      <ul class="checks">${signals.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
+      <h2>${esc(heading)}</h2>
+      <p class="lede">${esc(lede)}</p>
+      <ul class="checks">${items.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
     </div>
   </section>`;
 }
 
-function serviceCards(d, limit) {
+function serviceCards(d, limit, opts = {}) {
   const services = list(d.services);
   if (!services.length) return '';
   const shown = limit ? services.slice(0, limit) : services;
-  const items = shown.map((s) => `<article class="card">
+  // Summary cards link through to the services page so the two pages never carry
+  // the same service copy.
+  const items = shown.map((s) => (opts.link
+    ? `<a class="card link" href="/services">
+      <h3>${esc(s.name)}</h3>
+      <p>${s.buyer_question ? `Most asked: &ldquo;${esc(s.buyer_question)}&rdquo;` : esc(s.description)}</p>
+    </a>`
+    : `<article class="card">
       <h3>${esc(s.name)}</h3>
       <p>${esc(s.description)}</p>
       ${s.buyer_question ? `<p class="ask">Most asked: &ldquo;${esc(s.buyer_question)}&rdquo;</p>` : ''}
-    </article>`).join('');
+    </article>`)).join('');
+  const title = opts.heading || (limit ? 'What we do' : `Every service we offer in ${esc(d.__city || 'your area')}`);
   return `<section class="band">
     <div class="wrap">
-      <h2>${limit ? 'What we do' : `Every service we offer in ${esc(d.__city || 'your area')}`}</h2>
+      <h2>${opts.heading ? esc(title) : title}</h2>
+      ${opts.lede ? `<p class="lede">${esc(opts.lede)}</p>` : ''}
       <div class="grid cols-3">${items}</div>
     </div>
   </section>`;
@@ -155,17 +212,48 @@ function askSection(d) {
   </section>`;
 }
 
-function materialsSection(d) {
+// The quote funnel carries its own content so it never duplicates the contact page.
+function quoteDetailSection(contact) {
+  const items = [
+    'The address and any access notes, gate codes or parking details',
+    'Photos of the area as it looks today',
+    'Rough dimensions, or the number of cars for a garage',
+    'What you want the finished surface to look like',
+  ];
+  const steps = [
+    ['You send the details', 'Address, photos and rough sizes. That is usually enough for us to price the job.'],
+    ['We measure and confirm', 'For anything complex we book a short on-site visit and confirm the exact scope with you.'],
+    ['Written price comes back', 'The scope, the price, the materials and the schedule, in writing, before anything starts.'],
+  ];
+  return `<section class="band">
+    <div class="wrap">
+      <h2>Send us this and the quote is accurate</h2>
+      <ul class="checks">${items.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>
+      <p class="tiny">Send it to ${esc(contact.email || contact.phone || 'us')} and we will come back with a written range instead of a guess.</p>
+    </div>
+  </section>
+  <section class="band tint">
+    <div class="wrap">
+      <h2>What happens after you send it</h2>
+      <ol class="steps">${steps.map(([t, b]) => `<li><h3>${esc(t)}</h3><p>${esc(b)}</p></li>`).join('')}</ol>
+    </div>
+  </section>`;
+}
+
+function materialsSection(d, opts = {}) {
   const items = list(d.products_and_tools);
   if (!items.length) return '';
-  const cards = items.slice(0, 8).map((t) => `<article class="card">
+  const { heading = 'Materials and equipment we work with', lede = '', limit = 8, tint = true, offset = 0 } = opts;
+  const rotated = [...items.slice(offset), ...items.slice(0, offset)];
+  const cards = rotated.slice(0, limit).map((t) => `<article class="card">
       <h3>${esc(t.name)}</h3>
       <p>${esc(t.use)}</p>
       ${t.brand_examples ? `<p class="ask">${esc(t.brand_examples)}</p>` : ''}
     </article>`).join('');
-  return `<section class="band tint">
+  return `<section class="band${tint ? ' tint' : ''}">
     <div class="wrap">
-      <h2>Materials and equipment we work with</h2>
+      <h2>${esc(heading)}</h2>
+      ${lede ? `<p class="lede">${esc(lede)}</p>` : ''}
       <div class="grid cols-2">${cards}</div>
     </div>
   </section>`;
@@ -200,8 +288,8 @@ function buildPageBody(key, ctx) {
       image: images.hero,
       contact,
     })}
-    ${trustSection(d, contact)}
-    ${serviceCards(d, 6)}
+    ${trustSection(d, 'home')}
+    ${serviceCards(d, 6, { link: true, heading: 'The work we do most', lede: 'Each of these is measured on site and priced in writing. The full service list, with what every job involves, is on the services page.' })}
     ${galleryStrip(images, d)}
     ${askSection(d)}
     ${ctaBand(profile, null, contact)}`;
@@ -217,7 +305,7 @@ function buildPageBody(key, ctx) {
     })}
     ${serviceCards(d, 0)}
     ${materialsSection(d)}
-    ${trustSection(d, contact)}
+    ${trustSection(d, 'services')}
     ${ctaBand(profile, null, contact)}`;
   }
 
@@ -237,7 +325,7 @@ function buildPageBody(key, ctx) {
         <p class="lede">Not sure whether your address is inside the area? Call ${esc(contact.phone || 'us')} and we will confirm the same day.</p>
       </div>
     </section>
-    ${serviceCards(d, 6)}
+    ${serviceCards(d, 4, { link: true, heading: `The work we take on around ${place}`, lede: 'If your address is inside the area, one of these is the job you are booking.' })}
     ${ctaBand(profile, null, contact)}`;
   }
 
@@ -250,6 +338,7 @@ function buildPageBody(key, ctx) {
       contact,
     })}
     ${galleryStrip(images, d, 3)}
+    ${materialsSection(d, { heading: 'Finishes and materials you can choose', limit: 4, tint: false, offset: 2, lede: 'What the surface can be made from, and what each finish does for the room it is in.' })}
     ${askSection(d)}
     ${ctaBand(profile, null, contact)}`;
   }
@@ -269,11 +358,13 @@ function buildPageBody(key, ctx) {
       </div>
     </section>
     ${processSection()}
-    ${trustSection(d, contact)}
+    ${materialsSection(d, { heading: 'The equipment and materials we bring', limit: 3, tint: false, offset: 1, lede: 'The products we put on your job, named in your quote so you can check what is going into the surface.' })}
+    ${trustSection(d, 'about')}
     ${ctaBand(profile, null, contact)}`;
   }
 
   if (key === 'contact' || key === 'quote') {
+    const isQuote = key === 'quote';
     const questions = list(d.aeo_questions).slice(0, 8);
     const cards = [
       contact.tel ? `<a class="card link" href="${esc(contact.tel)}"><h3>Call ${esc(contact.phone)}</h3><p>The fastest way to get a price. Tell us the address and what you need done.</p></a>` : '',
@@ -289,17 +380,17 @@ function buildPageBody(key, ctx) {
     })}
     <section class="band">
       <div class="wrap">
-        <h2>Three ways to start</h2>
+        <h2>${isQuote ? 'Send it three ways' : 'Talk to us three ways'}</h2>
         <div class="grid cols-3">${cards}</div>
       </div>
     </section>
-    <section class="band tint">
+    ${isQuote ? quoteDetailSection(contact) : `<section class="band tint">
       <div class="wrap">
         <h2>What we will cover on the call</h2>
         <ul class="checks">${questions.map((q) => `<li>${esc(q)}</li>`).join('')}</ul>
       </div>
-    </section>
-    ${trustSection(d, contact)}
+    </section>`}
+    ${trustSection(d, isQuote ? 'quote' : 'contact')}
     ${ctaBand(profile, null, contact)}`;
   }
 
@@ -364,6 +455,8 @@ header.nav{border-bottom:1px solid var(--line);background:rgba(255,255,255,.94);
 .card h3{font-size:17px;margin-bottom:6px}
 .card p{color:var(--muted);font-size:14.5px;margin:0}
 .card.link{text-decoration:none;display:block;transition:border-color .15s,transform .15s}
+.card.link h3{color:var(--ink)}
+.card.link p{color:var(--muted)}
 .card.link:hover{border-color:var(--accent);transform:translateY(-2px)}
 .ask{margin-top:10px!important;font-size:13px;color:var(--accent)!important;font-weight:600}
 .lede{color:var(--muted);font-size:16px}
@@ -406,13 +499,13 @@ export function buildBrandSitePages({ profile, images = {}, pageCount = SITE_PAG
 
   const css = styles(tokens, fonts);
   const place = [profile.city, profile.state].filter(Boolean).join(', ');
-  const keywords = list(d.seo_keywords).slice(0, 12).join(', ');
 
   return keys.map((key) => {
     const meta = PAGES[key];
     const title = `${meta.title} | ${profile.business_name}${place ? ` — ${place}` : ''}`;
-    const description = sentences(d.summary, 1)
-      || `${profile.business_name} provides ${profile.industry_label || profile.industry} in ${place || 'your area'}. Written quotes, measured work.`;
+    const label = profile.industry_label || profile.industry || 'local service';
+    const description = descriptionFor(key, profile, d, place, label, profile.business_name);
+    const keywords = keywordsFor(key, profile, d, place, label, profile.business_name);
     const body = buildPageBody(key, { profile, d, images, contact });
     const jsonLd = {
       '@context': 'https://schema.org',

@@ -8,6 +8,7 @@ import LogoGeneratorPanel from '@/components/template-studio/brand/LogoGenerator
 import BrandDiscoveryPanel from '@/components/template-studio/brand/BrandDiscoveryPanel';
 import SitePagePackPanel from '@/components/template-studio/brand/SitePagePackPanel';
 import PhotoPosePanel from '@/components/template-studio/brand/PhotoPosePanel';
+import WorkflowAuditPanel from '@/components/template-studio/brand/WorkflowAuditPanel';
 import StockTemplatePreview from '@/components/template-studio/StockTemplatePreview';
 import StudioMediaActions from '@/components/template-studio/StudioMediaActions';
 import GoogleReadinessPanel from '@/components/template-studio/GoogleReadinessPanel';
@@ -148,6 +149,7 @@ export default function StockStudioEditor({ template, onBack, onNext }) {
           <BrandDiscoveryPanel profile={profile} />
           <SitePagePackPanel profile={profile} onBuilt={(pages) => setProfile((prev) => ({ ...prev, pages }))} />
           <PhotoPosePanel profile={profile} onBuilt={(pages) => setProfile((prev) => ({ ...prev, pages }))} />
+          <WorkflowAuditPanel />
         </>
       ) : profileChecked ? (
         <BrandSetupWizard onComplete={applyProfile} />

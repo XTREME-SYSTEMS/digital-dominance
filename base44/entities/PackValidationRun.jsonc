@@ -103,6 +103,105 @@
     "notes": {
       "type": "string",
       "maxLength": 4000
+    },
+    "stage_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "fail"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "One row per pipeline stage the audit exercised (profile, discovery, logos, build, photo posing)"
+    },
+    "workflow_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "points": {
+            "type": "number"
+          },
+          "earned": {
+            "type": "number"
+          },
+          "ratio": {
+            "type": "number"
+          },
+          "critical": {
+            "type": "boolean"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "failed_pages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "default": [],
+      "description": "The deterministic validator's scored criteria for this run"
+    },
+    "page_scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          },
+          "strengths": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "weaknesses": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "default": [],
+      "description": "The QA reviewer's per-page scores for this run"
+    },
+    "validator_verdict": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Deterministic validator's verdict line"
+    },
+    "qa_verdict": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "QA reviewer's verdict line"
+    },
+    "grade": {
+      "type": "string",
+      "maxLength": 4
     }
   },
   "required": [
