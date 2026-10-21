@@ -84,6 +84,26 @@
       "type": "string",
       "description": "The logo concept the user selected for the site"
     },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "slot": {
+            "type": "string",
+            "description": "Imagery slot this photo is posed into (hero, services, about, gallery1, gallery2, gallery3). Empty means it sits in the library only."
+          }
+        }
+      },
+      "default": [],
+      "description": "The owner's own photos: team, vehicles, equipment and finished work, posed into the imagery slots of the generated pages"
+    },
     "pages": {
       "type": "array",
       "items": {

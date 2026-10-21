@@ -46,12 +46,18 @@ export default async function (req: Request): Promise<Response> {
     const pageCount = Math.min(SITE_PAGE_COUNT.max, Math.max(SITE_PAGE_COUNT.min, Number(body.page_count) || SITE_PAGE_COUNT.default));
     const dossier = profile.discovery || {};
 
-    // One purpose-built image per imagery slot, generated in parallel.
-    const settled = await Promise.allSettled(SLOT_MATCHERS.map(async (slot) => {
+    // Photos the owner posed onto a slot are used as-is, and that slot's image is not generated.
+    const posed: Record<string, string> = {};
+    (Array.isArray(profile.photos) ? profile.photos : []).forEach((photo: any) => {
+      if (photo?.url && SLOT_MATCHERS.some((slot) => slot.key === photo.slot)) posed[photo.slot] = photo.url;
+    });
+
+    // One purpose-built image per remaining imagery slot, generated in parallel.
+    const settled = await Promise.allSettled(SLOT_MATCHERS.filter((slot) => !posed[slot.key]).map(async (slot) => {
       const res = await base44.integrations.Core.GenerateImage({ prompt: promptFor(slot, dossier, profile) });
       return { key: slot.key, url: res?.url || '' };
     }));
-    const images: Record<string, string> = {};
+    const images: Record<string, string> = { ...posed };
     settled.forEach((r: any) => {
       if (r.status === 'fulfilled' && r.value?.url) images[r.value.key] = r.value.url;
       else if (r.status === 'rejected') console.error('Pack image generation failed:', r.reason?.message || r.reason);
@@ -99,6 +105,7 @@ export default async function (req: Request): Promise<Response> {
     return Response.json({
       pages: packPages,
       image_count: Object.keys(images).length,
+      photo_count: Object.keys(posed).length,
       pack_tag: packTag,
     });
   } catch (error: any) {
