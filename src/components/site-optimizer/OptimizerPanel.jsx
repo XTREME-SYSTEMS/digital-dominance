@@ -8,47 +8,82 @@ import { LAYOUT_NAMES } from '@/lib/x1Preview';
  * The controls for one technology. Every entry either changes the live page —
  * which re-renders immediately behind this panel — or opens the tool that owns
  * that technology.
+ *
+ * This panel sits in the black menu column, so its own text is light. The
+ * pickers it embeds are shared with the wizard and keep their own surfaces.
  */
 export default function OptimizerPanel({ tool, state, actions }) {
-  const { profile, installed = [], removed = [], appliedFixes = [], layout, chosenImages = [], scan, scanning, checked = [], aiCopy, busy } = state;
+  const { profile, installed = [], removed = [], appliedFixes = [], layout, chosenImages = [], scan, scanning, checked = [], aiCopy, busy, pendingCount = 0 } = state;
 
   return (
     <div className="space-y-3">
       <button
         type="button"
         onClick={actions.back}
-        className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 transition hover:text-[#00a2ff]"
+        className="flex items-center gap-1.5 text-[11px] font-bold text-white/50 transition hover:text-[#00a2ff]"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> All technologies
       </button>
 
       <div>
-        <h2 className="text-sm font-black text-[#0a1220]">{tool.label}</h2>
-        <p className="mt-1 text-[11px] leading-snug text-gray-500">{tool.blurb}</p>
+        <h2 className="text-sm font-black text-white">{tool.label}</h2>
+        <p className="mt-1 text-[11px] leading-snug text-white/50">{tool.blurb}</p>
       </div>
 
       {state.error && (
-        <p role="alert" className="flex items-start gap-1.5 rounded-lg bg-red-50 p-2 text-[11px] text-red-600">
+        <p role="alert" className="flex items-start gap-1.5 rounded-lg bg-red-500/10 p-2 text-[11px] text-red-300">
           <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" /> {state.error}
         </p>
+      )}
+
+      {/* ── Apply: every waiting change, in one go ──────────── */}
+      {tool.kind === 'apply' && (
+        <div className="space-y-2">
+          {scan ? (
+            <button
+              type="button"
+              onClick={actions.applyAll}
+              disabled={!pendingCount || scanning}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00a2ff] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#0090e0] disabled:opacity-50"
+            >
+              {scanning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+              {pendingCount
+                ? `Apply all ${pendingCount} waiting change${pendingCount === 1 ? '' : 's'}`
+                : 'Nothing waiting — the page carries every fix'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={actions.scan}
+              disabled={scanning}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-xs font-bold text-white/80 transition hover:border-[#00a2ff] hover:text-[#00a2ff] disabled:opacity-50"
+            >
+              {scanning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+              Scan the page first
+            </button>
+          )}
+          <p className="text-[11px] text-white/45">
+            Applied changes are written into the page, saved to your business, and the scores at the top re-read the result.
+          </p>
+        </div>
       )}
 
       {/* ── Applied to the page, no action needed ───────────── */}
       {tool.kind === 'status' && tool.id === 'install' && (
         <div className="space-y-2">
-          <p className="text-[11px] font-black uppercase tracking-wider text-gray-400">Installed from your answers</p>
+          <p className="text-[11px] font-black uppercase tracking-wider text-white/40">Installed from your answers</p>
           {installed.length ? (
             <ul className="space-y-0.5">
-              {installed.map(item => <li key={item} className="text-[11px] text-gray-700">✓ {item}</li>)}
+              {installed.map(item => <li key={item} className="text-[11px] text-white/75">✓ {item}</li>)}
             </ul>
           ) : (
-            <p className="text-[11px] text-gray-500">Nothing installed yet — the page has not rendered.</p>
+            <p className="text-[11px] text-white/50">Nothing installed yet — the page has not rendered.</p>
           )}
           {removed.length > 0 && (
             <>
-              <p className="pt-1 text-[11px] font-black uppercase tracking-wider text-gray-400">Demonstration content removed</p>
+              <p className="pt-1 text-[11px] font-black uppercase tracking-wider text-white/40">Demonstration content removed</p>
               <ul className="space-y-0.5">
-                {removed.map(item => <li key={item} className="text-[11px] text-gray-500">✕ {item}</li>)}
+                {removed.map(item => <li key={item} className="text-[11px] text-white/50">✕ {item}</li>)}
               </ul>
             </>
           )}
@@ -56,7 +91,7 @@ export default function OptimizerPanel({ tool, state, actions }) {
       )}
 
       {tool.kind === 'status' && tool.id === 'rating-band' && (
-        <p className="rounded-lg border border-gray-200 p-2 text-[11px] text-gray-700">
+        <p className="rounded-lg border border-white/15 p-2 text-[11px] text-white/75">
           {profile?.has_rating
             ? `On — ${Number(profile.rating_value) || 5} of 5${profile.rating_count ? ` from ${profile.rating_count} reviews` : ''}.`
             : 'Off — you told the wizard you have no reviews, so nothing about ratings appears on the page.'}
@@ -85,7 +120,7 @@ export default function OptimizerPanel({ tool, state, actions }) {
               type="button"
               key={id}
               onClick={() => actions.setLayout(id)}
-              className={`flex items-center justify-between rounded-lg border px-2.5 py-2 text-left text-[11px] font-bold transition ${layout === id ? 'border-[#00a2ff] bg-[#00a2ff]/5 text-[#0a1220]' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}
+              className={`flex items-center justify-between rounded-lg border px-2.5 py-2 text-left text-[11px] font-bold transition ${layout === id ? 'border-[#00a2ff] bg-[#00a2ff]/15 text-white' : 'border-white/15 text-white/80 hover:border-white/30'}`}
             >
               {name}
               {layout === id && <Check className="h-3 w-3 text-[#00a2ff]" />}
@@ -98,7 +133,7 @@ export default function OptimizerPanel({ tool, state, actions }) {
       {tool.kind === 'images' && (
         <>
           <ImageConceptPicker profile={profile} chosen={chosenImages} onPick={actions.pickImages} />
-          <p className="text-[11px] text-gray-500">
+          <p className="text-[11px] text-white/50">
             {chosenImages.length
               ? `${chosenImages.length} image${chosenImages.length === 1 ? '' : 's'} on the page — the page behind this panel has already changed.`
               : 'Pick none and the page keeps the industry photography it already has.'}
@@ -110,10 +145,10 @@ export default function OptimizerPanel({ tool, state, actions }) {
       {tool.kind === 'copy' && (
         <div className="space-y-2">
           {aiCopy?.headline && (
-            <div className="rounded-lg border border-gray-200 p-2">
-              <p className="text-[10px] font-black uppercase tracking-wider text-gray-400">Currently on the page</p>
-              <p className="mt-1 text-[11px] font-bold text-gray-800">{aiCopy.headline}</p>
-              <p className="text-[11px] text-gray-500">{aiCopy.description}</p>
+            <div className="rounded-lg border border-white/15 p-2">
+              <p className="text-[10px] font-black uppercase tracking-wider text-white/40">Currently on the page</p>
+              <p className="mt-1 text-[11px] font-bold text-white">{aiCopy.headline}</p>
+              <p className="text-[11px] text-white/50">{aiCopy.description}</p>
             </div>
           )}
           <button
@@ -125,7 +160,7 @@ export default function OptimizerPanel({ tool, state, actions }) {
             {busy === 'copy' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
             {busy === 'copy' ? 'Writing…' : aiCopy?.headline ? 'Rewrite again' : 'Rewrite my copy'}
           </button>
-          <p className="text-[11px] text-gray-500">Written from your own services. It never claims certifications, awards or years in business you did not give.</p>
+          <p className="text-[11px] text-white/50">Written from your own services. It never claims certifications, awards or years in business you did not give.</p>
         </div>
       )}
 
@@ -148,7 +183,7 @@ export default function OptimizerPanel({ tool, state, actions }) {
         <button
           type="button"
           onClick={() => actions.openTool(tool.route)}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-xs font-bold text-gray-700 transition hover:border-[#00a2ff] hover:text-[#00a2ff]"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-xs font-bold text-white/80 transition hover:border-[#00a2ff] hover:text-[#00a2ff]"
         >
           <ExternalLink className="h-3.5 w-3.5" /> Open {tool.label}
         </button>
@@ -157,7 +192,7 @@ export default function OptimizerPanel({ tool, state, actions }) {
       <button
         type="button"
         onClick={actions.reload}
-        className="flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold text-gray-500 transition hover:text-[#00a2ff]"
+        className="flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold text-white/45 transition hover:text-[#00a2ff]"
       >
         <RefreshCw className="h-3 w-3" /> Reload the page
       </button>

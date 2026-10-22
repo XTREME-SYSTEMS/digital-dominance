@@ -118,6 +118,48 @@ export default async function (req: Request): Promise<Response> {
       verdict: score >= 90 ? 'Publish-ready.' : score >= 75 ? 'Strong, with a few gaps.' : score >= 55 ? 'Needs another pass before publishing.' : 'Not ready — work through the flagged areas.',
     };
 
+    // ── THE SCORES THE STUDIO SHOWS ─────────────────────────
+    // Every number below is read back off the finished HTML, so applying a fix
+    // moves it. Nothing is scored on trust.
+    const penalty: Record<string, number> = { high: 12, medium: 6, low: 3 };
+    const validator = Math.max(0, 100 - findings.reduce((sum, f) => sum + (penalty[f.severity] || 6), 0));
+
+    const titleText = (html.match(/<title>([\s\S]*?)<\/title>/) || [])[1] || '';
+    const hasDescription = /<meta name="description"/.test(html);
+    const h1 = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1] || '';
+    const altCount = (html.match(/<img [^>]*alt="[^"]+"/gi) || []).length;
+    const listed = services.filter(service => html.toLowerCase().includes(String(service).toLowerCase())).length;
+    const where = place || String(profile.city || '').trim();
+    const tradeOnPage = trade ? html.toLowerCase().includes(trade.toLowerCase()) : false;
+
+    // Search: a titled page, described, headed, selling its services, with imagery that says what it is.
+    const seo = [
+      titleText ? 20 : 0,
+      name && titleText.includes(name) ? 15 : 0,
+      hasDescription ? 20 : 0,
+      h1 ? 15 : 0,
+      services.length ? (listed >= Math.min(3, services.length) ? 15 : listed ? 8 : 0) : 0,
+      images > 0 ? (altCount >= Math.max(1, Math.ceil(images / 2)) ? 15 : 8) : 0,
+    ].reduce((sum, n) => sum + n, 0);
+
+    // Answer engines: questions answered, the business named as a local entity, structured data.
+    const aeo = [
+      has(html, /class="[^"]*faq|faq-item|frequently asked/i) ? 25 : 0,
+      name && where && html.includes(name) && html.includes(where) ? 25 : 0,
+      hasDescription && tradeOnPage ? 25 : 0,
+      has(html, /application\/ld\+json/i) ? 25 : 0,
+    ].reduce((sum, n) => sum + n, 0);
+
+    // Generative and local: where you serve, how to reach you, and no rating you did not give us.
+    const geo = [
+      html.includes('Serving') ? 30 : 0,
+      html.includes('tel:') ? 25 : 0,
+      where && html.includes(where) ? 20 : 0,
+      profile.has_rating ? (showsRating ? 25 : 0) : (showsRating ? 0 : 25),
+    ].reduce((sum, n) => sum + n, 0);
+
+    const scores = { qa: score, validator, seo, aeo, geo };
+
     // ── SUGGESTIONS AGENT: what the owner can tick ───────────
     const suggestions: any[] = [];
     const offer = (id, label, detail, severity) => {
@@ -175,7 +217,7 @@ Return:
       }
     }
 
-    return Response.json({ ok: true, validation, qa, suggestions });
+    return Response.json({ ok: true, validation, qa, scores, suggestions });
   } catch (error: any) {
     console.error('templateQaValidator error:', error);
     return Response.json({ error: error.message }, { status: 500 });

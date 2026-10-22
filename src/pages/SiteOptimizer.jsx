@@ -5,6 +5,8 @@ import { base44 } from '@/api/base44Client';
 import OptimizerMenu from '@/components/site-optimizer/OptimizerMenu';
 import OptimizerPanel from '@/components/site-optimizer/OptimizerPanel';
 import OptimizerPreview from '@/components/site-optimizer/OptimizerPreview';
+import OptimizerScoreBar from '@/components/site-optimizer/OptimizerScoreBar';
+import { AUTO_FIX_IDS, AUTO_OPTIMIZE_IDS } from '@/data/siteOptimizerTools';
 import { buildSiteBrief, resolveFixes, scrubBrandedHtml } from '@/lib/brandBrief';
 import { openHtmlInBrowser, useLayoutHtml } from '@/lib/x1Preview';
 
@@ -35,6 +37,7 @@ export default function SiteOptimizer() {
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [scanAfter, setScanAfter] = useState(0);
 
   // The business the wizard saved, and the template it was built on.
   useEffect(() => {
@@ -154,6 +157,26 @@ export default function SiteOptimizer() {
     applyFixes(ids);
   }, [scan, applyFixes, persist]);
 
+  // What the agents are still waiting on, split by what each button at the top applies.
+  const suggestions = scan?.suggestions || [];
+  const pending = suggestions.map(item => item.fix || item.id);
+  const pendingFixes = pending.filter(id => AUTO_FIX_IDS.includes(id));
+  const pendingOptimizations = pending.filter(id => AUTO_OPTIMIZE_IDS.includes(id));
+
+  const applyIds = useCallback(ids => {
+    if (!ids.length) return;
+    regenerate(ids);
+    setScanAfter(count => count + 1);
+  }, [regenerate]);
+
+  // After an automatic pass the agents re-read the page, so the scores at the
+  // top describe the page as it is now, not as it was.
+  useEffect(() => {
+    if (!scanAfter) return;
+    setScanAfter(0);
+    runScan();
+  }, [scanAfter, runScan]);
+
   const actions = {
     back: () => { setActiveTool(null); setError(null); },
     applyFix: fix => applyFixes([fix]),
@@ -165,9 +188,12 @@ export default function SiteOptimizer() {
     regenerate,
     openTool: route => navigate(route),
     reload: () => setReloadKey(key => key + 1),
+    scan: runScan,
+    applyAll: () => applyIds(pending),
+    autoApply: scope => applyIds(scope === 'fix' ? pendingFixes : scope === 'optimize' ? pendingOptimizations : pending),
   };
 
-  const state = { profile, installed: installed.installed, removed: installed.removed, appliedFixes, layout, chosenImages, scan, scanning, checked, aiCopy, busy, error };
+  const state = { profile, installed: installed.installed, removed: installed.removed, appliedFixes, layout, chosenImages, scan, scanning, checked, aiCopy, busy, error, pendingCount: pending.length };
 
   if (loading) {
     return (
@@ -199,11 +225,11 @@ export default function SiteOptimizer() {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white">
       {/* Left: every technology */}
-      <aside className="flex w-[260px] shrink-0 flex-col border-r border-gray-200 bg-gray-50/60">
-        <header className="border-b border-gray-200 px-4 py-3">
-          <p className="text-[10px] font-black uppercase tracking-wider text-gray-400">Site optimization studio</p>
-          <h1 className="truncate text-sm font-black text-[#0a1220]" title={profile.business_name}>{profile.business_name}</h1>
-          <p className="truncate text-[11px] text-gray-500">{profile.industry_label || profile.industry}{profile.city ? ` · ${profile.city}` : ''}</p>
+      <aside className="flex w-[260px] shrink-0 flex-col border-r border-white/10 bg-[#050508]">
+        <header className="border-b border-white/10 px-4 py-3">
+          <p className="text-[10px] font-black uppercase tracking-wider text-white/40">Site optimization studio</p>
+          <h1 className="truncate text-sm font-black text-white" title={profile.business_name}>{profile.business_name}</h1>
+          <p className="truncate text-[11px] text-white/50">{profile.industry_label || profile.industry}{profile.city ? ` · ${profile.city}` : ''}</p>
         </header>
         <div className="flex-1 overflow-y-auto px-2 py-3">
           {activeTool
@@ -214,6 +240,14 @@ export default function SiteOptimizer() {
 
       {/* Right: the live page, full size */}
       <main className="flex min-w-0 flex-1 flex-col">
+        <OptimizerScoreBar
+          scores={scan?.scores || null}
+          scanning={scanning}
+          pending={{ all: pending.length, fix: pendingFixes.length, optimize: pendingOptimizations.length }}
+          onScan={runScan}
+          onAuto={actions.autoApply}
+        />
+
         <div className="flex items-center justify-between gap-3 border-b border-gray-200 px-4 py-2">
           <p className="flex items-center gap-1.5 truncate text-[11px] font-bold text-gray-500">
             <ShieldCheck className="h-3.5 w-3.5 text-[#00a2ff]" />

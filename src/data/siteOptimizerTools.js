@@ -11,6 +11,7 @@
  */
 
 export const OPTIMIZER_GROUPS = [
+  { id: 'flow', label: 'Work top down' },
   { id: 'fit', label: 'Fit it to you' },
   { id: 'edit', label: 'Edit the page' },
   { id: 'enhance', label: 'Enhance it' },
@@ -20,6 +21,12 @@ export const OPTIMIZER_GROUPS = [
 ];
 
 export const OPTIMIZER_TOOLS = [
+  // ── Work top down: one step, then the next ───────────────
+  { id: 'transform', group: 'flow', kind: 'link', route: '/admin/prompt-chain', label: 'Prompt transformer', blurb: 'Step 1. One sentence in, the executable brief out — every step below works from it.' },
+  { id: 'create-tool', group: 'flow', kind: 'link', route: '/admin/tool-hub', label: 'Create a tool', blurb: 'Step 2. Build the tool this page needs: a scraper, a generator, a checker.' },
+  { id: 'generator', group: 'flow', kind: 'link', route: '/admin/one-click-factory', label: 'Generator', blurb: 'Step 3. Run the generator: profile, discovery, logos, build and validation in one pass.' },
+  { id: 'apply', group: 'flow', kind: 'apply', label: 'Apply to my page', blurb: 'Step 4. Apply every waiting change at once — the page redraws and the scores at the top re-read the result.' },
+
   // ── Fit it to you ────────────────────────────────────────
   { id: 'install', group: 'fit', kind: 'status', label: 'Install my details', blurb: 'Your business name, phone, address, email, services and rating written into every block, and the template’s demonstration content removed. Always on.' },
   { id: 'layout', group: 'fit', kind: 'layout', label: 'Swap the layout style', blurb: 'Ten universal layout styles. Changing one re-draws the whole page with the same content.' },
@@ -71,6 +78,12 @@ export const OPTIMIZER_TOOLS = [
   { id: 'command', group: 'upgrade', kind: 'link', route: '/admin/site-command', label: 'Site command center', blurb: 'Every built site, its status and its next action in one board.' },
   { id: 'analytics', group: 'upgrade', kind: 'link', route: '/admin/analytics', label: 'Analytics', blurb: 'Traffic and lead performance for the site.' },
 ];
+
+/** The repairs the validator flags — what the Auto Fix button applies. */
+export const AUTO_FIX_IDS = ['brand_name', 'contact_block', 'expand_services', 'service_area'];
+
+/** The search, answer and local layers — what the Auto Optimize button applies. */
+export const AUTO_OPTIMIZE_IDS = ['seo_meta', 'faq', 'differentiators', 'cta_phone', 'tighten_hero', 'ai_copy'];
 
 export const toolsForGroup = groupId => OPTIMIZER_TOOLS.filter(tool => tool.group === groupId);
 export const findTool = id => OPTIMIZER_TOOLS.find(tool => tool.id === id) || null;

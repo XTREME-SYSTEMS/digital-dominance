@@ -236,6 +236,11 @@ export function scrubBrandedHtml(html, profile, fixes = resolveFixes()) {
   if (profile.has_rating && !out.includes('rating-band')) {
     out = out.includes('<section id="contact"') ? out.replace('<section id="contact"', `${ratingBand(profile)}<section id="contact"`) : out.replace('</body>', `${ratingBand(profile)}</body>`);
   }
+  // The owner told us they have no reviews, so no rating block may ship.
+  if (!profile.has_rating) {
+    const band = out.match(/<section[^>]*class="[^"]*rating-band[^"]*"[\s\S]*?<\/section>/i);
+    if (band) { out = out.replace(band[0], ''); removed.push('Rating block (you have no reviews to show)'); }
+  }
 
   // ── Title, description, canonical ────────────────────────
   if (fixes.has('seo_meta')) {
