@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target, Code2, Download } from "lucide-react";
+import { Grid3X3, Diamond, ArrowUpFromLine, Check, Sparkles, Activity, Settings, Radio, Radar, Bug, Cpu, Brain, Smartphone, Rocket, Globe, Bot, ChevronDown, ChevronRight, Archive, Layers, BarChart3, Wrench, Shield, Database, Target, Code2, Download, Workflow } from "lucide-react";
 
 export default function ReferenceAdminSidebar() {
   const { pathname } = useLocation();
@@ -79,6 +79,9 @@ export default function ReferenceAdminSidebar() {
       <nav className="wle-nav-container" aria-label="QA and autonomous operations">
         <Link to="/admin/prompt-testing" className={`wle-side-nav${isCore(["/admin/prompt-testing"]) ? " active" : ""}`}>
           <Sparkles aria-hidden="true" />Prompt Testing Lab
+        </Link>
+        <Link to="/admin/prompt-chain" className={`wle-side-nav${isCore(["/admin/prompt-chain"]) ? " active" : ""}`}>
+          <Workflow aria-hidden="true" />Prompt Chain Console
         </Link>
         <Link to="/admin/background-ops" className={`wle-side-nav${isCore(["/admin/background-ops"]) ? " active" : ""}`}>
           <Bot aria-hidden="true" />Background Operations

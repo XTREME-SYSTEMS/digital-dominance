@@ -18,7 +18,11 @@ export default function ServiceDiscovery({ industry, subIndustries, services, on
     setError(null);
     try {
       const res = await base44.functions.invoke('serviceDiscovery', { industry, subIndustries, services });
-      const list = res.data?.services || [];
+      const core = (res.data?.core_missing || []).map(name => ({
+        name, why: 'Core service customers in this trade expect', type: 'core', demand: 'missing',
+      }));
+      const coreNames = new Set(core.map(item => item.name));
+      const list = [...core, ...(res.data?.services || []).filter(item => !coreNames.has(item.name))];
       setFound(list);
       setPicked(list.map(item => item.name));
       if (!list.length) setError('No new services came back — try again or add your own.');
@@ -36,8 +40,8 @@ export default function ServiceDiscovery({ industry, subIndustries, services, on
     <div className="space-y-2 rounded-xl border border-dashed border-[#00a2ff]/40 bg-[#00a2ff]/5 p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-xs font-black text-gray-800">Services we did not list</p>
-          <p className="text-[11px] text-gray-500">AI scans your industry for the newer services and niches worth offering.</p>
+          <p className="text-xs font-black text-gray-800">AI assistant — analyze my services</p>
+          <p className="text-[11px] text-gray-500">Reads your industry and the services you ticked, then returns the core services you are missing, what is in high demand right now, and the newer niches worth adding.</p>
         </div>
         <button
           type="button"
@@ -46,7 +50,7 @@ export default function ServiceDiscovery({ industry, subIndustries, services, on
           className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[#00a2ff] px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-[#0090e0] disabled:opacity-50"
         >
           {running ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-          {running ? 'Scanning…' : 'AI assist'}
+          {running ? 'Analyzing…' : 'AI assistant'}
         </button>
       </div>
 
@@ -84,7 +88,12 @@ export default function ServiceDiscovery({ industry, subIndustries, services, on
                     <span className="block truncate text-xs font-bold text-gray-800">{item.name}</span>
                     {item.why && <span className="block text-[10px] leading-snug text-gray-500">{item.why}</span>}
                   </span>
-                  {item.type === 'niche' && <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-700">niche</span>}
+                  <span className="flex shrink-0 flex-col items-end gap-1">
+                    {item.type === 'core' && <span className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase" style={{ background: '#fee2e2', color: '#b91c1c' }}>missing</span>}
+                    {item.type === 'niche' && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-amber-700">niche</span>}
+                    {item.demand === 'high' && <span className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase" style={{ background: '#dcfce7', color: '#15803d' }}>high demand</span>}
+                    {item.demand === 'growing' && <span className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase" style={{ background: '#dbeafe', color: '#1d4ed8' }}>up and coming</span>}
+                  </span>
                 </button>
               );
             })}

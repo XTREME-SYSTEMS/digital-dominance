@@ -212,6 +212,7 @@ import SmaiAdminPortal from '@/pages/smai/AdminPortal';
 import CodeInjector from '@/components/codestudio/CodeInjector';
 import DataExport from '@/pages/admin/DataExport';
 import DataDownload from '@/pages/DataDownload';
+import PromptChainConsole from '@/pages/admin/PromptChainConsole';
 
 
 const AuthenticatedApp = () => {
@@ -423,6 +424,7 @@ const AuthenticatedApp = () => {
         <Route path="vision-intelligence" element={<VisionIntelligence />} />
         <Route path="settings" element={<SettingsPage />} />
       <Route path="data-export" element={<DataExport />} />
+      <Route path="prompt-chain" element={<PromptChainConsole />} />
       </Route>
       <Route path="/admin.html" element={<AdminLayout />}>
         <Route index element={<TemplateStudio />} />

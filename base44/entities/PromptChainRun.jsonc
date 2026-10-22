@@ -1,0 +1,360 @@
+{
+  "name": "PromptChainRun",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Deterministic run ID \u2014 stable hash of sentence + industry + target. The same input always resolves to the same run."
+    },
+    "chain_version": {
+      "type": "string",
+      "description": "Chain contract version this run executed"
+    },
+    "source_sentence": {
+      "type": "string",
+      "maxLength": 600,
+      "description": "The single sentence or command the owner typed"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string",
+      "enum": [
+        "website",
+        "page",
+        "template",
+        "system",
+        "copy",
+        "automation"
+      ],
+      "default": "website"
+    },
+    "desired_result": {
+      "type": "string",
+      "maxLength": 400,
+      "description": "The result the owner named, in their own words"
+    },
+    "brief": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "The exhaustive brief: objective, industry context, desired result, audience, scope in and out, quality bar, constraints, acceptance checks, deliverables, risks \u2014 each stamped with its source (llm or scaffold)"
+    },
+    "brief_text": {
+      "type": "string",
+      "maxLength": 8000,
+      "description": "The brief rendered as a single executable prompt"
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "PARTIAL",
+              "BLOCKED",
+              "MISSING_EVIDENCE"
+            ]
+          },
+          "score": {
+            "type": "number"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 1200
+          }
+        }
+      },
+      "default": []
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "weight": {
+            "type": "number"
+          },
+          "earned": {
+            "type": "number"
+          },
+          "ratio": {
+            "type": "number"
+          },
+          "agent": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "default": []
+    },
+    "scores": {
+      "type": "object",
+      "properties": {
+        "transform": {
+          "type": "number"
+        },
+        "implement": {
+          "type": "number"
+        },
+        "qa": {
+          "type": "number"
+        },
+        "validate": {
+          "type": "number"
+        },
+        "autonomous": {
+          "type": "number"
+        },
+        "total": {
+          "type": "number"
+        },
+        "grade": {
+          "type": "string",
+          "maxLength": 4
+        }
+      }
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "PARTIAL",
+        "FAIL",
+        "BLOCKED"
+      ]
+    },
+    "determinism": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string"
+        },
+        "stable": {
+          "type": "boolean"
+        },
+        "unsupported_facts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "criterion": {
+            "type": "string"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "builder",
+              "admin",
+              "worker"
+            ]
+          },
+          "points": {
+            "type": "number"
+          }
+        }
+      },
+      "default": []
+    },
+    "packets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "criterion_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "builder",
+              "admin",
+              "worker"
+            ]
+          },
+          "plan": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "acceptance": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "default": []
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "packet_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "route": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "receipt_id": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "receipt_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "artefact_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "True only when a rendered artefact was handed to the QA agent and scored"
+    },
+    "qa_agent_score": {
+      "type": "number",
+      "description": "The QA agent's own score when a rendered artefact was supplied"
+    },
+    "auto_implement": {
+      "type": "boolean",
+      "default": false
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "cron"
+      ],
+      "default": "manual"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "planned",
+        "partially_verified",
+        "verified",
+        "blocked",
+        "failed"
+      ],
+      "default": "queued"
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "ran_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "run_id",
+    "chain_version",
+    "source_sentence",
+    "target",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

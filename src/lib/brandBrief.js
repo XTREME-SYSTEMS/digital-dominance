@@ -33,6 +33,20 @@ export function streetLine(profile) {
   return [profile.address, placeLabel(profile)].filter(v => v && v.trim()).join(', ');
 }
 
+/**
+ * The owner's existing site, when they told us they have one. A business asking
+ * for a new site has no URL yet, so nothing is injected and nothing is invented.
+ */
+export function websiteUrl(profile) {
+  if (profile.website_mode !== 'existing') return '';
+  const raw = String(profile.website_url || '').trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+  return raw ? `https://${raw}` : '';
+}
+
+export function websiteLabel(profile) {
+  return websiteUrl(profile).replace(/^https:\/\//, '');
+}
+
 function serviceAreaLine(profile) {
   const where = placeLabel(profile) || 'your area';
   const radius = Number(profile.territory_radius_miles) || 0;
@@ -131,6 +145,8 @@ function contactBlock(profile) {
   const lines = [];
   if (profile.address || placeLabel(profile)) lines.push(`<p class="contact-address">${streetLine(profile) || placeLabel(profile)}</p>`);
   if (profile.email) lines.push(`<p class="contact-email"><a href="mailto:${profile.email}">${profile.email}</a></p>`);
+  const site = websiteUrl(profile);
+  if (site) lines.push(`<p class="contact-web"><a href="${site}">${websiteLabel(profile)}</a></p>`);
   const area = serviceAreaLine(profile);
   if (area) lines.push(`<p class="contact-area">${area}</p>`);
   return lines.join('');
@@ -198,6 +214,7 @@ export function scrubBrandedHtml(html, profile, fixes = resolveFixes()) {
   }
   if (phone) installed.push(`Phone → ${phone}`);
   if (address) installed.push(`Address → ${address}`);
+  if (websiteUrl(profile)) installed.push(`Website → ${websiteLabel(profile)}`);
   if (where !== 'your service area') installed.push(`Service area → ${where}`);
   if (services.length) installed.push(`${services.length} services installed`);
   if (profile.has_rating) installed.push(`Rating → ${Number(profile.rating_value) || 5} / 5`);
@@ -229,7 +246,12 @@ export function scrubBrandedHtml(html, profile, fixes = resolveFixes()) {
   }
 
   const area = serviceAreaLine(profile);
-  if (area) out = swap(out, 'All rights reserved.', `All rights reserved. ${area}.`);
+  const site = websiteLabel(profile);
+  if (area) {
+    out = swap(out, 'All rights reserved.', `All rights reserved. ${area}${site ? ` · ${site}` : ''}.`);
+  } else if (site) {
+    out = swap(out, 'All rights reserved.', `All rights reserved. ${site}.`);
+  }
 
   return { html: out, installed, removed };
 }
