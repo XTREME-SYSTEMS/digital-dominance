@@ -156,7 +156,7 @@ export default function SiteOptimizer() {
 
   const actions = {
     back: () => { setActiveTool(null); setError(null); },
-    applyFix: applyFixes,
+    applyFix: fix => applyFixes([fix]),
     setLayout,
     pickImages,
     runScan,
