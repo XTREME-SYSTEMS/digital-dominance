@@ -3,8 +3,12 @@ import { secrets } from 'base44:runtime';
 import {
   CHAIN_VERSION, CHAIN_STAGES, TARGETS, normalizeSentence, runIdFor, buildPackets, dedupePackets,
   planScore, processScore, rankRecommendations, verdictFor, grade, weight, receiptIdFor, actionIdFor,
-  stableHash, runDigest, isMeasurable, scanUnsupportedFacts, briefToText,
+  packetIdFor, stableHash, runDigest, briefToText,
 } from '../../shared/promptChain.ts';
+import {
+  QA_AGENT, VALIDATOR_AGENT, QA_RUBRIC, VALIDATOR_RUBRIC, agentMaterial, applyFindings,
+  corroborationCriterion,
+} from '../../shared/independentQa.ts';
 
 /** A filtered query with options returns a page; this reads either shape without guessing. */
 const rows = (page: any) => (Array.isArray(page) ? page : page?.items || []);
@@ -130,7 +134,7 @@ async function sweep(base44: any, mode: string) {
       actual: evidence,
       status,
       evidence,
-      validator: 'validation_guardian',
+      validator: 'deterministic_audit',
       category: 'reliability',
       points_possible: 10,
       points_verified: status === 'PASS' ? 10 : 0,
@@ -183,12 +187,14 @@ async function runChain(base44: any, input: {
     evidence: `${packets.length} packets compiled, all IDs hash-derived from ${runId}`,
   });
 
-  // ── Stage 3: QA agent ──────────────────────────────────────
-  const qa = await qaStage(base44, { brief, briefText, packets, sentence: input.sentence, artefactHtml: input.artefactHtml, runId });
+  // ── Stage 3: independent QA agent ──────────────────────────
+  const qa = await qaStage(base44, { briefText, packets, sentence: input.sentence, artefactHtml: input.artefactHtml, runId });
   criteria.push(...qa.criteria);
-  stages.push({ id: 'qa', name: 'QA agent', agent: qa.agent, status: qa.status, score: qa.score, evidence: qa.evidence });
+  stages.push({
+    id: 'qa', name: 'QA agent (independent)', agent: qa.agent, status: qa.status, score: qa.score, evidence: qa.evidence,
+  });
 
-  // ── Stage 4: validation agent (replay + process integrity) ─
+  // ── Stage 4: replay proof, then the independent validator ──
   const replay = await base44.functions.invoke('promptTransformer', {
     sentence: input.sentence, industry: input.industry, target: input.target, desired_result: input.desired,
   });
@@ -196,22 +202,51 @@ async function runChain(base44: any, input: {
   const replayDigest = stableHash(replayData.brief_text || '');
   const replayed = replayData.ok === true && replayData.run_id === runId && replayDigest === stableHash(briefText);
 
-  const receipts = await writeStageReceipts(base44, { runId, criteria, stages });
-  receiptIds.push(...receipts.map((item: any) => item.receipt_id));
+  const firstReceipts = await writeStageReceipts(base44, { runId, criteria, stages });
+  receiptIds.push(...firstReceipts.map((item: any) => item.receipt_id));
 
+  // Mechanical facts, computed from the chain's own data. The validator agent is
+  // handed them so it can contradict them, never repeat them on trust.
   const process = processScore({
     runId, packets, receiptIds, replays: replayed ? 1 : 0,
     unsupported: transformed.unsupported_facts || [], artefactVerified: qa.artefactVerified,
   });
-  criteria.push(...process.criteria.filter((item: any) => item.weight > 0).map((item: any) => ({ ...item, agent: 'validation_guardian' })));
-  const validationScore = process.score;
-  stages.push({
-    id: 'validate', name: 'Validation agent', agent: 'validation_guardian',
-    status: validationScore >= 80 ? 'PASS' : 'FAIL', score: validationScore,
-    evidence: replayed
-      ? `Replay returned run ${replayData.run_id} with digest ${replayDigest}; IDs and receipts verified`
-      : 'Replay digest differed from the first pass',
+  const processCriteria = process.criteria
+    .filter((item: any) => item.weight > 0)
+    .map((item: any) => ({ ...item, agent: 'deterministic_validator' }));
+  criteria.push(...processCriteria);
+
+  const validation = await validatorStage(base44, {
+    sentence: input.sentence, briefText, packets, artefactHtml: input.artefactHtml, runId,
+    facts: {
+      run_id: runId,
+      run_id_recomputes_from_input: runIdFor(input.sentence, input.industry, input.target) === runId,
+      packet_count: packets.length,
+      packet_ids_hash_stable: packets.every((packet: any) => packet.id === packetIdFor(runId, packet.criterion_id)),
+      packet_ids_unique: new Set(packets.map((packet: any) => packet.id)).size === packets.length,
+      transform_replay_identical: replayed,
+      replay_digest: replayDigest,
+      unsupported_facts: transformed.unsupported_facts || [],
+      criteria_scored_so_far: criteria.length,
+      receipts_written_so_far: receiptIds.length,
+    },
   });
+  const corroboration = corroborationCriterion({ qa, validator: validation });
+  criteria.push(...validation.criteria, corroboration);
+
+  const validateCriteria = [...processCriteria, ...validation.criteria, corroboration];
+  const validationScore = weight(validateCriteria);
+  stages.push({
+    id: 'validate', name: 'Validation agent (independent)', agent: validation.agent,
+    status: validation.ok ? stageStatus(validateCriteria, validationScore) : 'BLOCKED',
+    score: validationScore,
+    evidence: (validation.ok
+      ? `${processCriteria.length} mechanical checks plus ${validation.criteria.length} validated by ${VALIDATOR_AGENT.id} on ${validation.provider}; ${corroboration.evidence}`
+      : `${VALIDATOR_AGENT.id} did not report — validation cannot pass on one agent's word`).slice(0, 1200),
+  });
+
+  const receipts = await writeStageReceipts(base44, { runId, criteria, stages });
+  receiptIds.splice(0, receiptIds.length, ...receipts.map((item: any) => item.receipt_id));
 
   // ── Stage 5: score + auto-recommender ──────────────────────
   const recommendations = rankRecommendations(criteria, packets);
@@ -294,6 +329,8 @@ async function runChain(base44: any, input: {
         `run id ${runId} recomputes from sentence, industry and target`,
         replayed ? 'replayed the transform: same run and same digest' : 'replay digest differed',
         `${packets.length} packets, all hash-derived and deduplicated`,
+        `${QA_AGENT.id} and ${VALIDATOR_AGENT.id} reviewed the material separately and never saw each other's findings`,
+        'the identifiers, receipts and packets replay identically; the two reviewers score only from evidence, so their marks are evidence-bound rather than bit-identical',
       ],
     },
     recommendations,
@@ -334,53 +371,93 @@ async function runChain(base44: any, input: {
 }
 
 /**
- * The QA agent. With a rendered artefact it defers to the independent page QA
- * agent and folds that score in; without one it reviews the plan adversarially
- * and records the artefact criterion as MISSING_EVIDENCE rather than guessing.
+ * Calls one independent reviewer. A reviewer that does not answer leaves the
+ * stage on MISSING_EVIDENCE, never on a quiet pass.
  */
-async function qaStage(base44: any, input: { brief: any; briefText: string; packets: any[]; sentence: string; artefactHtml: string; runId: string }) {
-  const unverifiable = (input.brief.acceptance_checks || []).filter((check: string) => !isMeasurable(check));
-  const evidencePlan = input.packets.filter((packet: any) => /evidence|receipt|verified|measured/i.test(packet.plan)).length;
-  const contradicted = input.packets.filter((packet: any) => (input.brief.scope_out || []).some((out: string) => out.length > 20 && packet.plan.includes(out)));
-  const invented = scanUnsupportedFacts(input.briefText, input.sentence);
-
-  const criteria = [
-    qaCriterion('qa_unverifiable', 'Acceptance checks are all measurable', 30, unverifiable.length === 0 ? 1 : Math.max(0, 1 - unverifiable.length / 3), unverifiable.length ? `Unmeasurable: ${unverifiable.join(' | ').slice(0, 300)}` : 'Every acceptance check names an observable result'),
-    qaCriterion('qa_evidence_plan', 'Every packet names the evidence it will produce', 30, input.packets.length ? evidencePlan / input.packets.length : 0, `${evidencePlan} of ${input.packets.length} packets name their evidence`),
-    qaCriterion('qa_no_contradiction', 'No packet contradicts the stated out-of-scope list', 20, contradicted.length === 0 ? 1 : 0, contradicted.length ? `${contradicted.length} packet(s) reach outside scope` : 'No packet reaches outside scope'),
-    qaCriterion('qa_no_invention', 'No invented facts in the brief', 20, invented.length === 0 ? 1 : 0, invented.length ? `Unsupported: ${invented.join(', ')}` : 'Nothing invented'),
-  ];
-
-  let score = weight(criteria);
-  let status = score >= 80 ? 'PASS' : 'FAIL';
-  let evidence = `Plan reviewed adversarially: ${score}/100 across ${criteria.length} criteria`;
-  let artefactVerified = false;
-
-  if (input.artefactHtml) {
-    try {
-      const res = await base44.functions.invoke('templateQaValidator', { html: input.artefactHtml, profile: {}, applied_fixes: [] });
-      const data = res?.data || {};
-      const qaScore = Number(data?.qa?.score);
-      if (Number.isFinite(qaScore)) {
-        artefactVerified = true;
-        const artefactCriterion = qaCriterion('qa_artefact', 'Rendered artefact scored by the page QA agent', 40, qaScore / 100, `templateQaValidator scored the rendered page ${qaScore}/100 (${data?.qa?.verdict || 'no verdict'})`);
-        criteria.push(artefactCriterion);
-        score = weight(criteria);
-        status = score >= 80 ? 'PASS' : 'FAIL';
-        evidence = `${evidence}; page QA agent scored the rendered artefact ${qaScore}/100`;
-      }
-    } catch (qaError: any) {
-      console.error('qaStage: page QA agent failed', qaError?.message);
-      criteria.push(qaCriterion('qa_artefact', 'Rendered artefact scored by the page QA agent', 40, 0, 'The page QA agent could not be reached'));
-      score = weight(criteria);
-      status = 'FAIL';
-      evidence = `${evidence}; page QA agent unreachable`;
-    }
-  } else {
-    criteria.push({ ...qaCriterion('qa_artefact', 'Rendered artefact scored by the page QA agent', 0, 0, 'No rendered artefact supplied — recorded as MISSING_EVIDENCE, never as a pass'), missingEvidence: true });
+async function callAgent(base44: any, functionName: string, payload: Record<string, any>) {
+  const token = secrets.get('PACK_SYNC_TOKEN');
+  try {
+    const response = await base44.functions.invoke(functionName, token ? { ...payload, internal_token: token } : payload);
+    return response?.data || { ok: false, error: 'no response' };
+  } catch (error: any) {
+    console.error(`${functionName} unreachable:`, error?.message);
+    return { ok: false, error: String(error?.message || 'unreachable') };
   }
+}
 
-  return { criteria, score, status, evidence, artefactVerified, agent: artefactVerified ? 'qa_agent+page_qa' : 'qa_agent' };
+/**
+ * A stage that lost points because evidence is missing is MISSING_EVIDENCE.
+ * Only a defect an agent found and proved is a FAIL.
+ */
+function stageStatus(criteria: any[], score: number) {
+  if (criteria.some((item: any) => item.status === 'FAIL')) return 'FAIL';
+  if (criteria.some((item: any) => item.status === 'MISSING_EVIDENCE')) return 'MISSING_EVIDENCE';
+  return score >= 80 ? 'PASS' : 'FAIL';
+}
+
+/** With nothing returned, every rubric line is recorded as missing evidence. */
+function noEvidence(rubric: any[], material: string, artefact: string, agent: any) {
+  return applyFindings({ rubric, findings: [], material, artefact, agent });
+}
+
+/**
+ * The independent QA agent. Its verdicts are kept only where the harness finds
+ * the quoted proof, so it cannot pass work on its word, and it answers to
+ * nobody: it runs as its own function on the app's free-tier provider chain.
+ */
+async function qaStage(base44: any, input: { briefText: string; packets: any[]; sentence: string; artefactHtml: string; runId: string }) {
+  const material = agentMaterial({ sentence: input.sentence, briefText: input.briefText, packets: input.packets, artefactHtml: input.artefactHtml });
+  const data = await callAgent(base44, 'qaAgentReview', {
+    run_id: input.runId,
+    sentence: input.sentence,
+    brief_text: input.briefText,
+    packets: input.packets,
+    artefact_html: String(input.artefactHtml || '').slice(0, 200000),
+  });
+
+  const ok = data.ok === true && Array.isArray(data.criteria);
+  const criteria = (ok ? data.criteria : noEvidence(QA_RUBRIC, material.body, input.artefactHtml, QA_AGENT))
+    .map((item: any) => ({ ...item, agent: QA_AGENT.id }));
+  const score = ok ? Number(data.score) || 0 : 0;
+  const evidenced = criteria.filter((item: any) => item.status === 'PASS').length;
+  const evidence = ok
+    ? `${evidenced} of ${criteria.length} criteria evidenced with quotes verified against the material, by ${QA_AGENT.id} on ${data.provider || 'its provider'}${material.truncated ? ' (artefact truncated for the review)' : ''}`
+    : `${QA_AGENT.id} did not report (${data.error || 'no response'}) — every QA criterion is MISSING_EVIDENCE, because a stage cannot pass without a reviewer`;
+
+  return {
+    criteria, score, status: ok ? stageStatus(criteria, score) : 'BLOCKED', evidence,
+    artefactVerified: material.hasArtefact && ok, agent: QA_AGENT.id, ok,
+  };
+}
+
+/**
+ * The independent validator: the same two questions, answered by a different
+ * agent on a different model and transport. It is handed the mechanical facts so
+ * it can contradict them, and the chain compares the two answers afterwards.
+ */
+async function validatorStage(base44: any, input: { sentence: string; briefText: string; packets: any[]; artefactHtml: string; runId: string; facts: Record<string, any> }) {
+  const material = agentMaterial({ sentence: input.sentence, briefText: input.briefText, packets: input.packets, artefactHtml: input.artefactHtml, facts: input.facts });
+  const data = await callAgent(base44, 'independentValidator', {
+    run_id: input.runId,
+    sentence: input.sentence,
+    brief_text: input.briefText,
+    packets: input.packets,
+    facts: input.facts,
+    artefact_html: String(input.artefactHtml || '').slice(0, 200000),
+  });
+
+  const ok = data.ok === true && Array.isArray(data.criteria);
+  const criteria = (ok ? data.criteria : noEvidence(VALIDATOR_RUBRIC, material.body, input.artefactHtml, VALIDATOR_AGENT))
+    .map((item: any) => ({ ...item, agent: VALIDATOR_AGENT.id }));
+
+  return {
+    criteria,
+    score: ok ? Number(data.score) || 0 : 0,
+    provider: data.provider || VALIDATOR_AGENT.model,
+    verdict: data.verdict,
+    agent: VALIDATOR_AGENT.id,
+    ok,
+  };
 }
 
 function qaCriterion(key: string, label: string, weightValue: number, ratio: number, evidence: string) {
@@ -399,7 +476,9 @@ async function writeStageReceipts(base44: any, input: { runId: string; criteria:
   const have = new Set(existing.map((item: any) => item.receipt_id));
   const entries = input.criteria.map((item: any) => {
     const stageId = stageIdForCriterion(item.agent);
-    const status = item.missingEvidence ? 'MISSING_EVIDENCE' : item.ratio >= 1 ? 'PASS' : 'FAIL';
+    // A reviewer's own verdict is kept (PASS / FAIL / MISSING_EVIDENCE); a
+    // mechanical criterion passes only when it earned its full weight.
+    const status = item.status || (item.missingEvidence ? 'MISSING_EVIDENCE' : item.ratio >= 1 ? 'PASS' : 'FAIL');
     return {
       receipt_id: receiptIdFor(input.runId, stageId, item.key),
       session_id: input.runId,
@@ -433,8 +512,8 @@ async function writeStageReceipts(base44: any, input: { runId: string; criteria:
 
 function stageIdForCriterion(agent: string) {
   if (agent === 'prompt_transformer') return 'transform';
-  if (agent === 'validation_guardian') return 'validate';
-  if (agent === 'qa_agent' || agent === 'qa_agent+page_qa') return 'qa';
+  if (agent === VALIDATOR_AGENT.id || agent === 'deterministic_validator' || agent === 'independent_corroboration') return 'validate';
+  if (agent === QA_AGENT.id) return 'qa';
   return 'implement';
 }
 

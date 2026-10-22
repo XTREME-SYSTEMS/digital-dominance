@@ -11,13 +11,19 @@
  *  - Scoring fails closed: a criterion without evidence earns zero.
  */
 
-export const CHAIN_VERSION = 'prompt-chain-1.0.0';
+export const CHAIN_VERSION = 'prompt-chain-1.1.0';
 
+/**
+ * The QA and validation stages are owned by two independent reviewers: separate
+ * functions, separate providers and separate models, neither of which sees the
+ * other's findings. The validation stage additionally carries the independent
+ * corroboration criterion, which only passes when both reviewers agree.
+ */
 export const CHAIN_STAGES = [
   { id: 'transform', name: 'Transform', agent: 'prompt_transformer', weight: 20 },
   { id: 'implement', name: 'Implement plan', agent: 'build_factory', weight: 20 },
-  { id: 'qa', name: 'QA agent', agent: 'qa_agent', weight: 25 },
-  { id: 'validate', name: 'Validation agent', agent: 'validation_guardian', weight: 20 },
+  { id: 'qa', name: 'QA agent (independent)', agent: 'independent_qa_agent', weight: 25 },
+  { id: 'validate', name: 'Validation agent (independent)', agent: 'independent_validator', weight: 20 },
   { id: 'autonomous_implement', name: 'Autonomous implementation', agent: 'build_factory', weight: 15 },
 ];
 

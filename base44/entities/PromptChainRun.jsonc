@@ -106,6 +106,15 @@
           "evidence": {
             "type": "string",
             "maxLength": 1000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "MISSING_EVIDENCE"
+            ],
+            "description": "The verdict the owning agent returned for this criterion. A reviewer's verdict is kept only when the proof it quoted was found in the material."
           }
         }
       },
