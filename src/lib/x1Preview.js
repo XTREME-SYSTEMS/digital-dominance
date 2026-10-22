@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { industryKeyForLabel, industryServices } from '@/data/industryCatalog';
+import { applyIndustryImages, industryImageSet } from '@/lib/industryImageMandate';
 
 const SCRIPT_URL = `${import.meta.env.BASE_URL || '/'}x1/x1.js`;
 
@@ -100,14 +101,20 @@ export function useLayoutHtml(template, brief, layoutId) {
   const layout = layoutId || layoutForTemplate(template);
   const briefKey = JSON.stringify(brief || {});
 
+  // The industry drives the imagery: the template's own niche wins, then the brief's industry.
+  const imageSet = useMemo(
+    () => industryImageSet(template?.niche || template?.industry || brief?.industry),
+    [template?.niche, template?.industry, brief?.industry],
+  );
+
   const html = useMemo(() => {
     if (!renderer) return null;
     try {
-      return renderer.renderSite(JSON.parse(briefKey), layout);
+      return applyIndustryImages(renderer.renderSite(JSON.parse(briefKey), layout), imageSet);
     } catch (e) {
       return null;
     }
-  }, [renderer, briefKey, layout]);
+  }, [renderer, briefKey, layout, imageSet]);
 
-  return { html, error, layout };
+  return { html, error, layout, imageSet };
 }

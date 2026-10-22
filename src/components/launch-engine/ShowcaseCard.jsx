@@ -5,7 +5,7 @@ import { galleryBrief, layoutNameForTemplate, openHtmlInBrowser, useLayoutHtml }
 
 export default function ShowcaseCard({ template, onPreview }) {
   const brief = useMemo(() => galleryBrief(template), [template]);
-  const { html } = useLayoutHtml(template, brief);
+  const { html, imageSet } = useLayoutHtml(template, brief);
   const [niche, layout] = template.name.includes(' / ') ? template.name.split(' / ') : [template.niche || 'Website', ''];
 
   return (
@@ -35,7 +35,9 @@ export default function ShowcaseCard({ template, onPreview }) {
         </div>
       </button>
       <div className="mt-auto flex items-center justify-between gap-2 border-t border-white/10 px-4 py-2.5">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[#55ceff]/70">Desktop + mobile preview</span>
+        <span className={`text-[10px] font-bold uppercase tracking-wider ${imageSet.approved ? 'text-[#55ceff]/70' : 'text-amber-300'}`}>
+          {imageSet.approved ? `${imageSet.label} photography` : 'Imagery pending review'}
+        </span>
         <button
           type="button"
           onClick={() => openHtmlInBrowser(html)}

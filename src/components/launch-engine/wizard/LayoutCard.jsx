@@ -4,7 +4,7 @@ import TemplateLivePreview from '@/components/launch-engine/TemplateLivePreview'
 import { layoutNameForTemplate, openHtmlInBrowser, useLayoutHtml } from '@/lib/x1Preview';
 
 export default function LayoutCard({ template, brief, active, designName, onSelect }) {
-  const { html } = useLayoutHtml(template, brief);
+  const { html, imageSet } = useLayoutHtml(template, brief);
   const layoutName = layoutNameForTemplate(template);
 
   return (
@@ -20,7 +20,9 @@ export default function LayoutCard({ template, brief, active, designName, onSele
       <div className="flex items-start justify-between gap-2 px-3 py-2">
         <span className="min-w-0">
           <span className={`block truncate text-xs font-bold ${active ? 'text-[#00a2ff]' : 'text-gray-800'}`}>{designName}</span>
-          <span className="mt-0.5 block truncate text-[10px] text-gray-400">{layoutName} · scroll inside to walk the page</span>
+          <span className={`mt-0.5 block truncate text-[10px] ${imageSet.approved ? 'text-gray-400' : 'text-amber-600'}`}>
+            {layoutName} · {imageSet.approved ? `${imageSet.label} photography` : 'imagery needs review'}
+          </span>
         </span>
         <span className="flex shrink-0 items-center gap-1">
           <button

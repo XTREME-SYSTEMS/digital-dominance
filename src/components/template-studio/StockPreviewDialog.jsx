@@ -6,7 +6,7 @@ import { galleryBrief, layoutNameForTemplate, useLayoutHtml } from '@/lib/x1Prev
 
 export default function StockPreviewDialog({ template, onClose, onChoose }) {
   const brief = useMemo(() => galleryBrief(template), [template]);
-  const { html } = useLayoutHtml(template, brief);
+  const { html, imageSet } = useLayoutHtml(template, brief);
 
   return (
     <Dialog open={!!template} onOpenChange={open => !open && onClose()}>
@@ -14,7 +14,8 @@ export default function StockPreviewDialog({ template, onClose, onChoose }) {
         <DialogTitle className="pr-7">{template?.name}</DialogTitle>
         <DialogDescription>
           The {layoutNameForTemplate(template)} layout: desktop from the top with the mobile view beside it. Scroll inside either view
-          to walk the whole page. Placeholder details and imagery need launch review.
+          to walk the whole page. Every image slot shows approved {imageSet.label} photography
+          {imageSet.approved ? '' : ' — none approved yet, so the slots are flagged for review'}. Placeholder details need launch review.
         </DialogDescription>
         <TemplateLivePreview html={html} className="min-h-0 flex-1" showFullScreen showHint />
         {onChoose && <Button onClick={() => { onChoose(template); onClose(); }}>Choose this exact layout</Button>}
