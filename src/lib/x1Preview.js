@@ -101,10 +101,15 @@ export function useLayoutHtml(template, brief, layoutId) {
   const layout = layoutId || layoutForTemplate(template);
   const briefKey = JSON.stringify(brief || {});
 
-  // The industry drives the imagery: the template's own niche wins, then the brief's industry.
+  // The imagery is the template's own final-site asset, resolved by industry.
+  const siteImage = useMemo(() => {
+    const manifest = template?.sections?.find(section => section.section_type === 'manifest')?.config;
+    return manifest?.hero_image_url || template?.preview_image_url || '';
+  }, [template]);
+
   const imageSet = useMemo(
-    () => industryImageSet(template?.niche || template?.industry || brief?.industry),
-    [template?.niche, template?.industry, brief?.industry],
+    () => industryImageSet(template?.niche || template?.industry || brief?.industry, siteImage),
+    [template?.niche, template?.industry, brief?.industry, siteImage],
   );
 
   const html = useMemo(() => {

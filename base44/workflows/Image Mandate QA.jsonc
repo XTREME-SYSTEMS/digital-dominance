@@ -1,0 +1,63 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 3 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "description": "Independently validates that every industry image the app ships is reachable, industry-accurate and unique, across every industry and every layout in the wizard.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "image_mandate_qa",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "audit_industry_images": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "imageMandateAudit",
+            "args": {}
+          },
+          "then": "judge_audit",
+          "x-base44": {
+            "title": "Audit industry imagery",
+            "description": "Reachability, accuracy, uniqueness"
+          }
+        }
+      },
+      {
+        "judge_audit": {
+          "switch": [
+            {
+              "when": "${ .audit_industry_images.verdict == \"FAIL\" }",
+              "then": "end"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Record verdict",
+            "description": "Failures already filed as receipts"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Image Mandate QA"
+}
