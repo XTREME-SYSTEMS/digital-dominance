@@ -187,7 +187,7 @@ export default function LaunchWizard({ initial, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative max-h-[92dvh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="wizard-scroll relative max-h-[92dvh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between bg-[#0a1220] px-5 py-4">
           <div className="flex items-center gap-2.5">
@@ -225,7 +225,7 @@ export default function LaunchWizard({ initial, onClose }) {
 
           {/* Step 0: Industry */}
           {step === 0 && (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-72 overflow-y-auto">
+            <div className="wizard-scroll grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-72 overflow-y-auto">
               {industries.isLoading && <p role="status" className="col-span-full text-center text-gray-400">Loading industries…</p>}
               {industries.error && <p role="alert" className="col-span-full text-center text-red-500">{industries.error.message}</p>}
               {industries.items.map((record) => {
@@ -251,7 +251,7 @@ export default function LaunchWizard({ initial, onClose }) {
 
           {/* Step 1: Template — exact admin templates */}
           {step === 1 && (
-            <div className="grid grid-cols-1 gap-3 max-h-[440px] overflow-y-auto sm:grid-cols-2">
+            <div className="wizard-scroll grid grid-cols-1 gap-3 max-h-[440px] overflow-y-auto sm:grid-cols-2">
               {designs.isLoading && <p role="status" className="col-span-full text-center text-gray-400">Loading designs…</p>}
               {designs.error && <p role="alert" className="col-span-full text-center text-red-500">{designs.error.message}</p>}
               {designs.items.map((t) => (
