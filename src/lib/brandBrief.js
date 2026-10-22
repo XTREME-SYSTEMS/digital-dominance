@@ -143,6 +143,9 @@ function ratingBand(profile) {
 
 function contactBlock(profile) {
   const lines = [];
+  // The phone comes first: it is a tap-to-call link on every phone that opens the page.
+  const phone = (profile.phone || '').trim();
+  if (phone) lines.push(`<p class="contact-phone"><a href="tel:${phone.replace(/[^\d+]/g, '')}">${phone}</a></p>`);
   if (profile.address || placeLabel(profile)) lines.push(`<p class="contact-address">${streetLine(profile) || placeLabel(profile)}</p>`);
   if (profile.email) lines.push(`<p class="contact-email"><a href="mailto:${profile.email}">${profile.email}</a></p>`);
   const site = websiteUrl(profile);

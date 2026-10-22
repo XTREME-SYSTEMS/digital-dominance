@@ -40,9 +40,11 @@ export const isSiteAsset = url => /^https:\/\/media\.base44\.com\//.test(String(
 
 /**
  * The approved image set for one industry.
- * `templateImage` is the image the template itself renders (highest priority).
+ * `chosenImages` are the images the owner generated and picked — they are the
+ * site's own photography and come first. `templateImage` is the image the
+ * template itself renders.
  */
-export function industryImageSet(industry, templateImage) {
+export function industryImageSet(industry, templateImage, chosenImages = []) {
   const key = normalizeNiche(industry);
   const registry = INDUSTRY_IMAGES[key];
   const images = [];
@@ -51,6 +53,7 @@ export function industryImageSet(industry, templateImage) {
     if (typeof url === 'string' && /^https:\/\//.test(url) && !images.includes(url)) images.push(url);
   };
 
+  (Array.isArray(chosenImages) ? chosenImages : [chosenImages]).forEach(add);
   add(templateImage);
 
   const homepage = HOMEPAGE_INDUSTRY_IMAGES.find(entry =>

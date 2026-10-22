@@ -8,6 +8,7 @@ import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import SafeImage from '@/components/ui/SafeImage';
 import LayoutCard from '@/components/launch-engine/wizard/LayoutCard';
 import BusinessProfileStep from '@/components/launch-engine/BusinessProfileStep';
+import BusinessDetails from '@/components/launch-engine/wizard/BusinessDetails';
 import { OTHER_OPTION, industryKeyForLabel, industryLabel, industryServices } from '@/data/industryCatalog';
 import { ACCENT_COMBOS } from '@/data/accentCombos';
 import { useLayoutHtml } from '@/lib/x1Preview';
@@ -38,6 +39,7 @@ export default function LaunchWizard({ initial, onClose }) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [appliedFixes, setAppliedFixes] = useState([]);
+  const [chosenImages, setChosenImages] = useState([]);
   const [aiCopy, setAiCopy] = useState(null);
   const [checked, setChecked] = useState([]);
   const [qa, setQa] = useState(null);
@@ -55,6 +57,7 @@ export default function LaunchWizard({ initial, onClose }) {
   const designs = useStockTemplates({ niche: selection.industry || '__unselected__' }, 10);
 
   const STEPS = [
+    { label: "Your business", desc: "Your business name and phone are installed into every design you preview next, so you are judging your own site — not a demonstration one" },
     { label: "Industry", desc: "Choose a business category" },
     { label: "Template", desc: "Pick a design — these are the exact templates from the admin studio" },
     { label: "Customize", desc: "Your details are installed into the page — click to edit any section, or generate industry content" },
@@ -91,7 +94,7 @@ export default function LaunchWizard({ initial, onClose }) {
     () => ({ ...brief, industry_label: briefTrade, ai_copy: aiCopy || undefined }),
     [brief, briefTrade, aiCopy],
   );
-  const { html: renderedHtml } = useLayoutHtml(selection.template, useMemo(() => buildSiteBrief(siteProfile, resolveFixes(appliedFixes)), [siteProfile, appliedFixes]));
+  const { html: renderedHtml } = useLayoutHtml(selection.template, useMemo(() => buildSiteBrief(siteProfile, resolveFixes(appliedFixes)), [siteProfile, appliedFixes]), undefined, chosenImages);
   const installed = useMemo(
     () => (renderedHtml
       ? scrubBrandedHtml(renderedHtml, siteProfile, resolveFixes(appliedFixes))
@@ -130,7 +133,7 @@ export default function LaunchWizard({ initial, onClose }) {
 
   // The agents scan the first presentation once, and again after each regenerate.
   useEffect(() => {
-    if (step !== 3 || !qaHtml) return;
+    if (step !== 4 || !qaHtml) return;
     const key = `${appliedFixes.join(',')}|${qaHtml.length}`;
     if (key === qaKey) return;
     setQaKey(key);
@@ -147,12 +150,14 @@ export default function LaunchWizard({ initial, onClose }) {
     setChecked([]);
   };
 
-  const canAdvance = step === 0 ? !!selection.industry
-    : step === 1 ? !!selection.template
-      : step === 2 ? brief.business_name.trim().length > 1 && brief.phone.replace(/\D/g, '').length >= 7
-        : step === 3 ? true
-          : step === 4 ? selection.count > 0
-            : true;
+  const detailsGiven = brief.business_name.trim().length > 1 && brief.phone.replace(/\D/g, '').length >= 7;
+  const canAdvance = step === 0 ? detailsGiven
+    : step === 1 ? !!selection.industry
+      : step === 2 ? !!selection.template
+        : step === 3 ? detailsGiven
+          : step === 4 ? true
+            : step === 5 ? selection.count > 0
+              : true;
 
   // Save the collected brief for the signed-in owner, then hand it to the studio.
   const launch = async () => {
@@ -183,13 +188,29 @@ export default function LaunchWizard({ initial, onClose }) {
           email: brief.email.trim(),
           logo_url: brief.logo_url,
           image_plan: brief.image_plan,
-          photos: brief.photos,
+          photos: [
+            ...brief.photos,
+            ...chosenImages.map((url, index) => ({
+              name: `Generated image ${index + 1}`,
+              url,
+              slot: index === 0 ? 'hero' : `gallery${index}`,
+            })),
+          ],
+          image_plan: chosenImages.length ? 'ai_generated' : brief.image_plan,
+          // The page the optimization studio opens, and the template it was drawn from.
+          pages: selection.template ? [{
+            key: 'home',
+            title: `${brief.business_name.trim()} home`,
+            path: '/',
+            category: 'homepage',
+            template_id: selection.template.id,
+          }] : [],
           applied_fixes: appliedFixes,
           ai_copy: aiCopy || undefined,
           status: 'configured',
         });
       }
-      navigate('/admin/template-studio', { state: { selectedStockTemplateId: selection.template?.id } });
+      navigate('/site-optimizer');
     } catch (e) {
       setSaveError(e.message || 'Could not save your business details');
     } finally {
@@ -310,8 +331,20 @@ export default function LaunchWizard({ initial, onClose }) {
         <div className="p-5 min-h-[320px]">
           <p className="text-sm text-gray-500 mb-4">{STEPS[step].desc}</p>
 
-          {/* Step 0: Industry */}
+          {/* Step 0: The owner's own business — their name and phone reach every template */}
           {step === 0 && (
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                <BusinessDetails value={brief} set={patch => setBrief(prev => ({ ...prev, ...patch }))} />
+              </div>
+              <p className="text-[11px] text-gray-400">
+                Every design you preview next carries this name and phone, so you are looking at your own website.
+              </p>
+            </div>
+          )}
+
+          {/* Step 1: Industry */}
+          {step === 1 && (
             <div className="wizard-scroll grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-72 overflow-y-auto">
               {industries.isLoading && <p role="status" className="col-span-full text-center text-gray-400">Loading industries…</p>}
               {industries.error && <p role="alert" className="col-span-full text-center text-red-500">{industries.error.message}</p>}
@@ -336,8 +369,8 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 1: Template — exact admin templates */}
-          {step === 1 && (
+          {/* Step 2: Template — exact admin templates */}
+          {step === 2 && (
             <div className="wizard-scroll grid grid-cols-1 gap-3 max-h-[440px] overflow-y-auto sm:grid-cols-2">
               {designs.isLoading && <p role="status" className="col-span-full text-center text-gray-400">Loading designs…</p>}
               {designs.error && <p role="alert" className="col-span-full text-center text-red-500">{designs.error.message}</p>}
@@ -357,10 +390,10 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 2: Customize — business brief, install, click-to-edit + generate */}
-          {step === 2 && (
+          {/* Step 3: Customize — business brief, install, images, click-to-edit + generate */}
+          {step === 3 && (
             <div className="space-y-4">
-              <BusinessProfileStep value={brief} onChange={setBrief} />
+              <BusinessProfileStep value={brief} onChange={setBrief} chosenImages={chosenImages} onPickImages={setChosenImages} />
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -422,8 +455,8 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 3: QA & Iterate — validation, QA score, suggestions */}
-          {step === 3 && (
+          {/* Step 4: QA & Iterate — validation, QA score, suggestions */}
+          {step === 4 && (
             <div className="space-y-4">
               <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "240px" }}>
                 <WebsitePreview industry={selection.industry} template={selection.template} overrideHtml={installed.html || editedContent} />
@@ -445,8 +478,8 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 4: Locations */}
-          {step === 4 && (
+          {/* Step 5: Locations */}
+          {step === 5 && (
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">Number of Location Sites</label>
@@ -476,8 +509,8 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 5: Review */}
-          {step === 5 && (
+          {/* Step 6: Review */}
+          {step === 6 && (
             <div className="space-y-3">
               <div className="rounded-xl bg-gray-50 p-4 space-y-2">
                 <Row label="Business" value={brief.business_name} />
@@ -492,7 +525,7 @@ export default function LaunchWizard({ initial, onClose }) {
                 <Row label="Star rating" value={brief.has_rating ? `${brief.rating_value} of 5` : 'None — removed from the page'} />
                 <Row label="Accent colour" value={(ACCENT_COMBOS.find(c => c.accent === brief.accent) || {}).name || brief.accent} />
                 <Row label="Slogan" value={brief.slogan} />
-                <Row label="Images" value={brief.image_plan === 'ai_generated' ? 'AI generated — review before publishing' : `${brief.photos.length} of your own`} />
+                <Row label="Images" value={chosenImages.length ? `${chosenImages.length} generated image${chosenImages.length === 1 ? '' : 's'} chosen` : brief.image_plan === 'ai_generated' ? 'AI generated — review before publishing' : `${brief.photos.length} of your own`} />
                 <Row label="Template" value={selection.template?.name || '—'} />
                 <Row label="QA score" value={qa?.qa ? `${qa.qa.score} / 100` : 'Not scanned'} />
                 <Row label="Fixes applied" value={appliedFixes.length ? `${appliedFixes.length} applied` : 'None yet'} />
@@ -500,7 +533,7 @@ export default function LaunchWizard({ initial, onClose }) {
                 <Row label="Markets" value={selection.locations || "Nationwide"} />
               </div>
               {saveError && <p role="alert" className="text-center text-xs text-red-500">{saveError}</p>}
-              <p className="text-xs text-gray-400 text-center">Open the studio to point-and-click edit, regenerate sections, and run the validation agent.</p>
+              <p className="text-xs text-gray-400 text-center">The optimization studio opens next: your live page on the right, and every technology that fits, edits, enhances, generates and upgrades it on the left.</p>
             </div>
           )}
         </div>
@@ -542,7 +575,7 @@ export default function LaunchWizard({ initial, onClose }) {
               className="flex items-center gap-2 rounded-lg bg-[#00a2ff] px-5 py-2 text-sm font-bold text-white hover:bg-[#0090e0] disabled:opacity-50"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4" />}
-              {saving ? 'Saving…' : 'Open in Studio'}
+              {saving ? 'Saving…' : 'Optimize my site'}
             </button>
           )}
         </div>

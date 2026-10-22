@@ -213,6 +213,7 @@ import CodeInjector from '@/components/codestudio/CodeInjector';
 import DataExport from '@/pages/admin/DataExport';
 import DataDownload from '@/pages/DataDownload';
 import PromptChainConsole from '@/pages/admin/PromptChainConsole';
+import SiteOptimizer from '@/pages/SiteOptimizer';
 
 
 const AuthenticatedApp = () => {
@@ -444,6 +445,9 @@ const AuthenticatedApp = () => {
       <Route path="/conversations" element={<Conversations />} />
       <Route path="/data-download" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route index element={<DataDownload />} />
+      </Route>
+      <Route path="/site-optimizer" element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login?returnTo=%2Fsite-optimizer" replace />} />}>
+        <Route index element={<SiteOptimizer />} />
       </Route>
       <Route path="/connect" element={<Connect />} />
       <Route path="/acquire" element={<Acquire />} />

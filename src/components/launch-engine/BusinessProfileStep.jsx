@@ -1,11 +1,12 @@
 import React from 'react';
-import { Building2, BriefcaseBusiness, Quote, Images, Star, Palette } from 'lucide-react';
+import { Building2, BriefcaseBusiness, Quote, Images, Star, Palette, Camera } from 'lucide-react';
 import BusinessDetails from './wizard/BusinessDetails';
 import IndustryServices from './wizard/IndustryServices';
 import SloganField from './wizard/SloganField';
 import BrandAssets from './wizard/BrandAssets';
 import StarRatingField from './wizard/StarRatingField';
 import AccentComboPicker from './wizard/AccentComboPicker';
+import ImageConceptPicker from './wizard/ImageConceptPicker';
 
 function Section({ title, icon: Icon, children }) {
   return (
@@ -18,7 +19,7 @@ function Section({ title, icon: Icon, children }) {
   );
 }
 
-export default function BusinessProfileStep({ value, onChange }) {
+export default function BusinessProfileStep({ value, onChange, chosenImages = [], onPickImages }) {
   const set = patch => onChange({ ...value, ...patch });
 
   return (
@@ -41,6 +42,11 @@ export default function BusinessProfileStep({ value, onChange }) {
       <Section title="Logo & photos" icon={Images}>
         <BrandAssets value={value} set={set} />
       </Section>
+      {onPickImages && (
+        <Section title="Generate images" icon={Camera}>
+          <ImageConceptPicker profile={value} chosen={chosenImages} onPick={onPickImages} />
+        </Section>
+      )}
     </div>
   );
 }

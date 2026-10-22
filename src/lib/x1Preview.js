@@ -85,8 +85,12 @@ export function openHtmlInBrowser(html) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
-/** Renders one layout style from a brief, reloading whenever the brief changes. */
-export function useLayoutHtml(template, brief, layoutId) {
+/**
+ * Renders one layout style from a brief, reloading whenever the brief changes.
+ * `chosenImages` are the images the owner picked: they take the place of the
+ * template's own photography, so the preview is the site they will ship.
+ */
+export function useLayoutHtml(template, brief, layoutId, chosenImages) {
   const [renderer, setRenderer] = useState(() => globalThis.X1UniversalSite || null);
   const [error, setError] = useState(null);
 
@@ -108,8 +112,8 @@ export function useLayoutHtml(template, brief, layoutId) {
   }, [template]);
 
   const imageSet = useMemo(
-    () => industryImageSet(template?.niche || template?.industry || brief?.industry, siteImage),
-    [template?.niche, template?.industry, brief?.industry, siteImage],
+    () => industryImageSet(template?.niche || template?.industry || brief?.industry, siteImage, chosenImages),
+    [template?.niche, template?.industry, brief?.industry, siteImage, chosenImages],
   );
 
   const html = useMemo(() => {
