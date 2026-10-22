@@ -1,20 +1,27 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Rocket, MapPin, Check, ChevronRight, Eye, ExternalLink, Sparkles, Loader2, Wand2, Globe, RefreshCw } from "lucide-react";
+import { X, Rocket, Check, ChevronRight, Eye, ExternalLink, Sparkles, Loader2, Wand2, ShieldCheck } from "lucide-react";
 import WebsitePreview from "@/components/launch-engine/WebsitePreview";
 import InteractiveTemplateEditor from "@/components/launch-engine/InteractiveTemplateEditor";
+import QAIterationStep from "@/components/launch-engine/QAIterationStep";
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
 import SafeImage from '@/components/ui/SafeImage';
 import LayoutCard from '@/components/launch-engine/wizard/LayoutCard';
 import BusinessProfileStep from '@/components/launch-engine/BusinessProfileStep';
 import { OTHER_OPTION, industryKeyForLabel, industryLabel, industryServices } from '@/data/industryCatalog';
+import { ACCENT_COMBOS } from '@/data/accentCombos';
+import { useLayoutHtml } from '@/lib/x1Preview';
+import { buildSiteBrief, scrubBrandedHtml, resolveFixes } from '@/lib/brandBrief';
 import { base44 } from '@/api/base44Client';
 
 const EMPTY_BRIEF = {
-  business_name: '', phone: '', website_mode: 'none', website_url: '',
+  business_name: '', phone: '', email: '', website_mode: 'none', website_url: '',
   address: '', city: '', state: '', territory_radius_miles: 25,
-  industry: '', industry_other: '', sub_industry: '', sub_industry_other: '',
-  services: [], custom_services: [], slogan: '', logo_url: '', photos: [], image_plan: 'own_photos',
+  industry: '', industry_other: '', sub_industry: '', sub_industry_other: '', sub_industries: [],
+  services: [], custom_services: [], discovered_services: [],
+  has_rating: false, rating_value: 5, rating_count: 0,
+  accent: ACCENT_COMBOS[0].accent, accent_combo: ACCENT_COMBOS[0].id,
+  slogan: '', logo_url: '', photos: [], image_plan: 'own_photos',
 };
 
 export default function LaunchWizard({ initial, onClose }) {
@@ -30,6 +37,13 @@ export default function LaunchWizard({ initial, onClose }) {
   });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  const [appliedFixes, setAppliedFixes] = useState([]);
+  const [aiCopy, setAiCopy] = useState(null);
+  const [checked, setChecked] = useState([]);
+  const [qa, setQa] = useState(null);
+  const [qaRunning, setQaRunning] = useState(false);
+  const [qaError, setQaError] = useState(null);
+  const [qaKey, setQaKey] = useState('');
   const [selection, setSelection] = useState({
     industry: initial?.industry || initial?.template?.niche || "",
     template: initial?.template || null,
@@ -43,16 +57,18 @@ export default function LaunchWizard({ initial, onClose }) {
   const STEPS = [
     { label: "Industry", desc: "Choose a business category" },
     { label: "Template", desc: "Pick a design — these are the exact templates from the admin studio" },
-    { label: "Customize", desc: "Click to edit any section, or generate industry-specific content" },
+    { label: "Customize", desc: "Your details are installed into the page — click to edit any section, or generate industry content" },
+    { label: "QA & Iterate", desc: "Both agents reviewed your first page. Fix what they flagged" },
     { label: "Locations", desc: "How many sites to launch" },
     { label: "Review", desc: "Review your selections and open the studio" },
   ];
 
   const briefTrade = brief.industry === OTHER_OPTION ? brief.industry_other : (industryLabel(brief.industry) || brief.industry);
   const briefSpecialty = brief.sub_industry === OTHER_OPTION ? brief.sub_industry_other : brief.sub_industry;
+  const briefSpecialties = (brief.sub_industries || []).filter(v => v && v !== OTHER_OPTION);
 
   // Every layout style is previewed with this business's own details.
-  const previewBrief = React.useMemo(() => {
+  const previewBrief = useMemo(() => {
     const trade = briefTrade || selection.industry || 'Local Services';
     const listed = industryServices(industryKeyForLabel(trade));
     const place = [brief.city, brief.state].filter(Boolean).join(', ');
@@ -65,16 +81,78 @@ export default function LaunchWizard({ initial, onClose }) {
       services: brief.services.length ? brief.services : (listed.length ? listed : undefined),
       phone: brief.phone.trim(),
       ctaLabel: 'Request a Quote',
-      accent: '#0f7bd6',
+      accent: brief.accent || ACCENT_COMBOS[0].accent,
       draft: false,
     };
   }, [brief, briefTrade, selection.industry]);
 
+  // ── The owner's details, installed into the page ──────────
+  const siteProfile = useMemo(
+    () => ({ ...brief, industry_label: briefTrade, ai_copy: aiCopy || undefined }),
+    [brief, briefTrade, aiCopy],
+  );
+  const { html: renderedHtml } = useLayoutHtml(selection.template, useMemo(() => buildSiteBrief(siteProfile, resolveFixes(appliedFixes)), [siteProfile, appliedFixes]));
+  const installed = useMemo(
+    () => (renderedHtml
+      ? scrubBrandedHtml(renderedHtml, siteProfile, resolveFixes(appliedFixes))
+      : { html: null, installed: [], removed: [] }),
+    [renderedHtml, siteProfile, appliedFixes],
+  );
+
+  const qaProfile = useMemo(() => ({
+    business_name: brief.business_name, industry: brief.industry || selection.industry,
+    industry_label: briefTrade, services: brief.services, phone: brief.phone, email: brief.email,
+    address: brief.address, city: brief.city, state: brief.state,
+    territory_radius_miles: brief.territory_radius_miles,
+    has_rating: brief.has_rating, rating_value: brief.rating_value, rating_count: brief.rating_count,
+    accent: brief.accent,
+  }), [brief, briefTrade, selection.industry]);
+
+  const qaHtml = installed.html;
+
+  const runQa = useCallback(async () => {
+    if (!qaHtml) return;
+    setQaRunning(true);
+    setQaError(null);
+    try {
+      const res = await base44.functions.invoke('templateQaValidator', {
+        html: qaHtml, profile: qaProfile, applied_fixes: appliedFixes,
+      });
+      if (res.data?.error) throw new Error(res.data.error);
+      setQa(res.data);
+    } catch (e) {
+      setQa(null);
+      setQaError(e.message || 'The agents could not finish the scan');
+    } finally {
+      setQaRunning(false);
+    }
+  }, [qaHtml, qaProfile, appliedFixes]);
+
+  // The agents scan the first presentation once, and again after each regenerate.
+  useEffect(() => {
+    if (step !== 3 || !qaHtml) return;
+    const key = `${appliedFixes.join(',')}|${qaHtml.length}`;
+    if (key === qaKey) return;
+    setQaKey(key);
+    runQa();
+  }, [step, qaHtml, appliedFixes, qaKey, runQa]);
+
+  const toggleChecked = id => setChecked(prev => (prev.includes(id) ? prev.filter(v => v !== id) : [...prev, id]));
+
+  const regenerate = ids => {
+    if (!ids.length) return;
+    const copy = (qa?.suggestions || []).find(item => item.id === 'ai_copy' && ids.includes('ai_copy'));
+    if (copy?.payload) setAiCopy(copy.payload);
+    setAppliedFixes(prev => [...new Set([...prev, ...ids])]);
+    setChecked([]);
+  };
+
   const canAdvance = step === 0 ? !!selection.industry
     : step === 1 ? !!selection.template
       : step === 2 ? brief.business_name.trim().length > 1 && brief.phone.replace(/\D/g, '').length >= 7
-        : step === 3 ? selection.count > 0
-          : true;
+        : step === 3 ? true
+          : step === 4 ? selection.count > 0
+            : true;
 
   // Save the collected brief for the signed-in owner, then hand it to the studio.
   const launch = async () => {
@@ -89,16 +167,25 @@ export default function LaunchWizard({ initial, onClose }) {
           industry: brief.industry || 'other',
           industry_label: briefTrade,
           sub_industry: briefSpecialty,
+          sub_industries: briefSpecialties,
           services: brief.services,
+          discovered_services: brief.discovered_services || [],
+          has_rating: !!brief.has_rating,
+          rating_value: brief.has_rating ? brief.rating_value : 0,
+          rating_count: brief.has_rating ? brief.rating_count : 0,
+          accent: brief.accent,
           slogan: brief.slogan.trim(),
           address: brief.address.trim(),
           city: brief.city.trim(),
           state: brief.state.trim(),
           territory_radius_miles: brief.territory_radius_miles,
           phone: brief.phone.trim(),
+          email: brief.email.trim(),
           logo_url: brief.logo_url,
           image_plan: brief.image_plan,
           photos: brief.photos,
+          applied_fixes: appliedFixes,
+          ai_copy: aiCopy || undefined,
           status: 'configured',
         });
       }
@@ -114,7 +201,7 @@ export default function LaunchWizard({ initial, onClose }) {
   const activeContent = editedContent || selection.template?.content || '';
 
   // Build a full-page HTML for "open in browser"
-  const previewHtml = useMemo(() => activeContent || null, [activeContent]);
+  const previewHtml = installed.html || activeContent || null;
 
   const openInBrowser = () => {
     if (!previewHtml) return;
@@ -137,7 +224,7 @@ export default function LaunchWizard({ initial, onClose }) {
         services: brief.services,
         businessName: brief.business_name.trim() || 'Your Business Name',
         phone: brief.phone.trim(),
-        email: '',
+        email: brief.email.trim(),
       });
       const content = res.data?.content;
       if (!content) throw new Error('No content returned');
@@ -183,7 +270,7 @@ export default function LaunchWizard({ initial, onClose }) {
     } finally {
       setGenerating(false);
     }
-  }, [selection.template, selection.industry, activeContent, briefTrade, briefSpecialty, brief.services, brief.business_name, brief.phone]);
+  }, [selection.template, selection.industry, activeContent, briefTrade, briefSpecialty, brief.services, brief.business_name, brief.phone, brief.email]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
@@ -235,7 +322,7 @@ export default function LaunchWizard({ initial, onClose }) {
                     key={ind}
                     onClick={() => {
                       setSelection({ ...selection, industry: ind, template: null });
-                      setBrief(prev => ({ ...prev, industry: industryKeyForLabel(ind) || prev.industry, sub_industry: '', sub_industry_other: '', services: [], custom_services: [] }));
+                      setBrief(prev => ({ ...prev, industry: industryKeyForLabel(ind) || prev.industry, sub_industry: '', sub_industry_other: '', sub_industries: [], services: [], custom_services: [] }));
                     }}
                     className={`flex flex-col items-center gap-2 rounded-xl border p-3 text-center transition ${selection.industry === ind ? "border-[#00a2ff] bg-[#00a2ff]/5" : "border-gray-200 hover:border-gray-300"}`}
                   >
@@ -270,7 +357,7 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 2: Customize — business brief, click-to-edit + generate */}
+          {/* Step 2: Customize — business brief, install, click-to-edit + generate */}
           {step === 2 && (
             <div className="space-y-4">
               <BusinessProfileStep value={brief} onChange={setBrief} />
@@ -278,7 +365,7 @@ export default function LaunchWizard({ initial, onClose }) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-[#00a2ff]" />
-                  <p className="text-xs font-bold text-gray-700">Live preview of your selected template</p>
+                  <p className="text-xs font-bold text-gray-700">Your page with your details installed</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -290,13 +377,30 @@ export default function LaunchWizard({ initial, onClose }) {
                   </button>
                   <button
                     onClick={openInBrowser}
-                    disabled={!selection.template}
+                    disabled={!previewHtml}
                     className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-40"
                   >
                     <ExternalLink className="h-3.5 w-3.5" /> Open
                   </button>
                 </div>
               </div>
+
+              {(installed.installed.length > 0 || installed.removed.length > 0) && (
+                <div className="rounded-xl border border-green-200 bg-green-50 p-3">
+                  <p className="text-[11px] font-black uppercase tracking-wider text-green-700">Installed into your page</p>
+                  <ul className="mt-1 grid gap-0.5 sm:grid-cols-2">
+                    {installed.installed.map(item => <li key={item} className="text-[11px] text-green-800">✓ {item}</li>)}
+                  </ul>
+                  {installed.removed.length > 0 && (
+                    <>
+                      <p className="mt-2 text-[11px] font-black uppercase tracking-wider text-green-700">Mock content removed</p>
+                      <ul className="mt-1 grid gap-0.5 sm:grid-cols-2">
+                        {installed.removed.map(item => <li key={item} className="text-[11px] text-green-800">✕ {item}</li>)}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Generate button — best generator technology */}
               <button
@@ -313,13 +417,36 @@ export default function LaunchWizard({ initial, onClose }) {
               <p className="text-[10px] text-gray-400 text-center">Uses AI to generate {selection.industry}-specific headlines, services, FAQs, and testimonials — then applies them to your template.</p>
 
               <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "340px" }}>
-                <WebsitePreview industry={selection.industry} template={selection.template} overrideHtml={editedContent} />
+                <WebsitePreview industry={selection.industry} template={selection.template} overrideHtml={installed.html || editedContent} />
               </div>
             </div>
           )}
 
-          {/* Step 3: Locations */}
+          {/* Step 3: QA & Iterate — validation, QA score, suggestions */}
           {step === 3 && (
+            <div className="space-y-4">
+              <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg" style={{ height: "240px" }}>
+                <WebsitePreview industry={selection.industry} template={selection.template} overrideHtml={installed.html || editedContent} />
+              </div>
+              {qaError && <p role="alert" className="text-center text-xs text-red-500">{qaError}</p>}
+              <QAIterationStep
+                result={qa}
+                running={qaRunning}
+                onRun={runQa}
+                checked={checked}
+                onToggle={toggleChecked}
+                onRegenerate={regenerate}
+                onOpenEditor={() => setShowEditor(true)}
+                appliedFixes={appliedFixes}
+              />
+              <p className="flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
+                <ShieldCheck className="h-3 w-3" /> The validator re-reads the finished page itself — it never takes the builder's word for it.
+              </p>
+            </div>
+          )}
+
+          {/* Step 4: Locations */}
+          {step === 4 && (
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">Number of Location Sites</label>
@@ -349,22 +476,26 @@ export default function LaunchWizard({ initial, onClose }) {
             </div>
           )}
 
-          {/* Step 4: Review */}
-          {step === 4 && (
+          {/* Step 5: Review */}
+          {step === 5 && (
             <div className="space-y-3">
               <div className="rounded-xl bg-gray-50 p-4 space-y-2">
                 <Row label="Business" value={brief.business_name} />
                 <Row label="Phone" value={brief.phone} />
+                <Row label="Email" value={brief.email} />
                 <Row label="Website" value={brief.website_mode === 'existing' ? brief.website_url : 'New site'} />
                 <Row label="Address" value={[brief.address, brief.city, brief.state].filter(Boolean).join(', ')} />
                 <Row label="Service radius" value={`${brief.territory_radius_miles} miles`} />
                 <Row label="Industry" value={briefTrade || selection.industry} />
-                <Row label="Specialty" value={briefSpecialty} />
+                <Row label="Specialties" value={briefSpecialties.length ? briefSpecialties.join(', ') : briefSpecialty} />
                 <Row label="Services" value={`${brief.services.length} selected`} />
+                <Row label="Star rating" value={brief.has_rating ? `${brief.rating_value} of 5` : 'None — removed from the page'} />
+                <Row label="Accent colour" value={(ACCENT_COMBOS.find(c => c.accent === brief.accent) || {}).name || brief.accent} />
                 <Row label="Slogan" value={brief.slogan} />
                 <Row label="Images" value={brief.image_plan === 'ai_generated' ? 'AI generated — review before publishing' : `${brief.photos.length} of your own`} />
                 <Row label="Template" value={selection.template?.name || '—'} />
-                <Row label="Content" value={editedContent ? 'AI-generated & customized' : 'Original template'} />
+                <Row label="QA score" value={qa?.qa ? `${qa.qa.score} / 100` : 'Not scanned'} />
+                <Row label="Fixes applied" value={appliedFixes.length ? `${appliedFixes.length} applied` : 'None yet'} />
                 <Row label="Location Sites" value={`${selection.count} sites`} />
                 <Row label="Markets" value={selection.locations || "Nationwide"} />
               </div>

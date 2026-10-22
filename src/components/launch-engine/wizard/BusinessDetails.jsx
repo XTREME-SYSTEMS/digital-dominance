@@ -24,6 +24,18 @@ export default function BusinessDetails({ value, set }) {
         </Field>
       </div>
 
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Business email">
+          <input
+            className={inputCls}
+            inputMode="email"
+            value={value.email}
+            onChange={e => set({ email: e.target.value })}
+            placeholder="quotes@yourbusiness.com"
+          />
+        </Field>
+      </div>
+
       <Field label="Business website">
         <div className="grid gap-2 sm:grid-cols-2">
           <Choice

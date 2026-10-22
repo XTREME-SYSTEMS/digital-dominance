@@ -29,7 +29,15 @@
     },
     "sub_industry": {
       "type": "string",
-      "description": "Sub-industry or specialty chosen inside the industry, including a written-in value when none of the options fit"
+      "description": "Primary sub-industry or specialty chosen inside the industry"
+    },
+    "sub_industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Every specialty picked inside the industry; each one is added to the services list"
     },
     "services": {
       "type": "array",
@@ -37,7 +45,33 @@
         "type": "string"
       },
       "default": [],
-      "description": "The services the business offers, chosen from the industry's traditional service list"
+      "description": "The services the business offers: industry list, specialties, discovered services and written-in ones"
+    },
+    "discovered_services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Newer services and niches the AI assist surfaced and the owner accepted"
+    },
+    "has_rating": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the business has customer star ratings to show. When false, no rating or review block is rendered"
+    },
+    "rating_value": {
+      "type": "number",
+      "description": "Star rating out of 5, when the business has one"
+    },
+    "rating_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many reviews the rating is based on"
+    },
+    "accent": {
+      "type": "string",
+      "description": "Accent colour for the site, chosen from the trending accent combinations"
     },
     "slogan": {
       "type": "string",
@@ -161,6 +195,19 @@
       },
       "default": [],
       "description": "The built website page pack: one entry per generated page, linked to its TemplateLibrary record"
+    },
+    "applied_fixes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "QA and validation suggestions the owner accepted and regenerated onto the page"
+    },
+    "ai_copy": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "AI-written headline, description and differentiators applied to the page when the owner accepts the copy suggestion"
     },
     "discovery": {
       "type": "object",

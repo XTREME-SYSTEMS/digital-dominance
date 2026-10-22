@@ -1,12 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import { Check, Plus, X } from 'lucide-react';
 import { Field, inputCls } from './wizardFields';
-import { INDUSTRY_OPTIONS, OTHER_OPTION, industryOption } from '@/data/industryCatalog';
+import SubIndustryPicker from './SubIndustryPicker';
+import ServiceDiscovery from './ServiceDiscovery';
+import { INDUSTRY_OPTIONS, OTHER_OPTION, industryOption, industryLabel } from '@/data/industryCatalog';
 
 export default function IndustryServices({ value, set }) {
   const [draft, setDraft] = useState('');
+  const [otherDraft, setOtherDraft] = useState(value.sub_industry_other || '');
   const industry = industryOption(value.industry);
   const custom = value.custom_services || [];
+  const specialties = value.sub_industries || [];
 
   const options = useMemo(() => {
     const listed = value.industry === OTHER_OPTION ? [] : (industry?.services || []);
@@ -21,6 +25,34 @@ export default function IndustryServices({ value, set }) {
     services: selected.includes(service) ? selected.filter(item => item !== service) : [...selected, service],
   });
 
+  // Picking a specialty puts that specialty straight into the services list.
+  const addSpecialty = name => set({
+    sub_industries: specialties.includes(name) ? specialties : [...specialties, name],
+    sub_industry: name,
+    services: selected.includes(name) ? selected : [...selected, name],
+  });
+
+  const removeSpecialty = name => {
+    const next = specialties.filter(item => item !== name);
+    set({ sub_industries: next, sub_industry: next[0] || '', services: selected.filter(item => item !== name) });
+  };
+
+  const toggleSpecialty = option => (specialties.includes(option) ? removeSpecialty(option) : addSpecialty(option));
+
+  const selectAllSpecialties = list => set({
+    sub_industries: list,
+    sub_industry: list[0] || '',
+    services: [...selected, ...list.filter(option => !selected.includes(option))],
+  });
+
+  const commitOther = () => {
+    const name = otherDraft.trim();
+    if (!name) return;
+    if (value.sub_industry_other && value.sub_industry_other !== name) removeSpecialty(value.sub_industry_other);
+    set({ sub_industry_other: name });
+    addSpecialty(name);
+  };
+
   const addDraft = () => {
     const name = draft.trim();
     if (!name || options.includes(name)) return;
@@ -33,33 +65,26 @@ export default function IndustryServices({ value, set }) {
     services: selected.filter(item => item !== name),
   });
 
+  // Services the AI assist found and the owner accepted.
+  const addDiscovered = names => set({
+    custom_services: [...custom, ...names.filter(name => !custom.includes(name))],
+    discovered_services: [...new Set([...(value.discovered_services || []), ...names])],
+    services: [...selected, ...names.filter(name => !selected.includes(name))],
+  });
+
   return (
     <div className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="Industry">
-          <select
-            className={inputCls}
-            value={value.industry}
-            onChange={e => set({ industry: e.target.value, sub_industry: '', sub_industry_other: '', services: [], custom_services: [] })}
-          >
-            <option value="">Choose an industry…</option>
-            {INDUSTRY_OPTIONS.map(option => <option key={option.key} value={option.key}>{option.label}</option>)}
-            <option value={OTHER_OPTION}>Other — type my own</option>
-          </select>
-        </Field>
-
-        <Field label="Sub-industry / specialty">
-          <select
-            className={inputCls}
-            value={value.sub_industry}
-            onChange={e => set({ sub_industry: e.target.value })}
-          >
-            <option value="">Choose a specialty…</option>
-            {subOptions.map(option => <option key={option} value={option}>{option}</option>)}
-            <option value={OTHER_OPTION}>Other — type my own</option>
-          </select>
-        </Field>
-      </div>
+      <Field label="Industry">
+        <select
+          className={inputCls}
+          value={value.industry}
+          onChange={e => set({ industry: e.target.value, sub_industry: '', sub_industry_other: '', sub_industries: [], services: [], custom_services: [] })}
+        >
+          <option value="">Choose an industry…</option>
+          {INDUSTRY_OPTIONS.map(option => <option key={option.key} value={option.key}>{option.label}</option>)}
+          <option value={OTHER_OPTION}>Other — type my own</option>
+        </select>
+      </Field>
 
       {value.industry === OTHER_OPTION && (
         <Field label="Your industry">
@@ -72,12 +97,24 @@ export default function IndustryServices({ value, set }) {
         </Field>
       )}
 
-      {value.sub_industry === OTHER_OPTION && (
+      {value.industry && value.industry !== OTHER_OPTION && (
+        <SubIndustryPicker
+          options={subOptions}
+          selected={specialties}
+          onToggle={toggleSpecialty}
+          onSelectAll={selectAllSpecialties}
+          onOther={() => set({ sub_industry: OTHER_OPTION })}
+        />
+      )}
+
+      {(value.sub_industry === OTHER_OPTION || value.sub_industry_other) && (
         <Field label="Your specialty">
           <input
             className={inputCls}
-            value={value.sub_industry_other}
-            onChange={e => set({ sub_industry_other: e.target.value })}
+            value={otherDraft}
+            onChange={e => setOtherDraft(e.target.value)}
+            onBlur={commitOther}
+            onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); commitOther(); } }}
             placeholder="Type the specialty we did not list"
           />
         </Field>
@@ -85,7 +122,7 @@ export default function IndustryServices({ value, set }) {
 
       <Field
         label={`Services — ${selected.length} of ${options.length} selected`}
-        hint="These become the service sections and pages on your site. Add anything we did not list."
+        hint="These become the service sections and pages on your site. Specialties you pick are added here automatically."
       >
         <div className="mb-2 flex items-center gap-2">
           <button
@@ -148,6 +185,15 @@ export default function IndustryServices({ value, set }) {
           >
             <Plus className="h-3.5 w-3.5" /> Add
           </button>
+        </div>
+
+        <div className="mt-2">
+          <ServiceDiscovery
+            industry={value.industry === OTHER_OPTION ? value.industry_other : (industryLabel(value.industry) || value.industry)}
+            subIndustries={specialties}
+            services={selected}
+            onAdd={addDiscovered}
+          />
         </div>
       </Field>
     </div>
