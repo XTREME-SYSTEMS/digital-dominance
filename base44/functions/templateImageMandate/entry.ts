@@ -45,11 +45,16 @@ export default async function (req: Request): Promise<Response> {
 
     const missingImage = allTemplates.filter((t) => !t.preview_image_url || t.preview_image_url.trim() === '');
     const fixes: any[] = [];
+    const unresolvedNicheImages: any[] = [];
 
     // ── 2. ASSIGN REAL IMAGES TO MISSING TEMPLATES ──────────
     for (const tpl of missingImage) {
-      const imageUrl = getImageForNiche(tpl.niche);
       const nicheKey = normalizeNiche(tpl.niche);
+      if (nicheKey === 'default') {
+        unresolvedNicheImages.push({ id: tpl.id, name: tpl.name, niche: tpl.niche, reason: 'Unknown category: generic imagery requires editorial approval' });
+        continue;
+      }
+      const imageUrl = getImageForNiche(tpl.niche);
 
       fixes.push({
         id: tpl.id,
@@ -69,7 +74,7 @@ export default async function (req: Request): Promise<Response> {
 
     // ── 3. OPTIONALLY VALIDATE EXISTING URLS ─────────────────
     let brokenUrls: any[] = [];
-    if (validateExisting && !dryRun) {
+    if (validateExisting) {
       const withImages = allTemplates.filter((t) => t.preview_image_url && !fixes.find((f) => f.id === t.id));
       const batchSize = 6;
 
@@ -106,9 +111,11 @@ export default async function (req: Request): Promise<Response> {
           assignedUrl: imageUrl,
           reason: `broken_url_${broken.status}`,
         });
-        await svc.entities.TemplateLibrary.update(broken.id, {
-          preview_image_url: imageUrl,
-        });
+        if (!dryRun) {
+          await svc.entities.TemplateLibrary.update(broken.id, {
+            preview_image_url: imageUrl,
+          });
+        }
       }
     }
 
@@ -119,7 +126,11 @@ export default async function (req: Request): Promise<Response> {
         totalTemplates: allTemplates.length,
         missingImages: missingImage.length,
         brokenUrls: brokenUrls.length,
-        totalFixed: fixes.length,
+        totalFixed: dryRun ? 0 : fixes.length,
+        proposedFixes: fixes.length,
+        unresolvedNicheImages: unresolvedNicheImages.slice(0, 100),
+        semanticRelevanceStatus: 'UNKNOWN_REQUIRES_INDEPENDENT_IMAGE_REVIEW',
+        semanticRelevanceVerified: false,
         fixes: fixes.slice(0, 50),
       },
     });

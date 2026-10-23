@@ -6,6 +6,7 @@ import AIAssistBubble from "@/components/ai-assist/AIAssistBubble";
 import ReferenceAdminSidebar from "@/components/launch-engine-admin/ReferenceAdminSidebar";
 import ReferenceAdminHeader from "@/components/launch-engine-admin/ReferenceAdminHeader";
 import "@/components/launch-engine-admin/ReferenceAdmin.css";
+import "@/components/admin/adminUi.css";
 
 // The exact mandatory branding — injected as CSS variables into the admin shell.
 // This is the single source of truth; the Brand Compliance Guardian keeps it enforced.

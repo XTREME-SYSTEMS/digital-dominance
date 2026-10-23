@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { secrets, waitUntil } from 'base44:runtime';
+import { generateSite } from '../../shared/universalGenerator.ts';
 
 // ============================================================
 // publishTemplateLive — Deploys a Website Launch Engine template
@@ -19,9 +20,29 @@ import { secrets, waitUntil } from 'base44:runtime';
 export default async function (req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    if (user.role !== 'admin') return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
+
+    // Auth: API key (for cron-triggered calls from bulkLaunchEngine) OR admin session
+    const authHeader = req.headers.get('authorization') || '';
+    const bearerKey = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+    const syncKey = secrets.get('GPT_SYNC_API_KEY') || '';
+    const isApiKey = syncKey && bearerKey === syncKey;
+
+    let svc;
+    let userId: string | undefined;
+    let userEmail: string | undefined;
+
+    if (isApiKey) {
+      svc = base44.asServiceRole;
+      userId = 'cron-orchestrator';
+      userEmail = 'system@autonomous';
+    } else {
+      const user = await base44.auth.me();
+      if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      if (user.role !== 'admin') return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
+      svc = base44.asServiceRole;
+      userId = user.id;
+      userEmail = user.email;
+    }
 
     const body = await req.json();
     const { templateId, appName, appSlug, brand } = body;
@@ -34,8 +55,6 @@ export default async function (req: Request): Promise<Response> {
     if (!token) {
       return Response.json({ error: 'VERCEL_API_TOKEN secret is not set' }, { status: 500 });
     }
-
-    const svc = base44.asServiceRole;
 
     // ── Load the template ──────────────────────────────────────────────
     const template = await svc.entities.TemplateLibrary.get(templateId);
@@ -50,15 +69,15 @@ export default async function (req: Request): Promise<Response> {
 
     let html: string;
     try {
-      const compileRes = await base44.functions.invoke('stockTemplateFactory', {
-        action: 'compile',
-        industryKey,
-        designKey,
-        brand: brand || {},
+      // ── Universal Generator: generate from the template's niche ──
+      const site = generateSite({
+        niche: industryKey || template.niche || 'generic',
+        brandName: appName || template.name || '',
+        city: body.city, state: body.state, phone: body.phone, domain: body.domain,
       });
-      html = compileRes.data?.html || template.content || '';
+      html = site.html || template.content || '';
     } catch {
-      // Fallback to raw template content if compilation fails
+      // Fallback to raw template content if generation fails
       html = template.content || '';
     }
 
@@ -69,13 +88,13 @@ export default async function (req: Request): Promise<Response> {
     // ── Create a DeploymentRecord to track this deployment ─────────────
     const deploymentId = `tpl-${appSlug}-${Date.now()}`;
     const depRecord = await svc.entities.DeploymentRecord.create({
-      owner_id: user.id,
+      owner_id: userId,
       deployment_id: deploymentId,
       session_id: templateId,
       task_description: `Template Studio deploy: ${appName || template.name} (${industryKey}/${designKey})`,
       status: 'deploying',
       target_environment: 'vercel',
-      deployed_by: user.email || user.id,
+      deployed_by: userEmail || userId,
     }).catch(() => null);
 
     // ── Assemble the static site files ─────────────────────────────────

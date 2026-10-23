@@ -1,84 +1,94 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 import useStockTemplates from '@/components/template-studio/useStockTemplates';
-import StockTemplateCard from '@/components/template-studio/StockTemplateCard';
 import StockPreviewDialog from '@/components/template-studio/StockPreviewDialog';
 import SafeImage from '@/components/ui/SafeImage';
+import ShowcaseCard from '@/components/launch-engine/ShowcaseCard';
 
+// Preserve the industry-image filters added on main while restoring premium full-page previews.
 const CATEGORIES = [
-  { id: 'all', label: 'All Styles', image: 'https://images.unsplash.com/photo-1467232004584-a551f7af35c3?w=400&q=80' },
-  { id: 'contractor', label: 'Contractor', niches: ['epoxy', 'roofing', 'hvac', 'plumbing', 'electrical', 'remodeling', 'landscaping', 'garage'], image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80' },
-  { id: 'health', label: 'Health & Wellness', niches: ['med_spa', 'dental', 'chiropractic', 'medical', 'wellness'], image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80' },
-  { id: 'legal', label: 'Legal', niches: ['legal', 'attorney', 'law'], image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&q=80' },
-  { id: 'professional', label: 'Professional', niches: ['insurance', 'mortgage', 'accounting', 'consulting', 'financial'], image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b67?w=400&q=80' },
-  { id: 'realestate', label: 'Real Estate', niches: ['real_estate', 'property', 'realtor'], image: 'https://images.unsplash.com/photo-1564013799919-ab6000f00a91?w=400&q=80' },
-  { id: 'home', label: 'Home Services', niches: ['cleaning', 'pest_control', 'moving', 'painting'], image: 'https://images.unsplash.com/photo-1521799267631-32f99f4c9746?w=400&q=80' },
-  { id: 'automotive', label: 'Automotive', niches: ['auto_detailing', 'auto_repair', 'towing'], image: 'https://images.unsplash.com/photo-1486001178350-2a3ff6b37e2c?w=400&q=80' },
+  { id: 'all', label: 'All Styles', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80' },
+  { id: 'contractor', label: 'Contractor', niches: ['epoxy','roofing','hvac','plumbing','electrical','remodeling','landscaping','garage'], image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80' },
+  { id: 'health', label: 'Health & Wellness', niches: ['med_spa','dental','chiropractic','medical','wellness'], image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80' },
+  { id: 'legal', label: 'Legal', niches: ['legal','attorney','law'], image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&q=80' },
+  { id: 'professional', label: 'Professional', niches: ['insurance','mortgage','accounting','consulting','financial'], image: 'https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/fbb49df42_generated_image.png' },
+  { id: 'realestate', label: 'Real Estate', niches: ['real_estate','property','realtor'], image: 'https://images.unsplash.com/photo-1568605114987-395e3a5eb4c5?w=400&q=80' },
+  { id: 'home', label: 'Home Services', niches: ['cleaning','pest_control','moving','painting'], image: 'https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/8860a9bbc_generated_image.png' },
+  { id: 'automotive', label: 'Automotive', niches: ['auto_detailing','auto_repair','towing'], image: 'https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/879b0b4e1_generated_image.png' },
 ];
+
+const normalize = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const matchesCategory = (template, category) =>
+  category.id === 'all' || (category.niches || []).some(niche => normalize(template.niche).includes(normalize(niche)));
 
 export default function TemplatesShowcase({ onChoose, workspace = false }) {
   const [preview, setPreview] = useState(null);
   const [category, setCategory] = useState('all');
-  const { items, isLoading, error } = useStockTemplates({ is_default: true }, 12);
+  // Latest main's is_default guard keeps this homepage an intentionally curated selection.
+  const { items, isLoading, error } = useStockTemplates({ is_default: true }, 20);
 
-  const filtered = useMemo(() => {
-    if (category === 'all') return items;
-    const cat = CATEGORIES.find(c => c.id === category);
-    if (!cat) return items;
-    return items.filter(t => {
-      const niche = (t.niche || '').toLowerCase();
-      return cat.niches.some(n => niche.includes(n.replace('_', '')));
-    });
+  const featured = useMemo(() => {
+    const selected = CATEGORIES.find(item => item.id === category) || CATEGORIES[0];
+    const filtered = items.filter(template => matchesCategory(template, selected));
+    if (category !== 'all') return filtered.slice(0, 6);
+    const seen = new Set();
+    const unique = [];
+    for (const template of filtered) {
+      const niche = normalize(template.niche || template.name);
+      if (!seen.has(niche)) {
+        seen.add(niche);
+        unique.push(template);
+      }
+      if (unique.length === 6) break;
+    }
+    return unique;
   }, [items, category]);
 
   return (
-    <section id="templates" className={workspace ? 'rounded-2xl border border-border bg-card p-5 sm:p-6' : 'bg-muted py-16 md:py-24 text-foreground'}>
-      <div className={workspace ? 'w-full' : 'mx-auto max-w-7xl px-4 md:px-8'}>
-        <div className="mb-8 text-center">
-          <h2 className="font-heading text-3xl font-extrabold">Explore Real Templates</h2>
-          <p className="mt-3 text-muted-foreground">The same 200 stock designs available in the studio. Filter by industry category to find your match.</p>
-          <Link to={workspace ? '/admin/template-studio' : '/templates'} className="mt-4 inline-block font-bold underline">View all templates →</Link>
+    <section id="templates" className={workspace ? 'rounded-2xl border border-border bg-card p-5 sm:p-6' : 'bg-[#041a34] py-14 text-white md:py-20'}>
+      <div className={workspace ? 'w-full' : 'mx-auto max-w-[1480px] px-4 md:px-10'}>
+        <div className="mb-7 flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[.20em] text-[#55ceff]">WEBSITE TEMPLATES</p>
+            <h2 className="font-heading text-3xl font-black tracking-[-.04em] md:text-5xl">Explore Real Templates</h2>
+            <p className={workspace ? 'mt-2 text-muted-foreground' : 'mt-2 max-w-3xl text-base text-slate-200/85 md:text-lg'}>
+              Preview full-page website concepts, then choose the exact design you want to customize.
+            </p>
+          </div>
+          <Link to={workspace ? '/admin/template-studio' : '/templates'} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[#2c9eff] px-5 font-bold text-[#f0f8ff] transition hover:bg-[#0877ea]">
+            View All Templates <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
-        {/* Category Tabs with Images */}
-        <div className="mb-8 flex flex-wrap justify-center gap-3">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setCategory(cat.id)}
-              className={`group relative overflow-hidden rounded-2xl border-2 transition-all duration-300 ${category === cat.id ? 'border-green-400 shadow-[0_0_16px_-2px_rgba(34,197,94,0.5)]' : 'border-gray-200 hover:border-green-400/50'}`}
-            >
-              <div className="h-16 w-24 sm:h-20 sm:w-32 overflow-hidden">
-                <SafeImage src={cat.image} alt={cat.label} category={cat.id} className="h-full w-full object-cover transition-transform group-hover:scale-110" />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-bold text-white">{cat.label}</span>
-              </div>
+        <div className="mb-8 flex flex-wrap gap-3" aria-label="Filter website templates by industry">
+          {CATEGORIES.map(item => (
+            <button key={item.id} type="button" aria-pressed={category === item.id}
+              onClick={() => setCategory(item.id)}
+              className={`group relative min-h-20 w-28 overflow-hidden rounded-xl border-2 text-left transition duration-200 hover:-translate-y-0.5 sm:w-36 ${category === item.id ? 'border-[#57cfff] shadow-[0_0_18px_rgba(20,156,255,.50)]' : 'border-[#93caed]/20 hover:border-[#57cfff]'}`}>
+              <SafeImage src={item.image} alt={`${item.label} template category`} category={item.id}
+                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#00152c] via-[#00152c]/25 to-transparent" />
+              <span className="absolute bottom-0 left-0 right-0 p-2 text-center text-[11px] font-extrabold leading-tight text-white sm:text-xs">{item.label}</span>
             </button>
           ))}
         </div>
 
-        {/* Template Cards with Industry Links */}
-        {isLoading && <Loader2 className="mx-auto h-6 w-6 animate-spin" aria-label="Loading templates" />}
-        {error && <p role="alert" className="text-destructive">Unable to load templates: {error.message}</p>}
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(template => (
-            <div key={template.id} className="space-y-2">
-              <StockTemplateCard template={template} onSelect={setPreview} />
-              <Link
-                to={`/templates?industry=${encodeURIComponent(template.niche || '')}`}
-                className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold text-[#0a1220] hover:border-green-400 hover:text-green-600 transition-all duration-300 hover:shadow-[0_0_12px_-2px_rgba(34,197,94,0.4)]"
-              >
-                <span>View {template.niche || 'Industry'} Version</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
+        {isLoading && <p role="status" className="mb-4 text-sm text-[#b5eaff]">Loading template previews…</p>}
+        {error && <p role="alert" className="mb-5 rounded-xl border border-amber-400/30 bg-amber-500/10 p-4 text-sm text-amber-100">Template previews are temporarily unavailable. Open the full catalog to try again.</p>}
+
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map(template => (
+            <ShowcaseCard key={template.id} template={template} onPreview={setPreview} />
           ))}
         </div>
-        {filtered.length === 0 && !isLoading && (
-          <p className="text-center text-sm text-muted-foreground py-8">No templates in this category yet — check back soon.</p>
+
+        {!isLoading && !error && !featured.length && (
+          <div className="rounded-xl border border-dashed border-white/25 bg-white/[.04] px-5 py-10 text-center">
+            <p className="text-lg font-semibold text-white">No verified templates in this selection yet.</p>
+            <p className="mt-2 text-sm text-slate-300">Browse the full catalog or contact us about this industry.</p>
+            <Link to="/templates" className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-[#0877ea] px-5 font-bold text-white">Open Template Catalog</Link>
+          </div>
         )}
       </div>
       <StockPreviewDialog template={preview} onClose={() => setPreview(null)} onChoose={onChoose} />

@@ -1,0 +1,325 @@
+/*
+ * Admin console kit — the shared surface language for every operator screen.
+ *
+ * Everything here is scoped to `.wle-main`, so it only ever affects the admin
+ * console and never the public site. It is built on the same tokens
+ * ReferenceAdmin.css uses, so operational pages and the reference dashboard
+ * finally look like one product.
+ *
+ * Two jobs:
+ *  1. Legibility guard — the admin canvas is always light. If the app is in
+ *     dark mode, the global shadcn tokens flip to near-white text, which made
+ *     token-styled pages render invisible inside this light shell. Re-declaring
+ *     the light values inside `.wle-main` fixes that for every page at once.
+ *  2. A small set of primitives (header, card, button, badge, alert, table,
+ *     empty state) so pages stop inventing their own.
+ */
+
+.wle-main {
+  color-scheme: light;
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 213 94% 40%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 11%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 213 94% 45%;
+  --radius: 0.625rem;
+}
+
+/* ── Page header ───────────────────────────────────────────── */
+.adm-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--launch-admin-border);
+}
+.adm-eyebrow {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--launch-admin-eyebrow);
+}
+.adm-title {
+  margin: 0;
+  font-size: clamp(22px, 2.4vw, 29px);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.15;
+  color: var(--launch-admin-heading);
+}
+.adm-sub {
+  margin: 9px 0 0;
+  max-width: 78ch;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--launch-admin-muted);
+}
+.adm-head-actions { display: flex; align-items: center; gap: 10px; flex: none; }
+.adm-muted { color: var(--launch-admin-muted); font-size: 13.5px; margin: 0; }
+
+/* ── Sections and cards ────────────────────────────────────── */
+.adm-section { margin-bottom: 24px; }
+.adm-section-title {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--launch-admin-heading);
+}
+.adm-card {
+  background: var(--launch-admin-surface);
+  border: 1px solid var(--launch-admin-border);
+  border-radius: 13px;
+}
+.adm-card-pad { padding: 22px; }
+.adm-grid { display: grid; gap: 16px; }
+.adm-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.adm-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.adm-grid.cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+/* ── Step rail ─────────────────────────────────────────────── */
+.adm-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.adm-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--launch-admin-border);
+  border-radius: 8px;
+  background: var(--launch-admin-surface);
+  color: var(--launch-admin-muted);
+  padding: 7px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.adm-step-num {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #eef3f9;
+  color: var(--launch-admin-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+.adm-step.active {
+  border-color: var(--launch-admin-primary);
+  background: #f2f8ff;
+  color: var(--launch-admin-primary);
+}
+.adm-step.active .adm-step-num { background: var(--launch-admin-primary); color: #fff; }
+.adm-step.done { border-color: #c8ecd9; background: #f4fbf7; color: #0f6b43; }
+.adm-step.done .adm-step-num { background: #15803d; color: #fff; }
+.adm-step-sep { color: #c3d2e0; flex: none; }
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.adm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--launch-admin-border);
+  border-radius: 9px;
+  background: var(--launch-admin-surface);
+  color: var(--launch-admin-heading);
+  padding: 9px 15px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+.adm-btn:hover { border-color: #b9cde2; box-shadow: 0 1px 2px rgba(9, 44, 79, .08); }
+.adm-btn.primary {
+  background: var(--launch-admin-primary);
+  border-color: var(--launch-admin-primary);
+  color: #fff;
+}
+.adm-btn.primary:hover { background: #0f61b3; border-color: #0f61b3; }
+.adm-btn.success { background: #15803d; border-color: #15803d; color: #fff; }
+.adm-btn.success:hover { background: #12692f; border-color: #12692f; }
+.adm-btn.lg { padding: 12px 22px; font-size: 15px; }
+.adm-btn:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+.adm-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--launch-admin-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+.adm-link:hover { text-decoration: underline; }
+
+/* ── Badges ────────────────────────────────────────────────── */
+.adm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.adm-badge.tone-slate { background: #f1f5f9; border-color: #e2e8f0; color: #475569; }
+.adm-badge.tone-sky { background: #e8f2fd; border-color: #cfe4fb; color: #0b5394; }
+.adm-badge.tone-amber { background: #fff6e5; border-color: #fce3b0; color: #8a5a09; }
+.adm-badge.tone-purple { background: #f3eefd; border-color: #e4d9fb; color: #5b3fa8; }
+.adm-badge.tone-cyan { background: #e6f7f9; border-color: #c7edf2; color: #0e6b78; }
+.adm-badge.tone-emerald { background: #e9f8f0; border-color: #c8ecd9; color: #0f6b43; }
+.adm-badge.tone-green { background: #eaf9ea; border-color: #cdeccd; color: #1a6b1f; }
+.adm-badge.tone-red { background: #fdecec; border-color: #f8d3d3; color: #a32121; }
+.adm-badge.tone-orange { background: #fdf0e6; border-color: #f8ddc5; color: #9a4d10; }
+
+/* ── Alerts ────────────────────────────────────────────────── */
+.adm-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid;
+  border-radius: 11px;
+  padding: 14px 16px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.adm-alert svg { flex: none; margin-top: 1px; }
+.adm-alert.warn { background: #fff8ec; border-color: #f2d9ab; color: #7a5312; }
+.adm-alert.info { background: #f2f8ff; border-color: #cfe4fb; color: #0b5394; }
+.adm-alert.error { background: #fdecec; border-color: #f6d0d0; color: #992020; }
+.adm-alert.success { background: #f1faf4; border-color: #c8ecd9; color: #0f6b43; }
+
+/* ── Selectable tiles ──────────────────────────────────────── */
+.adm-tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 5 / 3;
+  border: 1px solid var(--launch-admin-border);
+  border-radius: 12px;
+  background: var(--launch-admin-surface);
+  text-align: left;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.adm-tile:hover {
+  border-color: var(--launch-admin-primary);
+  box-shadow: 0 6px 18px rgba(9, 44, 79, .10);
+  transform: translateY(-2px);
+}
+.adm-tile-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.adm-tile-label {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 22px 12px 10px;
+  background: linear-gradient(to top, rgba(3, 19, 39, .92), rgba(3, 19, 39, 0));
+  color: #fff;
+  font-size: 13px;
+  font-weight: 750;
+}
+.adm-choice {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--launch-admin-border);
+  border-radius: 13px;
+  background: var(--launch-admin-surface);
+  padding: 22px;
+  text-align: center;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.adm-choice:hover {
+  border-color: var(--launch-admin-primary);
+  box-shadow: 0 6px 18px rgba(9, 44, 79, .10);
+  transform: translateY(-2px);
+}
+.adm-choice.active { border-color: var(--launch-admin-primary); background: #f2f8ff; }
+.adm-choice-value { font-size: 30px; font-weight: 800; color: var(--launch-admin-heading); letter-spacing: -.03em; }
+.adm-choice-note { margin-top: 6px; font-size: 13px; color: var(--launch-admin-muted); }
+.adm-mock {
+  display: grid;
+  place-items: center;
+  height: 116px;
+  border: 1px solid #e4edf5;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f6fafe, #eaf2fa);
+  color: #9db4c9;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+/* ── Preview frame ─────────────────────────────────────────── */
+.adm-frame {
+  overflow: hidden;
+  border: 1px solid var(--launch-admin-border);
+  border-radius: 12px;
+  background: var(--launch-admin-surface);
+}
+.adm-frame iframe { display: block; width: 100%; height: 250px; border: 0; background: #fff; }
+.adm-frame-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 13px;
+  border-top: 1px solid #eef3f8;
+  font-size: 12.5px;
+  color: var(--launch-admin-muted);
+}
+
+/* ── Table ─────────────────────────────────────────────────── */
+.adm-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.adm-table th {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--launch-admin-border);
+  background: #f8fbfe;
+  color: var(--launch-admin-muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-align: left;
+  text-transform: uppercase;
+}
+.adm-table td { padding: 12px; border-bottom: 1px solid #eef3f8; color: var(--launch-admin-text); }
+.adm-table tbody tr:hover td { background: #f8fbfe; }
+
+/* ── Empty state ───────────────────────────────────────────── */
+.adm-empty {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  padding: 46px 22px;
+  border: 1px dashed #cddceb;
+  border-radius: 13px;
+  background: #fbfdff;
+  color: var(--launch-admin-muted);
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ── Tablet: the console is used on 868px-class screens ────── */
+@media (max-width: 1080px) {
+  .adm-grid.cols-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .adm-grid.cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .adm-head { flex-direction: column; gap: 14px; }
+}
+@media (max-width: 720px) {
+  .adm-grid.cols-2,
+  .adm-grid.cols-3,
+  .adm-grid.cols-5 { grid-template-columns: minmax(0, 1fr); }
+}

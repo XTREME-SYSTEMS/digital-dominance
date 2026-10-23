@@ -19,6 +19,7 @@ export default function WebsiteFactory() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [deploying, setDeploying] = useState(null);
+  const [deployError, setDeployError] = useState(null);
   const [form, setForm] = useState({
     name: "",
     slug: "",
@@ -57,19 +58,15 @@ export default function WebsiteFactory() {
 
   const deploy = async (template) => {
     setDeploying(template.id);
+    setDeployError(null);
     try {
-      // Simulate deployment — in production this would clone the Base44 app
-      // and configure it with the template's settings.
-      await new Promise((r) => setTimeout(r, 2000));
-      const liveUrl = liveUrlFor(template) || PUBLISHED_URL;
-      await base44.entities.WebsiteTemplate.update(template.id, {
-        status: "live",
-        generated_url: liveUrl,
-        deploy_log: JSON.stringify({ steps: ["clone", "configure", "deploy", "verify"], completed: true }),
-      });
-      queryClient.invalidateQueries({ queryKey: ["websiteTemplates"] });
+      // Fail closed: there is no verified deploy provider on this legacy screen.
+      // Preserve the configured record and send operators to the governed launch
+      // workflow instead of fabricating a URL, receipt, or LIVE status.
+      throw new Error("Deployment unavailable in this legacy screen. Use Launch Control and require a verified provider deployment receipt.");
     } catch (e) {
-      console.error("Deploy failed:", e);
+      console.error("Deploy blocked:", e);
+      setDeployError(e.message || "Deployment could not be verified.");
     }
     setDeploying(null);
   };
@@ -159,6 +156,7 @@ export default function WebsiteFactory() {
         </div>
       )}
 
+      {deployError && <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">{deployError}</p>}
       {isLoading ? (
         <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-stone-400" /></div>
       ) : (
@@ -177,7 +175,7 @@ export default function WebsiteFactory() {
               {t.config?.company_name && <p className="text-sm text-stone-600">{t.config.company_name}</p>}
               {t.config?.primary_city && <p className="text-xs text-stone-400 mt-1">{t.config.primary_city}, {t.config.primary_state}</p>}
               {(() => {
-                const live = liveUrlFor(t);
+                const live = t.status === "live" && t.generated_url ? t.generated_url : null;
                 return live ? (
                   <a href={live} target="_blank" rel="noopener" className="text-xs text-amber-600 hover:underline flex items-center gap-1 mt-2">
                     <Globe className="h-3 w-3" /> {live.replace(/^https?:\/\//, "")}
@@ -195,7 +193,7 @@ export default function WebsiteFactory() {
                     {deploying === t.id ? "Deploying..." : "Deploy"}
                   </button>
                 ) : (
-                  <a href={liveUrlFor(t) || PUBLISHED_URL} target="_blank" rel="noopener" className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-stone-900 text-white text-xs font-bold hover:bg-stone-800">
+                  <a href={t.generated_url || "#"} target="_blank" rel="noopener" className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-stone-900 text-white text-xs font-bold hover:bg-stone-800">
                     <Globe className="h-3.5 w-3.5" /> Visit
                   </a>
                 )}

@@ -84,6 +84,7 @@ export default async function (req: Request): Promise<Response> {
     if (!token) return Response.json({ error: 'VERCEL_API_TOKEN secret is not set' }, { status: 500 });
 
     const svc = base44.asServiceRole;
+    const body = await req.json().catch(() => ({}));
     const pages = await svc.entities.DynamicPage.filter({ status: 'published', is_public: true });
     const codeBlocks = await svc.entities.CodeBlock.filter({ active: true });
 
@@ -92,8 +93,10 @@ export default async function (req: Request): Promise<Response> {
 
     const files: any[] = [];
 
-    // Generate index.html — landing on the first published page or a directory listing
-    if (pages.length > 0) {
+    // If baseHtml is provided (from the universal generator), use it as index.html
+    if (body.baseHtml) {
+      files.push({ file: 'index.html', data: body.baseHtml });
+    } else if (pages.length > 0) {
       files.push({ file: 'index.html', data: generatePageHtml(pages[0], globalCss, globalJs) });
     } else {
       files.push({ file: 'index.html', data: '<!DOCTYPE html><html><head><title>Code Studio</title></head><body><h1>No published pages yet</h1></body></html>' });

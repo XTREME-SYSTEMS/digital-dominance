@@ -1,0 +1,23 @@
+name: Mass launch evidence regression
+on:
+  push:
+    branches:
+      - 'fix/mass-launch-proof-gates-*'
+  pull_request:
+    paths:
+      - 'base44/shared/deploymentProof.mjs'
+      - 'base44/functions/massLaunchOrchestrator/entry.ts'
+      - 'base44/functions/siteLaunchValidator/entry.ts'
+      - 'scripts/deployment-truth.test.mjs'
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Synthetic deployment safety tests
+        run: node --test scripts/deployment-truth.test.mjs

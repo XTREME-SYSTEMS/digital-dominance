@@ -16,11 +16,11 @@ export default function LaunchHeroCopy({ onBrowse }) {
     <div className="wle-hero-actions">
       <button type="button" onClick={onBrowse} className="wle-primary">Browse Industries <span aria-hidden="true">→</span></button>
       <a href="#templates" className="wle-outline">View Templates</a>
-      <a href="tel:+18665711174" className="wle-outline wle-hero-call" aria-label="Call Strategic Minds AI at 866 571 1174">
-        <Phone aria-hidden="true" /><span><small>Call Now</small><strong>(866) 571-1174</strong></span>
+      <a href="tel:+17722090266" className="wle-outline wle-hero-call" aria-label="Call Digital Dominance at 772 209 0266">
+        <Phone aria-hidden="true" /><span><small>Call Now</small><strong>(772) 209-0266</strong></span>
       </a>
     </div>
-    <div className="wle-feature-row" aria-label="Website Launch Engine benefits">
+    <div className="wle-feature-row" aria-label="Digital Dominance benefits">
       {benefits.map(([icon, label]) => <div key={icon}><span aria-hidden="true">{icon}</span><b>{label}</b></div>)}
     </div>
     <button type="button" className="wle-open-wizard" onClick={onBrowse}>Plan a website launch <span aria-hidden="true">↗</span></button>

@@ -1,22 +1,29 @@
 /**
  * Industry Image Registry — the single source of truth for real, verified
- * preview images mapped to industry niches. Every URL is a stable Unsplash
- * photo that renders reliably. The mandate system uses this to guarantee
- * no template ever ships with a blank or broken preview image.
+ * preview images mapped to industry niches.
  *
- * To add a new industry: add an entry to INDUSTRY_IMAGES with a verified
- * Unsplash URL (test it in a browser first). The normalizeNiche() function
- * maps TemplateLibrary.niche values to registry keys.
+ * RULES
+ * 1. Every URL must be a verified-live asset. 22 Unsplash entries previously
+ *    404'd, which left every template preview slot blank (the all-black
+ *    template step). Each of those is now a live Base44-hosted image — the same
+ *    asset the delivered site renders for that industry.
+ * 2. No image is shared between unrelated industries.
+ * 3. 'default' is the only generic entry and is never a substitute for a named
+ *    industry: consumers fail closed instead of borrowing it.
+ *
+ * imageMandateAudit re-checks every URL over HTTP and fails the run if any
+ * entry is unreachable. To add an industry: add an entry with a verified URL,
+ * then run that audit before shipping.
  */
 
 export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   epoxy: {
     label: "Epoxy Flooring",
-    url: "https://images.unsplash.com/photo-1585421724267-2a87ea7c19a4?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/090c0dbb8_generated_image.png",
   },
   roofing: {
     label: "Roofing",
-    url: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/18622e02f_generated_image.png",
   },
   hvac: {
     label: "HVAC",
@@ -28,19 +35,19 @@ export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   },
   electrical: {
     label: "Electrical",
-    url: "https://images.unsplash.com/photo-1621905219875-9a3a1f00f5be?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ea9d7a219_generated_image.png",
   },
   water_damage: {
     label: "Water Damage Restoration",
-    url: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/625091ac6_generated_image.png",
   },
   mold_remediation: {
     label: "Mold Remediation",
-    url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/89a71a4d1_generated_image.png",
   },
   fire_damage: {
     label: "Fire Damage Restoration",
-    url: "https://images.unsplash.com/photo-1600585154340-be6161a1a817?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/6fe575a92_generated_image.png",
   },
   med_spa: {
     label: "Med Spa",
@@ -60,23 +67,23 @@ export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   },
   personal_injury: {
     label: "Personal Injury Law",
-    url: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/1604e81e2_generated_image.png",
   },
   real_estate: {
     label: "Real Estate",
-    url: "https://images.unsplash.com/photo-1564013799919-ab6000f00a91?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/e6aa23e34_generated_image.png",
   },
   insurance: {
     label: "Insurance",
-    url: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b67?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/ce38bc06e_generated_image.png",
   },
   mortgage: {
     label: "Mortgage",
-    url: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b67?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/23df705e2_generated_image.png",
   },
   cleaning: {
     label: "Cleaning Services",
-    url: "https://images.unsplash.com/photo-1521799267631-32f99f4c9746?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/c2936f808_generated_image.png",
   },
   landscaping: {
     label: "Landscaping",
@@ -88,7 +95,7 @@ export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   },
   pest_control: {
     label: "Pest Control",
-    url: "https://images.unsplash.com/photo-1581094271901-4d0e8e6f3a91?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/62099cc37_generated_image.png",
   },
   moving: {
     label: "Moving Services",
@@ -96,15 +103,15 @@ export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   },
   auto_detailing: {
     label: "Auto Detailing",
-    url: "https://images.unsplash.com/photo-1486001178350-2a3ff6b37e2c?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/6bee96b87_generated_image.png",
   },
   remodeling: {
     label: "Remodeling",
-    url: "https://images.unsplash.com/photo-1503387762-592deb58ef3e?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/bd651939c_generated_image.png",
   },
   locksmith: {
     label: "Locksmith",
-    url: "https://images.unsplash.com/photo-1592934297817-2a8c8b6f3a91?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/91025a7cc_generated_image.png",
   },
   garage_door: {
     label: "Garage Door",
@@ -112,11 +119,48 @@ export const INDUSTRY_IMAGES: Record<string, { url: string; label: string }> = {
   },
   restaurants: {
     label: "Restaurants",
-    url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34d4?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/6a26270b8_generated_image.png",
   },
   default: {
     label: "Professional",
-    url: "https://images.unsplash.com/photo-1467232004584-a551f7af35c3?w=800&q=80&auto=format&fit=crop",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/447c55244_generated_image.png",
+  },
+  // === Non-contractor digital niches — each gets a unique image ===
+  saas: {
+    label: "SaaS Platform",
+    url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&auto=format&fit=crop",
+  },
+  marketplace: {
+    label: "Marketplace",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/107c30c28_generated_image.png",
+  },
+  booking: {
+    label: "Booking Platform",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a5b83db58_generated_image.png",
+  },
+  social: {
+    label: "Social Platform",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/77508582a_generated_image.png",
+  },
+  ai_tool: {
+    label: "AI Tool",
+    url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80&auto=format&fit=crop",
+  },
+  ecommerce: {
+    label: "Ecommerce Store",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/55a6768da_generated_image.png",
+  },
+  content_gen: {
+    label: "Content Generator",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/a5b713e67_generated_image.png",
+  },
+  funnel: {
+    label: "Funnel Builder",
+    url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80&auto=format&fit=crop",
+  },
+  identity: {
+    label: "Brand & Web Design",
+    url: "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b/c911f0390_generated_image.png",
   },
 };
 

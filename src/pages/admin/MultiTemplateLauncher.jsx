@@ -7,6 +7,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import AdminSystemPage from "@/components/launch-engine-admin/AdminSystemPage";
+import TemplatePreviewCard from "@/components/multi-launch/TemplatePreviewCard";
 
 export default function MultiTemplateLauncher() {
   const queryClient = useQueryClient();
@@ -29,11 +30,28 @@ export default function MultiTemplateLauncher() {
     },
   });
 
-  // Get unique niches for filter
-  const niches = [...new Set(templates.map((t) => t.niche).filter(Boolean))].sort();
+  // Normalize niches — group case-variant duplicates (e.g. "Epoxy Flooring" and "epoxy")
+  // into a single canonical display label so the filter dropdown is clean.
+  const nicheMap = {};
+  for (const t of templates) {
+    if (!t.niche) continue;
+    const key = t.niche.toLowerCase().replace(/ /g, "_");
+    if (!nicheMap[key]) {
+      nicheMap[key] = { key, display: t.niche, count: 0 };
+    }
+    nicheMap[key].count++;
+    // Prefer Title Case display over lowercase
+    if (t.niche[0] === t.niche[0]?.toUpperCase() && nicheMap[key].display[0] === nicheMap[key].display[0]?.toLowerCase()) {
+      nicheMap[key].display = t.niche;
+    }
+  }
+  const niches = Object.values(nicheMap).sort((a, b) => a.display.localeCompare(b.display));
 
   const filtered = templates.filter((t) => {
-    if (nicheFilter !== "all" && t.niche !== nicheFilter) return false;
+    if (nicheFilter !== "all") {
+      const tKey = (t.niche || "").toLowerCase().replace(/ /g, "_");
+      if (tKey !== nicheFilter) return false;
+    }
     if (search) {
       const q = search.toLowerCase();
       return t.name?.toLowerCase().includes(q) || t.slug?.toLowerCase().includes(q) || t.niche?.toLowerCase().includes(q);
@@ -158,9 +176,9 @@ export default function MultiTemplateLauncher() {
           onChange={(e) => setNicheFilter(e.target.value)}
           className="h-9 px-3 rounded-lg border border-[#dce6f1] text-sm text-[#112940] focus:border-[#126fc8] outline-none bg-white"
         >
-          <option value="all">All Niches</option>
+          <option value="all">All Niches ({templates.length})</option>
           {niches.map((n) => (
-            <option key={n} value={n}>{n}</option>
+            <option key={n.key} value={n.key}>{n.display} ({n.count})</option>
           ))}
         </select>
         <button
@@ -261,46 +279,14 @@ export default function MultiTemplateLauncher() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filtered.map((tpl) => {
-            const isSelected = selected.has(tpl.id);
-            return (
-              <button
-                key={tpl.id}
-                onClick={() => toggleSelect(tpl.id)}
-                className={`text-left rounded-lg border p-3 transition ${
-                  isSelected
-                    ? "border-[#126fc8] bg-[#126fc8]/5 ring-2 ring-[#126fc8]/20"
-                    : "border-[#e4e4e7] bg-white hover:border-[#126fc8]/40"
-                }`}
-              >
-                <div className="flex items-start gap-2">
-                  <div
-                    className={`w-5 h-5 rounded border-2 shrink-0 mt-0.5 grid place-items-center ${
-                      isSelected ? "border-[#126fc8] bg-[#126fc8]" : "border-[#d4d4d8]"
-                    }`}
-                  >
-                    {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-[#112940] truncate">{tpl.name}</p>
-                    <p className="text-[10px] text-[#8faec9] font-mono truncate">{tpl.slug}</p>
-                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                      {tpl.niche && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#126fc8]/10 text-[#126fc8]">{tpl.niche}</span>
-                      )}
-                      <span className="text-[9px] text-[#607790]">{tpl.category}</span>
-                      {tpl.deploy_count > 0 && (
-                        <span className="text-[9px] text-[#d97706] font-bold">{tpl.deploy_count} deploys</span>
-                      )}
-                    </div>
-                    {tpl.description && (
-                      <p className="text-[10px] text-[#607790] mt-1.5 line-clamp-2">{tpl.description}</p>
-                    )}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
+          {filtered.map((tpl) => (
+            <TemplatePreviewCard
+              key={tpl.id}
+              template={tpl}
+              isSelected={selected.has(tpl.id)}
+              onToggle={() => toggleSelect(tpl.id)}
+            />
+          ))}
         </div>
       )}
 

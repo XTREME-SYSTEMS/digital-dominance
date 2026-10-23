@@ -1,0 +1,286 @@
+{
+  "name": "BrandProfile",
+  "type": "object",
+  "properties": {
+    "business_name": {
+      "type": "string",
+      "description": "The business name the site is built around"
+    },
+    "website_mode": {
+      "type": "string",
+      "enum": [
+        "existing",
+        "new"
+      ],
+      "default": "new",
+      "description": "Whether the business already has a website or needs a new one"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Existing website URL when website_mode is existing"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Industry niche key, matching the stock template catalogue"
+    },
+    "industry_label": {
+      "type": "string",
+      "description": "Human-readable industry name"
+    },
+    "sub_industry": {
+      "type": "string",
+      "description": "Primary sub-industry or specialty chosen inside the industry"
+    },
+    "sub_industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Every specialty picked inside the industry; each one is added to the services list"
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "The services the business offers: industry list, specialties, discovered services and written-in ones"
+    },
+    "discovered_services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Newer services and niches the AI assist surfaced and the owner accepted"
+    },
+    "has_rating": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the business has customer star ratings to show. When false, no rating or review block is rendered"
+    },
+    "rating_value": {
+      "type": "number",
+      "description": "Star rating out of 5, when the business has one"
+    },
+    "rating_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many reviews the rating is based on"
+    },
+    "accent": {
+      "type": "string",
+      "description": "Accent colour for the site, chosen from the trending accent combinations"
+    },
+    "slogan": {
+      "type": "string",
+      "description": "Business slogan or tagline, written by the owner or generated"
+    },
+    "address": {
+      "type": "string",
+      "description": "Street address of the business"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "territory_radius_miles": {
+      "type": "number",
+      "description": "How far from the business address it serves customers, in miles"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Primary phone number shown on every page and used for call buttons"
+    },
+    "email": {
+      "type": "string",
+      "description": "Contact email shown on every page and used for quote replies"
+    },
+    "palette_id": {
+      "type": "string"
+    },
+    "palette": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "accent": {
+          "type": "string"
+        },
+        "accentLight": {
+          "type": "string"
+        },
+        "gradient": {
+          "type": "string"
+        }
+      }
+    },
+    "logos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "style": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "The 10 generated transparent-background logo concepts"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "The logo concept the user selected for the site"
+    },
+    "image_plan": {
+      "type": "string",
+      "enum": [
+        "own_photos",
+        "ai_generated"
+      ],
+      "default": "own_photos",
+      "description": "Whether the site uses the owner's own uploaded photos or AI-generated imagery reviewed before publishing"
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "slot": {
+            "type": "string",
+            "description": "Imagery slot this photo is posed into (hero, services, about, gallery1, gallery2, gallery3). Empty means it sits in the library only."
+          }
+        }
+      },
+      "default": [],
+      "description": "The owner's own photos: team, vehicles, equipment and finished work, posed into the imagery slots of the generated pages"
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "template_id": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "The built website page pack: one entry per generated page, linked to its TemplateLibrary record"
+    },
+    "applied_fixes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "QA and validation suggestions the owner accepted and regenerated onto the page"
+    },
+    "ai_copy": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "AI-written headline, description and differentiators applied to the page when the owner accepts the copy suggestion"
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Exhaustive industry discovery: services, image prompts, products and tools, hooks, phrases and slogans, SEO/AEO/GEO, trust signals, marketing recommendations, layouts, fonts and funnel placements"
+    },
+    "discovery_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "ready",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "discovery_error": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "configured",
+        "ready"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "business_name",
+    "industry"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

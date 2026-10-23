@@ -1,0 +1,34 @@
+name: Stock Gallery Regression
+on:
+  push:
+    branches: ["fix/live-template-catalog-*"]
+  pull_request:
+    paths:
+      - "src/lib/stockCatalogFallback.js"
+      - "src/components/template-studio/**"
+      - "src/pages/TemplatesGallery.jsx"
+      - "vercel.json"
+      - "scripts/stock-catalog-fallback.test.mjs"
+permissions:
+  contents: read
+jobs:
+  gallery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/stock-catalog-fallback.test.mjs
+
+  http-smoke:
+    runs-on: ubuntu-latest
+    env:
+      SMOKE_SITE: https://digital-dominance-4efu69yiw-strategic-minds-advisory.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify published Vercel preview routes
+        run: node scripts/stock-gallery-http-smoke.mjs
