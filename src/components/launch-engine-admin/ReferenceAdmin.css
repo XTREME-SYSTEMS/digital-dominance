@@ -59,6 +59,10 @@
 .wle-footer { font-size: 13px; color: var(--launch-admin-footer); margin-top: 20px; }
 .wle-admin .wle-footer a { color: var(--launch-admin-footer-link); font-weight: 850; }
 @media (max-width: 1100px) {
+  .wle-admin { grid-template-columns: 232px minmax(0,1fr); }
+  .wle-aside { padding: 18px 14px; }
+  .wle-admin .wle-side-nav { padding: 12px; font-size: 14px; gap: 10px; }
+  .wle-content { padding: 26px; }
   .wle-stats { grid-template-columns: repeat(2,1fr); }
   .wle-panels { grid-template-columns: 1fr; }
 }

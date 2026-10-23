@@ -1,27 +1,38 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { Rocket, Check, ChevronRight, Loader2, ShieldCheck, AlertTriangle, Eye, Lock, FileCheck, Globe } from 'lucide-react';
+import { Rocket, Check, ChevronRight, Loader2, ShieldCheck, AlertTriangle, Lock, FileCheck, Globe } from 'lucide-react';
 import { HOMEPAGE_INDUSTRY_IMAGES } from '@/data/homeIndustryImages';
 import SafeImage from '@/components/ui/SafeImage';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import { base44 } from '@/api/base44Client';
 
 const LAYOUTS = [
-  { id: 1, name: 'Split Modern', desc: 'Hero left, content right with asymmetric grid' },
-  { id: 2, name: 'Bold Centered', desc: 'Full-width centered hero with bold typography' },
-  { id: 3, name: 'Corporate Sidebar', desc: 'Sidebar nav with structured content sections' },
+  { id: 1, name: 'Split modern', desc: 'Hero left, content right with an asymmetric grid' },
+  { id: 2, name: 'Bold centred', desc: 'Full-width centred hero with bold typography' },
+  { id: 3, name: 'Corporate sidebar', desc: 'Sidebar navigation with structured content sections' },
 ];
 
 const BATCH_SIZES = [1, 10, 100];
 
+const STEPS = [
+  { n: 1, label: 'Industry' },
+  { n: 2, label: 'Design' },
+  { n: 3, label: 'Quantity' },
+  { n: 4, label: 'Generate' },
+  { n: 5, label: 'Preview & QA' },
+  { n: 6, label: 'Approve' },
+  { n: 7, label: 'Publish' },
+];
+
 const STATUSES = {
-  CONFIGURED: { label: 'Configured', color: 'text-slate-400 bg-slate-500/10' },
-  QUEUED: { label: 'Queued', color: 'text-sky-400 bg-sky-500/10' },
-  BUILDING: { label: 'Building', color: 'text-amber-400 bg-amber-500/10' },
-  PREVIEW_READY: { label: 'Preview Ready', color: 'text-purple-400 bg-purple-500/10' },
-  VALIDATED: { label: 'Validated', color: 'text-cyan-400 bg-cyan-500/10' },
-  APPROVED: { label: 'Approved', color: 'text-emerald-400 bg-emerald-500/10' },
-  LIVE: { label: 'Live', color: 'text-green-400 bg-green-500/10' },
-  FAILED: { label: 'Failed', color: 'text-red-400 bg-red-500/10' },
-  ROLLED_BACK: { label: 'Rolled Back', color: 'text-orange-400 bg-orange-500/10' },
+  CONFIGURED: { label: 'Configured', tone: 'tone-slate' },
+  QUEUED: { label: 'Queued', tone: 'tone-sky' },
+  BUILDING: { label: 'Building', tone: 'tone-amber' },
+  PREVIEW_READY: { label: 'Preview ready', tone: 'tone-purple' },
+  VALIDATED: { label: 'Validated', tone: 'tone-cyan' },
+  APPROVED: { label: 'Approved', tone: 'tone-emerald' },
+  LIVE: { label: 'Live', tone: 'tone-green' },
+  FAILED: { label: 'Failed', tone: 'tone-red' },
+  ROLLED_BACK: { label: 'Rolled back', tone: 'tone-orange' },
 };
 
 export default function OneClickFactory() {
@@ -125,231 +136,251 @@ export default function OneClickFactory() {
     setError(null);
   }, []);
 
+  const layoutName = LAYOUTS.find((l) => l.id === selectedLayout)?.name;
+  const status = STATUSES[batchStatus] || { label: batchStatus, tone: 'tone-slate' };
+
   return (
-    <div className="min-h-screen bg-[#050508] text-white">
-      <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
-        {/* Header */}
-        <div className="mb-8 flex items-center gap-3">
-          <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-sky-500 to-blue-700">
-            <Rocket className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">One-Click Factory</h1>
-            <p className="text-sm text-slate-400">Industry → Design → Quantity → Generate → Validate → Approve → Publish</p>
-          </div>
-        </div>
+    <div className="wle-content">
+      <AdminPageHeader
+        eyebrow="Site factory"
+        title="One-click factory"
+        description="Choose an industry, a design and a batch size, then generate NOINDEX previews for review. Nothing publishes from this screen without a verified deployment and an approval receipt."
+      />
 
-        {/* Step Progress */}
-        <div className="mb-8 flex flex-wrap items-center gap-2">
-          {[
-            { n: 1, label: 'Industry' },
-            { n: 2, label: 'Design' },
-            { n: 3, label: 'Quantity' },
-            { n: 4, label: 'Generate' },
-            { n: 5, label: 'Preview & QA' },
-            { n: 6, label: 'Approve' },
-            { n: 7, label: 'Publish' },
-          ].map((s) => (
-            <div key={s.n} className="flex items-center gap-2">
-              <div
-                className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
-                  step >= s.n
-                    ? 'border-sky-500 bg-sky-500/15 text-sky-300'
-                    : 'border-slate-700 bg-slate-800/50 text-slate-500'
-                }`}
-              >
-                <span className={`grid h-5 w-5 place-items-center rounded-full text-[10px] ${
-                  step > s.n ? 'bg-sky-500 text-white' : step === s.n ? 'border border-sky-400 text-sky-300' : 'bg-slate-700 text-slate-500'
-                }`}>
-                  {step > s.n ? <Check className="h-3 w-3" /> : s.n}
-                </span>
-                {s.label}
-              </div>
-              {s.n < 7 && <ChevronRight className="h-3 w-3 text-slate-600" />}
+      {/* Progress */}
+      <div className="adm-steps" style={{ marginBottom: 22 }}>
+        {STEPS.map((s) => (
+          <React.Fragment key={s.n}>
+            <div
+              className={`adm-step ${step > s.n ? 'done' : step === s.n ? 'active' : ''}`}
+              aria-current={step === s.n ? 'step' : undefined}
+            >
+              <span className="adm-step-num">{step > s.n ? <Check className="h-3 w-3" /> : s.n}</span>
+              {s.label}
             </div>
-          ))}
-        </div>
+            {s.n < STEPS.length && <ChevronRight className="adm-step-sep h-3.5 w-3.5" />}
+          </React.Fragment>
+        ))}
+      </div>
 
-        {/* Batch Status Badge */}
-        {batchStatus !== 'CONFIGURED' && (
-          <div className="mb-6 flex items-center gap-2">
-            <span className="text-xs text-slate-400">Batch Status:</span>
-            <span className={`rounded-full px-3 py-1 text-xs font-bold ${STATUSES[batchStatus]?.color}`}>
-              {STATUSES[batchStatus]?.label || batchStatus}
+      {batchStatus !== 'CONFIGURED' && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+          <span className="adm-muted">Batch status</span>
+          <span className={`adm-badge ${status.tone}`}>{status.label}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="adm-alert error" role="alert" style={{ marginBottom: 20 }}>
+          <AlertTriangle className="h-4 w-4" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {/* Step 1 — industry */}
+      {step === 1 && (
+        <section className="adm-section">
+          <h2 className="adm-section-title">Choose your industry</h2>
+          <p className="adm-muted" style={{ marginBottom: 16 }}>
+            Each industry carries its own approved photography and layout set.
+          </p>
+          <div className="adm-grid cols-5">
+            {industries.map((ind) => (
+              <button key={ind.id} type="button" onClick={() => handleIndustrySelect(ind.niche)} className="adm-tile">
+                <SafeImage
+                  src={ind.image_url}
+                  alt={ind.alt_text}
+                  niche={ind.niche}
+                  failClosed
+                  className="adm-tile-media"
+                />
+                <span className="adm-tile-label">{ind.label}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Step 2 — design */}
+      {step === 2 && (
+        <section className="adm-section">
+          <h2 className="adm-section-title">Choose your design</h2>
+          <p className="adm-muted" style={{ marginBottom: 16 }}>
+            Industry: <strong style={{ color: 'var(--launch-admin-heading)' }}>{selectedIndustry}</strong>
+          </p>
+          <div className="adm-grid cols-3">
+            {LAYOUTS.map((layout) => (
+              <button
+                key={layout.id}
+                type="button"
+                onClick={() => handleLayoutSelect(layout.id)}
+                className={`adm-choice ${selectedLayout === layout.id ? 'active' : ''}`}
+              >
+                <div className="adm-mock">{String.fromCharCode(64 + layout.id)}</div>
+                <h3 style={{ margin: '14px 0 4px', fontSize: 15, fontWeight: 800, color: 'var(--launch-admin-heading)' }}>
+                  {layout.name}
+                </h3>
+                <p className="adm-choice-note">{layout.desc}</p>
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={() => setStep(1)} className="adm-link" style={{ marginTop: 18 }}>
+            ← Back to industries
+          </button>
+        </section>
+      )}
+
+      {/* Step 3 — quantity */}
+      {step === 3 && (
+        <section className="adm-section">
+          <h2 className="adm-section-title">Choose a batch size</h2>
+          <p className="adm-muted" style={{ marginBottom: 16 }}>
+            {selectedIndustry} · {layoutName}
+          </p>
+          <div className="adm-grid cols-3">
+            {BATCH_SIZES.map((size) => (
+              <button
+                key={size}
+                type="button"
+                onClick={() => handleBatchSizeSelect(size)}
+                className={`adm-choice ${batchSize === size ? 'active' : ''}`}
+              >
+                <div className="adm-choice-value">{size}</div>
+                <div className="adm-choice-note">
+                  {size === 1 ? 'Canary site' : size === 10 ? 'Preview batch' : 'Stress test'}
+                </div>
+                {size === 100 && (
+                  <div style={{ marginTop: 10 }}>
+                    <span className="adm-badge tone-amber">Compilation only — no auto-deploy</span>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={() => setStep(2)} className="adm-link" style={{ marginTop: 18 }}>
+            ← Back to designs
+          </button>
+        </section>
+      )}
+
+      {/* Step 4 — generate */}
+      {step === 4 && (
+        <section className="adm-card adm-card-pad" style={{ textAlign: 'center', maxWidth: 620, margin: '0 auto' }}>
+          <h2 className="adm-section-title">Ready to generate</h2>
+          <p className="adm-muted" style={{ margin: '8px 0 20px' }}>
+            {batchSize} {batchSize === 1 ? 'site' : 'sites'} · {selectedIndustry} · {layoutName} · NOINDEX preview
+          </p>
+          <button type="button" onClick={handleGenerate} disabled={generating} className="adm-btn primary lg">
+            {generating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Rocket className="h-5 w-5" />}
+            {generating ? 'Generating…' : 'Generate preview batch'}
+          </button>
+          {error && (
+            <div className="adm-alert error" role="alert" style={{ marginTop: 18, textAlign: 'left' }}>
+              <AlertTriangle className="h-4 w-4" />
+              <span>{error}</span>
+            </div>
+          )}
+          <div>
+            <button type="button" onClick={() => setStep(3)} className="adm-link" style={{ marginTop: 18 }}>
+              ← Back
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* Step 5 — preview & QA */}
+      {step === 5 && (
+        <section className="adm-section">
+          <h2 className="adm-section-title">Preview & independent QA</h2>
+          <div className="adm-alert warn" style={{ margin: '14px 0 18px' }}>
+            <Lock className="h-4 w-4" />
+            <span>
+              Every preview here is NOINDEX. Nothing in this batch is indexed by search engines until it is
+              approved and published through the governed launch workflow.
             </span>
           </div>
-        )}
-
-        {/* Step 1: Industry Selection */}
-        {step === 1 && (
-          <div>
-            <h2 className="mb-4 text-lg font-bold">Choose Your Industry</h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {industries.map((ind) => (
-                <button
-                  key={ind.id}
-                  onClick={() => handleIndustrySelect(ind.niche)}
-                  className="group relative aspect-[5/3] overflow-hidden rounded-xl border border-slate-700 bg-slate-900 text-left transition hover:-translate-y-1 hover:border-sky-500"
-                >
-                  <SafeImage src={ind.image_url} alt={ind.alt_text} niche={ind.niche} failClosed className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-105" />
-                  <span className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-                  <span className="absolute inset-x-0 bottom-0 p-3 text-sm font-bold">{ind.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 2: Design Selection */}
-        {step === 2 && (
-          <div>
-            <h2 className="mb-4 text-lg font-bold">Choose Your Design</h2>
-            <p className="mb-6 text-sm text-slate-400">Industry: <span className="font-semibold text-sky-300">{selectedIndustry}</span></p>
-            <div className="grid gap-4 md:grid-cols-3">
-              {LAYOUTS.map((layout) => (
-                <button
-                  key={layout.id}
-                  onClick={() => handleLayoutSelect(layout.id)}
-                  className="group rounded-xl border border-slate-700 bg-slate-900/50 p-6 text-left transition hover:-translate-y-1 hover:border-sky-500"
-                >
-                  <div className="mb-3 grid h-32 place-items-center rounded-lg border border-slate-700 bg-slate-800">
-                    <span className="text-4xl font-bold text-slate-600">{String.fromCharCode(64 + layout.id)}</span>
-                  </div>
-                  <h3 className="mb-1 font-bold">{layout.name}</h3>
-                  <p className="text-xs text-slate-400">{layout.desc}</p>
-                </button>
-              ))}
-            </div>
-            <button onClick={() => setStep(1)} className="mt-6 text-sm text-slate-400 hover:text-sky-300">← Back to industries</button>
-          </div>
-        )}
-
-        {/* Step 3: Quantity */}
-        {step === 3 && (
-          <div>
-            <h2 className="mb-4 text-lg font-bold">Choose Batch Size</h2>
-            <p className="mb-6 text-sm text-slate-400">
-              Industry: <span className="font-semibold text-sky-300">{selectedIndustry}</span> · Design: <span className="font-semibold text-sky-300">{LAYOUTS.find((l) => l.id === selectedLayout)?.name}</span>
-            </p>
-            <div className="grid gap-4 md:grid-cols-3">
-              {BATCH_SIZES.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => handleBatchSizeSelect(size)}
-                  className={`rounded-xl border p-8 text-center transition hover:-translate-y-1 ${
-                    batchSize === size ? 'border-sky-500 bg-sky-500/10' : 'border-slate-700 bg-slate-900/50'
-                  }`}
-                >
-                  <div className="text-4xl font-bold text-sky-300">{size}</div>
-                  <div className="mt-2 text-sm text-slate-400">{size === 1 ? 'Canary site' : size === 10 ? 'Preview batch' : 'Stress test'}</div>
-                  {size === 100 && <p className="mt-2 text-xs text-amber-400">Compilation only — no auto-deploy</p>}
-                </button>
-              ))}
-            </div>
-            <button onClick={() => setStep(2)} className="mt-6 text-sm text-slate-400 hover:text-sky-300">← Back to designs</button>
-          </div>
-        )}
-
-        {/* Step 4: Generate */}
-        {step === 4 && (
-          <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-8 text-center">
-            <h2 className="mb-2 text-lg font-bold">Ready to Generate</h2>
-            <p className="mb-6 text-sm text-slate-400">
-              {batchSize} site(s) · {selectedIndustry} · {LAYOUTS.find((l) => l.id === selectedLayout)?.name} · NOINDEX preview
-            </p>
-            <button
-              onClick={handleGenerate}
-              disabled={generating}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-700 px-8 py-3 font-bold text-white transition hover:brightness-110 disabled:opacity-50"
-            >
-              {generating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Rocket className="h-5 w-5" />}
-              {generating ? 'Generating...' : 'Generate Preview Batch'}
-            </button>
-            {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
-            <button onClick={() => setStep(3)} className="mt-6 block text-sm text-slate-400 hover:text-sky-300">← Back</button>
-          </div>
-        )}
-
-        {/* Step 5: Preview & QA */}
-        {step === 5 && (
-          <div>
-            <h2 className="mb-4 text-lg font-bold">Preview & Independent QA</h2>
-            <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-700/50 bg-amber-900/20 p-3">
-              <Lock className="h-4 w-4 text-amber-400" />
-              <span className="text-xs text-amber-300">All preview sites are NOINDEX. They will not be indexed by search engines until explicitly approved and published.</span>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {generatedPreviews.map((preview) => (
-                <div key={preview.id} className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900/50">
+          <div className="adm-grid cols-3">
+            {generatedPreviews.map((preview) => {
+              const previewStatus = STATUSES[preview.status] || { label: preview.status, tone: 'tone-slate' };
+              return (
+                <div key={preview.id} className="adm-frame">
                   {preview.html ? (
-                    <iframe srcDoc={preview.html} className="h-64 w-full" title={`Preview ${preview.id}`} sandbox="allow-same-origin" />
+                    <iframe srcDoc={preview.html} title={`Preview ${preview.id}`} sandbox="allow-same-origin" />
                   ) : (
-                    <div className="grid h-64 place-items-center text-sm text-red-400">
-                      <div className="text-center">
-                        <AlertTriangle className="mx-auto mb-2 h-8 w-8" />
-                        {preview.error || 'Generation failed'}
-                      </div>
+                    <div className="adm-empty" style={{ border: 0, borderRadius: 0, minHeight: 250 }}>
+                      <AlertTriangle className="h-6 w-6" style={{ color: '#a32121' }} />
+                      <span>{preview.error || 'Generation failed'}</span>
                     </div>
                   )}
-                  <div className="p-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-slate-400">{preview.niche} · Layout {preview.layout}</span>
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${STATUSES[preview.status]?.color || 'text-slate-400'}`}>
-                        {STATUSES[preview.status]?.label || preview.status}
-                      </span>
-                    </div>
+                  <div className="adm-frame-foot">
+                    <span>
+                      {preview.niche} · Layout {preview.layout}
+                    </span>
+                    <span className={`adm-badge ${previewStatus.tone}`}>{previewStatus.label}</span>
                   </div>
                 </div>
-              ))}
+              );
+            })}
+          </div>
+          {batchStatus === 'PREVIEW_READY' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 20 }}>
+              <button type="button" onClick={handleApprove} className="adm-btn success lg">
+                <ShieldCheck className="h-5 w-5" /> Approve for release
+              </button>
+              <button type="button" onClick={() => setStep(4)} className="adm-link">
+                ← Regenerate
+              </button>
             </div>
-            {batchStatus === 'PREVIEW_READY' && (
-              <div className="mt-6 flex items-center gap-4">
-                <button onClick={handleApprove} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-bold text-white transition hover:brightness-110">
-                  <ShieldCheck className="h-5 w-5" /> Approve for Release
-                </button>
-                <button onClick={() => setStep(4)} className="text-sm text-slate-400 hover:text-sky-300">← Regenerate</button>
-              </div>
-            )}
-            {batchStatus === 'FAILED' && (
-              <div className="mt-6">
-                <button onClick={() => setStep(4)} className="text-sm text-slate-400 hover:text-sky-300">← Back to generation</button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Step 6: Approval */}
-        {step === 6 && (
-          <div className="rounded-xl border border-emerald-700/50 bg-emerald-900/20 p-8 text-center">
-            <ShieldCheck className="mx-auto mb-4 h-12 w-12 text-emerald-400" />
-            <h2 className="mb-2 text-lg font-bold">Batch Approved</h2>
-            <p className="mb-6 text-sm text-slate-400">
-              {batchSize} site(s) approved for {selectedIndustry}. Ready to publish.
-            </p>
-            <button
-              onClick={handlePublish}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 px-8 py-3 font-bold text-white transition hover:brightness-110"
-            >
-              <Globe className="h-5 w-5" /> Publish to Production
+          )}
+          {batchStatus === 'FAILED' && (
+            <button type="button" onClick={() => setStep(4)} className="adm-link" style={{ marginTop: 20 }}>
+              ← Back to generation
             </button>
-            <button onClick={reset} className="mt-6 block text-sm text-slate-400 hover:text-sky-300">← Start over</button>
-          </div>
-        )}
+          )}
+        </section>
+      )}
 
-        {/* Step 7: Published */}
-        {step === 7 && (
-          <div className="rounded-xl border border-green-700/50 bg-green-900/20 p-8 text-center">
-            <FileCheck className="mx-auto mb-4 h-12 w-12 text-green-400" />
-            <h2 className="mb-2 text-lg font-bold">Batch Published</h2>
-            <p className="mb-6 text-sm text-slate-400">
-              {batchSize} site(s) are now live for {selectedIndustry}. Monitor performance in the Proof Dashboard.
-            </p>
-            <button onClick={reset} className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/50 px-6 py-2 text-sm text-slate-300 transition hover:border-sky-500">
-              <Rocket className="h-4 w-4" /> Launch Another Batch
+      {/* Step 6 — approval */}
+      {step === 6 && (
+        <section className="adm-card adm-card-pad" style={{ textAlign: 'center', maxWidth: 660, margin: '0 auto' }}>
+          <ShieldCheck className="h-11 w-11" style={{ color: '#15803d', margin: '0 auto 12px' }} />
+          <h2 className="adm-section-title">Batch approved</h2>
+          <p className="adm-muted" style={{ margin: '8px 0 6px' }}>
+            {batchSize} {batchSize === 1 ? 'site' : 'sites'} approved for {selectedIndustry}.
+          </p>
+          {error ? (
+            <div className="adm-alert warn" role="alert" style={{ margin: '16px 0 0', textAlign: 'left' }}>
+              <Lock className="h-4 w-4" />
+              <span>{error}</span>
+            </div>
+          ) : (
+            <p className="adm-muted">Ready for the governed launch workflow.</p>
+          )}
+          <button type="button" onClick={handlePublish} className="adm-btn success lg" style={{ marginTop: 20 }}>
+            <Globe className="h-5 w-5" /> Publish to production
+          </button>
+          <div>
+            <button type="button" onClick={reset} className="adm-link" style={{ marginTop: 18 }}>
+              ← Start over
             </button>
           </div>
-        )}
-      </div>
+        </section>
+      )}
+
+      {/* Step 7 — published */}
+      {step === 7 && (
+        <section className="adm-card adm-card-pad" style={{ textAlign: 'center', maxWidth: 660, margin: '0 auto' }}>
+          <FileCheck className="h-11 w-11" style={{ color: '#15803d', margin: '0 auto 12px' }} />
+          <h2 className="adm-section-title">Batch published</h2>
+          <p className="adm-muted" style={{ margin: '8px 0 6px' }}>
+            {batchSize} {batchSize === 1 ? 'site' : 'sites'} are live for {selectedIndustry}. Track performance in the
+            proof dashboard.
+          </p>
+          <button type="button" onClick={reset} className="adm-btn" style={{ marginTop: 20 }}>
+            <Rocket className="h-4 w-4" /> Launch another batch
+          </button>
+        </section>
+      )}
     </div>
   );
 }
